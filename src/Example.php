@@ -11,6 +11,6 @@ final class Example
 {
     public function foo(): string
     {
-        return 'test';
+        return 'bar';
     }
 }
