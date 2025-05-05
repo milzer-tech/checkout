@@ -4,12 +4,62 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Connectors;
 
+use Illuminate\Support\Facades\Config;
+use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
+use Saloon\Traits\Plugins\HasTimeout;
 
-final class NezasaConnector extends Connector
+/**
+ * Nezasa Connector
+ *
+ * This class is responsible for connecting to the Nezasa API.
+ * It sets the base URL, default headers, and authentication method.
+ *
+ * @link https://support.nezasa.com/hc/en-gb/articles/29588280597265-Checkout-API
+ */
+class NezasaConnector extends Connector
 {
+    use HasTimeout;
+
+    /**
+     * The timeout in seconds for the connection according to the Nezasa API.
+     */
+    protected int $connectTimeout = 30;
+
+    /**
+     * The timeout in seconds for the request according to the Nezasa API.
+     */
+    protected int $requestTimeout = 30;
+
     /**
      * Define the base URL of the API.
      */
-    public function resolveBaseUrl(): string {}
+    public function resolveBaseUrl(): string
+    {
+        return Config::string('checkout.nezasa.base_url');
+    }
+
+    /**
+     * Default Request Headers
+     *
+     * @return array<string, string>
+     */
+    protected function defaultHeaders(): array
+    {
+        return [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ];
+    }
+
+    /**
+     * Default authenticator used.
+     */
+    protected function defaultAuth(): BasicAuthenticator
+    {
+        return new BasicAuthenticator(
+            Config::string('checkout.nezasa.username'),
+            Config::string('checkout.nezasa.password')
+        );
+    }
 }

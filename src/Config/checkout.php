@@ -7,5 +7,7 @@ return [
      */
     'nezasa' => [
         'base_url' => env('CHECKOUT_NEZASA_BASE_URL', 'https://api.tripbuilder.app'),
+        'username' => env('CHECKOUT_NEZASA_USERNAME', 'your_username'),
+        'password' => env('CHECKOUT_NEZASA_PASSWORD', 'your_password'),
     ],
 ];
