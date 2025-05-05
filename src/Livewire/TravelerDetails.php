@@ -36,10 +36,10 @@ class TravelerDetails extends Component
      */
     public function mount(Request $request): void
     {
-        $this->checkoutId = $request->query('checkoutId');
-        $this->itineraryId = $request->query('itineraryId');
-        $this->origin = $request->query('origin');
-        $this->lang = $request->query('lang');
+        $this->checkoutId = $request->str('checkoutId')->toString();
+        $this->itineraryId = $request->str('itineraryId')->toString();
+        $this->origin = $request->str('origin')->toString();
+        $this->lang = $request->str('lang')->toString();
     }
 
     /**
