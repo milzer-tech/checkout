@@ -1,5 +1,5 @@
 {
-    "name": "milzer-tech/checkout",
+    "name": "milzer/checkout",
     "description": "the checkout package for the Nezasa checkout system",
     "keywords": ["php", "package", "checkout", "nezasa", "milzer"],
     "license": "MIT",
@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "php": "^8.3.0"
+        "php": "^8.3.0",
+        "livewire/livewire": "^3.6"
     },
     "require-dev": {
         "laravel/pint": "^1.18.1",
