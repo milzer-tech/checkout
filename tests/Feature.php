@@ -1,5 +1,6 @@
 <?php
- use Nezasa\Checkout\Example;
+
+use Nezasa\Checkout\Example;
 
 it('foo', function (): void {
     $example = new Example;
