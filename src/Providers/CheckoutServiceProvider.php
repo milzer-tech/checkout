@@ -19,6 +19,10 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../Resources/Views', 'checkout');
 
         Config::set('livewire.layout', 'checkout::layouts.layout');
+
+        $this->publishes([
+            __DIR__.'/../Resources/Views/assets' => public_path('vendor/checkout'),
+        ], 'checkout');
     }
 
     /**

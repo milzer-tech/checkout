@@ -46,6 +46,6 @@ class TravelerDetails extends Component
      */
     public function render(): View
     {
-        return view('checkout::traveler-details');
+        return view('checkout::traveler-details.index');
     }
 }
