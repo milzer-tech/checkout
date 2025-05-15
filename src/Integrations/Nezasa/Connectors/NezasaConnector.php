@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Connectors;
 
 use Illuminate\Support\Facades\Config;
+use Nezasa\Checkout\Integrations\Nezasa\Resources\CheckoutResource;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
+use Saloon\Traits\Makeable;
 use Saloon\Traits\Plugins\HasTimeout;
 
 /**
@@ -20,6 +22,7 @@ use Saloon\Traits\Plugins\HasTimeout;
 class NezasaConnector extends Connector
 {
     use HasTimeout;
+    use Makeable;
 
     /**
      * The timeout in seconds for the connection according to the Nezasa API.
@@ -61,5 +64,13 @@ class NezasaConnector extends Connector
             Config::string('checkout.nezasa.username'),
             Config::string('checkout.nezasa.password')
         );
+    }
+
+    /**
+     * Get the checkout resource.
+     */
+    public function checkout(): CheckoutResource
+    {
+        return new CheckoutResource($this);
     }
 }
