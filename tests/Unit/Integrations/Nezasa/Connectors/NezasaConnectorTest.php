@@ -5,7 +5,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Resources\CheckoutResource;
 use Saloon\Http\Auth\BasicAuthenticator;
 
-it('returns the correct base url', function () {
+it('returns the correct base url', function (): void {
     $newUrl = 'https://my.tripbuilder.app';
 
     Config::set('checkout.nezasa.base_url', $newUrl);
@@ -15,19 +15,19 @@ it('returns the correct base url', function () {
     expect($connector->resolveBaseUrl())->toBe($newUrl);
 });
 
-it('checks the connect timeout', function () {
+it('checks the connect timeout', function (): void {
     $connector = new NezasaConnector;
 
     expect($connector->getConnectTimeout())->toBe(floatval(30));
 });
 
-it('checks the request timeout', function () {
+it('checks the request timeout', function (): void {
     $connector = new NezasaConnector;
 
     expect($connector->getRequestTimeout())->toBe(floatval(30));
 });
 
-it('checks the default headers', function () {
+it('checks the default headers', function (): void {
     $connector = new NezasaConnector;
 
     expect($connector->headers()->all())
@@ -38,7 +38,7 @@ it('checks the default headers', function () {
         ]);
 });
 
-it('checks the default auth', function () {
+it('checks the default auth', function (): void {
     Config::set('checkout.nezasa.username', 'testUsername');
     Config::set('checkout.nezasa.password', 'testPassword');
 
@@ -53,7 +53,7 @@ it('checks the default auth', function () {
         ->toBe('testPassword');
 });
 
-it('returns the checkout resource', function () {
+it('returns the checkout resource', function (): void {
     $connector = new NezasaConnector;
 
     expect($connector->checkout())->toBeInstanceOf(CheckoutResource::class);
