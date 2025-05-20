@@ -12,7 +12,8 @@
     "require": {
         "php": "^8.3.0",
         "livewire/livewire": "^3.6",
-        "saloonphp/saloon": "^3.0"
+        "saloonphp/saloon": "^3.0",
+        "spatie/laravel-data": "^4.15"
     },
     "require-dev": {
         "laravel/pint": "^1.18.1",
