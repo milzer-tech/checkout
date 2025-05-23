@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Connectors;
 
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Integrations\Nezasa\Resources\CheckoutResource;
+use Nezasa\Checkout\Integrations\Nezasa\Resources\PlannerResource;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Traits\Makeable;
@@ -72,5 +73,13 @@ class NezasaConnector extends Connector
     public function checkout(): CheckoutResource
     {
         return new CheckoutResource($this);
+    }
+
+    /**
+     * Get the itinerary resource.
+     */
+    public function planner(): PlannerResource
+    {
+        return new PlannerResource($this);
     }
 }
