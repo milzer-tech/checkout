@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Nezasa\Checkout\Integrations\Nezasa\Requests\Planner;
+
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse;
+use Saloon\Enums\Method;
+use Saloon\Http\Request;
+use Saloon\Http\Response;
+
+class GetItineraryRequest extends Request
+{
+    /**
+     * Define the HTTP method.
+     */
+    protected Method $method = Method::GET;
+
+    /**
+     * Create a new instance of RetrieveCheckoutRequest
+     */
+    public function __construct(protected readonly string $itineraryId) {}
+
+    /**
+     * Define the endpoint for the request.
+     */
+    public function resolveEndpoint(): string
+    {
+        return '/planner/v1/itineraries/'.$this->itineraryId.'?include=all';
+    }
+
+    public function createDtoFromResponse(Response $response): GetItineraryResponse
+    {
+        return GetItineraryResponse::from($response->array('itinerary'));
+    }
+}
