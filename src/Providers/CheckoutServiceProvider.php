@@ -19,6 +19,11 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../Resources/Views', 'checkout');
 
         Config::set('livewire.layout', 'checkout::layouts.layout');
+        Config::set('data.date_format', [
+            DATE_ATOM,
+            'Y-m-d',
+            'Y-m-d\TH:i:s.uP',
+        ]);
 
         $this->publishes([
             __DIR__.'/../Resources/Views/assets' => public_path('vendor/checkout'),
