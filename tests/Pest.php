@@ -11,4 +11,4 @@
 |
 */
 
-uses(Tests\TestCase::class)->in('Feature', 'Unit');
+uses(Tests\TestCase::class)->in(__DIR__);

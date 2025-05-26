@@ -2,9 +2,25 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Nezasa\Checkout\Providers\CheckoutServiceProvider;
+use Orchestra\Testbench\TestCase as OrchestraTestCase;
+use Spatie\LaravelData\LaravelDataServiceProvider;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase extends OrchestraTestCase
 {
-    use \Orchestra\Testbench\Concerns\CreatesApplication;
+    /**
+     * Get package providers.
+     *
+     * @api
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return array<int, class-string>
+     */
+    protected function getPackageProviders($app)
+    {
+        return [
+            LaravelDataServiceProvider::class,
+            CheckoutServiceProvider::class,
+        ];
+    }
 }
