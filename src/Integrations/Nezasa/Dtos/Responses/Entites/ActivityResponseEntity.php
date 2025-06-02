@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites;
 
-use Illuminate\Support\Carbon;
+use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Data;
 
 class ActivityResponseEntity extends Data
@@ -18,7 +18,7 @@ class ActivityResponseEntity extends Data
      */
     public function __construct(
         public string $name,
-        public Carbon $startDateTime,
-        public Carbon $endDateTime,
+        public CarbonImmutable $startDateTime,
+        public CarbonImmutable $endDateTime,
     ) {}
 }
