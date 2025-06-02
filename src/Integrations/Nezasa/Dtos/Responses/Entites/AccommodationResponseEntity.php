@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites;
 
-use Illuminate\Support\Carbon;
+use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Data;
 
 class AccommodationResponseEntity extends Data
@@ -18,7 +18,7 @@ class AccommodationResponseEntity extends Data
      */
     public function __construct(
         public string $name,
-        public Carbon $startDate,
+        public CarbonImmutable $startDate,
         public int $nights,
         public LocationResponseEntity $location,
     ) {}
