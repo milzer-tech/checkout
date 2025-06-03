@@ -24,7 +24,7 @@ class GetItineraryResponse extends Data
      */
     public function __construct(
         public Collection $modules,
-        public Collection $startConnections,
-        public Collection $returnConnections,
+        public Collection $startConnections = new Collection,
+        public Collection $returnConnections = new Collection,
     ) {}
 }
