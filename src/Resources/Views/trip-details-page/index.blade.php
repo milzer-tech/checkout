@@ -14,7 +14,7 @@
             </section>
         </div>
         <div class="overflow-auto min-w-[300px]">
-{{--            <livewire:trip-summary />--}}
+            <livewire:trip-summary />
         </div>
     </div>
     <!-- Footer with navigation buttons - takes 2 columns out of 3 on larger screens -->
