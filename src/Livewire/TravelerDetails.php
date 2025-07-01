@@ -1,51 +1,75 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Nezasa\Checkout\Livewire;
 
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class TravelerDetails extends Component
 {
-    /**
-     * The unique identifier for the checkout process.
-     */
-    #[Url]
-    public string $checkoutId;
+    public $travelerExpanded = true;
 
-    /**
-     * The unique identifier for the itinerary
-     */
-    #[Url]
-    public string $itineraryId;
+    public $showSecondTraveler = false;
 
-    /**
-     * Indicates the request's source from the IBE or the APP.
-     * This can help determine if the user is authenticated (APP) or not (IBE).
-     */
-    #[Url]
-    public string $origin;
+    public $travelers = [];
 
-    /**
-     * The ISO 639-1 language code representing the user's language preference for the itinerary.
-     */
-    #[Url]
-    public string $lang;
+    protected $rules = [
+        'travelers.*.firstName' => 'required|min:2',
+        'travelers.*.secondName' => 'nullable|min:2',
+        'travelers.*.lastName' => 'required|min:2',
+        'travelers.*.nationality' => 'required',
+        'travelers.*.gender' => 'required',
+        'travelers.*.dateOfBirth' => 'required|date',
+        'travelers.*.passportNumber' => 'required|min:6',
+        'travelers.*.passportIssuingCountry' => 'required',
+        'travelers.*.passportExpiry' => 'required|date|after:today',
+    ];
 
-    /**
-     * Mount the component with the request data.
-     */
-    public function mount(Request $request): void {}
-
-    /**
-     * Render the component view.
-     */
-    public function render(): View
+    public function mount()
     {
-        return view('checkout::traveler-details.index');
+        $this->initializeTravelers();
+    }
+
+    public function initializeTravelers()
+    {
+        $this->travelers = [
+            [
+                'firstName' => '',
+                'secondName' => '',
+                'lastName' => '',
+                'nationality' => '',
+                'gender' => '',
+                'dateOfBirth' => '',
+                'passportNumber' => '',
+                'passportIssuingCountry' => '',
+                'passportExpiry' => '',
+            ],
+        ];
+    }
+
+    public function addTraveler()
+    {
+        $this->travelers[] = [
+            'firstName' => '',
+            'secondName' => '',
+            'lastName' => '',
+            'nationality' => '',
+            'gender' => '',
+            'dateOfBirth' => '',
+            'passportNumber' => '',
+            'passportIssuingCountry' => '',
+            'passportExpiry' => '',
+        ];
+    }
+
+    public function save()
+    {
+        // No validation for now
+        $this->travelerExpanded = false;
+        $this->dispatch('enablePromoCodeSection');
+    }
+
+    public function render()
+    {
+        return view('checkout::trip-details-page.traveler-details');
     }
 }
