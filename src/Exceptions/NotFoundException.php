@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Exceptions;
 
-use Exception;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Response as LaravelResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class NotFoundException extends Exception
+class NotFoundException extends NotFoundHttpException
 {
     /**
      * Create a new instance of the ParentException
@@ -15,8 +16,19 @@ class NotFoundException extends Exception
     public function __construct()
     {
         parent::__construct(
-            message: 'The requested resource could not be found.',
-            code: Response::HTTP_NOT_FOUND,
+            message: 'The requested resource could not be retrieved from Nezasa API.',
+            code: SymfonyResponse::HTTP_NOT_FOUND,
+        );
+    }
+
+    /**
+     * Render the exception as an HTTP response.
+     */
+    public function render(): LaravelResponse
+    {
+        return new LaravelResponse(
+            content: view('checkout::exceptions.all', ['exception' => $this]),
+            status: SymfonyResponse::HTTP_NOT_FOUND,
         );
     }
 }
