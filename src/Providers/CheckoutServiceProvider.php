@@ -20,45 +20,72 @@ use Nezasa\Checkout\Livewire\TripSummary;
 class CheckoutServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
-
-        $this->loadViewsFrom(__DIR__.'/../Resources/Views', 'checkout');
-        $this->loadViewsFrom(__DIR__.'/../Resources/Views', 'checkout');
-
-        Livewire::component('stepper', Stepper::class);
-        Livewire::component('banner', Banner::class);
-        Livewire::component('contact-details', ContactDetails::class);
-        Livewire::component('traveler-details', TravelerDetails::class);
-        Livewire::component('promo-code-section', PromoCodeSection::class);
-        Livewire::component('travel-insurance-section', TravelInsuranceSection::class);
-        Livewire::component('additional-services-section', AdditionalServicesSection::class);
-        Livewire::component('payment-options-section', PaymentOptionsSection::class);
-        Livewire::component('trip-summary', TripSummary::class);
-
-        Config::set('livewire.layout', 'checkout::layouts.layout');
-        Config::set('data.date_format', [
-            DATE_ATOM,
-            'Y-m-d',
-            'Y-m-d\TH:i:s.uP',
-        ]);
-
-        $this->publishes([
-            //            __DIR__ . '/../Resources/assets' => resource_path('vendor/checkout'),
-            __DIR__.'/../Resources/assets' => resource_path('vendor/checkout'),
-            __DIR__.'/../Resources/config/tailwind.config.js' => base_path('tailwind.config.js'),
-            __DIR__.'/../Resources/config/postcss.config.js' => base_path('postcss.config.js'),
-        ], 'checkout');
-    }
-
-    /**
      * Register any application services.
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../Config/checkout.php', 'checkout');
+        $this->mergeConfigFrom(path: __DIR__.'/../Config/checkout.php', key: 'checkout');
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        $this->loadResources();
+
+        $this->registerLivewireComponents();
+
+        $this->setUpConfigurations();
+
+        $this->publishAssets();
+    }
+
+    /**
+     * Register Livewire components manually.
+     */
+    private function registerLivewireComponents(): void
+    {
+        Livewire::component(name: 'stepper', class: Stepper::class);
+        Livewire::component(name: 'banner', class: Banner::class);
+        Livewire::component(name: 'contact-details', class: ContactDetails::class);
+        Livewire::component(name: 'traveler-details', class: TravelerDetails::class);
+        Livewire::component(name: 'promo-code-section', class: PromoCodeSection::class);
+        Livewire::component(name: 'travel-insurance-section', class: TravelInsuranceSection::class);
+        Livewire::component(name: 'additional-services-section', class: AdditionalServicesSection::class);
+        Livewire::component(name: 'payment-options-section', class: PaymentOptionsSection::class);
+        Livewire::component(name: 'trip-summary', class: TripSummary::class);
+    }
+
+    /**
+     * Load the necessary resources for the package.
+     */
+    private function loadResources(): void
+    {
+        $this->loadRoutesFrom(path: __DIR__.'/../Routes/web.php');
+
+        $this->loadViewsFrom(path: __DIR__.'/../Resources/Views', namespace: 'checkout');
+    }
+
+    /**
+     * Set up configurations for the package.
+     */
+    private function setUpConfigurations(): void
+    {
+        Config::set(key: 'livewire.layout', value: 'checkout::layouts.layout');
+
+        Config::set(key: 'data.date_format', value: [DATE_ATOM, 'Y-m-d', 'Y-m-d\TH:i:s.uP']);
+    }
+
+    /**
+     * Publish package assets.
+     */
+    private function publishAssets(): void
+    {
+        $this->publishes(paths: [
+            __DIR__.'/../Resources/assets' => resource_path(path: 'vendor/checkout'),
+            __DIR__.'/../Resources/config/tailwind.config.js' => base_path(path: 'tailwind.config.js'),
+            __DIR__.'/../Resources/config/postcss.config.js' => base_path(path: 'postcss.config.js'),
+        ], groups: 'checkout');
     }
 }
