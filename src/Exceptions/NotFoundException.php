@@ -7,7 +7,7 @@ namespace Nezasa\Checkout\Exceptions;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
-class NoFoundResourceException extends Exception
+class NotFoundException extends Exception
 {
     /**
      * Create a new instance of the ParentException
