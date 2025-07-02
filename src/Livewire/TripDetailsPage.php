@@ -7,7 +7,6 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
-use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 
 class TripDetailsPage extends Component
 {
@@ -37,19 +36,6 @@ class TripDetailsPage extends Component
     public string $lang;
 
     public $totalPrice;
-
-    /**
-     * Mount the component with the request data.
-     */
-    public function mount(SummarizeItineraryAction $summerizeItinerary): void
-    {
-        $result = $summerizeItinerary->handle($this->itineraryId);
-
-        $this->totalPrice = 1000;
-        //        dd(
-        //            $result->toArray()
-        //        );
-    }
 
     /**
      * Render the component view.
