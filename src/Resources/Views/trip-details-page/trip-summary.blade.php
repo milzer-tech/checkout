@@ -50,8 +50,10 @@
             <h3 class="text-base font-bold text-[rgba(37,42,49,1)] dark:text-white leading-6">Travel date</h3>
         </div>
         <div class="ml-7">
-            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->startDate->format('D, j M Y')}} - {{$itinerary->endDate->format('D, j M Y')}}</p>
-            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->nights}} nights</p>
+            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->startDate->format('D, j M Y')}}
+                - {{$itinerary->endDate->format('D, j M Y')}}</p>
+            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->nights}}
+                nights</p>
         </div>
     </div>
 
@@ -67,8 +69,27 @@
             <h3 class="text-base font-bold text-[rgba(37,42,49,1)] dark:text-white leading-6">Travellers</h3>
         </div>
         <div class="ml-7">
-            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">2 Adults, 2 Children
-                (1 year old, 6 years old)</p>
+            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">
+                @php
+                    $str = str($itinerary->adults)
+                    ->append(' ')
+                    ->append(str('Adult')->plural($itinerary->adults));
+
+                    if($itinerary->childrenAges->isNotEmpty()){
+                       $str = $str->append(', ' . $itinerary->children. ' ')
+                       ->append(str('Child')->plural($itinerary->children))
+                       ->append(' (')
+                       ->append(
+                            $itinerary->childrenAges->map(function ( $age) {
+                                return  $age . ' ' . str('year')->plural($age) . ' old';
+                            })->implode(', ')
+                        )
+                        ->append(')');
+                    }
+
+                    echo $str;
+                @endphp
+            </p>
         </div>
     </div>
 

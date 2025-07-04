@@ -7,6 +7,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Throwable;
 
 class TripSummary extends Component
 {
@@ -34,6 +35,8 @@ class TripSummary extends Component
 
     /**
      * Mount the component to initialize its actions and properties.
+     *
+     * @throws Throwable
      */
     public function mount(SummarizeItineraryAction $summerizeItinerary): void
     {
@@ -48,6 +51,9 @@ class TripSummary extends Component
         return view('checkout::trip-details-page.trip-summary')->with('itinerary', $this->itinerarySummary);
     }
 
+    /**
+     * Toggle the expansion state of the trip details.
+     */
     public function toggleExpand(): void
     {
         $this->isExpanded = ! $this->isExpanded;
