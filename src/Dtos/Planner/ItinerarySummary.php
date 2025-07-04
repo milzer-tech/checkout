@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Dtos\Planner;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Stringable;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryActivity;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryFlight;
@@ -31,6 +32,7 @@ class ItinerarySummary extends BaseDto
      * @param  Collection<int, ItineraryRentalCar>  $rentalCars
      */
     public function __construct(
+        public Stringable $title,
         public CarbonImmutable $startDate,
         public CarbonImmutable $endDate,
         public int $adults,

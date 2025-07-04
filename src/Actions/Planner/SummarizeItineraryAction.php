@@ -55,6 +55,7 @@ class SummarizeItineraryAction
     private function initializeResult(GetItineraryResponse $itineraryResponse): void
     {
         $this->result = new ItinerarySummary(
+            title: str($itineraryResponse->title),
             startDate: $itineraryResponse->startDate,
             endDate: $itineraryResponse->endDate,
             adults: $itineraryResponse->countAdults(),

@@ -28,6 +28,7 @@ class GetItineraryResponse extends BaseDto
     public function __construct(
         public CarbonImmutable $startDate,
         public CarbonImmutable $endDate,
+        public string $title,
         public Collection $modules = new Collection,
         public Collection $paxDetails = new Collection,
         public Collection $startConnections = new Collection,
