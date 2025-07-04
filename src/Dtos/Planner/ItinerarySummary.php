@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Dtos\Planner;
 
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryActivity;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryFlight;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryRentalCar;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryTransfer;
-use Spatie\LaravelData\Data;
 
-class ItinerarySummary extends Data
+class ItinerarySummary extends BaseDto
 {
     /**
      * Create a new instance of the ItinerarySummary.

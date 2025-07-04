@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Dtos\Planner\Entities;
 
 use Carbon\CarbonImmutable;
-use Spatie\LaravelData\Data;
+use Nezasa\Checkout\Dtos\BaseDto;
 
-class ItineraryFlight extends Data
+class ItineraryFlight extends BaseDto
 {
     /**
      * Create a new instance of ItineraryFlight

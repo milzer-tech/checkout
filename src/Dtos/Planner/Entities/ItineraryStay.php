@@ -6,9 +6,9 @@ namespace Nezasa\Checkout\Dtos\Planner\Entities;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Stringable;
-use Spatie\LaravelData\Data;
+use Nezasa\Checkout\Dtos\BaseDto;
 
-class ItineraryStay extends Data
+class ItineraryStay extends BaseDto
 {
     public CarbonImmutable $checkOut;
 
