@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Dtos\Planner;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryActivity;
@@ -24,6 +25,8 @@ class ItinerarySummary extends BaseDto
      * @param  Collection<int, ItineraryRentalCar>  $rentalCars
      */
     public function __construct(
+        public CarbonImmutable $startDate,
+        public CarbonImmutable $endDate,
         public Collection $stays = new Collection,
         public Collection $flights = new Collection,
         public Collection $transfers = new Collection,
