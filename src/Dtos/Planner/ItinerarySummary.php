@@ -32,6 +32,9 @@ class ItinerarySummary extends BaseDto
     public function __construct(
         public CarbonImmutable $startDate,
         public CarbonImmutable $endDate,
+        public int $adults,
+        public int $children = 0,
+        public Collection $childrenAges = new Collection,
         public Collection $stays = new Collection,
         public Collection $flights = new Collection,
         public Collection $transfers = new Collection,

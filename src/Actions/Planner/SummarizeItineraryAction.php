@@ -57,6 +57,9 @@ class SummarizeItineraryAction
         $this->result = new ItinerarySummary(
             startDate: $itineraryResponse->startDate,
             endDate: $itineraryResponse->endDate,
+            adults: $itineraryResponse->countAdults(),
+            children: $itineraryResponse->countChildren(),
+            childrenAges: $itineraryResponse->getChildrenAges()
         );
     }
 
