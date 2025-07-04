@@ -150,12 +150,13 @@
                     </div>
                 @endif
 
-                {{-- Flights section --}}
-                <div class="mb-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="font-semibold dark:text-white">Flights</h3>
-                        <span
-                            class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
+                @if($itinerary->flights->isNotEmpty())
+                    {{-- Flights section --}}
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-semibold dark:text-white">Flights</h3>
+                            <span
+                                class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -163,45 +164,35 @@
                             </svg>
                             Available
                         </span>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="none"
-                                     stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                <span
-                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">Lisbon - Palma</span>
-                            </div>
-                            <div class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">Tue,
-                                1 Apr
-                            </div>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="none"
-                                     stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                <span
-                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">Palma - Lisbon</span>
-                            </div>
-                            <div class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">Sat,
-                                5 Apr
-                            </div>
+                        <div class="space-y-2">
+                            @foreach($itinerary->flights as $flight)
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="none"
+                                             stroke="currentColor" viewBox="0 0 24 24"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span
+                                            class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startLocationName}} - {{$flight->endLocationName}}</span>
+                                    </div>
+                                    <div
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
-                </div>
+                @endif
 
-                {{-- Transfers section --}}
-                <div class="mb-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="font-semibold dark:text-white">Transfers</h3>
-                        <span
-                            class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
+                @if($itinerary->transfers->isNotEmpty())
+                    {{-- Transfers section --}}
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-semibold dark:text-white">Transfers</h3>
+                            <span
+                                class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -209,38 +200,25 @@
                             </svg>
                             Available
                         </span>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="none"
-                                     stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                <span
-                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">Palma Airport to hotel</span>
-                            </div>
-                            <div class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">Tue,
-                                1 Apr
-                            </div>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="none"
-                                     stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                <span
-                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">Hotel to Palma Airport</span>
-                            </div>
-                            <div class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">Sat,
-                                5 Apr
-                            </div>
+                        <div class="space-y-2">
+                            @foreach($itinerary->transfers as $transfer)
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="none"
+                                             stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span
+                                            class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startLocationName}} to {{$transfer->endLocationName}}</span>
+                                    </div>
+                                    <div class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
-                </div>
+                @endif
 
 
                 @if($itinerary->rentalCars->isNotEmpty())
@@ -258,22 +236,25 @@
                             Available
                         </span>
                         </div>
-                        @foreach($itinerary->rentalCars as $rentalCar)
-                            <div class="space-y-2">
+                        <div class="space-y-2">
+                            @foreach($itinerary->rentalCars as $rentalCar)
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center">
                                         <svg class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="none"
-                                             stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                             stroke="currentColor" viewBox="0 0 24 24"
+                                             xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                   d="M5 13l4 4L19 7"></path>
                                         </svg>
                                         <span
                                             class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
                                     </div>
-                                    <div class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}} - {{$rentalCar->endDateTime->format('D, j M')}}</div>
+                                    <div
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}}
+                                        - {{$rentalCar->endDateTime->format('D, j M')}}</div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
                 @endif
             </div>
