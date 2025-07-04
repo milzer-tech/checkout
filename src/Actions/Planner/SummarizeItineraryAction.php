@@ -26,24 +26,19 @@ class SummarizeItineraryAction
     private ItinerarySummary $result;
 
     /**
-     * Create a new instance of the SummerizeItineraryAction.
-     */
-    public function __construct()
-    {
-        $this->result = new ItinerarySummary;
-    }
-
-    /**
      * Handle summarizing the itinerary by its ID.
+     *
+     * @throws Throwable
      */
     public function handle(string $itineraryId): ItinerarySummary
     {
-        $dto = $this->retrieveItinerary($itineraryId);
+        $itineraryResponse = $this->retrieveItinerary($itineraryId);
 
-        $this->pushTransport($dto->startConnections);
-        $this->pushTransport($dto->returnConnections);
+        $this->initializeResult($itineraryResponse);
+        $this->pushTransport($itineraryResponse->startConnections);
+        $this->pushTransport($itineraryResponse->returnConnections);
 
-        foreach ($dto->modules as $module) {
+        foreach ($itineraryResponse->modules as $module) {
             foreach ($module->legs as $leg) {
                 $this->pushAccommodation($leg);
                 $this->pushActivities($leg);
@@ -52,6 +47,17 @@ class SummarizeItineraryAction
         }
 
         return $this->result;
+    }
+
+    /**
+     * Initialize the result with the start and end dates from the itinerary.
+     */
+    private function initializeResult(GetItineraryResponse $itineraryResponse): void
+    {
+        $this->result = new ItinerarySummary(
+            startDate: $itineraryResponse->startDate,
+            endDate: $itineraryResponse->endDate,
+        );
     }
 
     /**
