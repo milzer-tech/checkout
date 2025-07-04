@@ -2,11 +2,29 @@
 
 namespace Nezasa\Checkout\Livewire;
 
+use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Url;
 use Livewire\Component;
+use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
+use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 
 class TripSummary extends Component
 {
-    public $isExpanded = false;
+    /**
+     * The unique identifier for the itinerary
+     */
+    #[Url]
+    public string $itineraryId;
+
+    /**
+     * The summary of the itinerary.
+     */
+    public ItinerarySummary $itinerarySummary;
+
+    /**
+     * Indicates whether the trip details in the view are expanded.
+     */
+    public bool $isExpanded = false;
 
     public $tripDetails = [
         'title' => 'Palma de Mallorca',
@@ -14,19 +32,24 @@ class TripSummary extends Component
 
     public $totalPrice = '1,234.56';
 
-    public function toggleExpand()
+    /**
+     * Mount the component to initialize its actions and properties.
+     */
+    public function mount(SummarizeItineraryAction $summerizeItinerary): void
+    {
+        $this->itinerarySummary = $summerizeItinerary->handle($this->itineraryId);
+    }
+
+    /**
+     * Render the component view.
+     */
+    public function render(): View
+    {
+        return view('checkout::trip-details-page.trip-summary')->with('itinerary', $this->itinerarySummary);
+    }
+
+    public function toggleExpand(): void
     {
         $this->isExpanded = ! $this->isExpanded;
-    }
-
-    public function viewFullItinerary()
-    {
-        // Implement the logic to view the full itinerary
-        // This could be a redirect or a modal display
-    }
-
-    public function render()
-    {
-        return view('checkout::trip-details-page.trip-summary');
     }
 }
