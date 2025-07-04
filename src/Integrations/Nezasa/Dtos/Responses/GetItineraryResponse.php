@@ -6,12 +6,12 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\ModulesResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\PaxDetailEntity;
-use Spatie\LaravelData\Data;
 
-class GetItineraryResponse extends Data
+class GetItineraryResponse extends BaseDto
 {
     /**
      * Create a new instance of the GetItineraryResponseDto
@@ -39,7 +39,9 @@ class GetItineraryResponse extends Data
      */
     public function countAdults(): int
     {
-        return $this->paxDetails->filter(fn (PaxDetailEntity $detail) => $detail->age >= 18)->count();
+        return $this->paxDetails
+            ->reject(fn (PaxDetailEntity $pax) => $pax->age && $pax->age < 18)
+            ->count();
     }
 
     /**
@@ -47,7 +49,9 @@ class GetItineraryResponse extends Data
      */
     public function countChildren(): int
     {
-        return $this->paxDetails->filter(fn (PaxDetailEntity $detail) => $detail->age < 18)->count();
+        return $this->paxDetails
+            ->filter(fn (PaxDetailEntity $pax) => $pax->age && $pax->age < 18)
+            ->count();
     }
 
     /**
