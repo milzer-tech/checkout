@@ -16,6 +16,11 @@ use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryTransfer;
 class ItinerarySummary extends BaseDto
 {
     /**
+     * The number of nights in the itinerary.
+     */
+    public int $nights;
+
+    /**
      * Create a new instance of the ItinerarySummary.
      *
      * @param  Collection<int, ItineraryStay>  $stays
@@ -31,6 +36,8 @@ class ItinerarySummary extends BaseDto
         public Collection $flights = new Collection,
         public Collection $transfers = new Collection,
         public Collection $activities = new Collection,
-        public Collection $rentalCars = new Collection,
-    ) {}
+        public Collection $rentalCars = new Collection
+    ) {
+        $this->nights = (int) $this->startDate->diffInDays($this->endDate);
+    }
 }

@@ -50,9 +50,8 @@
             <h3 class="text-base font-bold text-[rgba(37,42,49,1)] dark:text-white leading-6">Travel date</h3>
         </div>
         <div class="ml-7">
-            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">Tue, 1 Apr 2025 - Sat,
-                5 Apr 2025</p>
-            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">4 nights</p>
+            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->startDate->format('D, j M Y')}} - {{$itinerary->endDate->format('D, j M Y')}}</p>
+            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->nights}} nights</p>
         </div>
     </div>
 
