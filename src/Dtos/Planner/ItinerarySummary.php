@@ -23,6 +23,7 @@ class ItinerarySummary extends BaseDto
     /**
      * Create a new instance of the ItinerarySummary.
      *
+     * @param  Collection<int, int>|array<int, int>  $childrenAges
      * @param  Collection<int, ItineraryStay>  $stays
      * @param  Collection<int, ItineraryFlight>  $flights
      * @param  Collection<int, ItineraryTransfer>  $transfers
@@ -34,7 +35,7 @@ class ItinerarySummary extends BaseDto
         public CarbonImmutable $endDate,
         public int $adults,
         public int $children = 0,
-        public Collection $childrenAges = new Collection,
+        public Collection|array $childrenAges = new Collection,
         public Collection $stays = new Collection,
         public Collection $flights = new Collection,
         public Collection $transfers = new Collection,
@@ -42,5 +43,9 @@ class ItinerarySummary extends BaseDto
         public Collection $rentalCars = new Collection
     ) {
         $this->nights = (int) $this->startDate->diffInDays($this->endDate);
+
+        if (is_array($this->childrenAges)) {
+            $this->childrenAges = new Collection($this->childrenAges);
+        }
     }
 }
