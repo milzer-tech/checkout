@@ -57,7 +57,7 @@ class SummarizeItineraryAction
     {
         $this->result = new ItinerarySummary(
             price: $itineraryResponse->priceInfo->packagePrice,
-            title: str($itineraryResponse->title),
+            title: $itineraryResponse->title,
             startDate: $itineraryResponse->startDate,
             endDate: $itineraryResponse->endDate,
             adults: $itineraryResponse->countAdults(),
@@ -73,14 +73,6 @@ class SummarizeItineraryAction
      */
     private function retrieveItinerary(string $itineraryId): GetItineraryResponse
     {
-        //        dd(
-        //            json_encode(
-        //                NezasaConnector::make()
-        //                    ->planner()
-        //                    ->getItinerary($itineraryId)
-        //                ->array()
-        //            )
-        //        );
         return NezasaConnector::make()
             ->planner()
             ->getItinerary($itineraryId)
@@ -95,7 +87,7 @@ class SummarizeItineraryAction
         foreach ($leg->stop->accommodations as $hotel) {
             $this->result->stays->push(
                 new ItineraryStay(
-                    name: str($hotel->location->name),
+                    name: $hotel->location->name,
                     checkIn: $hotel->startDate,
                     nights: $hotel->nights
                 )
@@ -187,7 +179,7 @@ class SummarizeItineraryAction
     {
         $this->result->activities->push(
             new ItineraryActivity(
-                name: str($name),
+                name: $name,
                 startDateTime: $start,
                 endDateTime: $end
             )

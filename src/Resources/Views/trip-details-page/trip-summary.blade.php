@@ -9,7 +9,7 @@
             />
         </div>
         <div class="flex-1">
-            <h2 class="font-mulish font-bold text-[18px] leading-[28px] tracking-[0%] align-middle mb-2 dark:text-white">{{ $itinerary->title->limit(20) }}</h2>
+            <h2 class="font-mulish font-bold text-[18px] leading-[28px] tracking-[0%] align-middle mb-2 dark:text-white">{{str($itinerary->title)->limit(20) }}</h2>
             <div class="flex justify-end">
                 <button
                     class="text-blue-600 font-medium text-sm hover:underline focus:outline-none bg-transparent px-2 py-1 rounded transition flex items-center gap-1.5">

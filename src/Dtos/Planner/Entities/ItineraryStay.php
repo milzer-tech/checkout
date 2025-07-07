@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Dtos\Planner\Entities;
 
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Stringable;
 use Nezasa\Checkout\Dtos\BaseDto;
 
 class ItineraryStay extends BaseDto
@@ -16,7 +15,7 @@ class ItineraryStay extends BaseDto
      * Create a new instance of ItineraryStay.
      */
     public function __construct(
-        public Stringable $name,
+        public string $name,
         public CarbonImmutable $checkIn,
         public int $nights,
     ) {
