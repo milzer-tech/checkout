@@ -148,7 +148,8 @@ class SummarizeItineraryAction
                 startLocationName: $connection->startLocation->name,
                 endLocationName: $connection->endLocation->name,
                 startDateTime: $connection->startDateTime,
-                endDateTime: $connection->endDateTime
+                endDateTime: $connection->endDateTime,
+                name: $connection->name
             )
         );
     }

@@ -16,6 +16,17 @@ class ItineraryTransfer extends BaseDto
         public string $startLocationName,
         public string $endLocationName,
         public CarbonImmutable $startDateTime,
-        public CarbonImmutable $endDateTime
+        public CarbonImmutable $endDateTime,
+        public ?string $name = null,
     ) {}
+
+    /**
+     * Get the title of the transfer.
+     */
+    public function getTitle(): string
+    {
+        return filled($this->name)
+            ? $this->name
+            : $this->startLocationName.' to '.$this->endLocationName;
+    }
 }
