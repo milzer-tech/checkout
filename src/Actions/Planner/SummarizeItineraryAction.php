@@ -16,6 +16,10 @@ use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RetrieveCheckoutResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\GetItineraryRequest;
+use Saloon\Http\Response;
 use Throwable;
 
 class SummarizeItineraryAction
@@ -25,6 +29,10 @@ class SummarizeItineraryAction
      */
     private ItinerarySummary $result;
 
+    private GetItineraryResponse $itineraryResponse;
+
+    private RetrieveCheckoutResponse $checkoutResponse;
+
     /**
      * Handle summarizing the itinerary by its ID.
      *
@@ -32,13 +40,13 @@ class SummarizeItineraryAction
      */
     public function handle(string $itineraryId): ItinerarySummary
     {
-        $itineraryResponse = $this->retrieveItinerary($itineraryId);
+        $this->retrieveItinerary($itineraryId);
 
-        $this->initializeResult($itineraryResponse);
-        $this->pushTransport($itineraryResponse->startConnections);
-        $this->pushTransport($itineraryResponse->returnConnections);
+        $this->initializeResult();
+        $this->pushTransport($this->itineraryResponse->startConnections);
+        $this->pushTransport($this->itineraryResponse->returnConnections);
 
-        foreach ($itineraryResponse->modules as $module) {
+        foreach ($this->itineraryResponse->modules as $module) {
             $this->pushTransport($module->returnConnections);
             foreach ($module->legs as $leg) {
                 $this->pushAccommodation($leg);
@@ -53,30 +61,46 @@ class SummarizeItineraryAction
     /**
      * Initialize the result with the start and end dates from the itinerary.
      */
-    private function initializeResult(GetItineraryResponse $itineraryResponse): void
+    private function initializeResult(): void
     {
         $this->result = new ItinerarySummary(
-            price: $itineraryResponse->priceInfo->packagePrice,
-            title: $itineraryResponse->title,
-            startDate: $itineraryResponse->startDate,
-            endDate: $itineraryResponse->endDate,
-            adults: $itineraryResponse->countAdults(),
-            children: $itineraryResponse->countChildren(),
-            childrenAges: $itineraryResponse->getChildrenAges()
+            price: $this->checkoutResponse->prices->packagePrice,
+            title: $this->itineraryResponse->title,
+            startDate: $this->itineraryResponse->startDate,
+            endDate: $this->itineraryResponse->endDate,
+            adults: $this->itineraryResponse->countAdults(),
+            children: $this->itineraryResponse->countChildren(),
+            childrenAges: $this->itineraryResponse->getChildrenAges()
         );
     }
 
     /**
      * Retrieve the itinerary by its ID.
      *
+     * @return Collection{'itinerary': GetItineraryResponse, 'checkout': RetrieveCheckoutResponse}
+     *
      * @throws Throwable
      */
-    private function retrieveItinerary(string $itineraryId): GetItineraryResponse
+    private function retrieveItinerary(string $itineraryId): Collection
     {
-        return NezasaConnector::make()
-            ->planner()
-            ->getItinerary($itineraryId)
-            ->dto();
+        $results = new Collection;
+
+        NezasaConnector::make()
+            ->pool([
+                'itinerary' => new GetItineraryRequest($itineraryId),
+                'checkout' => new RetrieveCheckoutRequest($itineraryId),
+            ])
+            ->withResponseHandler(function (Response $response, string $key) {
+                if ($key === 'itinerary') {
+                    $this->itineraryResponse = $response->dto();
+                } elseif ($key === 'checkout') {
+                    $this->checkoutResponse = $response->dto();
+                }
+            })
+            ->send()
+            ->wait();
+
+        return $results;
     }
 
     /**
