@@ -13,6 +13,7 @@ use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryFlight;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryRentalCar;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryTransfer;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 
 class ItinerarySummary extends BaseDto
 {
@@ -32,6 +33,7 @@ class ItinerarySummary extends BaseDto
      * @param  Collection<int, ItineraryRentalCar>  $rentalCars
      */
     public function __construct(
+        public Price $price,
         public Stringable $title,
         public CarbonImmutable $startDate,
         public CarbonImmutable $endDate,

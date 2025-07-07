@@ -15,7 +15,6 @@ use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegResponseEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse;
 use Throwable;
 
 class SummarizeItineraryAction
@@ -45,7 +44,6 @@ class SummarizeItineraryAction
                 $this->pushTransport($leg->connections);
             }
         }
-        //        dd($this->result->toArray());
 
         return $this->result;
     }
@@ -56,6 +54,7 @@ class SummarizeItineraryAction
     private function initializeResult(GetItineraryResponse $itineraryResponse): void
     {
         $this->result = new ItinerarySummary(
+            price: $itineraryResponse->priceInfo->packagePrice,
             title: str($itineraryResponse->title),
             startDate: $itineraryResponse->startDate,
             endDate: $itineraryResponse->endDate,

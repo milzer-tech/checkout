@@ -307,8 +307,8 @@
     {{-- Total price section --}}
     <div>
         <div class="flex justify-between items-center">
-            <h3 class="font-semibold text-xl dark:text-white">Total (EUR)</h3>
-            <span class="text-2xl font-bold dark:text-white">{{ $totalPrice }} €</span>
+            <h3 class="font-semibold text-xl dark:text-white">Total ({{strtoupper($itinerary->price->currency)}})</h3>
+            <span class="text-2xl font-bold dark:text-white">{{ \Illuminate\Support\Number::currency($itinerary->price->amount, $itinerary->price->currency) }} </span>
         </div>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Includes all taxes, fees, surcharges, and Tripbuilder service fees. Tripbuilder service
