@@ -39,6 +39,7 @@ class SummarizeItineraryAction
         $this->pushTransport($itineraryResponse->returnConnections);
 
         foreach ($itineraryResponse->modules as $module) {
+            $this->pushTransport($module->returnConnections);
             foreach ($module->legs as $leg) {
                 $this->pushAccommodation($leg);
                 $this->pushActivities($leg);
@@ -72,6 +73,14 @@ class SummarizeItineraryAction
      */
     private function retrieveItinerary(string $itineraryId): GetItineraryResponse
     {
+        //        dd(
+        //            json_encode(
+        //                NezasaConnector::make()
+        //                    ->planner()
+        //                    ->getItinerary($itineraryId)
+        //                ->array()
+        //            )
+        //        );
         return NezasaConnector::make()
             ->planner()
             ->getItinerary($itineraryId)

@@ -13,6 +13,7 @@ class ModulesResponseEntity extends Data
      * Create a new instance of the ModulesResponseEntityDto
      *
      * @param  Collection<int, LegResponseEntity>  $legs
+     * @param  Collection<int, LegConnectionEntity>  $returnConnections
      *
      * @link https://support.nezasa.com/hc/en-gb/articles/4404075693969-Planner-API
      *
@@ -20,5 +21,6 @@ class ModulesResponseEntity extends Data
      */
     public function __construct(
         public Collection $legs,
+        public Collection $returnConnections = new Collection,
     ) {}
 }
