@@ -45,6 +45,7 @@ class SummarizeItineraryAction
                 $this->pushTransport($leg->connections);
             }
         }
+        //        dd($this->result->toArray());
 
         return $this->result;
     }
