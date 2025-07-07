@@ -176,7 +176,7 @@
                                                   d="M5 13l4 4L19 7"></path>
                                         </svg>
                                         <span
-                                            class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startLocationName}} - {{$flight->endLocationName}}</span>
+                                            class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
                                     </div>
                                     <div
                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
