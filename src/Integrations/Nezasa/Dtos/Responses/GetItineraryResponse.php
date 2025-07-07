@@ -10,6 +10,7 @@ use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\ModulesResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\PaxDetailEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\PriceInfoEntity;
 
 class GetItineraryResponse extends BaseDto
 {
@@ -29,6 +30,7 @@ class GetItineraryResponse extends BaseDto
         public CarbonImmutable $startDate,
         public CarbonImmutable $endDate,
         public string $title,
+        public PriceInfoEntity $priceInfo,
         public Collection $modules = new Collection,
         public Collection $paxDetails = new Collection,
         public Collection $startConnections = new Collection,
