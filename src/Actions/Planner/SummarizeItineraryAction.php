@@ -15,6 +15,7 @@ use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse;
 use Throwable;
 
 class SummarizeItineraryAction
