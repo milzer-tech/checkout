@@ -17,6 +17,7 @@ class ItineraryTransfer extends BaseDto
         public string $endLocationName,
         public CarbonImmutable $startDateTime,
         public CarbonImmutable $endDateTime,
+        public bool $isPlaceholder,
         public ?string $name = null,
     ) {}
 

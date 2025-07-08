@@ -51,4 +51,34 @@ class ItinerarySummary extends BaseDto
             $this->childrenAges = new Collection($this->childrenAges);
         }
     }
+
+    /**
+     * Check if the itinerary transfers are displayable.
+     */
+    public function hasTransfers(): bool
+    {
+        return $this->transfers
+            ->filter(fn (ItineraryTransfer $transfer) => ! $transfer->isPlaceholder)
+            ->isNotEmpty();
+    }
+
+    /**
+     * Check if the itinerary flights are displayable.
+     */
+    public function hasFlights(): bool
+    {
+        return $this->flights
+            ->filter(fn (ItineraryFlight $flight) => ! $flight->isPlaceholder)
+            ->isNotEmpty();
+    }
+
+    /**
+     * Check if the itinerary rental cars are displayable.
+     */
+    public function hasRentalCar(): bool
+    {
+        return $this->rentalCars
+            ->filter(fn (ItineraryRentalCar $rentalCar) => ! $rentalCar->isPlaceholder)
+            ->isNotEmpty();
+    }
 }

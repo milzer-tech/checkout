@@ -159,7 +159,8 @@ class SummarizeItineraryAction
             new ItineraryRentalCar(
                 name: $connection->name,
                 startDateTime: $connection->startDateTime,
-                endDateTime: $connection->endDateTime
+                endDateTime: $connection->endDateTime,
+                isPlaceholder: $connection->isPlaceholder
             )
         );
     }
@@ -175,6 +176,7 @@ class SummarizeItineraryAction
                 endLocationName: $connection->endLocation->name,
                 startDateTime: $connection->startDateTime,
                 endDateTime: $connection->endDateTime,
+                isPlaceholder: $connection->isPlaceholder,
                 name: $connection->name
             )
         );
@@ -191,6 +193,7 @@ class SummarizeItineraryAction
                 endLocationName: $connection->endLocation->name,
                 startDateTime: $connection->startDateTime,
                 endDateTime: $connection->endDateTime,
+                isPlaceholder: $connection->isPlaceholder,
                 name: $connection->name
             )
         );

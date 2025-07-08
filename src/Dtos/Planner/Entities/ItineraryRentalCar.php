@@ -15,6 +15,7 @@ class ItineraryRentalCar extends BaseDto
     public function __construct(
         public string $name,
         public CarbonImmutable $startDateTime,
-        public CarbonImmutable $endDateTime
+        public CarbonImmutable $endDateTime,
+        public bool $isPlaceholder,
     ) {}
 }

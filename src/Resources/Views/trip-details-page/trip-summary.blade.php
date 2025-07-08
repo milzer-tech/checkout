@@ -187,7 +187,7 @@
                     </div>
                 @endif
 
-                @if($itinerary->flights->isNotEmpty())
+                @if($itinerary->hasFlights())
                     {{-- Flights section --}}
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
@@ -223,7 +223,7 @@
                     </div>
                 @endif
 
-                @if($itinerary->transfers->isNotEmpty())
+                @if($itinerary->hasTransfers())
                     {{-- Transfers section --}}
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
@@ -260,7 +260,7 @@
                 @endif
 
 
-                @if($itinerary->rentalCars->isNotEmpty())
+                @if($itinerary->hasRentalCar())
                     {{-- renal car section --}}
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
