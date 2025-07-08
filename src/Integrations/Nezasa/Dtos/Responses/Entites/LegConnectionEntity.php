@@ -19,5 +19,6 @@ class LegConnectionEntity extends Data
         public LocationResponseEntity $endLocation,
         public CarbonImmutable $startDateTime,
         public CarbonImmutable $endDateTime,
+        public bool $isPlaceholder,
     ) {}
 }
