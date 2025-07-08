@@ -38,9 +38,9 @@ class SummarizeItineraryAction
      *
      * @throws Throwable
      */
-    public function handle(string $itineraryId): ItinerarySummary
+    public function handle(string $itineraryId, string $checkoutId): ItinerarySummary
     {
-        $this->retrieveItinerary($itineraryId);
+        $this->retrieveItinerary($itineraryId, $checkoutId);
 
         $this->initializeResult();
         $this->pushTransport($this->itineraryResponse->startConnections);
@@ -81,14 +81,14 @@ class SummarizeItineraryAction
      *
      * @throws Throwable
      */
-    private function retrieveItinerary(string $itineraryId): Collection
+    private function retrieveItinerary(string $itineraryId, string $checkoutId): Collection
     {
         $results = new Collection;
 
         NezasaConnector::make()
             ->pool([
                 'itinerary' => new GetItineraryRequest($itineraryId),
-                'checkout' => new RetrieveCheckoutRequest($itineraryId),
+                'checkout' => new RetrieveCheckoutRequest($checkoutId),
             ])
             ->withResponseHandler(function (Response $response, string $key) {
                 if ($key === 'itinerary') {

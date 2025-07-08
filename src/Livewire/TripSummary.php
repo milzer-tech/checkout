@@ -18,6 +18,12 @@ class TripSummary extends Component
     public string $itineraryId;
 
     /**
+     * The unique identifier for the checkout session.
+     */
+    #[Url]
+    public string $checkoutId;
+
+    /**
      * The summary of the itinerary.
      */
     public ItinerarySummary $itinerarySummary;
@@ -40,7 +46,7 @@ class TripSummary extends Component
      */
     public function mount(SummarizeItineraryAction $summerizeItinerary): void
     {
-        $this->itinerarySummary = $summerizeItinerary->handle($this->itineraryId);
+        $this->itinerarySummary = $summerizeItinerary->handle($this->itineraryId, $this->checkoutId);
     }
 
     /**
