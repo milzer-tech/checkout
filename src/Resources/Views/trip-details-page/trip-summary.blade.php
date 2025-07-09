@@ -95,7 +95,7 @@
 
     {{-- Booking details collapsible section --}}
     <div class="mb-5">
-        <button wire:click="toggleExpand"
+        <button wire:click="$toggle('isExpanded')"
                 class="text-blue-600 font-medium text-sm hover:underline focus:outline-none bg-transparent px-2 py-1 rounded transition flex items-center gap-1.5">
             <span>Booking details</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
