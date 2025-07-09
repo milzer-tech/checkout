@@ -31,13 +31,7 @@ class TripSummary extends Component
     /**
      * Indicates whether the trip details in the view are expanded.
      */
-    public bool $isExpanded = false;
-
-    public $tripDetails = [
-        'title' => 'Palma de Mallorca',
-    ];
-
-    public $totalPrice = '1,234.56';
+    public bool $isExpanded = true;
 
     /**
      * Mount the component to initialize its actions and properties.
@@ -55,13 +49,5 @@ class TripSummary extends Component
     public function render(): View
     {
         return view('checkout::trip-details-page.trip-summary')->with('itinerary', $this->itinerarySummary);
-    }
-
-    /**
-     * Toggle the expansion state of the trip details.
-     */
-    public function toggleExpand(): void
-    {
-        $this->isExpanded = ! $this->isExpanded;
     }
 }
