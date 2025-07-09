@@ -15,7 +15,7 @@ use AzimKordpour\PowerEnum\Traits\PowerEnum;
  * @method bool isOptional()
  * @method bool isHidden()
  */
-enum RequiredTravelerFieldEnum: string
+enum TravelerRequirementFieldEnum: string
 {
     use PowerEnum;
 
