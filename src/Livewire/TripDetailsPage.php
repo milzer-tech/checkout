@@ -7,6 +7,8 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
+use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 
 class TripDetailsPage extends Component
 {
@@ -37,11 +39,19 @@ class TripDetailsPage extends Component
 
     public $totalPrice;
 
+    public function mount(): void {}
+
     /**
      * Render the component view.
      */
-    public function render(): View
-    {
-        return view('checkout::trip-details-page.index');
+    public function render(
+        CallTripDetailsAction $callTripDetails,
+        SummarizeItineraryAction $summerizeItinerary,
+    ): View {
+        $result = $callTripDetails->run($this->itineraryId, $this->checkoutId);
+
+        return view('checkout::trip-details-page.index', [
+            'itinerarySummary' => $summerizeItinerary->run($result->get('itinerary'), $result->get('checkout')),
+        ]);
     }
 }

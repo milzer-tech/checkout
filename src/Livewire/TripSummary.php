@@ -5,7 +5,6 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
-use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Throwable;
 
@@ -16,12 +15,6 @@ class TripSummary extends Component
      */
     #[Url]
     public string $itineraryId;
-
-    /**
-     * The unique identifier for the checkout session.
-     */
-    #[Url]
-    public string $checkoutId;
 
     /**
      * The summary of the itinerary.
@@ -38,9 +31,9 @@ class TripSummary extends Component
      *
      * @throws Throwable
      */
-    public function mount(SummarizeItineraryAction $summerizeItinerary): void
+    public function mount(ItinerarySummary $itinerarySummary): void
     {
-        $this->itinerarySummary = $summerizeItinerary->handle($this->itineraryId, $this->checkoutId);
+        $this->itinerarySummary = $itinerarySummary;
     }
 
     /**

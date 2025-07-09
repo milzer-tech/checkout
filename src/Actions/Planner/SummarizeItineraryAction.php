@@ -12,14 +12,10 @@ use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryRentalCar;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryTransfer;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
-use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegResponseEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RetrieveCheckoutResponse;
-use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
-use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\GetItineraryRequest;
-use Saloon\Http\Response;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse as ItineraryResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RetrieveCheckoutResponse as CheckoutResponse;
 use Throwable;
 
 class SummarizeItineraryAction
@@ -29,24 +25,18 @@ class SummarizeItineraryAction
      */
     private ItinerarySummary $result;
 
-    private GetItineraryResponse $itineraryResponse;
-
-    private RetrieveCheckoutResponse $checkoutResponse;
-
     /**
      * Handle summarizing the itinerary by its ID.
      *
      * @throws Throwable
      */
-    public function handle(string $itineraryId, string $checkoutId): ItinerarySummary
+    public function run(ItineraryResponse $itineraryResponse, CheckoutResponse $checkoutResponse): ItinerarySummary
     {
-        $this->retrieveItinerary($itineraryId, $checkoutId);
+        $this->initializeResult($itineraryResponse, $checkoutResponse);
+        $this->pushTransport($itineraryResponse->startConnections);
+        $this->pushTransport($itineraryResponse->returnConnections);
 
-        $this->initializeResult();
-        $this->pushTransport($this->itineraryResponse->startConnections);
-        $this->pushTransport($this->itineraryResponse->returnConnections);
-
-        foreach ($this->itineraryResponse->modules as $module) {
+        foreach ($itineraryResponse->modules as $module) {
             $this->pushTransport($module->returnConnections);
             foreach ($module->legs as $leg) {
                 $this->pushAccommodation($leg);
@@ -61,46 +51,17 @@ class SummarizeItineraryAction
     /**
      * Initialize the result with the start and end dates from the itinerary.
      */
-    private function initializeResult(): void
+    private function initializeResult(ItineraryResponse $itineraryResponse, CheckoutResponse $checkoutResponse): void
     {
         $this->result = new ItinerarySummary(
-            price: $this->checkoutResponse->prices->packagePrice,
-            title: $this->itineraryResponse->title,
-            startDate: $this->itineraryResponse->startDate,
-            endDate: $this->itineraryResponse->endDate,
-            adults: $this->itineraryResponse->countAdults(),
-            children: $this->itineraryResponse->countChildren(),
-            childrenAges: $this->itineraryResponse->getChildrenAges()
+            price: $checkoutResponse->prices->packagePrice,
+            title: $itineraryResponse->title,
+            startDate: $itineraryResponse->startDate,
+            endDate: $itineraryResponse->endDate,
+            adults: $itineraryResponse->countAdults(),
+            children: $itineraryResponse->countChildren(),
+            childrenAges: $itineraryResponse->getChildrenAges()
         );
-    }
-
-    /**
-     * Retrieve the itinerary by its ID.
-     *
-     * @return Collection{'itinerary': GetItineraryResponse, 'checkout': RetrieveCheckoutResponse}
-     *
-     * @throws Throwable
-     */
-    private function retrieveItinerary(string $itineraryId, string $checkoutId): Collection
-    {
-        $results = new Collection;
-
-        NezasaConnector::make()
-            ->pool([
-                'itinerary' => new GetItineraryRequest($itineraryId),
-                'checkout' => new RetrieveCheckoutRequest($checkoutId),
-            ])
-            ->withResponseHandler(function (Response $response, string $key) {
-                if ($key === 'itinerary') {
-                    $this->itineraryResponse = $response->dto();
-                } elseif ($key === 'checkout') {
-                    $this->checkoutResponse = $response->dto();
-                }
-            })
-            ->send()
-            ->wait();
-
-        return $results;
     }
 
     /**
