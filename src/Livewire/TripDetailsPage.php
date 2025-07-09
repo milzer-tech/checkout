@@ -9,6 +9,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Throwable;
 
 class TripDetailsPage extends Component
 {
@@ -39,10 +40,10 @@ class TripDetailsPage extends Component
 
     public $totalPrice;
 
-    public function mount(): void {}
-
     /**
      * Render the component view.
+     *
+     * @throws Throwable
      */
     public function render(
         CallTripDetailsAction $callTripDetails,
@@ -51,7 +52,7 @@ class TripDetailsPage extends Component
         $result = $callTripDetails->run($this->itineraryId, $this->checkoutId);
 
         return view('checkout::trip-details-page.index', [
-            'itinerarySummary' => $summerizeItinerary->run($result->get('itinerary'), $result->get('checkout')),
+            'itinerary' => $summerizeItinerary->run($result->get('itinerary'), $result->get('checkout')),
         ]);
     }
 }

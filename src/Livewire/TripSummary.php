@@ -19,7 +19,7 @@ class TripSummary extends Component
     /**
      * The summary of the itinerary.
      */
-    public ItinerarySummary $itinerarySummary;
+    public ItinerarySummary $itinerary;
 
     /**
      * Indicates whether the trip details in the view are expanded.
@@ -31,9 +31,9 @@ class TripSummary extends Component
      *
      * @throws Throwable
      */
-    public function mount(ItinerarySummary $itinerarySummary): void
+    public function mount(ItinerarySummary $itinerary): void
     {
-        $this->itinerarySummary = $itinerarySummary;
+        $this->itinerary = $itinerary;
     }
 
     /**
@@ -41,6 +41,6 @@ class TripSummary extends Component
      */
     public function render(): View
     {
-        return view('checkout::trip-details-page.trip-summary')->with('itinerary', $this->itinerarySummary);
+        return view('checkout::trip-details-page.trip-summary')->with('itinerary', $this->itinerary);
     }
 }
