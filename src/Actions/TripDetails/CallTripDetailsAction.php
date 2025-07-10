@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Actions\TripDetails;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\GetItineraryRequest;
 use Saloon\Http\Response;
 use Throwable;
@@ -14,11 +15,17 @@ use Throwable;
 class CallTripDetailsAction
 {
     /**
+     * Create a new instance of the CallTripDetailsAction.
+     */
+    public function __construct(private readonly NezasaConnector $nezasaConnector) {}
+
+    /**
      * Execute the action to retrieve itinerary and checkout details.
      *
      * @return Collection {
      *                    'itinerary': GetItineraryResponse,
-     *                    'checkout': RetrieveCheckoutResponse
+     *                    'checkout': RetrieveCheckoutResponse,
+     *                    'TravelerRequirements': TravelerRequirementsResponse,
      *                    }
      *
      * @throws Throwable
@@ -27,11 +34,14 @@ class CallTripDetailsAction
     {
         $results = new Collection;
 
-        NezasaConnector::make()
-            ->pool([
-                'itinerary' => new GetItineraryRequest($itineraryId),
-                'checkout' => new RetrieveCheckoutRequest($checkoutId),
-            ])
+        $requests = [
+            'itinerary' => new GetItineraryRequest($itineraryId),
+            'checkout' => new RetrieveCheckoutRequest($checkoutId),
+            'travelerRequirements' => new TravelerRequirementsRequest($checkoutId),
+        ];
+
+        $this->nezasaConnector
+            ->pool($requests)
             ->withResponseHandler(fn (Response $response, string $key) => $results->put($key, $response->dto()))
             ->send()
             ->wait();
