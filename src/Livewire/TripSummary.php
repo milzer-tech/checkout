@@ -6,7 +6,6 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
-use Throwable;
 
 class TripSummary extends Component
 {
@@ -25,16 +24,6 @@ class TripSummary extends Component
      * Indicates whether the trip details in the view are expanded.
      */
     public bool $isExpanded = true;
-
-    /**
-     * Mount the component to initialize its actions and properties.
-     *
-     * @throws Throwable
-     */
-    public function mount(ItinerarySummary $itinerary): void
-    {
-        $this->itinerary = $itinerary;
-    }
 
     /**
      * Render the component view.
