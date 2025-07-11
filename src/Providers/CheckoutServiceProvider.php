@@ -65,6 +65,8 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(path: __DIR__.'/../Routes/web.php');
 
         $this->loadViewsFrom(path: __DIR__.'/../Resources/Views', namespace: 'checkout');
+
+        $this->loadTranslationsFrom(path: __DIR__.'/../../lang', namespace: 'checkout');
     }
 
     /**
@@ -86,6 +88,7 @@ class CheckoutServiceProvider extends ServiceProvider
             __DIR__.'/../Resources/assets' => resource_path(path: 'vendor/checkout'),
             __DIR__.'/../Resources/config/tailwind.config.js' => base_path(path: 'tailwind.config.js'),
             __DIR__.'/../Resources/config/postcss.config.js' => base_path(path: 'postcss.config.js'),
+            __DIR__.'/../../lang' => $this->app->langPath('vendor/checkout'),
         ], groups: 'checkout');
     }
 }
