@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Actions\TripDetails;
 
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Exceptions\NotFoundException;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
@@ -25,7 +26,7 @@ class CallTripDetailsAction
      * @return Collection {
      *                    'itinerary': GetItineraryResponse,
      *                    'checkout': RetrieveCheckoutResponse,
-     *                    'TravelerRequirements': TravelerRequirementsResponse,
+     *                    'travelerRequirements': TravelerRequirementsResponse,
      *                    }
      *
      * @throws Throwable
@@ -33,7 +34,6 @@ class CallTripDetailsAction
     public function run(string $itineraryId, string $checkoutId): Collection
     {
         $results = new Collection;
-
         $requests = [
             'itinerary' => new GetItineraryRequest($itineraryId),
             'checkout' => new RetrieveCheckoutRequest($checkoutId),
@@ -42,6 +42,7 @@ class CallTripDetailsAction
 
         $this->nezasaConnector
             ->pool($requests)
+            ->withExceptionHandler(fn ($exception) => throw new NotFoundException)
             ->withResponseHandler(fn (Response $response, string $key) => $results->put($key, $response->dto()))
             ->send()
             ->wait();
