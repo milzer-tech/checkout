@@ -38,8 +38,6 @@ class TripDetailsPage extends Component
     #[Url]
     public string $lang;
 
-    public $totalPrice;
-
     /**
      * Render the component view.
      *
@@ -52,7 +50,8 @@ class TripDetailsPage extends Component
         $result = $callTripDetails->run($this->itineraryId, $this->checkoutId);
 
         return view('checkout::trip-details-page.index', [
-            'itinerary' => $summerizeItinerary->run($result->get('itinerary'), $result->get('checkout')),
+            'itinerary' => $summerizeItinerary->run($result['itinerary'], $result['checkout']),
+            'contactRequirements' => $result['travelerRequirements']->contact,
         ]);
     }
 }

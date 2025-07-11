@@ -4,7 +4,7 @@
         <div class="space-y-6">
             <section class="space-y-6">
                 <livewire:banner />
-                <livewire:contact-details />
+                <livewire:contact-details :$contactRequirements/>
                 <livewire:traveler-details />
                 <livewire:promo-code-section />
                 <livewire:travel-insurance-section />
@@ -26,7 +26,7 @@
             Back
         </button>
         <button wire:click="goToPayment" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-md">
-            Pay {{ $totalPrice }} € (EUR)
+            Pay 1 € (EUR)
         </button>
     </div>
     <div class="text-center mb-10 text-gray-500 dark:text-gray-400 max-w-full md:max-w-[66.66%]">

@@ -3,20 +3,22 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Livewire\Component;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\ContactRequirementEntity;
 
 class ContactDetails extends Component
 {
-    public $email = '';
+    public array $contact;
 
-    public $phone = '';
-
-    public $contactExpanded = false;
+    public $contactExpanded = true;
 
     public $contactDetailsCompleted = false;
 
+    public ContactRequirementEntity $contactRequirements;
+
     protected $rules = [
-        'email' => 'required|email',
-        'phone' => 'required|min:10',
+        'contact' => 'array',
+        'contact.email' => 'required|email|max:4',
+        'contact.phone' => 'required|max:1',
     ];
 
     public function updated($propertyName)
@@ -27,6 +29,9 @@ class ContactDetails extends Component
     public function save()
     {
         $validatedData = $this->validate();
+        dd(
+            $validatedData
+        );
         $this->contactDetailsCompleted = true;
         $this->contactExpanded = false;
 
@@ -44,5 +49,12 @@ class ContactDetails extends Component
     public function render()
     {
         return view('checkout::trip-details-page.contact-details');
+    }
+
+    public function rules()
+    {
+        dd(
+            $this->contactRequirements
+        );
     }
 }

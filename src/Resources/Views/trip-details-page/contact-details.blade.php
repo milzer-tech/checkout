@@ -1,5 +1,5 @@
 @php
-    if ($contactExpanded) {
+    use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;if ($contactExpanded) {
         $state = 'editing';
     } else {
         $state = 'valid';
@@ -14,42 +14,68 @@
     onEdit="editContact"
 >
     <form wire:submit="save" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8">
-            <div class="col-span-1 md:col-span-6 space-y-2 w-full">
-                <label class="block text-gray-700 dark:text-gray-200 font-medium">
-                    Email
-                </label>
-                <input
-                    type="email"
-                    wire:model="email"
-                    placeholder="example@mail.com"
-                    class="form-input"
-                    required
-                />
-                @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-            </div>
-            <div class="col-span-1 md:col-span-6 space-y-2 w-full">
-                <label class="block text-gray-700 dark:text-gray-200 font-medium">
-                    Phone number
-                </label>
-                <input
-                    type="tel"
-                    wire:model="phone"
-                    placeholder="+1 (234) 567-8901"
-                    class="form-input"
-                    required
-                />
-                @error('phone') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-            </div>
-        </div>
+        @php($inputs = 0)
+        @php($openTag = false)
 
-        <div class="flex justify-end">
-            <button
-                type="submit"
-                class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
-            >
-                Save Contact Details
-            </button>
-        </div>
+        @foreach($contactRequirements as $name => $value)
+            @if($value->isHidden())
+                @continue
+            @endif
+
+            @if($inputs === 0 && !$openTag)
+                @php($openTag = true)
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
+                    @endif
+
+                    @if(! in_array($name, ['address1', 'address2', 'gender']))
+                        @include('checkout::components.input', [
+                            'label' => $name,
+                            'wireModel' => "array.$name",
+                            'placeholder' => $name,
+                        ])
+                        @php($inputs++)
+                    @endif
+
+                    @if($name === 'gender')
+                        @include('checkout::components.gender', ['wireModel' => "array.$name"])
+                        @php($inputs++)
+                    @endif
+
+                @if($inputs === 3 && $openTag)
+                    </div>
+                    @php($inputs = 0)
+                    @php($openTag = false)
+                @endif
+
+                @endforeach
+
+                @if($openTag)
+                        </div>
+                @endif
+
+
+                @unless($contactRequirements->address1->isHidden())
+                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 min-w-0">
+                        @include('checkout::components.address', ['wireModel' => "array.address1", 'name' => 'address1'])
+                    </div>
+                        @php($inputs++)
+                @endunless
+
+                @unless($contactRequirements->address2->isHidden())
+                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 min-w-0">
+                        @include('checkout::components.address', ['wireModel' => "array.address2", 'name' => 'address2'])
+                    </div>
+                    @php($inputs++)
+                @endunless
+
+
+            <div class="flex justify-end">
+                <button
+                    type="submit"
+                    class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
+                >
+                    Save Contact Details
+                </button>
+            </div>
     </form>
 </x-checkout::editable-box>
