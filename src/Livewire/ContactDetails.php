@@ -12,6 +12,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\ContactRequiremen
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\CountryCallingCodeResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Models\Checkout;
+use Throwable;
 
 class ContactDetails extends Component
 {
@@ -44,11 +45,13 @@ class ContactDetails extends Component
         $this->contact = Checkout::query()
             ->firstOrCreate(['checkout_id' => $this->checkoutId])
             ->data
-            ->get('contact', []);
+            ?->get('contact', []) ?? [];
 
-        $this->validate();
-
-        $this->contactExpanded = false;
+        try {
+            $this->validate();
+            $this->contactExpanded = false;
+        } catch (Throwable $e) {
+        }
     }
 
     /**
