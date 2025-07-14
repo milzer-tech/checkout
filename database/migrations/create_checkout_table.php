@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('checkouts', function (Blueprint $table) {
             $table->id();
-            $table->string('checkout_id')->index();
+            $table->string('checkout_id')->unique();
             $table->json('data')->nullable();
             $table->timestamps();
         });
