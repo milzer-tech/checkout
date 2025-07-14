@@ -2,9 +2,12 @@
 
 namespace Nezasa\Checkout\Livewire;
 
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Component;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\ContactRequirementEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\CountryCallingCodeResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 
 class ContactDetails extends Component
@@ -16,6 +19,13 @@ class ContactDetails extends Component
     public $contactDetailsCompleted = false;
 
     public ContactRequirementEntity $contactRequirements;
+
+    /**
+     * A collection of country calling codes.
+     *
+     * @var Collection<int, CountryCallingCodeResponseEntity>
+     */
+    public CountryCodesResponse $countryCodes;
 
     public function updated($propertyName)
     {

@@ -27,7 +27,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
                     @endif
 
-                    @if(! in_array($name, ['address1', 'address2', 'gender']))
+                    @if(! in_array($name, ['address1', 'address2', 'gender', 'mobilePhone']))
                         @include('checkout::components.input', [
                             'label' => $name,
                             'wireModel' => "contact.$name",
@@ -38,6 +38,14 @@
 
                     @if($name === 'gender')
                         @include('checkout::components.gender', ['wireModel' => "contact.$name"])
+                        @php($inputs++)
+                    @endif
+
+                    @if($name === 'mobilePhone')
+                        @include('checkout::components.phone', [
+                            'wireModel' => "contact.$name",
+                            'codes' => $countryCodes
+                           ])
                         @php($inputs++)
                     @endif
 

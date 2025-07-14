@@ -28,6 +28,7 @@ class CallTripDetailsAction
      *                    'itinerary': GetItineraryResponse,
      *                    'checkout': RetrieveCheckoutResponse,
      *                    'travelerRequirements': TravelerRequirementsResponse,
+     *                    'countryCodes': CountryCodesResponse,
      *                    }
      *
      * @throws Throwable
@@ -43,7 +44,7 @@ class CallTripDetailsAction
         ];
 
         $this->nezasaConnector
-            ->pool($requests)
+            ->pool(requests: $requests, concurrency: count($requests))
             ->withExceptionHandler(fn ($exception) => throw new NotFoundException)
             ->withResponseHandler(fn (Response $response, string $key) => $results->put($key, $response->dto()))
             ->send()

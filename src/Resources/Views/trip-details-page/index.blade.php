@@ -4,7 +4,7 @@
         <div class="space-y-6">
             <section class="space-y-6">
                 <livewire:banner />
-                <livewire:contact-details :$contactRequirements/>
+                <livewire:contact-details :$contactRequirements :$countryCodes/>
                 <livewire:traveler-details />
                 <livewire:promo-code-section />
                 <livewire:travel-insurance-section />
