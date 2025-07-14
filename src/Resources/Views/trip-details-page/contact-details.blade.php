@@ -30,14 +30,14 @@
                     @if(! in_array($name, ['address1', 'address2', 'gender']))
                         @include('checkout::components.input', [
                             'label' => $name,
-                            'wireModel' => "array.$name",
+                            'wireModel' => "contact.$name",
                             'placeholder' => $name,
                         ])
                         @php($inputs++)
                     @endif
 
                     @if($name === 'gender')
-                        @include('checkout::components.gender', ['wireModel' => "array.$name"])
+                        @include('checkout::components.gender', ['wireModel' => "contact.$name"])
                         @php($inputs++)
                     @endif
 
@@ -56,14 +56,14 @@
 
                 @unless($contactRequirements->address1->isHidden())
                     <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 min-w-0">
-                        @include('checkout::components.address', ['wireModel' => "array.address1", 'name' => 'address1'])
+                        @include('checkout::components.address', ['wireModel' => "contact.address1", 'name' => 'address1'])
                     </div>
                         @php($inputs++)
                 @endunless
 
                 @unless($contactRequirements->address2->isHidden())
                     <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 min-w-0">
-                        @include('checkout::components.address', ['wireModel' => "array.address2", 'name' => 'address2'])
+                        @include('checkout::components.address', ['wireModel' => "contact.address2", 'name' => 'address2'])
                     </div>
                     @php($inputs++)
                 @endunless
