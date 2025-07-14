@@ -89,6 +89,11 @@ class CheckoutServiceProvider extends ServiceProvider
             __DIR__.'/../Resources/config/tailwind.config.js' => base_path(path: 'tailwind.config.js'),
             __DIR__.'/../Resources/config/postcss.config.js' => base_path(path: 'postcss.config.js'),
             __DIR__.'/../../lang' => $this->app->langPath('vendor/checkout'),
+
         ], groups: 'checkout');
+
+        $this->publishesMigrations([
+            __DIR__.'/../../database/migrations' => database_path('migrations'),
+        ], 'checkout-migrations');
     }
 }
