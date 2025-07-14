@@ -1,9 +1,7 @@
 @php
-    use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;if ($contactExpanded) {
-        $state = 'editing';
-    } else {
-        $state = 'valid';
-    }
+    use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
+
+    $state = $contactExpanded ? 'editing' : 'valid';
 @endphp
 
 <x-checkout::editable-box
@@ -82,7 +80,7 @@
                     type="submit"
                     class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
                 >
-                    Save Contact Details
+                    Save Contact
                 </button>
             </div>
     </form>
