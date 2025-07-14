@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\BillingRequirementEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\ContactRequirementEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\PassengerRequirementEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\BillingRequirementEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ContactRequirementEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequirementEntity;
 
 class TravelerRequirementsResponse extends BaseDto
 {

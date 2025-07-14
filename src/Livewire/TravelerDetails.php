@@ -13,15 +13,7 @@ class TravelerDetails extends Component
     public $travelers = [];
 
     protected $rules = [
-        'travelers.*.firstName' => 'required|min:2',
-        'travelers.*.secondName' => 'nullable|min:2',
-        'travelers.*.lastName' => 'required|min:2',
-        'travelers.*.nationality' => 'required',
-        'travelers.*.gender' => 'required',
-        'travelers.*.dateOfBirth' => 'required|date',
-        'travelers.*.passportNumber' => 'required|min:6',
-        'travelers.*.passportIssuingCountry' => 'required',
-        'travelers.*.passportExpiry' => 'required|date|after:today',
+
     ];
 
     public function mount()

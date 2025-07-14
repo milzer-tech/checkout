@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\PriceInfoEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PriceInfoEntity;
 
 class RetrieveCheckoutResponse extends BaseDto
 {

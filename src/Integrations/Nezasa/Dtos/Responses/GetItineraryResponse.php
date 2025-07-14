@@ -7,11 +7,11 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\LegConnectionEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\ModulesResponseEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\PaxAllocationResponseEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\PaxDetailEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\PriceInfoEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\LegConnectionEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ModulesResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxDetailEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PriceInfoEntity;
 
 class GetItineraryResponse extends BaseDto
 {

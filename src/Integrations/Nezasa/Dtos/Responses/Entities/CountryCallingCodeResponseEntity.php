@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites;
+namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 
 use Spatie\LaravelData\Data;
 

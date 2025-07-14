@@ -6,7 +6,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entites\CountryCallingCodeResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\CountryCallingCodeResponseEntity;
 
 class CountryCodesResponse extends BaseDto
 {
