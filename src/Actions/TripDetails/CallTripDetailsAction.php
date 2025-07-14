@@ -9,6 +9,7 @@ use Nezasa\Checkout\Exceptions\NotFoundException;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountryCodesRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\GetItineraryRequest;
 use Saloon\Http\Response;
 use Throwable;
@@ -38,6 +39,7 @@ class CallTripDetailsAction
             'itinerary' => new GetItineraryRequest($itineraryId),
             'checkout' => new RetrieveCheckoutRequest($checkoutId),
             'travelerRequirements' => new TravelerRequirementsRequest($checkoutId),
+            'countryCodes' => new CountryCodesRequest,
         ];
 
         $this->nezasaConnector
