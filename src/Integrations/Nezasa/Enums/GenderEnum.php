@@ -20,4 +20,19 @@ enum GenderEnum: string
 
     case Male = 'Male';
     case Female = 'Female';
+
+    /**
+     * Set the labels of all the cases.
+     *
+     * Keys are the values of the cases and the values are the labels.
+     *
+     * @return array<string, string>
+     */
+    protected static function setLabels(): array
+    {
+        return [
+            self::Male->value => trans('checkout::entities.gender.male'),
+            self::Female->value => trans('checkout::entities.gender.female'),
+        ];
+    }
 }
