@@ -42,6 +42,6 @@ class CountryCodesRequest extends Request
     {
         throw_unless(condition: $response->ok(), exception: NotFoundException::class);
 
-        return CountryCodesResponse::from($response->array(key: 'itinerary'));
+        return CountryCodesResponse::from($response->array());
     }
 }
