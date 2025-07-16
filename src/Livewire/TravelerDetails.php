@@ -3,9 +3,15 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Livewire\Component;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 
 class TravelerDetails extends Component
 {
+    /**
+     * The PaxAllocationResponseEntity that holds the allocation of travelers.
+     */
+    public PaxAllocationResponseEntity $allocatedPax;
+
     public $travelerExpanded = true;
 
     public $showSecondTraveler = false;

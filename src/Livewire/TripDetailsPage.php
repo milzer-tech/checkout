@@ -43,16 +43,15 @@ class TripDetailsPage extends Component
      *
      * @throws Throwable
      */
-    public function render(
-        CallTripDetailsAction $callTripDetails,
-        SummarizeItineraryAction $summerizeItinerary,
-    ): View {
+    public function render(CallTripDetailsAction $callTripDetails, SummarizeItineraryAction $summerizeItinerary): View
+    {
         $result = $callTripDetails->run($this->itineraryId, $this->checkoutId);
 
         return view('checkout::trip-details-page.index', [
             'itinerary' => $summerizeItinerary->run($result['itinerary'], $result['checkout']),
             'contactRequirements' => $result['travelerRequirements']->contact,
             'countryCodes' => $result['countryCodes'],
+            'allocatedPax' => $result['itinerary']->allocatedPax,
         ]);
     }
 }
