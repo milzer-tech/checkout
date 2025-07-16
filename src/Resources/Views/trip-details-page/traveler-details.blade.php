@@ -24,13 +24,13 @@
                 <!-- Traveller Tabs Row -->
                 <div class="relative flex border-b border-gray-200 mb-3">
 
-                    @for($i=0; $i <  $room->adults + $room->childAges->count(); $i++)
+                    @for($i=0; $i <  $room->countTotal(); $i++)
                         <!-- Traveller 1 - Active -->
                         <button @if($i === 0)
                                     class="relative z-10 flex items-center space-x-2 text-sm font-semibold text-gray-900 bg-white border-t border-l border-r border-gray-300 rounded-t-md py-2"
-                        @else
-                            class="relative z-0 flex items-center space-x-2 text-sm font-medium text-gray-400 bg-white px-4 py-2"
-                        @endif
+                                @else
+                                    class="relative z-0 flex items-center space-x-2 text-sm font-medium text-gray-400 bg-white px-4 py-2"
+                            @endif
                         >
                             <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,7 +63,7 @@
             </div>
 
 
-            @for($i=0; $i < $room->adults + $room->childAges->count(); $i++)
+            @for($i=0; $i < $room->countTotal(); $i++)
 
                 <div @if($i > 0) class="hidden" @endif>
 
@@ -188,28 +188,20 @@
                         </div>
                     </div>
 
-                    {{-- Next traveller button --}}
-                    <div class="flex justify-end mt-4">
-                        <button type="button" wire:click="$toggle('showSecondTraveler')"
-                                class="text-blue-600 hover:underline flex items-center gap-1 font-medium">
+                    <div class="flex justify-end mt-8">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
                             Next traveller
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M19 9l-7 7-7-7"></path>
-                            </svg>
                         </button>
                     </div>
                 </div>
             @endfor
 
+            @unless($loop->last)
+                {{-- Divider between rooms --}}
+            <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8 mt-6 mb-6"></div>
+            @endunless
         @endforeach
 
-        {{-- Next button --}}
-        <div class="flex justify-end mt-8">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                Next
-            </button>
-        </div>
+
     </form>
 </x-checkout::editable-box>

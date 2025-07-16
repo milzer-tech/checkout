@@ -26,4 +26,12 @@ class RoomAllocationResponseEntity extends BaseDto
             $this->childAges = new Collection($childAges);
         }
     }
+
+    /**
+     * Count the number of adults and children in the room.
+     */
+    public function countTotal(): int
+    {
+        return $this->adults + $this->childAges->count();
+    }
 }
