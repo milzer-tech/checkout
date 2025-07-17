@@ -1,10 +1,4 @@
-@php
-    if ($travelerExpanded) {
-        $state = 'editing';
-    } else {
-        $state = 'valid';
-    }
-@endphp
+@php($state = $travelerExpanded ? 'editing' : 'valid')
 
 <x-checkout::editable-box
     title="Traveller details"
@@ -16,7 +10,7 @@
 >
     <form wire:submit="save">
 
-        @foreach($allocatedPax->rooms as $roomNumber => $room)
+        @foreach($showTravellers as $roomNumber => $room)
             <div class="max-w-6xl mx-auto">
                 <!-- Title -->
                 <h2 class="text-xl font-semibold mb-4">Room {{$roomNumber + 1}}</h2>
@@ -24,9 +18,9 @@
                 <!-- Traveller Tabs Row -->
                 <div class="relative flex border-b border-gray-200 mb-3">
 
-                    @for($i=0; $i <  $room->countTotal(); $i++)
+                    @foreach($room as $i => $showTraveller)
                         <!-- Traveller 1 - Active -->
-                        <button @if($i === 0)
+                        <button type="button" wire:click="showTraveller('{{"$roomNumber-$i" }}')" id="{{$roomNumber}}-{{$i}}" @if($showTraveller->show)
                                     class="relative z-10 flex items-center space-x-2 text-sm font-semibold text-gray-900 bg-white border-t border-l border-r border-gray-300 rounded-t-md py-2"
                                 @else
                                     class="relative z-0 flex items-center space-x-2 text-sm font-medium text-gray-400 bg-white px-4 py-2"
@@ -36,25 +30,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M5.121 17.804A10.97 10.97 0 0112 15c2.136 0 4.113.635 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
-                            <span>Traveller {{$i+1}} - @if($i < $room->adults)
+                            <span>Traveller {{$i+1}} - @if($showTraveller->adult)
                                     Adult
-
                                 @else
                                     Child
                                 @endif</span>
                         </button>
-                    @endfor
-
-                    <!-- Traveller 2 - Inactive -->
-                    {{--                    <button--}}
-                    {{--                        class="relative z-0 flex items-center space-x-2 text-sm font-medium text-gray-400 bg-white px-4 py-2"--}}
-                    {{--                    >--}}
-                    {{--                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">--}}
-                    {{--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"--}}
-                    {{--                                  d="M5.121 17.804A10.97 10.97 0 0112 15c2.136 0 4.113.635 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>--}}
-                    {{--                        </svg>--}}
-                    {{--                        <span>Traveller 2 - Adult</span>--}}
-                    {{--                    </button>--}}
+                    @endforeach
 
                     <!-- underline under whole row -->
                     <div class="absolute bottom-0 left-0 w-full h-px bg-gray-200 z-0"></div>
@@ -63,9 +45,10 @@
             </div>
 
 
-            @for($i=0; $i < $room->countTotal(); $i++)
+            @foreach($room as $i => $traveler)
+                {{-- Traveller details form --}}
 
-                <div @if($i > 0) class="hidden" @endif>
+                <div @unless($traveler->show) class="hidden" @endunless>
 
                     {{-- First row - Name fields --}}
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
@@ -188,13 +171,14 @@
                         </div>
                     </div>
 
+
                     <div class="flex justify-end mt-8">
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
+                        <button type="button" wire:click="showNextTraveller('{{"$roomNumber-$i" }}')" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
                             Next traveller
                         </button>
                     </div>
                 </div>
-            @endfor
+            @endforeach
 
             @unless($loop->last)
                 {{-- Divider between rooms --}}
