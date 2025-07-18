@@ -35,6 +35,6 @@ class CountriesRequest extends Request
     {
         throw_unless(condition: $response->ok(), exception: NotFoundException::class);
 
-        return CountriesResponse::from($response->array());
+        return CountriesResponse::from($response->array('data'));
     }
 }
