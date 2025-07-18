@@ -3,13 +3,11 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Collection;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ContactRequirementEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\CountryCallingCodeResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Models\Checkout;
 use Throwable;
@@ -64,8 +62,6 @@ class ContactDetails extends Component
 
     /**
      * The country calling codes for the contact details.
-     *
-     * @var Collection<int, CountryCallingCodeResponseEntity>
      */
     public CountryCodesResponse $countryCodes;
 
