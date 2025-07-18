@@ -34,7 +34,7 @@
 
                 @case('country')
                     @include('checkout::components.country', [
-                            'label' => $name,
+                            'name' => $name,
                             'wireModel' => "$saveTo.$name",
                             'countriesResponse' => $countriesResponse
                     ])
@@ -43,7 +43,7 @@
 
                 @case('nationality')
                     @include('checkout::components.country', [
-                            'label' => $name,
+                            'name' => $name,
                             'wireModel' => "$saveTo.$name",
                             'countriesResponse' => $countriesResponse
                     ])
@@ -77,14 +77,23 @@
 
     @unless($requirements->address1->isHidden())
 
-            @include('checkout::components.address', ['wireModel' => "$saveTo.address1", 'name' => 'address1'])
+            @include('checkout::components.address', [
+                'wireModel' => "$saveTo.address1",
+                'name' => 'address1',
+                 'countriesResponse' => $countriesResponse
+     ])
 
         @php($inputs++)
     @endunless
 
     @unless($requirements->address2->isHidden())
 
-            @include('checkout::components.address', ['wireModel' => "$saveTo.address2", 'name' => 'address2'])
+            @include('checkout::components.address', [
+                 'wireModel' => "$saveTo.address2",
+                 'name' => 'address2',
+                 'countriesResponse' => $countriesResponse
+                ])
+
 
         @php($inputs++)
     @endunless
