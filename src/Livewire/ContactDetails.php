@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ContactRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
@@ -64,6 +65,11 @@ class ContactDetails extends Component
      * The country calling codes for the contact details.
      */
     public CountryCodesResponse $countryCodes;
+
+    /**
+     * The countries response that holds the list of countries.
+     */
+    public CountriesResponse $countriesResponse;
 
     /**
      * Update the contact details when a field is changed.

@@ -53,6 +53,7 @@ class TripDetailsPage extends Component
             'countryCodes' => $result['countryCodes'],
             'allocatedPax' => $result['itinerary']->allocatedPax,
             'passengerRequirements' => $result['travelerRequirements']->passenger,
+            'countriesResponse' => $result['countries'],
         ]);
     }
 }

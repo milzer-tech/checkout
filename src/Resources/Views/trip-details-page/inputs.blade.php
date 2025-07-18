@@ -11,7 +11,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0 mb-4">
             @endif
 
-            @if(! in_array($name, ['address1', 'address2', 'gender', 'mobilePhone']))
+            @if(! in_array($name, ['address1', 'address2', 'gender', 'mobilePhone', 'country', 'nationality']))
                 @include('checkout::components.input', [
                     'label' => $name,
                     'wireModel' => "$saveTo.$name",
@@ -20,18 +20,38 @@
                 @php($inputs++)
             @endif
 
-            @if($name === 'gender')
-                @include('checkout::components.gender', ['wireModel' => "$saveTo.$name"])
-                @php($inputs++)
-            @endif
 
-            @if($name === 'mobilePhone')
-                @include('checkout::components.phone', [
-                    'wireModel' => "$saveTo.$name",
-                    'codes' => $countryCodes
-                   ])
-                @php($inputs++)
-            @endif
+            @switch($name)
+                @case('gender')
+                    @include('checkout::components.gender', ['wireModel' => "$saveTo.$name"])
+                    @php($inputs++)
+                    @break
+
+                @case('mobilePhone')
+                    @include('checkout::components.phone', ['wireModel' => "$saveTo.$name", 'codes' => $countryCodes])
+                    @php($inputs++)
+                    @break
+
+                @case('country')
+                    @include('checkout::components.country', [
+                            'label' => $name,
+                            'wireModel' => "$saveTo.$name",
+                            'countriesResponse' => $countriesResponse
+                    ])
+                    @php($inputs++)
+                    @break
+
+                @case('nationality')
+                    @include('checkout::components.country', [
+                            'label' => $name,
+                            'wireModel' => "$saveTo.$name",
+                            'countriesResponse' => $countriesResponse
+                    ])
+                    @php($inputs++)
+                    @break
+
+            @endswitch
+
 
             @if($inputs === 3 && $openTag)
         </div>

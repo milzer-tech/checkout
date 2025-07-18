@@ -54,9 +54,9 @@
                     @include('checkout::trip-details-page.inputs',[
                              'requirements' => $passengerRequirements,
                              'countryCodes' => $countryCodes,
-                             'saveTo' => 'paxInfo'
+                             'countriesResponse' => $countriesResponse,
+                             'saveTo' => "paxInfo.$roomNumber.$i"
                          ])
-
 
 
 {{--                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">--}}

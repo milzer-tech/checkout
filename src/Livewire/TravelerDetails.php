@@ -5,6 +5,7 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Nezasa\Checkout\Dtos\View\ShowTraveller;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
@@ -43,6 +44,11 @@ class TravelerDetails extends Component
      */
     public CountryCodesResponse $countryCodes;
 
+    /**
+     * The countries response that holds the list of countries.
+     */
+    public CountriesResponse $countriesResponse;
+
     public function mount()
     {
         foreach ($this->allocatedPax->rooms as $number => $room) {
@@ -54,7 +60,6 @@ class TravelerDetails extends Component
                 $this->showTravellers[$number][] = new ShowTraveller(adult: false, show: false, age: $age);
             }
         }
-
     }
 
     public function save()
