@@ -5,7 +5,7 @@
             <section class="space-y-6">
                 <livewire:banner />
                 <livewire:contact-details :$contactRequirements :$countryCodes/>
-                <livewire:traveler-details :$allocatedPax />
+                <livewire:traveler-details :$allocatedPax :$passengerRequirements :$countryCodes/>
                 <livewire:promo-code-section />
                 <livewire:travel-insurance-section />
                 <livewire:additional-services-section />

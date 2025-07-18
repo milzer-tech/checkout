@@ -50,126 +50,134 @@
 
                 <div @unless($traveler->show) class="hidden" @endunless>
 
-                    {{-- First row - Name fields --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
-                        <div class="space-y-2 w-full min-w-0">
-                            <label
-                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">First
-                                name</label>
-                            <input type="text" wire:model="travelers.0.firstName" class="form-input w-full"
-                                   placeholder="e.g. Harry">
-                            @error('travelers.0.firstName') <span
-                                class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="space-y-2 w-full min-w-0">
-                            <label
-                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Second
-                                name</label>
-                            <input type="text" wire:model="travelers.0.secondName" class="form-input w-full"
-                                   placeholder="e.g. James">
-                            @error('travelers.0.secondName') <span
-                                class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="space-y-2 w-full min-w-0">
-                            <label
-                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Last
-                                name</label>
-                            <input type="text" wire:model="travelers.0.lastName" class="form-input w-full"
-                                   placeholder="e.g. Potter">
-                            @error('travelers.0.lastName') <span
-                                class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 mt-4 min-w-0">
-                        <div class="flex flex-col md:flex-row gap-4 w-full">
-                            <div class="space-y-2 w-full min-w-0">
-                                <label
-                                    class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Nationality</label>
-                                <select wire:model="travelers.0.nationality" class="form-select pr-8 w-full">
-                                    <option value="" disabled>Select</option>
-                                    <option value="PT">Portuguese</option>
-                                    <option value="ES">Spanish</option>
-                                    <option value="US">American</option>
-                                    <option value="UK">British</option>
-                                </select>
-                                @error('travelers.0.nationality') <span
-                                    class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="space-y-2 w-full min-w-0">
-                                <label
-                                    class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Gender</label>
-                                <select wire:model="travelers.0.gender" class="form-select pr-8 w-full">
-                                    <option value="" disabled>Select</option>
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
-                                    <option value="O">Other</option>
-                                </select>
-                                @error('travelers.0.gender') <span
-                                    class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
-                        <div class="space-y-2 w-full min-w-0">
-                            <label
-                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Date
-                                of birth</label>
-                            @include('checkout::components.date-field', [
-                                'day' => 'travelers.0.dateOfBirthDay',
-                                'month' => 'travelers.0.dateOfBirthMonth',
-                                'year' => 'travelers.0.dateOfBirthYear'
-                            ])
-                            @error('travelers.0.dateOfBirthDay') <span
-                                class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            @error('travelers.0.dateOfBirthMonth') <span
-                                class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            @error('travelers.0.dateOfBirthYear') <span
-                                class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-                    </div>
+                    @include('checkout::trip-details-page.inputs',[
+                             'requirements' => $passengerRequirements,
+                             'countryCodes' => $countryCodes,
+                             'saveTo' => 'paxInfo'
+                         ])
 
-                    <div class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 mt-4 min-w-0">
-                        <div class="flex flex-col md:flex-row gap-4 w-full">
-                            <div class="space-y-2 w-full min-w-0">
-                                <label
-                                    class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Passport
-                                    number</label>
-                                <input type="text" wire:model="travelers.0.passportNumber" class="form-input w-full"
-                                       placeholder="e.g. 1234">
-                                @error('travelers.0.passportNumber') <span
-                                    class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="space-y-2 w-full min-w-0">
-                                <label
-                                    class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Passport
-                                    issuing country</label>
-                                <select wire:model="travelers.0.passportIssuingCountry" class="form-select pr-8 w-full">
-                                    <option value="" disabled>Select</option>
-                                    <option value="PT">Portugal</option>
-                                    <option value="ES">Spain</option>
-                                    <option value="US">United States</option>
-                                    <option value="UK">United Kingdom</option>
-                                </select>
-                                @error('travelers.0.passportIssuingCountry') <span
-                                    class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
-                        <div class="space-y-2 w-full min-w-0">
-                            <label
-                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Passport
-                                expiration date</label>
-                            @include('checkout::components.date-field', [
-                                'day' => 'travelers.0.passportExpiryDay',
-                                'month' => 'travelers.0.passportExpiryMonth',
-                                'year' => 'travelers.0.passportExpiryYear'
-                            ])
-                            @error('travelers.0.passportExpiryDay') <span
-                                class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            @error('travelers.0.passportExpiryMonth') <span
-                                class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            @error('travelers.0.passportExpiryYear') <span
-                                class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-                    </div>
+
+
+{{--                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">--}}
+{{--                        <div class="space-y-2 w-full min-w-0">--}}
+{{--                            <label--}}
+{{--                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">First--}}
+{{--                                name</label>--}}
+{{--                            <input type="text" wire:model="travelers.0.firstName" class="form-input w-full"--}}
+{{--                                   placeholder="e.g. Harry">--}}
+{{--                            @error('travelers.0.firstName') <span--}}
+{{--                                class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                        </div>--}}
+{{--                        <div class="space-y-2 w-full min-w-0">--}}
+{{--                            <label--}}
+{{--                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Second--}}
+{{--                                name</label>--}}
+{{--                            <input type="text" wire:model="travelers.0.secondName" class="form-input w-full"--}}
+{{--                                   placeholder="e.g. James">--}}
+{{--                            @error('travelers.0.secondName') <span--}}
+{{--                                class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                        </div>--}}
+{{--                        <div class="space-y-2 w-full min-w-0">--}}
+{{--                            <label--}}
+{{--                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Last--}}
+{{--                                name</label>--}}
+{{--                            <input type="text" wire:model="travelers.0.lastName" class="form-input w-full"--}}
+{{--                                   placeholder="e.g. Potter">--}}
+{{--                            @error('travelers.0.lastName') <span--}}
+{{--                                class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+
+{{--                    <div class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 mt-4 min-w-0">--}}
+{{--                        <div class="flex flex-col md:flex-row gap-4 w-full">--}}
+{{--                            <div class="space-y-2 w-full min-w-0">--}}
+{{--                                <label--}}
+{{--                                    class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Nationality</label>--}}
+{{--                                <select wire:model="travelers.0.nationality" class="form-select pr-8 w-full">--}}
+{{--                                    <option value="" disabled>Select</option>--}}
+{{--                                    <option value="PT">Portuguese</option>--}}
+{{--                                    <option value="ES">Spanish</option>--}}
+{{--                                    <option value="US">American</option>--}}
+{{--                                    <option value="UK">British</option>--}}
+{{--                                </select>--}}
+{{--                                @error('travelers.0.nationality') <span--}}
+{{--                                    class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                            </div>--}}
+{{--                            <div class="space-y-2 w-full min-w-0">--}}
+{{--                                <label--}}
+{{--                                    class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Gender</label>--}}
+{{--                                <select wire:model="travelers.0.gender" class="form-select pr-8 w-full">--}}
+{{--                                    <option value="" disabled>Select</option>--}}
+{{--                                    <option value="M">Male</option>--}}
+{{--                                    <option value="F">Female</option>--}}
+{{--                                    <option value="O">Other</option>--}}
+{{--                                </select>--}}
+{{--                                @error('travelers.0.gender') <span--}}
+{{--                                    class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                        <div class="space-y-2 w-full min-w-0">--}}
+{{--                            <label--}}
+{{--                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Date--}}
+{{--                                of birth</label>--}}
+{{--                            @include('checkout::components.date-field', [--}}
+{{--                                'day' => 'travelers.0.dateOfBirthDay',--}}
+{{--                                'month' => 'travelers.0.dateOfBirthMonth',--}}
+{{--                                'year' => 'travelers.0.dateOfBirthYear'--}}
+{{--                            ])--}}
+{{--                            @error('travelers.0.dateOfBirthDay') <span--}}
+{{--                                class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                            @error('travelers.0.dateOfBirthMonth') <span--}}
+{{--                                class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                            @error('travelers.0.dateOfBirthYear') <span--}}
+{{--                                class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+
+{{--                    <div class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 mt-4 min-w-0">--}}
+{{--                        <div class="flex flex-col md:flex-row gap-4 w-full">--}}
+{{--                            <div class="space-y-2 w-full min-w-0">--}}
+{{--                                <label--}}
+{{--                                    class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Passport--}}
+{{--                                    number</label>--}}
+{{--                                <input type="text" wire:model="travelers.0.passportNumber" class="form-input w-full"--}}
+{{--                                       placeholder="e.g. 1234">--}}
+{{--                                @error('travelers.0.passportNumber') <span--}}
+{{--                                    class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                            </div>--}}
+{{--                            <div class="space-y-2 w-full min-w-0">--}}
+{{--                                <label--}}
+{{--                                    class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Passport--}}
+{{--                                    issuing country</label>--}}
+{{--                                <select wire:model="travelers.0.passportIssuingCountry" class="form-select pr-8 w-full">--}}
+{{--                                    <option value="" disabled>Select</option>--}}
+{{--                                    <option value="PT">Portugal</option>--}}
+{{--                                    <option value="ES">Spain</option>--}}
+{{--                                    <option value="US">United States</option>--}}
+{{--                                    <option value="UK">United Kingdom</option>--}}
+{{--                                </select>--}}
+{{--                                @error('travelers.0.passportIssuingCountry') <span--}}
+{{--                                    class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                        <div class="space-y-2 w-full min-w-0">--}}
+{{--                            <label--}}
+{{--                                class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">Passport--}}
+{{--                                expiration date</label>--}}
+{{--                            @include('checkout::components.date-field', [--}}
+{{--                                'day' => 'travelers.0.passportExpiryDay',--}}
+{{--                                'month' => 'travelers.0.passportExpiryMonth',--}}
+{{--                                'year' => 'travelers.0.passportExpiryYear'--}}
+{{--                            ])--}}
+{{--                            @error('travelers.0.passportExpiryDay') <span--}}
+{{--                                class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                            @error('travelers.0.passportExpiryMonth') <span--}}
+{{--                                class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                            @error('travelers.0.passportExpiryYear') <span--}}
+{{--                                class="text-red-500 text-sm">{{ $message }}</span> @enderror--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 
 
                     <div class="flex justify-end mt-8">

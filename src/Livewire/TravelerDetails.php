@@ -2,8 +2,11 @@
 
 namespace Nezasa\Checkout\Livewire;
 
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Nezasa\Checkout\Dtos\View\ShowTraveller;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 
 class TravelerDetails extends Component
@@ -14,6 +17,11 @@ class TravelerDetails extends Component
     public PaxAllocationResponseEntity $allocatedPax;
 
     /**
+     * The PassengerRequirementEntity that holds the requirements for passengers.
+     */
+    public PassengerRequirementEntity $passengerRequirements;
+
+    /**
      * An array to hold the ShowTraveller objects for each room.
      *
      * @var array<int, ShowTraveller>
@@ -21,9 +29,19 @@ class TravelerDetails extends Component
     public array $showTravellers = [];
 
     /**
+     * An array to hold the information of each traveler.
+     */
+    public array $paxInfo = [];
+
+    /**
      * Indicates whether the traveler details section is expanded or not..
      */
     public $travelerExpanded = true;
+
+    /**
+     * The country calling codes for the contact details.
+     */
+    public CountryCodesResponse $countryCodes;
 
     public function mount()
     {
@@ -46,7 +64,7 @@ class TravelerDetails extends Component
         $this->dispatch('enablePromoCodeSection');
     }
 
-    public function render()
+    public function render(): View
     {
         return view('checkout::trip-details-page.traveler-details');
     }
