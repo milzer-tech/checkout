@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Resources;
 
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountriesRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountryCodesRequest;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
@@ -22,6 +23,19 @@ class LocationResource extends BaseResource
     {
         return $this->connector->send(
             new CountryCodesRequest
+        );
+    }
+
+    /**
+     * Retrieve a list of countries.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function getCountries(): Response
+    {
+        return $this->connector->send(
+            new CountriesRequest
         );
     }
 }
