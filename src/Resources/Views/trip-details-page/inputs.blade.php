@@ -11,7 +11,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0 mb-4">
             @endif
 
-            @if(! in_array($name, ['address1', 'address2', 'gender', 'mobilePhone', 'country', 'nationality']))
+            @if(! in_array($name, ['address1', 'address2', 'gender', 'mobilePhone', 'country', 'nationality', 'passportIssuingCountry']))
                 @include('checkout::components.input', [
                     'label' => $name,
                     'wireModel' => "$saveTo.$name",
@@ -50,6 +50,15 @@
                     @php($inputs++)
                     @break
 
+                @case('passportIssuingCountry')
+                    @include('checkout::components.country', [
+                            'label' => $name,
+                            'wireModel' => "$saveTo.$name",
+                            'countriesResponse' => $countriesResponse
+                    ])
+                    @php($inputs++)
+                    @break
+
             @endswitch
 
 
@@ -67,15 +76,15 @@
 
 
     @unless($requirements->address1->isHidden())
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 min-w-0 mt-6">
+
             @include('checkout::components.address', ['wireModel' => "$saveTo.address1", 'name' => 'address1'])
-        </div>
+
         @php($inputs++)
     @endunless
 
     @unless($requirements->address2->isHidden())
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 min-w-0">
+
             @include('checkout::components.address', ['wireModel' => "$saveTo.address2", 'name' => 'address2'])
-        </div>
+
         @php($inputs++)
     @endunless
