@@ -32,6 +32,12 @@ return [
         'gender' => 'Gender',
         'taxNumber' => 'Tax number',
         'localIdNumber' => 'local Id number',
+        'passportNumber' => 'Passport number',
+        'nationality' => 'Nationality',
+        'dateOfBirth' => 'Date of birth',
+        'passportExpirationDate' => 'Passport expiration date',
+        'passportIssuingCountry' => 'Passport issuing country',
+        'secondOrAdditionalName' => 'Second name',
     ],
     'placeholders' => [
         'firstName' => 'e.g. John',
@@ -61,6 +67,10 @@ return [
         'city' => 'London',
         'country' => 'England',
         'state' => 'State',
+        'passportNumber' => 'e.g. 123456789',
+        'nationality' => 'e.g. British',
+        'passportIssuingCountry' => 'e.g. United Kingdom',
+        'secondOrAdditionalName' => 'e.g. Smith',
     ],
 
 ];
