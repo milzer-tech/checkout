@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nezasa\Checkout\Integrations\Nezasa\Requests\Planner;
+namespace Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout;
 
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
@@ -36,17 +36,6 @@ class SaveTravelerDetailsRequest extends Request implements HasBody
      */
     protected function defaultBody(): array
     {
-        return [
-
-            'paxInfo' => [
-                [
-                    'firstName' => 'John',
-                ],
-                [
-                    'firstName' => 'Mary',
-                ],
-
-            ],
-        ];
+        return [];
     }
 }
