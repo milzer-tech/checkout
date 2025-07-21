@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Resources;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\SaveTravelerDetailsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
+use Nezasa\Checkout\Models\Checkout;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\BaseResource;
@@ -33,10 +34,10 @@ class CheckoutResource extends BaseResource
      * @throws FatalRequestException
      * @throws RequestException
      */
-    public function saveTravelerDetails(string $checkoutId): Response
+    public function saveTravelerDetails(string $checkoutId, Checkout $checkout): Response
     {
         return $this->connector->send(
-            new SaveTravelerDetailsRequest($checkoutId)
+            new SaveTravelerDetailsRequest($checkoutId, $checkout)
         );
     }
 

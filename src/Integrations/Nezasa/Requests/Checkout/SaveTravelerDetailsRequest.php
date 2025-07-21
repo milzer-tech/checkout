@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout;
 
+use Nezasa\Checkout\Models\Checkout;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
@@ -21,7 +22,7 @@ class SaveTravelerDetailsRequest extends Request implements HasBody
     /**
      * Create a new instance of RetrieveCheckoutRequest
      */
-    public function __construct(protected readonly string $checkoutId) {}
+    public function __construct(protected readonly string $checkoutId, public Checkout $checkout) {}
 
     /**
      * Define the endpoint for the request.
@@ -36,6 +37,9 @@ class SaveTravelerDetailsRequest extends Request implements HasBody
      */
     protected function defaultBody(): array
     {
-        return [];
+        return [
+            'contactInfo' => $this->checkout->data['contact'],
+            'paxInfo' => collect($this->checkout->data['paxInfo'])->flatten(1)->all(),
+        ];
     }
 }

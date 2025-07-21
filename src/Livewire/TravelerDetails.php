@@ -12,6 +12,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
+use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 use Nezasa\Checkout\Models\Checkout;
 
 class TravelerDetails extends Component
@@ -96,6 +97,12 @@ class TravelerDetails extends Component
     {
         [$room, $traveler] = str($item)->explode('-')->transform(fn ($item) => intval($item));
 
+        $this->validate(
+            collect($this->rules())->mapWithKeys(fn (array $rule, string $key) => [
+                str($key)->replaceFirst('*', $room)->replaceFirst('*', $traveler)->toString() => $rule,
+            ])->all()
+        );
+
         $this->showTravellers[$room][$traveler]->show = false;
 
         if (isset($this->showTravellers[$room][$traveler + 1])) {
@@ -129,9 +136,16 @@ class TravelerDetails extends Component
      */
     public function updated(string $name, mixed $value)
     {
-        Checkout::query()
-            ->firstOrCreate(['checkout_id' => $this->checkoutId])
-            ->updateData($name, $value);
+        //        SaveTraverDetailsJob::dispatch($this->checkoutId, $name, $value);
+
+        $job = new SaveTraverDetailsJob(
+            checkoutId: $this->checkoutId,
+            name: $name,
+            value: $value,
+            paxInfo: $this->paxInfo,
+        );
+
+        $job->handle();
     }
 
     protected function rules(): array
@@ -187,8 +201,25 @@ class TravelerDetails extends Component
         }
 
         return array_combine(
-            array_map(fn ($key) => 'contact.'.$key, array_keys($rules)),
+            array_map(fn ($key) => 'paxInfo.*.*.'.$key, array_keys($rules)),
             array_values($rules)
         );
+    }
+
+    /**
+     * Returns the validation messages for the contact details.
+     *
+     * @return array<string, string>
+     */
+    protected function validationAttributes(): array
+    {
+        return collect($this->rules())
+            ->reject(fn ($item, $key) => $key === 'paxInfo.*.*.address1' || $key === 'paxInfo.*.*.address2')
+            ->mapWithKeys(function ($item, $key) {
+                $translatedKey = str_replace('paxInfo.*.*.', '', $key);
+
+                return [$key => strtolower(trans("checkout::input.attributes.$translatedKey"))];
+            })
+            ->toArray();
     }
 }
