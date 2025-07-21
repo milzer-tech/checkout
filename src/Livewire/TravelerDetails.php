@@ -67,17 +67,24 @@ class TravelerDetails extends Component
             ->data
             ?->get('paxInfo');
 
+        $paxNumber = 0;
         foreach ($this->allocatedPax->rooms as $number => $room) {
             for ($i = 0; $i < $room->adults; $i++) {
                 $this->showTravellers[$number][$i] = new ShowTraveller(adult: true, show: $i === 0);
 
                 $this->paxInfo[$number][$i] = $paxInfo[$number][$i] ?? [];
+                $this->paxInfo[$number][$i]['refId'] = "pax-$paxNumber";
+
+                $paxNumber++;
             }
 
             foreach ($room->childAges as $index => $age) {
                 $this->showTravellers[$number][$index + $i] = new ShowTraveller(adult: false, show: false, age: $age);
                 $this->paxInfo[$number][$index + $i] = [];
                 $this->paxInfo[$number][$index + $i] = $paxInfo[$number][$index + $i] ?? [];
+                $this->paxInfo[$number][$index + $i]['refId'] = "pax-$paxNumber";
+
+                $paxNumber++;
             }
         }
     }
@@ -216,7 +223,7 @@ class TravelerDetails extends Component
         return collect($this->rules())
             ->reject(fn ($item, $key) => $key === 'paxInfo.*.*.address1' || $key === 'paxInfo.*.*.address2')
             ->mapWithKeys(function ($item, $key) {
-                $translatedKey = str_replace('paxInfo.*.*.', '', $key);
+                $translatedKey = str($key)->afterLast('.')->toString();
 
                 return [$key => strtolower(trans("checkout::input.attributes.$translatedKey"))];
             })

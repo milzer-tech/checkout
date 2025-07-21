@@ -3,7 +3,7 @@
 
         <label
             class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
-            {{trans("checkout::input.attributes.$name.street1")}}
+            {{trans("checkout::input.attributes.street1")}}
         </label>
         <input type="text" wire:model.blur="{{$wireModel}}.street1" class="form-input w-full"
                placeholder="{{trans("checkout::input.placeholders.$name.street1")}}"/>
@@ -13,7 +13,7 @@
     <div class="space-y-2 w-full min-w-0">
         <label
             class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
-            {{trans("checkout::input.attributes.$name.street2")}}
+            {{trans("checkout::input.attributes.street2")}}
         </label>
         <input type="text" wire:model.blur="{{$wireModel}}.street2" class="form-input w-full"
                placeholder="{{trans("checkout::input.placeholders.$name.street2")}}"/>
@@ -23,7 +23,7 @@
     <div class="space-y-2 w-full min-w-0">
         <label
             class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
-            {{trans("checkout::input.attributes.$name.postalCode")}}
+            {{trans("checkout::input.attributes.postalCode")}}
         </label>
         <input type="text" wire:model.blur="{{$wireModel}}.postalCode" class="form-input w-full"
                placeholder="{{trans("checkout::input.placeholders.$name.postalCode")}}"/>
@@ -33,7 +33,7 @@
     <div class="space-y-2 w-full min-w-0">
         <label
             class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
-            {{trans("checkout::input.attributes.$name.city")}}
+            {{trans("checkout::input.attributes.city")}}
         </label>
         <input type="text" wire:model.blur="{{$wireModel}}.city" class="form-input w-full"
                placeholder="{{trans("checkout::input.placeholders.$name.city")}}"/>
@@ -42,7 +42,7 @@
 
 
     @include('checkout::components.country', [
-                        'name' =>   $name. '.country',
+                        'name' =>   'country',
                         'wireModel' => $wireModel.'.country',
                         'countriesResponse' => $countriesResponse,
                         'test' => true
@@ -61,7 +61,7 @@
     <div class="space-y-2 w-full min-w-0">
         <label
             class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
-            {{trans("checkout::input.attributes.$name.countryCode")}}
+            {{trans("checkout::input.attributes.countryCode")}}
         </label>
         <input type="text" wire:model.blur="{{$wireModel}}.countryCode" class="form-input w-full"
                placeholder="{{trans("checkout::input.placeholders.$name.countryCode")}}"/>
@@ -71,7 +71,7 @@
     <div class="space-y-2 w-full min-w-0">
         <label
             class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
-            {{trans("checkout::input.attributes.$name.region")}}
+            {{trans("checkout::input.attributes.region")}}
         </label>
         <input type="text" wire:model.blur="{{$wireModel}}.region" class="form-input w-full"
                placeholder="{{trans("checkout::input.placeholders.$name.region")}}"/>

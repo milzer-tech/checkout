@@ -7,15 +7,15 @@
             <div class="relative w-[40%]">
                 <select wire:model.blur="{{$wireModel}}.month" class="form-input custom-select w-full appearance-none px-2 pr-8" >
                     <option value="" disabled="">Month</option>
-                    <option value="01">January</option>
-                    <option value="02">February</option>
-                    <option value="03">March</option>
-                    <option value="04">April</option>
-                    <option value="05">May</option>
-                    <option value="06">June</option>
-                    <option value="07">July</option>
-                    <option value="08">August</option>
-                    <option value="09">September</option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
                     <option value="10">October</option>
                     <option value="11">November</option>
                     <option value="12">December</option>
@@ -28,4 +28,7 @@
             <input type="text" wire:model.blur="{{$wireModel}}.year" maxlength="4" placeholder="YYYY" class="form-input w-[80px] px-4 " >
         </div>
     </div>
+
+
+    @error($wireModel . '.year')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
 </div>

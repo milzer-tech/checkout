@@ -7,7 +7,10 @@ namespace Nezasa\Checkout\Jobs;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Collection;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
 use Nezasa\Checkout\Models\Checkout;
 
 class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
@@ -29,18 +32,10 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
-        $model = Checkout::query()->firstOrCreate(['checkout_id' => $this->checkoutId]);
+        $model = $this->updateCheckoutModel();
 
-        $model->updateData($this->name, $this->value);
-
-        $model->refresh();
-
-        if (collect($this->paxInfo)->flatten(1)->reject()->isEmpty()) {
-            dd(NezasaConnector::make()
-                ->checkout()
-                ->saveTravelerDetails($this->checkoutId, $model)
-                ->array());
-        }
+        // If the value is a contact info, update the contact info in the model
+        $this->updateTravelerDetailsOnNezasa($model);
     }
 
     /**
@@ -49,5 +44,35 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
     public function uniqueId(): string
     {
         return $this->checkoutId.'-'.$this->name;
+    }
+
+    /**
+     * Update the Checkout model with the provided name and value.
+     */
+    private function updateCheckoutModel(): Checkout
+    {
+        $model = Checkout::query()->firstOrCreate(['checkout_id' => $this->checkoutId]);
+
+        $model->updateData($this->name, $this->value);
+
+        return $model->refresh();
+    }
+
+    public function updateTravelerDetailsOnNezasa(Checkout $model): void
+    {
+        $paxInfo = new Collection;
+
+        foreach (collect($this->paxInfo)->flatten(1) as $pax) {
+            $paxInfo->add(PaxInfoPayloadEntity::from($pax));
+        }
+
+        if (collect($this->paxInfo)->flatten(1)->reject()->isEmpty()) {
+            dd(NezasaConnector::make()
+                ->checkout()
+                ->saveTravelerDetails($this->checkoutId, new SaveTravellersDetailsPayload(paxInfo: $paxInfo))
+                ->array()
+            );
+
+        }
     }
 }
