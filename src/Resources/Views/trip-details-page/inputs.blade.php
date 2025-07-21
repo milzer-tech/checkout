@@ -11,7 +11,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0 mb-4">
             @endif
 
-            @if(! in_array($name, ['address1', 'address2', 'gender', 'mobilePhone', 'country', 'nationality', 'passportIssuingCountry']))
+            @if(! in_array($name, ['dateOfBirth','address1', 'address2', 'gender', 'mobilePhone', 'country', 'nationality', 'passportIssuingCountry']))
                 @include('checkout::components.input', [
                     'label' => $name,
                     'wireModel' => "$saveTo.$name",
@@ -55,6 +55,14 @@
                             'label' => $name,
                             'wireModel' => "$saveTo.$name",
                             'countriesResponse' => $countriesResponse
+                    ])
+                    @php($inputs++)
+                    @break
+
+                @case('dateOfBirth')
+                    @include('checkout::components.date', [
+                            'label' => $name,
+                            'wireModel' => "$saveTo.$name",
                     ])
                     @php($inputs++)
                     @break
