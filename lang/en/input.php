@@ -42,7 +42,7 @@ return [
         'street2' => 'Address Line 2',
         'region' => 'Region',
         'state' => 'State',
-        'passportNumber' => 'e.g. 123456789',
+        'passportNr' => 'e.g. 123456789',
         'nationality' => 'e.g. British',
         'passportIssuingCountry' => 'e.g. United Kingdom',
         'secondOrAdditionalName' => 'e.g. Smith',
