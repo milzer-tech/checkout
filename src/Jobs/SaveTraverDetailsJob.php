@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
 use Nezasa\Checkout\Models\Checkout;
@@ -24,7 +25,8 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
         public string $checkoutId,
         public string $name,
         public mixed $value,
-        public array $paxInfo
+        public array $paxInfo,
+
     ) {}
 
     /**
@@ -62,17 +64,20 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
     {
         $paxInfo = new Collection;
 
-        foreach (collect($this->paxInfo)->flatten(1) as $pax) {
-            $paxInfo->add(PaxInfoPayloadEntity::from($pax));
+        foreach (collect($model->data['paxInfo'])->flatten(1) as $index => $pax) {
+            $paxInfo[] = PaxInfoPayloadEntity::from([
+                'refId' => "pax-$index",
+                ...$pax,
+            ]);
         }
 
-        if (collect($this->paxInfo)->flatten(1)->reject()->isEmpty()) {
-            dd(NezasaConnector::make()
-                ->checkout()
-                ->saveTravelerDetails($this->checkoutId, new SaveTravellersDetailsPayload(paxInfo: $paxInfo))
-                ->array()
+        if ($model['data']['numberOfPax'] == $paxInfo->count()) {
+            $payload = new SaveTravellersDetailsPayload(
+                contactInfo: ContactInfoPayloadEntity::from($model->data['contact']),
+                paxInfo: $paxInfo
             );
 
+            NezasaConnector::make()->checkout()->saveTravelerDetails($this->checkoutId, $payload);
         }
     }
 }

@@ -40,8 +40,6 @@ class SaveTravelerDetailsRequest extends Request implements HasBody
      */
     protected function defaultBody(): array
     {
-
         return $this->payload->toArray();
-
     }
 }

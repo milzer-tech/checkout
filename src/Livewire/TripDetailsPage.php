@@ -51,7 +51,7 @@ class TripDetailsPage extends Component
     ): View {
         $result = $callTripDetails->run($this->itineraryId, $this->checkoutId);
 
-        $initializeCheckoutData->run($this->checkoutId, $result['itinerary']->allocatedPax);
+        $initializeCheckoutData->run(checkoutId: $this->checkoutId, allocatedPax: $result['itinerary']->allocatedPax);
 
         return view('checkout::trip-details-page.index', [
             'itinerary' => $summerizeItinerary->run($result['itinerary'], $result['checkout']),

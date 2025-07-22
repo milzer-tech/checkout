@@ -161,13 +161,13 @@ class TravelerDetails extends Component
             'firstName' => ['string', 'max:255'],
             'lastName' => ['string', 'max:255'],
             'secondOrAdditionalName' => ['string', 'max:255'],
-            'passportNumber' => ['string', 'max:255'],
+            'passportNr' => ['string', 'max:255'],
             'nationality' => ['string'], // country response
             'gender' => [new Enum(GenderEnum::class)],
-            'dateOfBirth' => ['array'],
-            'dateOfBirth.day' => ['integer', 'min:1', 'max:31'],
-            'dateOfBirth.month' => ['integer', 'min:1', 'max:12'],
-            'dateOfBirth.year' => ['integer', 'min:1900', 'max:'.date('Y')],
+            'birthDate' => ['array'],
+            'birthDate.day' => ['integer', 'min:1', 'max:31'],
+            'birthDate.month' => ['integer', 'min:1', 'max:12'],
+            'birthDate.year' => ['integer', 'min:1900', 'max:'.date('Y')],
             'passportExpirationDate' => ['array'],
             'passportExpirationDate.day' => ['integer', 'min:1', 'max:31'],
             'passportExpirationDate.month' => ['integer', 'min:1', 'max:12'],
@@ -176,35 +176,13 @@ class TravelerDetails extends Component
             'postalCode' => ['string', 'max:20'],
             'city' => ['string', 'max:255'],
             'country' => ['string', 'max:255'],
-            'address1' => ['array'],
-            'address1.country' => ['string', 'max:255'],
-            'address1.countryCode' => ['string', 'max:10'],
-            'address1.city' => ['string', 'max:255'],
-            'address1.postalCode' => ['string', 'max:20'],
-            'address1.street1' => ['string', 'max:255'],
-            'address1.street2' => ['string', 'max:255'],
-            'address1.region' => ['string', 'max:255'],
-            'address2' => ['array'],
-            'address2.country' => ['string', 'max:255'],
-            'address2.countryCode' => ['string', 'max:10'],
-            'address2.city' => ['string', 'max:255'],
-            'address2.postalCode' => ['string', 'max:20'],
-            'address2.street1' => ['string', 'max:255'],
-            'address2.street2' => ['string', 'max:255'],
-            'address2.region' => ['string', 'max:255'],
+            'countryCode' => ['string', 'max:10'],
+            'street1' => ['string', 'max:255'],
+            'street2' => ['string', 'max:255'],
         ];
 
         foreach ($this->passengerRequirements as $name => $item) {
-            $required = $item->isRequired() ? ['required'] : ['nullable'];
-
-            $rules[$name] = array_merge($required, $rules[$name]);
-
-            if ($name === 'address1' || $name === 'address2') {
-                $rules["$name.country"] = array_merge($required, $rules["$name.country"]);
-                $rules["$name.city"] = array_merge($required, $rules["$name.city"]);
-                $rules["$name.postalCode"] = array_merge($required, $rules["$name.postalCode"]);
-                $rules["$name.street1"] = array_merge($required, $rules["$name.street1"]);
-            }
+            $rules[$name] = array_merge($item->isRequired() ? ['required'] : ['nullable'], $rules[$name]);
         }
 
         return array_combine(

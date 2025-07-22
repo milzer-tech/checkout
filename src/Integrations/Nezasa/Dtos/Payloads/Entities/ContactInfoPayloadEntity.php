@@ -24,4 +24,11 @@ class ContactInfoPayloadEntity extends BaseDto
         public ?string $localIdNumber = null,
         public ?AddressEntity $address = null,
     ) {}
+
+    public static function from(...$payloads): static
+    {
+        $payloads[0]['address'] = AddressEntity::from($payloads[0]);
+
+        return parent::from(...$payloads);
+    }
 }
