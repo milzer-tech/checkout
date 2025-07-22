@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
+use Spatie\LaravelData\Attributes\MapInputName;
 
 class ContactRequirementEntity extends BaseDto
 {
@@ -20,8 +21,10 @@ class ContactRequirementEntity extends BaseDto
         public TravelerRequirementFieldEnum $companyName,
         public TravelerRequirementFieldEnum $email,
         public TravelerRequirementFieldEnum $mobilePhone,
-        public TravelerRequirementFieldEnum $address1,
-        public TravelerRequirementFieldEnum $address2,
+        #[MapInputName('address1')]
+        public TravelerRequirementFieldEnum $street1,
+        #[MapInputName('address2')]
+        public TravelerRequirementFieldEnum $street2,
         public TravelerRequirementFieldEnum $postalCode,
         public TravelerRequirementFieldEnum $city,
         public TravelerRequirementFieldEnum $country,

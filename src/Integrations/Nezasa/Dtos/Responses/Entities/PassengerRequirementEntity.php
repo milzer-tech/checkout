@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
+use Spatie\LaravelData\Attributes\MapInputName;
 
 class PassengerRequirementEntity extends BaseDto
 {
@@ -19,13 +20,17 @@ class PassengerRequirementEntity extends BaseDto
         public TravelerRequirementFieldEnum $lastName,
         public TravelerRequirementFieldEnum $secondOrAdditionalName,
         public TravelerRequirementFieldEnum $gender,
-        public TravelerRequirementFieldEnum $passportNumber,
+        #[MapInputName('passportNumber')]
+        public TravelerRequirementFieldEnum $passportNr,
         public TravelerRequirementFieldEnum $nationality,
-        public TravelerRequirementFieldEnum $dateOfBirth,
+        #[MapInputName('dateOfBirth')]
+        public TravelerRequirementFieldEnum $birthDate,
         public TravelerRequirementFieldEnum $passportExpirationDate,
         public TravelerRequirementFieldEnum $passportIssuingCountry,
-        public TravelerRequirementFieldEnum $address1,
-        public TravelerRequirementFieldEnum $address2,
+        #[MapInputName('address1')]
+        public TravelerRequirementFieldEnum $street1,
+        #[MapInputName('address2')]
+        public TravelerRequirementFieldEnum $street2,
         public TravelerRequirementFieldEnum $postalCode,
         public TravelerRequirementFieldEnum $city,
         public TravelerRequirementFieldEnum $country,
