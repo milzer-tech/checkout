@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Throwable;
@@ -43,9 +44,14 @@ class TripDetailsPage extends Component
      *
      * @throws Throwable
      */
-    public function render(CallTripDetailsAction $callTripDetails, SummarizeItineraryAction $summerizeItinerary): View
-    {
+    public function render(
+        CallTripDetailsAction $callTripDetails,
+        SummarizeItineraryAction $summerizeItinerary,
+        InitializeCheckoutDataAction $initializeCheckoutData
+    ): View {
         $result = $callTripDetails->run($this->itineraryId, $this->checkoutId);
+
+        $initializeCheckoutData->run($this->checkoutId, $result['itinerary']->allocatedPax);
 
         return view('checkout::trip-details-page.index', [
             'itinerary' => $summerizeItinerary->run($result['itinerary'], $result['checkout']),
