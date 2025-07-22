@@ -123,39 +123,18 @@ class ContactDetails extends Component
             'country' => ['string', 'max:255'],
             'taxNumber' => ['string', 'max:255'],
             'localIdNumber' => ['string', 'max:255'],
-            'address1' => ['array'],
-            'address1.country' => ['string', 'max:255'],
-            'address1.countryCode' => ['string', 'max:10'],
-            'address1.city' => ['string', 'max:255'],
-            'address1.postalCode' => ['string', 'max:20'],
-            'address1.street1' => ['string', 'max:255'],
-            'address1.street2' => ['string', 'max:255'],
-            'address1.region' => ['string', 'max:255'],
-            'address2' => ['array'],
-            'address2.country' => ['string', 'max:255'],
-            'address2.countryCode' => ['string', 'max:10'],
-            'address2.city' => ['string', 'max:255'],
-            'address2.postalCode' => ['string', 'max:20'],
-            'address2.street1' => ['string', 'max:255'],
-            'address2.street2' => ['string', 'max:255'],
-            'address2.region' => ['string', 'max:255'],
+            'street1' => ['string', 'max:255'],
+            'street2' => ['string', 'max:255'],
+            'countryCode' => ['string', 'max:10'],
+
         ];
 
         foreach ($this->contactRequirements as $name => $item) {
-            $required = $item->isRequired() ? ['required'] : ['nullable'];
-
-            $rules[$name] = array_merge($required, $rules[$name]);
-
-            if ($name === 'address1' || $name === 'address2') {
-                $rules["$name.country"] = array_merge($required, $rules["$name.country"]);
-                $rules["$name.city"] = array_merge($required, $rules["$name.city"]);
-                $rules["$name.postalCode"] = array_merge($required, $rules["$name.postalCode"]);
-                $rules["$name.street1"] = array_merge($required, $rules["$name.street1"]);
-            }
+            $rules[$name] = array_merge($item->isRequired() ? ['required'] : ['nullable'], $rules[$name]);
         }
 
         return array_combine(
-            array_map(fn ($key) => 'contact.'.$key, array_keys($rules)),
+            array_map(fn ($key) => "contact.$key", array_keys($rules)),
             array_values($rules)
         );
     }
@@ -168,7 +147,6 @@ class ContactDetails extends Component
     protected function validationAttributes(): array
     {
         return collect($this->rules())
-            ->reject(fn ($item, $key) => $key === 'contact.address1' || $key === 'contact.address2')
             ->mapWithKeys(function ($item, $key) {
                 $translatedKey = str_replace('contact.', '', $key);
 
