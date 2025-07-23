@@ -150,7 +150,7 @@ class TravelerDetails extends Component
             ->toString();
 
         $this->validate([
-            $key => $this->rules()[$key],
+            $name => $this->rules()[$key],
         ]);
 
         SaveTraverDetailsJob::dispatch($this->checkoutId, $name, $value);
