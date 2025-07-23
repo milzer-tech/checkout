@@ -102,13 +102,9 @@ class TravelerDetails extends Component
 
     public function showNextTraveller(string $item): void
     {
-        [$room, $traveler] = str($item)->explode('-')->transform(fn ($item) => intval($item));
+        [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
 
-        $this->validate(
-            collect($this->rules())->mapWithKeys(fn (array $rule, string $key) => [
-                str($key)->replaceFirst('*', $room)->replaceFirst('*', $traveler)->toString() => $rule,
-            ])->all()
-        );
+        $this->validateTravellerData($room, $traveler);
 
         $this->showTravellers[$room][$traveler]->show = false;
 
@@ -124,10 +120,14 @@ class TravelerDetails extends Component
      */
     public function showTraveller(string $item): void
     {
-        [$room, $traveler] = str($item)->explode('-')->transform(fn ($item) => intval($item));
+        [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
 
-        foreach ($this->showTravellers[$room] as $item) {
-            $item->show = false;
+        foreach ($this->showTravellers[$room] as $travelerNumber => $item) {
+            if ($item->show) {
+                $this->validateTravellerData($room, $travelerNumber);
+
+                $item->show = false;
+            }
         }
 
         $this->showTravellers[$room][$traveler]->show = true;
@@ -197,6 +197,23 @@ class TravelerDetails extends Component
         return array_combine(
             array_map(fn ($key) => 'paxInfo.*.*.'.$key, array_keys($rules)),
             array_values($rules)
+        );
+    }
+
+    /**
+     * @return array{0: int, 1: int}
+     */
+    protected function getRoomAndTravellerNumber(string $item): array
+    {
+        return str($item)->explode('-')->transform(fn ($item) => intval($item))->toArray();
+    }
+
+    protected function validateTravellerData(int $room, int $travelerNumber): void
+    {
+        $this->validate(
+            collect($this->rules())->mapWithKeys(fn (array $rule, string $key) => [
+                str($key)->replaceFirst('*', $room)->replaceFirst('*', $travelerNumber)->toString() => $rule,
+            ])->all()
         );
     }
 
