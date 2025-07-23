@@ -143,15 +143,17 @@ class TravelerDetails extends Component
      */
     public function updated(string $name, mixed $value)
     {
-        //        SaveTraverDetailsJob::dispatch($this->checkoutId, $name, $value);
+        $key = str($name)->after('.')
+            ->after('.')
+            ->after('.')
+            ->prepend('paxInfo.*.*.')
+            ->toString();
 
-        $job = new SaveTraverDetailsJob(
-            checkoutId: $this->checkoutId,
-            name: $name,
-            value: $value,
-        );
+        $this->validate([
+            $key => $this->rules()[$key],
+        ]);
 
-        $job->handle();
+        SaveTraverDetailsJob::dispatch($this->checkoutId, $name, $value);
     }
 
     protected function rules(): array
@@ -181,7 +183,15 @@ class TravelerDetails extends Component
         ];
 
         foreach ($this->passengerRequirements as $name => $item) {
-            $rules[$name] = array_merge($item->isRequired() ? ['required'] : ['nullable'], $rules[$name]);
+            if ($item->isRequired()) {
+                $rules[$name] = array_merge(['required'], $rules[$name]);
+
+                if ($name === 'birthDate' || $name === 'passportExpirationDate') {
+                    $rules["$name.day"] = array_merge(['required'], $rules["$name.day"]);
+                    $rules["$name.month"] = array_merge(['required'], $rules["$name.month"]);
+                    $rules["$name.year"] = array_merge(['required'], $rules["$name.year"]);
+                }
+            }
         }
 
         return array_combine(
