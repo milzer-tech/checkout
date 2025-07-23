@@ -24,8 +24,7 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
     public function __construct(
         public string $checkoutId,
         public string $name,
-        public mixed $value,
-        public array $paxInfo,
+        public mixed $value
 
     ) {}
 
@@ -64,7 +63,7 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
     {
         $paxInfo = new Collection;
 
-        foreach (collect($model->data['paxInfo'])->flatten(1) as $index => $pax) {
+        foreach (collect($model->data['paxInfo'] ?? [])->flatten(1) as $index => $pax) {
             $paxInfo[] = PaxInfoPayloadEntity::from([
                 'refId' => "pax-$index",
                 ...$pax,

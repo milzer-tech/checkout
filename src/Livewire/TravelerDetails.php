@@ -149,7 +149,6 @@ class TravelerDetails extends Component
             checkoutId: $this->checkoutId,
             name: $name,
             value: $value,
-            paxInfo: $this->paxInfo,
         );
 
         $job->handle();

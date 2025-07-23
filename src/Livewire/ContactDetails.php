@@ -10,6 +10,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ContactRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
+use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 use Nezasa\Checkout\Models\Checkout;
 use Throwable;
 
@@ -74,11 +75,15 @@ class ContactDetails extends Component
     /**
      * Update the contact details when a field is changed.
      */
-    public function updated(string $name, mixed $value)
+    public function updated(string $name, mixed $value): void
     {
-        Checkout::query()
-            ->firstOrCreate(['checkout_id' => $this->checkoutId])
-            ->updateData($name, $value);
+        $this->validate([
+            $name => $this->rules()[$name],
+        ]);
+
+        $job = new SaveTraverDetailsJob(checkoutId: $this->checkoutId, name: $name, value: $value);
+
+        dispatch($job);
     }
 
     /**
