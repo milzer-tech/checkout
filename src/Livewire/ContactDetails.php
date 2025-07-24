@@ -104,12 +104,15 @@ class ContactDetails extends Component
             ->updateData('contact', $validatedData['contact']);
 
         $this->contactExpanded = false;
+        $this->isCompleted = true;
+
+        $this->dispatch('contact-stored');
     }
 
     /**
      * Cancel the contact details edit and collapse the form.
      */
-    public function editContact()
+    public function editContact(): void
     {
         $this->contactExpanded = true;
     }
