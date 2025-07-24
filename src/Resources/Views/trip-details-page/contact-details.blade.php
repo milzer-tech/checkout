@@ -8,7 +8,7 @@
         title="Contact details"
         :state="$state"
         :showEdit="$state === 'valid'"
-        :showCheck="$state === 'valid'"
+        :showCheck="$isCompleted"
         onEdit="editContact"
 >
     <form wire:submit="save" class="space-y-6">

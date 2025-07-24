@@ -38,6 +38,11 @@ class ContactDetails extends Component
     public ContactRequirementEntity $contactRequirements;
 
     /**
+     * Indicates whether the traveler details have been completed.
+     */
+    public bool $isCompleted = false;
+
+    /**
      * Initialize the component with the contact details.
      */
     public function mount(): void
@@ -50,6 +55,7 @@ class ContactDetails extends Component
         try {
             $this->validate();
             $this->contactExpanded = false;
+            $this->isCompleted = true;
         } catch (Throwable $e) {
         }
     }

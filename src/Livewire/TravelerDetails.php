@@ -48,7 +48,12 @@ class TravelerDetails extends Component
     /**
      * Indicates whether the traveler details section is expanded or not..
      */
-    public $travelerExpanded = true;
+    public bool $travelerExpanded = false;
+
+    /**
+     * Indicates whether the traveler details have been completed.
+     */
+    public bool $isCompleted = false;
 
     /**
      * The country calling codes for the contact details.
@@ -65,7 +70,7 @@ class TravelerDetails extends Component
         $paxInfo = Checkout::query()
             ->firstOrCreate(['checkout_id' => $this->checkoutId])
             ->data
-            ?->get('paxInfo');
+            ?->get('paxInfo') ?? [];
 
         $paxNumber = 0;
         foreach ($this->allocatedPax->rooms as $number => $room) {
@@ -92,6 +97,7 @@ class TravelerDetails extends Component
     public function save()
     {
         $this->travelerExpanded = false;
+
         $this->dispatch('enablePromoCodeSection');
     }
 

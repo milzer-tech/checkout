@@ -2,10 +2,9 @@
 
 <x-checkout::editable-box
     title="Traveller details"
-    subtitle="Information of all the travellers as appearing in their travel documents."
     :state="$state"
     :showEdit="$state === 'valid'"
-    :showCheck="$state === 'valid'"
+    :showCheck="$isCompleted"
     onEdit="editTraveler"
 >
     <form wire:submit="save">
