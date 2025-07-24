@@ -70,7 +70,7 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
             ]);
         }
 
-        if ($model['data']['numberOfPax'] == $paxInfo->count()) {
+        if ($model['data']['numberOfPax'] == $paxInfo->count() && isset($model->data['contact'])) {
             $payload = new SaveTravellersDetailsPayload(
                 contactInfo: ContactInfoPayloadEntity::from($model->data['contact']),
                 paxInfo: $paxInfo

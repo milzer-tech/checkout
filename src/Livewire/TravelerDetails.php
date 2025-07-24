@@ -4,6 +4,7 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rules\Enum;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Dtos\View\ShowTraveller;
@@ -32,13 +33,6 @@ class TravelerDetails extends Component
      * The PassengerRequirementEntity that holds the requirements for passengers.
      */
     public PassengerRequirementEntity $passengerRequirements;
-
-    /**
-     * An array to hold the ShowTraveller objects for each room.
-     *
-     * @var array<int, ShowTraveller>
-     */
-    public array $showTravellers = [];
 
     /**
      * An array to hold the information of each traveler.
@@ -75,21 +69,42 @@ class TravelerDetails extends Component
         $paxNumber = 0;
         foreach ($this->allocatedPax->rooms as $number => $room) {
             for ($i = 0; $i < $room->adults; $i++) {
-                $this->showTravellers[$number][$i] = new ShowTraveller(adult: true, show: $i === 0);
 
                 $this->paxInfo[$number][$i] = $paxInfo[$number][$i] ?? [];
+                if (! isset($this->paxInfo[$number][$i]['showTraveller'])) {
+                    $this->paxInfo[$number][$i]['showTraveller'] = new ShowTraveller(isAdult: true);
+                } else {
+                    $this->paxInfo[$number][$i]['showTraveller'] = ShowTraveller::from($paxInfo[$number][$i]['showTraveller']);
+                }
+
                 $this->paxInfo[$number][$i]['refId'] = "pax-$paxNumber";
 
                 $paxNumber++;
             }
 
             foreach ($room->childAges as $index => $age) {
-                $this->showTravellers[$number][$index + $i] = new ShowTraveller(adult: false, show: false, age: $age);
-                $this->paxInfo[$number][$index + $i] = [];
+                if (! isset($this->paxInfo[$number][$index + $i]['showTraveller'])) {
+                    $this->paxInfo[$number][$index + $i]['showTraveller'] = new ShowTraveller(isAdult: false, age: $age);
+                } else {
+                    $this->paxInfo[$number][$index + $i]['showTraveller'] = ShowTraveller::from($paxInfo[$number][$index + $i]['showTraveller']);
+                    $this->paxInfo[$number][$index + $i]['showTraveller']->age = $age;
+                }
+
                 $this->paxInfo[$number][$index + $i] = $paxInfo[$number][$index + $i] ?? [];
                 $this->paxInfo[$number][$index + $i]['refId'] = "pax-$paxNumber";
 
                 $paxNumber++;
+            }
+        }
+
+        foreach ($this->paxInfo as $roomNumber => $room) {
+            if (
+                collect($this->paxInfo[$roomNumber])
+                    ->pluck('showTraveller')
+                    ->filter(fn (ShowTraveller $item) => $item->isShowing)
+                    ->isEmpty()
+            ) {
+                $this->paxInfo[$roomNumber][0]['showTraveller']->isShowing = true;
             }
         }
     }
@@ -97,6 +112,7 @@ class TravelerDetails extends Component
     public function save()
     {
         $this->travelerExpanded = false;
+        $this->isCompleted = true;
 
         $this->dispatch('enablePromoCodeSection');
     }
@@ -112,36 +128,30 @@ class TravelerDetails extends Component
 
         $this->validateTravellerData($room, $traveler);
 
-        $this->showTravellers[$room][$traveler]->show = false;
+        $this->paxInfo[$room][$traveler]['showTraveller']->isFilled = true;
+        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
 
-        if (isset($this->showTravellers[$room][$traveler + 1])) {
-            $this->showTravellers[$room][$traveler + 1]->show = true;
-        } else {
-            $this->showTravellers[$room][0]->show = true;
+        SaveTraverDetailsJob::dispatch(
+            $this->checkoutId, "paxInfo.$room.$traveler", $this->paxInfo[$room][$traveler]
+        );
+
+        $traveler = $traveler + 1;
+        if (isset($this->paxInfo[$room][$traveler])) {
+            $this->paxInfo[$room][$traveler]['showTraveller']->isFilled = false;
+            $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = true;
+
+            SaveTraverDetailsJob::dispatch(
+                $this->checkoutId, "paxInfo.$room.$traveler", $this->paxInfo[$room][$traveler]
+            );
         }
     }
 
-    /**
-     * Show the details of a specific traveler.
-     */
-    public function showTraveller(string $item): void
-    {
-        [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
-
-        foreach ($this->showTravellers[$room] as $travelerNumber => $item) {
-            if ($item->show) {
-                $this->validateTravellerData($room, $travelerNumber);
-
-                $item->show = false;
-            }
-        }
-
-        $this->showTravellers[$room][$traveler]->show = true;
-    }
-
+    #[On('contact-stored')]
     public function editTraveler(): void
     {
         $this->travelerExpanded = true;
+
+        $this->render();
     }
 
     /**
