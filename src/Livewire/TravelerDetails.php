@@ -83,6 +83,8 @@ class TravelerDetails extends Component
             }
 
             foreach ($room->childAges as $index => $age) {
+                $this->paxInfo[$number][$index + $i] = $paxInfo[$number][$index + $i] ?? [];
+
                 if (! isset($this->paxInfo[$number][$index + $i]['showTraveller'])) {
                     $this->paxInfo[$number][$index + $i]['showTraveller'] = new ShowTraveller(isAdult: false, age: $age);
                 } else {
@@ -90,7 +92,6 @@ class TravelerDetails extends Component
                     $this->paxInfo[$number][$index + $i]['showTraveller']->age = $age;
                 }
 
-                $this->paxInfo[$number][$index + $i] = $paxInfo[$number][$index + $i] ?? [];
                 $this->paxInfo[$number][$index + $i]['refId'] = "pax-$paxNumber";
 
                 $paxNumber++;
