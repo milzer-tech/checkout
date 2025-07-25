@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout;
 
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
+use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
 class ApplyPromoCodeRequest extends Request implements HasBody
@@ -44,5 +46,13 @@ class ApplyPromoCodeRequest extends Request implements HasBody
         return [
             'promoCode' => $this->code,
         ];
+    }
+
+    /**
+     * Cast the response to a DTO.
+     */
+    public function createDtoFromResponse(Response $response): ApplyPromoCodeResponse
+    {
+        return ApplyPromoCodeResponse::from($response->array());
     }
 }
