@@ -42,7 +42,7 @@ class TravelerDetails extends Component
     /**
      * Indicates whether the traveler details section is expanded or not..
      */
-    public bool $travelerExpanded = false;
+    public bool $travelerExpanded = true;
 
     /**
      * Indicates whether the traveler details have been completed.
@@ -66,48 +66,8 @@ class TravelerDetails extends Component
             ->data
             ?->get('paxInfo') ?? [];
 
-        $paxNumber = 0;
-        foreach ($this->allocatedPax->rooms as $number => $room) {
-            for ($i = 0; $i < $room->adults; $i++) {
-
-                $this->paxInfo[$number][$i] = $paxInfo[$number][$i] ?? [];
-                if (! isset($this->paxInfo[$number][$i]['showTraveller'])) {
-                    $this->paxInfo[$number][$i]['showTraveller'] = new ShowTraveller(isAdult: true);
-                } else {
-                    $this->paxInfo[$number][$i]['showTraveller'] = ShowTraveller::from($paxInfo[$number][$i]['showTraveller']);
-                }
-
-                $this->paxInfo[$number][$i]['refId'] = "pax-$paxNumber";
-
-                $paxNumber++;
-            }
-
-            foreach ($room->childAges as $index => $age) {
-                $this->paxInfo[$number][$index + $i] = $paxInfo[$number][$index + $i] ?? [];
-
-                if (! isset($this->paxInfo[$number][$index + $i]['showTraveller'])) {
-                    $this->paxInfo[$number][$index + $i]['showTraveller'] = new ShowTraveller(isAdult: false, age: $age);
-                } else {
-                    $this->paxInfo[$number][$index + $i]['showTraveller'] = ShowTraveller::from($paxInfo[$number][$index + $i]['showTraveller']);
-                    $this->paxInfo[$number][$index + $i]['showTraveller']->age = $age;
-                }
-
-                $this->paxInfo[$number][$index + $i]['refId'] = "pax-$paxNumber";
-
-                $paxNumber++;
-            }
-        }
-
-        foreach ($this->paxInfo as $roomNumber => $room) {
-            if (
-                collect($this->paxInfo[$roomNumber])
-                    ->pluck('showTraveller')
-                    ->filter(fn (ShowTraveller $item) => $item->isShowing)
-                    ->isEmpty()
-            ) {
-                $this->paxInfo[$roomNumber][0]['showTraveller']->isShowing = true;
-            }
-        }
+        $this->setUpPaxData($paxInfo);
+        $this->setShowingTravellers();
     }
 
     public function save()
@@ -137,6 +97,8 @@ class TravelerDetails extends Component
         );
 
         $traveler = $traveler + 1;
+        $nextRoom = $room + 1;
+
         if (isset($this->paxInfo[$room][$traveler])) {
             $this->paxInfo[$room][$traveler]['showTraveller']->isFilled = false;
             $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = true;
@@ -144,7 +106,32 @@ class TravelerDetails extends Component
             SaveTraverDetailsJob::dispatch(
                 $this->checkoutId, "paxInfo.$room.$traveler", $this->paxInfo[$room][$traveler]
             );
+        } elseif (isset($this->paxInfo[$nextRoom])) {
+            $this->paxInfo[$nextRoom][0]['showTraveller']->isFilled = false;
+            $this->paxInfo[$nextRoom][0]['showTraveller']->isShowing = true;
+
+            SaveTraverDetailsJob::dispatch(
+                $this->checkoutId, "paxInfo.$nextRoom.0", $this->paxInfo[$nextRoom][0]
+            );
+        } else {
+            $this->dispatch('travellers-stored');
         }
+    }
+
+    public function showPreviousTraveller(string $item): void
+    {
+        [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
+
+        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
+
+        if ($traveler > 0) {
+            $traveler = $traveler - 1;
+        } else {
+            $room = $room - 1;
+            $traveler = count($this->paxInfo[$room]) - 1;
+        }
+
+        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = true;
     }
 
     #[On('contact-stored')]
@@ -232,6 +219,57 @@ class TravelerDetails extends Component
                 str($key)->replaceFirst('*', $room)->replaceFirst('*', $travelerNumber)->toString() => $rule,
             ])->all()
         );
+    }
+
+    protected function setUpPaxData(array $paxInfo): void
+    {
+        $paxNumber = 0;
+
+        foreach ($this->allocatedPax->rooms as $number => $room) {
+            for ($i = 0; $i < $room->adults; $i++) {
+
+                $this->paxInfo[$number][$i] = $paxInfo[$number][$i] ?? [];
+                if (! isset($this->paxInfo[$number][$i]['showTraveller'])) {
+                    $this->paxInfo[$number][$i]['showTraveller'] = new ShowTraveller(isAdult: true);
+                } else {
+                    $this->paxInfo[$number][$i]['showTraveller'] = ShowTraveller::from($paxInfo[$number][$i]['showTraveller']);
+                }
+
+                $this->paxInfo[$number][$i]['refId'] = "pax-$paxNumber";
+
+                $paxNumber++;
+            }
+
+            foreach ($room->childAges as $index => $age) {
+                $this->paxInfo[$number][$index + $i] = $paxInfo[$number][$index + $i] ?? [];
+
+                if (! isset($this->paxInfo[$number][$index + $i]['showTraveller'])) {
+                    $this->paxInfo[$number][$index + $i]['showTraveller'] = new ShowTraveller(isAdult: false, age: $age);
+                } else {
+                    $this->paxInfo[$number][$index + $i]['showTraveller'] = ShowTraveller::from($paxInfo[$number][$index + $i]['showTraveller']);
+                    $this->paxInfo[$number][$index + $i]['showTraveller']->age = $age;
+                }
+
+                $this->paxInfo[$number][$index + $i]['refId'] = "pax-$paxNumber";
+
+                $paxNumber++;
+            }
+        }
+    }
+
+    protected function setShowingTravellers(): void
+    {
+        foreach ($this->paxInfo as $roomNumber => $room) {
+            if (collect($this->paxInfo[$roomNumber])
+                ->pluck('showTraveller')
+                ->filter(fn (ShowTraveller $item) => $item->isShowing)
+                ->isNotEmpty()
+            ) {
+                return;
+            }
+        }
+
+        $this->paxInfo[0][0]['showTraveller']->isShowing = true;
     }
 
     /**
