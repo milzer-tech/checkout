@@ -3,10 +3,18 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Url;
 use Livewire\Component;
+use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 
 class PromoCodeSection extends Component
 {
+    /**
+     * The unique identifier for the checkout process.
+     */
+    #[Url]
+    public string $checkoutId;
+
     /**
      * The promo code entered by the user.
      */
@@ -43,5 +51,15 @@ class PromoCodeSection extends Component
     public function save(): void
     {
         $this->validate();
+
+        NezasaConnector::make()->checkout()->deletePromoCode($this->checkoutId);
+
+        $response = NezasaConnector::make()
+            ->checkout()
+            ->applyPromoCode($this->checkoutId, $this->promoCode);
+
+        $response->ok()
+            ? session()->flash('appliedPromoCode')
+            : session()->flash('failedPromoCode', $response->array('problems')[0]['detail']);
     }
 }
