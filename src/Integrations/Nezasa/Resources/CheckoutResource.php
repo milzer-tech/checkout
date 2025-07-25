@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Resources;
 
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\ApplyPromoCodeRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\SaveTravelerDetailsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
@@ -52,6 +53,19 @@ class CheckoutResource extends BaseResource
     {
         return $this->connector->send(
             new TravelerRequirementsRequest($checkoutId)
+        );
+    }
+
+    /**
+     * Apply a promo code to a checkout.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function applyPromoCode(string $checkout, string $code): Response
+    {
+        return $this->connector->send(
+            new ApplyPromoCodeRequest($checkout, $code)
         );
     }
 }
