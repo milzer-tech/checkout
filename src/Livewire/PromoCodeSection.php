@@ -2,59 +2,46 @@
 
 namespace Nezasa\Checkout\Livewire;
 
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class PromoCodeSection extends Component
 {
-    public $promoCode = '';
+    /**
+     * The promo code entered by the user.
+     */
+    public ?string $promoCode = null;
 
-    public $isValid = false;
+    /**
+     * The error message to display if the promo code is invalid.
+     */
+    public $isExpanded = true;
 
-    public $discount = 0;
+    /**
+     * Indicates whether the section have been completed.
+     */
+    public bool $isCompleted = false;
 
-    public $error = '';
-
-    public $enabled = false;
-
-    protected $rules = [
-        'promoCode' => 'required|min:3|max:20',
+    /**
+     * The validation rules for the promo code input.
+     */
+    protected array $rules = [
+        'promoCode' => 'required|min:1|max:256',
     ];
 
-    protected $listeners = ['enablePromoCodeSection' => 'enableSection'];
-
-    public function enableSection()
-    {
-        $this->enabled = true;
-    }
-
-    public function updatedPromoCode()
-    {
-        $this->validateOnly('promoCode');
-        $this->error = '';
-        $this->isValid = false;
-        $this->discount = 0;
-    }
-
-    public function applyPromoCode()
-    {
-        $this->validate();
-
-        // Here you would typically check the promo code against your database
-        // For now, we'll just simulate a valid code
-        if ($this->promoCode === 'WELCOME10') {
-            $this->isValid = true;
-            $this->discount = 10;
-            $this->error = '';
-            $this->dispatch('promoCodeApplied', ['discount' => $this->discount]);
-        } else {
-            $this->isValid = false;
-            $this->discount = 0;
-            $this->error = 'Invalid promo code';
-        }
-    }
-
-    public function render()
+    /**
+     * Render the component view.
+     */
+    public function render(): View
     {
         return view('checkout::trip-details-page.promo-code-section');
+    }
+
+    /**
+     * Apply the promo code.
+     */
+    public function save(): void
+    {
+        $this->validate();
     }
 }
