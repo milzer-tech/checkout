@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Resources;
 
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\ApplyPromoCodeRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\DeletePromoCodeRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\SaveTravelerDetailsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
@@ -66,6 +67,19 @@ class CheckoutResource extends BaseResource
     {
         return $this->connector->send(
             new ApplyPromoCodeRequest($checkout, $code)
+        );
+    }
+
+    /**
+     * Delete a promo code from a checkout.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function deletePromoCode(string $checkoutId): Response
+    {
+        return $this->connector->send(
+            new DeletePromoCodeRequest($checkoutId)
         );
     }
 }
