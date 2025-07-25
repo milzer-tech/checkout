@@ -59,7 +59,10 @@ class TravelerDetails extends Component
      */
     public CountriesResponse $countriesResponse;
 
-    public function mount()
+    /**
+     * Mount the component and initialize the traveler details.
+     */
+    public function mount(): void
     {
         $paxInfo = Checkout::query()
             ->firstOrCreate(['checkout_id' => $this->checkoutId])
@@ -68,73 +71,13 @@ class TravelerDetails extends Component
 
         $this->setUpPaxData($paxInfo);
         $this->setShowingTravellers();
+
+        $this->updateFormStatus();
     }
 
-    public function save()
-    {
-        $this->travelerExpanded = false;
-        $this->isCompleted = true;
-
-        $this->dispatch('enablePromoCodeSection');
-    }
-
-    public function render(): View
-    {
-        return view('checkout::trip-details-page.traveler-details');
-    }
-
-    public function showNextTraveller(string $item): void
-    {
-        [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
-
-        $this->validateTravellerData($room, $traveler);
-
-        $this->paxInfo[$room][$traveler]['showTraveller']->isFilled = true;
-        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
-
-        SaveTraverDetailsJob::dispatch(
-            $this->checkoutId, "paxInfo.$room.$traveler", $this->paxInfo[$room][$traveler]
-        );
-
-        $traveler = $traveler + 1;
-        $nextRoom = $room + 1;
-
-        if (isset($this->paxInfo[$room][$traveler])) {
-            $this->paxInfo[$room][$traveler]['showTraveller']->isFilled = false;
-            $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = true;
-
-            SaveTraverDetailsJob::dispatch(
-                $this->checkoutId, "paxInfo.$room.$traveler", $this->paxInfo[$room][$traveler]
-            );
-        } elseif (isset($this->paxInfo[$nextRoom])) {
-            $this->paxInfo[$nextRoom][0]['showTraveller']->isFilled = false;
-            $this->paxInfo[$nextRoom][0]['showTraveller']->isShowing = true;
-
-            SaveTraverDetailsJob::dispatch(
-                $this->checkoutId, "paxInfo.$nextRoom.0", $this->paxInfo[$nextRoom][0]
-            );
-        } else {
-            $this->travelerExpanded = false;
-            $this->dispatch('travellers-stored');
-        }
-    }
-
-    public function showPreviousTraveller(string $item): void
-    {
-        [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
-
-        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
-
-        if ($traveler > 0) {
-            $traveler = $traveler - 1;
-        } else {
-            $room = $room - 1;
-            $traveler = count($this->paxInfo[$room]) - 1;
-        }
-
-        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = true;
-    }
-
+    /**
+     * Expand the traveler details section when a contact is stored.
+     */
     #[On('contact-stored')]
     public function editTraveler(): void
     {
@@ -144,23 +87,30 @@ class TravelerDetails extends Component
     }
 
     /**
-     * Update the contact details when a field is changed.
+     * Render the view for the traveler details page.
      */
-    public function updated(string $name, mixed $value)
+    public function render(): View
     {
-        $key = str($name)->after('.')
-            ->after('.')
-            ->after('.')
-            ->prepend('paxInfo.*.*.')
-            ->toString();
-
-        $this->validate([
-            $name => $this->rules()[$key],
-        ]);
-
-        SaveTraverDetailsJob::dispatch($this->checkoutId, $name, $value);
+        return view('checkout::trip-details-page.traveler-details');
     }
 
+    /**
+     * Save the traveler details and mark the section as completed.
+     */
+    public function save(): void
+    {
+        $this->travelerExpanded = false;
+
+        $this->isCompleted = true;
+
+        $this->dispatch('enablePromoCodeSection');
+    }
+
+    /**
+     * Get the validation rules for the traveler details.
+     *
+     * @return array<string, string|Enum>
+     */
     protected function rules(): array
     {
         $rules = [
@@ -206,6 +156,100 @@ class TravelerDetails extends Component
     }
 
     /**
+     * Check if the form is completed by checking if all travelers have filled their details.
+     */
+    public function updateFormStatus(): void
+    {
+        $this->isCompleted = collect($this->paxInfo)
+            ->flatten(1)
+            ->pluck('showTraveller')
+            ->transform(fn ($item) => ShowTraveller::from($item))
+            ->reject(fn (ShowTraveller $item) => $item->isFilled)
+            ->isEmpty();
+    }
+
+    /**
+     * Show the next traveler in the list.
+     */
+    public function showNextTraveller(string $item): void
+    {
+        [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
+
+        $this->validateTravellerData($room, $traveler);
+
+        $this->paxInfo[$room][$traveler]['showTraveller']->isFilled = true;
+        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
+
+        SaveTraverDetailsJob::dispatch(
+            $this->checkoutId, "paxInfo.$room.$traveler", $this->paxInfo[$room][$traveler]
+        );
+
+        $nextTraveler = $traveler + 1;
+        $nextRoom = $room + 1;
+
+        if (isset($this->paxInfo[$room][$nextTraveler])) {
+            $this->paxInfo[$room][$nextTraveler]['showTraveller']->isFilled = false;
+            $this->paxInfo[$room][$nextTraveler]['showTraveller']->isShowing = true;
+
+            SaveTraverDetailsJob::dispatch(
+                $this->checkoutId, "paxInfo.$room.$nextTraveler", $this->paxInfo[$room][$nextTraveler]
+            );
+        } elseif (isset($this->paxInfo[$nextRoom])) {
+            $this->paxInfo[$nextRoom][0]['showTraveller']->isFilled = false;
+            $this->paxInfo[$nextRoom][0]['showTraveller']->isShowing = true;
+
+            SaveTraverDetailsJob::dispatch(
+                $this->checkoutId, "paxInfo.$nextRoom.0", $this->paxInfo[$nextRoom][0]
+            );
+        } else {
+            $this->paxInfo[$room][0]['showTraveller']->isShowing = true;
+
+            $this->travelerExpanded = false;
+            $this->updateFormStatus();
+            $this->dispatch('travellers-stored');
+        }
+    }
+
+    /**
+     * Show the previous traveler in the list.
+     */
+    public function showPreviousTraveller(string $item): void
+    {
+        [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
+
+        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
+
+        if ($traveler > 0) {
+            $traveler = $traveler - 1;
+        } else {
+            $room = $room - 1;
+            $traveler = count($this->paxInfo[$room]) - 1;
+        }
+
+        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = true;
+    }
+
+    /**
+     * Update the traveller's details when a field is changed.
+     */
+    public function updated(string $name, mixed $value)
+    {
+        $key = str($name)->after('.')
+            ->after('.')
+            ->after('.')
+            ->prepend('paxInfo.*.*.')
+            ->toString();
+
+        $this->validate([
+            $name => $this->rules()[$key],
+        ]);
+
+        SaveTraverDetailsJob::dispatch($this->checkoutId, $name, $value);
+    }
+
+    /**
+     * Extracts the room and traveller number from the given item string.
+     *
      * @return array{0: int, 1: int}
      */
     protected function getRoomAndTravellerNumber(string $item): array
@@ -213,6 +257,9 @@ class TravelerDetails extends Component
         return str($item)->explode('-')->transform(fn ($item) => intval($item))->toArray();
     }
 
+    /**
+     * Validates the traveller data for a specific room and traveller number.
+     */
     protected function validateTravellerData(int $room, int $travelerNumber): void
     {
         $this->validate(
@@ -222,6 +269,9 @@ class TravelerDetails extends Component
         );
     }
 
+    /**
+     * Sets up the initial data for the travelers based on the provided pax information.
+     */
     protected function setUpPaxData(array $paxInfo): void
     {
         $paxNumber = 0;
@@ -258,6 +308,9 @@ class TravelerDetails extends Component
         }
     }
 
+    /**
+     * Sets the first traveller to be shown if no travellers are currently showing.
+     */
     protected function setShowingTravellers(): void
     {
         foreach ($this->paxInfo as $roomNumber => $room) {
