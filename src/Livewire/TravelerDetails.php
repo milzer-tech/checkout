@@ -42,7 +42,7 @@ class TravelerDetails extends Component
     /**
      * Indicates whether the traveler details section is expanded or not..
      */
-    public bool $travelerExpanded = true;
+    public bool $travelerExpanded = false;
 
     /**
      * Indicates whether the traveler details have been completed.
@@ -114,6 +114,7 @@ class TravelerDetails extends Component
                 $this->checkoutId, "paxInfo.$nextRoom.0", $this->paxInfo[$nextRoom][0]
             );
         } else {
+            $this->travelerExpanded = false;
             $this->dispatch('travellers-stored');
         }
     }
