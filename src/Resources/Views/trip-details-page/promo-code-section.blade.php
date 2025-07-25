@@ -25,7 +25,8 @@
                     <span class="inline-flex items-center gap-2">
                         <span>Apply</span>
 
-                        <svg wire:loading wire:target="save" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg wire:loading wire:target="save" class="animate-spin h-4 w-4 text-white"
+                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
                         </svg>
@@ -35,15 +36,15 @@
             </div>
         </form>
 
-                @session('appliedPromoCode')
+        @session('appliedPromoCode')
         <div class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
             <div class="flex items-center gap-2 text-green-700 dark:text-green-400">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
-                <span>Promo code {{$promoCode}} applied! You get 1111% off</span>
+                <span>Promo code {{$promoCode}} applied! You saved {{\Illuminate\Support\Number::percentage($value)}} on your booking.</span>
             </div>
         </div>
-                @endsession
+        @endsession
     </div>
 </x-checkout::editable-box>

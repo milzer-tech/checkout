@@ -54,12 +54,16 @@ class PromoCodeSection extends Component
 
         NezasaConnector::make()->checkout()->deletePromoCode($this->checkoutId);
 
-        $response = NezasaConnector::make()
-            ->checkout()
-            ->applyPromoCode($this->checkoutId, $this->promoCode);
+        $response = NezasaConnector::make()->checkout()->applyPromoCode($this->checkoutId, $this->promoCode);
 
-        $response->ok()
-            ? session()->flash('appliedPromoCode')
-            : session()->flash('failedPromoCode', $response->array('problems')[0]['detail']);
+        if (! $response->ok()) {
+            session()->flash('failedPromoCode', $response->array('problems')[0]['detail']);
+
+            return;
+        }
+
+        session()->flash('appliedPromoCode', $response->dto()->decreasePercent());
+
+        $this->dispatch('promoCode-applied', ApplyPromoCodeResponse: $response->dto());
     }
 }
