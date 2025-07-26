@@ -307,7 +307,7 @@
     <hr class="border-gray-200 dark:border-gray-600 my-4"/>
 
 
-    @if($itinerary->promoCodeResponse)
+    @if($itinerary->promoCodeResponse->promoCode)
     {{-- Discount row --}}
     <div class="flex justify-between items-center text-sm text-gray-700 dark:text-gray-300 mb-2">
         <div class="flex items-center gap-1">
