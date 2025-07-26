@@ -64,6 +64,6 @@ class PromoCodeSection extends Component
 
         session()->flash('appliedPromoCode', $response->dto()->decreasePercent());
 
-        $this->dispatch('promoCode-applied', ApplyPromoCodeResponse: $response->dto());
+        $this->dispatch('promoCode-applied', applyPromoCodeResponse: $response->dto());
     }
 }

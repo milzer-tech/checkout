@@ -42,7 +42,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
-                <span>Promo code {{$promoCode}} applied! You saved {{\Illuminate\Support\Number::percentage($value)}} on your booking.</span>
+                <span>The Promo code applied! You saved {{\Illuminate\Support\Number::percentage($value)}} on your booking.</span>
             </div>
         </div>
         @endsession

@@ -3,9 +3,11 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 
 class TripSummary extends Component
 {
@@ -31,5 +33,20 @@ class TripSummary extends Component
     public function render(): View
     {
         return view('checkout::trip-details-page.trip-summary')->with('itinerary', $this->itinerary);
+    }
+
+    /**
+     * Handle the promo code applied event.
+     *
+     * @param  array<string, array<string, float>>  $applyPromoCodeResponse
+     */
+    #[On('promoCode-applied')]
+    public function promoCodeApplied(array $applyPromoCodeResponse): void
+    {
+        $promoCodeResponse = ApplyPromoCodeResponse::from($applyPromoCodeResponse);
+
+        $this->itinerary->price = $promoCodeResponse->discountedPackagePrice;
+
+        $this->itinerary->promoCodeResponse = $promoCodeResponse;
     }
 }
