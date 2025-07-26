@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PriceInfoEntity;
 
 class RetrieveCheckoutResponse extends BaseDto
 {
@@ -17,7 +16,6 @@ class RetrieveCheckoutResponse extends BaseDto
      * @note There are other properties in the response, but we are only interested in the modules for now.
      */
     public function __construct(
-        public PriceInfoEntity $prices,
-
+        public ApplyPromoCodeResponse $prices,
     ) {}
 }

@@ -14,5 +14,6 @@ class PriceInfoEntity extends BaseDto
      */
     public function __construct(
         public Price $packagePrice,
+        public ?Price $discountedPackagePrice = null,
     ) {}
 }
