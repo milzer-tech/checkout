@@ -38,12 +38,12 @@ class TripSummary extends Component
     /**
      * Handle the promo code applied event.
      *
-     * @param  array<string, array<string, float>>  $applyPromoCodeResponse
+     * @param  array<string, array<string, float>>  $prices
      */
-    #[On('promoCode-applied')]
-    public function promoCodeApplied(array $applyPromoCodeResponse): void
+    #[On('price-changed')]
+    public function priceChanged(array $prices): void
     {
-        $promoCodeResponse = ApplyPromoCodeResponse::from($applyPromoCodeResponse);
+        $promoCodeResponse = ApplyPromoCodeResponse::from($prices);
 
         $this->itinerary->price = $promoCodeResponse->discountedPackagePrice;
 

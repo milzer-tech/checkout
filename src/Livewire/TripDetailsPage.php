@@ -53,6 +53,9 @@ class TripDetailsPage extends Component
 
         $initializeCheckoutData->run(checkoutId: $this->checkoutId, allocatedPax: $result['itinerary']->allocatedPax);
 
+        // dd(
+        //    $result['checkout']->prices
+        // );
         return view('checkout::trip-details-page.index', [
             'itinerary' => $summerizeItinerary->run($result['itinerary'], $result['checkout']),
             'contactRequirements' => $result['travelerRequirements']->contact,
@@ -60,6 +63,7 @@ class TripDetailsPage extends Component
             'allocatedPax' => $result['itinerary']->allocatedPax,
             'passengerRequirements' => $result['travelerRequirements']->passenger,
             'countriesResponse' => $result['countries'],
+            'prices' => $result['checkout']->prices,
         ]);
     }
 }

@@ -6,7 +6,7 @@
                 <livewire:banner />
                 <livewire:contact-details :$contactRequirements :$countryCodes :$countriesResponse/>
                 <livewire:traveler-details :$allocatedPax :$passengerRequirements :$countryCodes :$countriesResponse/>
-                <livewire:promo-code-section />
+                <livewire:promo-code-section :$prices />
                 <livewire:travel-insurance-section />
                 <livewire:additional-services-section />
                 <livewire:payment-options-section />

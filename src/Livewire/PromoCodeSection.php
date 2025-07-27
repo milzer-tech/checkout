@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 
 class PromoCodeSection extends Component
 {
@@ -38,6 +39,19 @@ class PromoCodeSection extends Component
     ];
 
     /**
+     * The prices data transfer object containing promo code information.
+     */
+    public ApplyPromoCodeResponse $prices;
+
+    /**
+     * Initialize the component with the promo code from the prices DTO.
+     */
+    public function mount(): void
+    {
+        $this->promoCode = $this->prices->promoCode?->code;
+    }
+
+    /**
      * Render the component view.
      */
     public function render(): View
@@ -57,13 +71,14 @@ class PromoCodeSection extends Component
         $response = NezasaConnector::make()->checkout()->applyPromoCode($this->checkoutId, $this->promoCode);
 
         if (! $response->ok()) {
-            session()->flash('failedPromoCode', $response->array('problems')[0]['detail']);
+            $this->prices->promoCode = null;
+            $this->prices->discountedPackagePrice = $this->prices->packagePrice;
 
-            return;
+            session()->flash('failedPromoCode', $response->array('problems')[0]['detail']);
+        } else {
+            $this->prices = $response->dto();
         }
 
-        session()->flash('appliedPromoCode', $response->dto()->decreasePercent());
-
-        $this->dispatch('promoCode-applied', applyPromoCodeResponse: $response->dto());
+        $this->dispatch('price-changed', prices: $this->prices);
     }
 }
