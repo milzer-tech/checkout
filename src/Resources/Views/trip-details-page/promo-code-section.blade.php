@@ -1,12 +1,13 @@
 @php
-    $state = $isExpanded ? 'editing' : 'disabled';
+    $state = $isExpanded ? 'editing' : 'valid';
 @endphp
 
 <x-checkout::editable-box
     title="Add Promo code"
     :state="$state"
-    :showEdit="false"
-    :showCheck="false"
+    :showEdit="true"
+    :showCheck="$isCompleted"
+    onEdit="expand"
 >
     <div class="space-y-4">
         <form wire:submit="save" class="mb-6">
@@ -49,13 +50,15 @@
         <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
 
         <div class="flex justify-between items-center">
-            {{--            <a href="#" wire:click.prevent="skipPromoCode" class="text-blue-600 hover:underline font-medium">--}}
-            {{--                I don’t have a promo code--}}
-            {{--            </a>--}}
-            <div></div>
-
+            @if(! $isCompleted)
+                        <a href="#" wire:click.prevent="noPromoCode" class="text-blue-600 hover:underline font-medium">
+                            I don’t have a promo code
+                        </a>
+            @else
+                <div></div>
+            @endif
             <button type="button"
-                    wire:click="proceedWithoutPromo"
+                    wire:click="next"
                     class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
                 Next
             </button>
