@@ -12,14 +12,15 @@
                     :is-completed="$model->data['status']['contact']['isCompleted']"
                     :is-expanded="$model->data['status']['contact']['isExpanded']"
                 />
-{{--                <livewire:traveler-details--}}
-{{--                    :$allocatedPax--}}
-{{--                    :$passengerRequirements--}}
-{{--                    :$countryCodes--}}
-{{--                    :$countriesResponse--}}
-{{--                    :is-completed="$model->data['status']['contact']['isCompleted']"--}}
-{{--                    :is-expanded="$model->data['status']['contact']['isExpanded']"--}}
-{{--                />--}}
+                <livewire:traveler-details
+                    :$allocatedPax
+                    :$passengerRequirements
+                    :$countryCodes
+                    :$countriesResponse
+                    :$model
+                    :is-completed="$model->data['status']['traveller']['isCompleted']"
+                    :is-expanded="$model->data['status']['traveller']['isExpanded']"
+                />
 {{--                <livewire:promo-code-section--}}
 {{--                    :$prices--}}
 {{--                    :is-completed="$model->data['status']['promo']['isCompleted']"--}}

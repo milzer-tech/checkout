@@ -5,25 +5,18 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Dtos\View\ShowTraveller;
+use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
-use Nezasa\Checkout\Models\Checkout;
 
-class TravelerDetails extends Component
+class TravelerDetails extends BaseCheckoutComponent
 {
-    /**
-     * The unique identifier for the checkout process.
-     */
-    #[Url]
-    public string $checkoutId;
-
     /**
      * The PaxAllocationResponseEntity that holds the allocation of travelers.
      */
@@ -40,16 +33,6 @@ class TravelerDetails extends Component
     public array $paxInfo = [];
 
     /**
-     * Indicates whether the traveler details section is expanded or not..
-     */
-    public bool $travelerExpanded = false;
-
-    /**
-     * Indicates whether the traveler details have been completed.
-     */
-    public bool $isCompleted = false;
-
-    /**
      * The country calling codes for the contact details.
      */
     public CountryCodesResponse $countryCodes;
@@ -64,26 +47,12 @@ class TravelerDetails extends Component
      */
     public function mount(): void
     {
-        $paxInfo = Checkout::query()
-            ->firstOrCreate(['checkout_id' => $this->checkoutId])
-            ->data
-            ?->get('paxInfo') ?? [];
+        $paxInfo = $this->model->data->get('paxInfo');
 
         $this->setUpPaxData($paxInfo);
         $this->setShowingTravellers();
 
         $this->updateFormStatus();
-    }
-
-    /**
-     * Expand the traveler details section when a contact is stored.
-     */
-    #[On('contact-stored')]
-    public function editTraveler(): void
-    {
-        $this->travelerExpanded = true;
-
-        $this->render();
     }
 
     /**
@@ -99,9 +68,9 @@ class TravelerDetails extends Component
      */
     public function save(): void
     {
-        $this->travelerExpanded = false;
+        $this->collapse(Section::Traveller);
 
-        $this->isCompleted = true;
+        $this->markAsCompleted(Section::Traveller);
 
         $this->dispatch('enablePromoCodeSection');
     }
@@ -204,8 +173,9 @@ class TravelerDetails extends Component
         } else {
             $this->paxInfo[$room][0]['showTraveller']->isShowing = true;
 
-            $this->travelerExpanded = false;
             $this->updateFormStatus();
+            $this->collapse(Section::Traveller);
+            $this->markAsCompleted(Section::Traveller);
             $this->dispatch('travellers-stored');
         }
     }

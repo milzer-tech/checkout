@@ -1,12 +1,13 @@
-@php use Nezasa\Checkout\Dtos\View\ShowTraveller; @endphp
-@php($state = $travelerExpanded ? 'editing' : 'valid')
+@use(Nezasa\Checkout\Enums\Section)
+@use(Nezasa\Checkout\Dtos\View\ShowTraveller)
+@php($state = $isExpanded ? 'editing' : 'valid')
 
 <x-checkout::editable-box
     title="Traveller details"
     :state="$state"
     :showEdit="$state === 'valid'"
     :showCheck="$isCompleted"
-    onEdit="editTraveler"
+    onEdit="expand('{{Section::Traveller->value}}')"
 >
     <form wire:submit="save">
 

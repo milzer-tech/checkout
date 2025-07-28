@@ -4,28 +4,59 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Actions\Checkout;
 
+use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
 use Nezasa\Checkout\Models\Checkout;
 
 class InitializeCheckoutDataAction
 {
-    public function run(
-        string $checkoutId,
-        PaxAllocationResponseEntity $allocatedPax
-    ): void {
-        $model = Checkout::query()->firstOrCreate(['checkout_id' => $checkoutId]);
+    public function run(string $checkoutId, PaxAllocationResponseEntity $allocatedPax): Checkout
+    {
+        if (Checkout::whereCheckoutId($checkoutId)->exists()) {
+            $model = Checkout::whereCheckoutId($checkoutId)->first();
 
-        $numberOfPax = $allocatedPax->rooms->sum(
-            fn (RoomAllocationResponseEntity $room) => $room->adults + $room->childAges->count()
-        );
+        } else {
+            $model = Checkout::create(['checkout_id' => $checkoutId]);
 
-        if (! $model->data) {
-            $model->data = [];
+            $this->firstConfiguration($allocatedPax, $model);
         }
 
-        $model->data['numberOfPax'] = $numberOfPax;
+        return $model;
+    }
 
-        $model->save();
+    private function firstConfiguration(PaxAllocationResponseEntity $allocatedPax, Checkout $checkout): void
+    {
+        $checkout->data = [
+            'paxInfo' => [],
+            'contact' => [],
+            'numberOfPax' => $this->countPaxes($allocatedPax),
+            'status' => [
+                Section::Contact->value => [
+                    'isExpanded' => true,
+                    'isCompleted' => false,
+                ],
+                Section::Traveller->value => [
+                    'isExpanded' => false,
+                    'isCompleted' => false,
+                ],
+                Section::Promo->value => [
+                    'isExpanded' => false,
+                    'isCompleted' => false,
+                ],
+            ],
+        ];
+
+        $checkout->save();
+    }
+
+    /**
+     *  Count the total number of passengers allocated in the response.
+     */
+    private function countPaxes(PaxAllocationResponseEntity $allocatedPax): int
+    {
+        return $allocatedPax->rooms->sum(
+            fn (RoomAllocationResponseEntity $room) => $room->adults + $room->childAges->count()
+        );
     }
 }
