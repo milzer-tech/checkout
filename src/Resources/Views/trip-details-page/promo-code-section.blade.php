@@ -49,7 +49,7 @@
         <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
 
         <div class="flex justify-between items-center">
-            @if(! $isCompleted)
+            @if(! $prices->promoCode?->code)
                         <a href="#" wire:click.prevent="noPromoCode" class="text-blue-600 hover:underline font-medium">
                             I don’t have a promo code
                         </a>
