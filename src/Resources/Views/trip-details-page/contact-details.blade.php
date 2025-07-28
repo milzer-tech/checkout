@@ -1,7 +1,6 @@
+@use(Nezasa\Checkout\Enums\Section)
 @php
-    use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
-
-    $state = $contactExpanded ? 'editing' : 'valid';
+    $state = $isExpanded ? 'editing' : 'valid';
 @endphp
 
 <x-checkout::editable-box
@@ -9,7 +8,7 @@
         :state="$state"
         :showEdit="$state === 'valid'"
         :showCheck="$isCompleted"
-        onEdit="editContact"
+        onEdit="expand('{{Section::Contact->value}}')"
 >
     <form wire:submit="save" class="space-y-6">
 
