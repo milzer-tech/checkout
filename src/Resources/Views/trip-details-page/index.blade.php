@@ -8,6 +8,7 @@
                     :$contactRequirements
                     :$countryCodes
                     :$countriesResponse
+                    :$model
                     :is-completed="$model->data['status']['contact']['isCompleted']"
                     :is-expanded="$model->data['status']['contact']['isExpanded']"
                 />

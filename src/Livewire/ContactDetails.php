@@ -40,7 +40,7 @@ class ContactDetails extends BaseCheckoutComponent
      */
     public function mount(): void
     {
-        $this->contact = Checkout::firstWhere(['checkout_id' => $this->checkoutId])->data->get('contact');
+        $this->contact = $this->model->data->get('contact');
     }
 
     /**

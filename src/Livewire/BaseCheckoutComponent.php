@@ -8,6 +8,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Jobs\SaveSectionStatusJob;
+use Nezasa\Checkout\Models\Checkout;
 
 class BaseCheckoutComponent extends Component
 {
@@ -16,6 +17,11 @@ class BaseCheckoutComponent extends Component
      */
     #[Url]
     public string $checkoutId;
+
+    /**
+     * The unique identifier for the checkout process.
+     */
+    public Checkout $model;
 
     /**
      * Indicates whether the section is expanded or collapsed.
