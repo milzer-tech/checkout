@@ -7,7 +7,7 @@
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
-    onEdit="expand"
+    onEdit="expand('')"
 >
     <div class="space-y-4">
         <form wire:submit="save" class="mb-6">

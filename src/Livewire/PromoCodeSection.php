@@ -3,19 +3,13 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Url;
-use Livewire\Component;
+use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
+use Nezasa\Checkout\Jobs\SaveSectionStatusJob;
 
-class PromoCodeSection extends Component
+class PromoCodeSection extends BaseCheckoutComponent
 {
-    /**
-     * The unique identifier for the checkout process.
-     */
-    #[Url]
-    public string $checkoutId;
-
     /**
      * The promo code entered by the user.
      */
@@ -25,16 +19,6 @@ class PromoCodeSection extends Component
      * Indicates whether the user does not have a promo code.
      */
     public ?bool $notHavePromoCode = null;
-
-    /**
-     * The error message to display if the promo code is invalid.
-     */
-    public $isExpanded = true;
-
-    /**
-     * Indicates whether the section have been completed.
-     */
-    public bool $isCompleted = false;
 
     /**
      * The validation rules for the promo code input.
@@ -54,10 +38,6 @@ class PromoCodeSection extends Component
     public function mount(): void
     {
         $this->promoCode = $this->prices->promoCode?->code;
-
-        if ($this->hasCompleted()) {
-            $this->collapse();
-        }
     }
 
     /**
@@ -83,27 +63,11 @@ class PromoCodeSection extends Component
             session()->flash('failedPromoCode', $response->array('problems')[0]['detail']);
         } else {
             $this->prices = $response->dto();
+            $this->markAsCompleted(Section::Promo);
         }
 
-        $this->hasCompleted();
-
+        SaveSectionStatusJob::dispatch($this->checkoutId, 'promo', $this->isCompleted, $this->isExpanded);
         $this->dispatchPriceChangedEvent();
-    }
-
-    /**
-     * Edit the promo code section, allowing the user to enter a new promo code.
-     */
-    public function expand(): void
-    {
-        $this->isExpanded = true;
-    }
-
-    /**
-     * Collapse the promo code section, hiding it from view.
-     */
-    public function collapse(): void
-    {
-        $this->isExpanded = false;
     }
 
     /**
@@ -111,8 +75,9 @@ class PromoCodeSection extends Component
      */
     public function next(): void
     {
-        $this->collapse();
+        $this->collapse(Section::Promo);
 
+        SaveSectionStatusJob::dispatch($this->checkoutId, 'promo', $this->isCompleted, $this->isExpanded);
         $this->dispatch('promoCode-done');
     }
 
@@ -127,16 +92,6 @@ class PromoCodeSection extends Component
     }
 
     /**
-     * Check if the promo code section is completed based on the presence of a promo code.
-     */
-    protected function hasCompleted(): bool
-    {
-        $this->isCompleted = $this->prices->promoCode?->code ?? false;
-
-        return $this->isCompleted;
-    }
-
-    /**
      * Delete the promo code from the checkout process.
      */
     protected function deleteCurrentPromoCode(): void
@@ -145,14 +100,10 @@ class PromoCodeSection extends Component
 
         $this->prices->promoCode = null;
         $this->prices->discountedPackagePrice = $this->prices->packagePrice;
-    }
 
-    /**
-     * Check if the promo code section is expanded.
-     */
-    protected function markAsCompleted(): void
-    {
-        $this->isCompleted = true;
+        $this->markAsNotCompleted(Section::Promo);
+
+        SaveSectionStatusJob::dispatch($this->checkoutId, 'promo', $this->isCompleted, $this->isExpanded);
     }
 
     /**
