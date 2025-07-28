@@ -1,13 +1,12 @@
-@php
-    $state = $isExpanded ? 'editing' : 'valid';
-@endphp
+@use(Nezasa\Checkout\Enums\Section)
+@php($state = $isExpanded ? 'editing' : 'valid')
 
 <x-checkout::editable-box
     title="Add Promo code"
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
-    onEdit="expand('')"
+    onEdit="expand('{{Section::Promo->value}}')"
 >
     <div class="space-y-4">
         <form wire:submit="save" class="mb-6">

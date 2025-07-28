@@ -6,7 +6,6 @@ use Illuminate\Contracts\View\View;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
-use Nezasa\Checkout\Jobs\SaveSectionStatusJob;
 
 class PromoCodeSection extends BaseCheckoutComponent
 {
@@ -38,6 +37,10 @@ class PromoCodeSection extends BaseCheckoutComponent
     public function mount(): void
     {
         $this->promoCode = $this->prices->promoCode?->code;
+
+        if ($this->promoCode) {
+            $this->markAsCompleted(Section::Promo);
+        }
     }
 
     /**
@@ -66,7 +69,6 @@ class PromoCodeSection extends BaseCheckoutComponent
             $this->markAsCompleted(Section::Promo);
         }
 
-        SaveSectionStatusJob::dispatch($this->checkoutId, 'promo', $this->isCompleted, $this->isExpanded);
         $this->dispatchPriceChangedEvent();
     }
 
@@ -77,7 +79,6 @@ class PromoCodeSection extends BaseCheckoutComponent
     {
         $this->collapse(Section::Promo);
 
-        SaveSectionStatusJob::dispatch($this->checkoutId, 'promo', $this->isCompleted, $this->isExpanded);
         $this->dispatch('promoCode-done');
     }
 
@@ -87,6 +88,8 @@ class PromoCodeSection extends BaseCheckoutComponent
     public function noPromoCode(): void
     {
         $this->notHavePromoCode = true;
+
+        $this->markAsCompleted(Section::Promo);
 
         $this->next();
     }
@@ -102,8 +105,6 @@ class PromoCodeSection extends BaseCheckoutComponent
         $this->prices->discountedPackagePrice = $this->prices->packagePrice;
 
         $this->markAsNotCompleted(Section::Promo);
-
-        SaveSectionStatusJob::dispatch($this->checkoutId, 'promo', $this->isCompleted, $this->isExpanded);
     }
 
     /**
