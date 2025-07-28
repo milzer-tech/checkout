@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
@@ -52,6 +53,17 @@ class PromoCodeSection extends BaseCheckoutComponent
     }
 
     /**
+     * Listen for the 'traveller-processed' event to determine if the promo code section should be expanded or completed.
+     */
+    #[On('traveller-processed')]
+    public function listen(): void
+    {
+        $this->isCompleted
+            ? $this->dispatch('promo-processed')
+            : $this->expand(Section::Promo);
+    }
+
+    /**
      * Apply the promo code.
      */
     public function save(): void
@@ -79,7 +91,7 @@ class PromoCodeSection extends BaseCheckoutComponent
     {
         $this->collapse(Section::Promo);
 
-        $this->dispatch('promoCode-done');
+        $this->dispatch('promo-processed');
     }
 
     /**

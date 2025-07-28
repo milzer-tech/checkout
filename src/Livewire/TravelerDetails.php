@@ -5,7 +5,6 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\On;
-use Livewire\Component;
 use Nezasa\Checkout\Dtos\View\ShowTraveller;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
@@ -64,6 +63,17 @@ class TravelerDetails extends BaseCheckoutComponent
     }
 
     /**
+     * Listen for the 'contact-stored' event to determine if the traveler section should be expanded or completed.
+     */
+    #[On('contact-processed')]
+    public function listen(): void
+    {
+        $this->isCompleted
+            ? $this->dispatch('traveller-processed')
+            : $this->expand(Section::Traveller);
+    }
+
+    /**
      * Save the traveler details and mark the section as completed.
      */
     public function save(): void
@@ -72,7 +82,7 @@ class TravelerDetails extends BaseCheckoutComponent
 
         $this->markAsCompleted(Section::Traveller);
 
-        $this->dispatch('enablePromoCodeSection');
+        $this->dispatch('traveller-processed');
     }
 
     /**
@@ -176,7 +186,7 @@ class TravelerDetails extends BaseCheckoutComponent
             $this->updateFormStatus();
             $this->collapse(Section::Traveller);
             $this->markAsCompleted(Section::Traveller);
-            $this->dispatch('travellers-stored');
+            $this->dispatch('traveller-processed');
         }
     }
 

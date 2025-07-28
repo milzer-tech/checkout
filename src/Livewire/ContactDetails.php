@@ -78,7 +78,7 @@ class ContactDetails extends BaseCheckoutComponent
         $this->markAsCompleted(Section::Contact);
         $this->collapse(Section::Contact);
 
-        $this->dispatch('contact-stored');
+        $this->dispatch('contact-processed');
     }
 
     /**
