@@ -39,6 +39,6 @@ class SaveSectionStatusJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return $this->checkoutId.'-'.$this->section;
+        return $this->checkoutId.'-'.$this->section->name;
     }
 }
