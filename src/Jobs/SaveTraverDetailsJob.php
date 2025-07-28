@@ -54,7 +54,7 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
     {
         $model = Checkout::query()->firstOrCreate(['checkout_id' => $this->checkoutId]);
 
-        $model->updateData($this->name, $this->value);
+        $model->updateData([$this->name => $this->value]);
 
         return $model->refresh();
     }

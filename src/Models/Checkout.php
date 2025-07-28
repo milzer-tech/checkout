@@ -34,11 +34,13 @@ class Checkout extends Model
     /**
      * Update a specific key in the data collection;
      */
-    public function updateData(string $kay, $value): bool
+    public function updateData(array $data): bool
     {
         $array = $this->data?->toArray() ?? [];
 
-        $array = data_set($array, $kay, $value);
+        foreach ($data as $key => $value) {
+            $array = data_set($array, $key, $value);
+        }
 
         $this->data = $array;
 

@@ -101,7 +101,7 @@ class ContactDetails extends Component
 
         Checkout::query()
             ->firstOrCreate(['checkout_id' => $this->checkoutId])
-            ->updateData('contact', $validatedData['contact']);
+            ->updateData(['contact' => $validatedData['contact']]);
 
         $this->contactExpanded = false;
         $this->isCompleted = true;
