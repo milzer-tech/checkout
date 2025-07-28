@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Jobs;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Models\Checkout;
 
 class SaveSectionStatusJob implements ShouldBeUnique, ShouldQueue
@@ -15,7 +16,7 @@ class SaveSectionStatusJob implements ShouldBeUnique, ShouldQueue
 
     public function __construct(
         public string $checkoutId,
-        public string $section,
+        public Section $section,
         public bool $isCompleted,
         public bool $isExpanded,
     ) {}
@@ -28,8 +29,8 @@ class SaveSectionStatusJob implements ShouldBeUnique, ShouldQueue
         $model = Checkout::whereCheckoutId($this->checkoutId)->first();
 
         $model->updateData([
-            "status.$this->section.isCompleted" => $this->isCompleted,
-            "status.$this->section.isExpanded" => $this->isExpanded,
+            'status.'.$this->section->value.'.isCompleted' => $this->isCompleted,
+            'status.'.$this->section->value.'.isExpanded' => $this->isExpanded,
         ]);
     }
 
