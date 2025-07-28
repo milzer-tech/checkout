@@ -4,13 +4,26 @@
         <div class="space-y-6">
             <section class="space-y-6">
                 <livewire:banner />
-                <livewire:contact-details :$contactRequirements :$countryCodes :$countriesResponse/>
-                <livewire:traveler-details :$allocatedPax :$passengerRequirements :$countryCodes :$countriesResponse/>
-                <livewire:promo-code-section
-                    :$prices
-                    :is-completed="$model->data['status']['promo']['isCompleted']"
-                    :is-expanded="$model->data['status']['promo']['isExpanded']"
+                <livewire:contact-details
+                    :$contactRequirements
+                    :$countryCodes
+                    :$countriesResponse
+                    :is-completed="$model->data['status']['contact']['isCompleted']"
+                    :is-expanded="$model->data['status']['contact']['isExpanded']"
                 />
+{{--                <livewire:traveler-details--}}
+{{--                    :$allocatedPax--}}
+{{--                    :$passengerRequirements--}}
+{{--                    :$countryCodes--}}
+{{--                    :$countriesResponse--}}
+{{--                    :is-completed="$model->data['status']['contact']['isCompleted']"--}}
+{{--                    :is-expanded="$model->data['status']['contact']['isExpanded']"--}}
+{{--                />--}}
+{{--                <livewire:promo-code-section--}}
+{{--                    :$prices--}}
+{{--                    :is-completed="$model->data['status']['promo']['isCompleted']"--}}
+{{--                    :is-expanded="$model->data['status']['promo']['isExpanded']"--}}
+{{--                />--}}
                 <livewire:travel-insurance-section />
                 <livewire:additional-services-section />
                 <livewire:payment-options-section />

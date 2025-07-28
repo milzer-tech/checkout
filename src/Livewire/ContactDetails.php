@@ -4,69 +4,26 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rules\Enum;
-use Livewire\Attributes\Url;
 use Livewire\Component;
+use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ContactRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 use Nezasa\Checkout\Models\Checkout;
-use Throwable;
 
-class ContactDetails extends Component
+class ContactDetails extends BaseCheckoutComponent
 {
-    /**
-     * The unique identifier for the checkout process.
-     */
-    #[Url]
-    public string $checkoutId;
-
     /**
      * The data for the contact details.
      */
     public array $contact;
 
     /**
-     * Indicates whether the contact details form is expanded or not.
-     */
-    public bool $contactExpanded = true;
-
-    /**
      * Contact requirements for the checkout.
      */
     public ContactRequirementEntity $contactRequirements;
-
-    /**
-     * Indicates whether the traveler details have been completed.
-     */
-    public bool $isCompleted = false;
-
-    /**
-     * Initialize the component with the contact details.
-     */
-    public function mount(): void
-    {
-        $this->contact = Checkout::query()
-            ->firstOrCreate(['checkout_id' => $this->checkoutId])
-            ->data
-            ?->get('contact', []) ?? [];
-
-        try {
-            $this->validate();
-            $this->contactExpanded = false;
-            $this->isCompleted = true;
-        } catch (Throwable $e) {
-        }
-    }
-
-    /**
-     * Render the component view.
-     */
-    public function render(): View
-    {
-        return view('checkout::trip-details-page.contact-details');
-    }
 
     /**
      * The country calling codes for the contact details.
@@ -77,6 +34,22 @@ class ContactDetails extends Component
      * The countries response that holds the list of countries.
      */
     public CountriesResponse $countriesResponse;
+
+    /**
+     * Initialize the component with the contact details.
+     */
+    public function mount(): void
+    {
+        $this->contact = Checkout::firstWhere(['checkout_id' => $this->checkoutId])->data->get('contact');
+    }
+
+    /**
+     * Render the component view.
+     */
+    public function render(): View
+    {
+        return view('checkout::trip-details-page.contact-details');
+    }
 
     /**
      * Update the contact details when a field is changed.
@@ -99,22 +72,13 @@ class ContactDetails extends Component
     {
         $validatedData = $this->validate();
 
-        Checkout::query()
-            ->firstOrCreate(['checkout_id' => $this->checkoutId])
+        Checkout::firstWhere(['checkout_id' => $this->checkoutId])
             ->updateData(['contact' => $validatedData['contact']]);
 
-        $this->contactExpanded = false;
-        $this->isCompleted = true;
+        $this->markAsCompleted(Section::Contact);
+        $this->collapse(Section::Contact);
 
         $this->dispatch('contact-stored');
-    }
-
-    /**
-     * Cancel the contact details edit and collapse the form.
-     */
-    public function editContact(): void
-    {
-        $this->contactExpanded = true;
     }
 
     /**
