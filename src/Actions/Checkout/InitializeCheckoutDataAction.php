@@ -44,6 +44,10 @@ class InitializeCheckoutDataAction
                     'isExpanded' => false,
                     'isCompleted' => false,
                 ],
+                Section::AdditionalService->value => [
+                    'isExpanded' => false,
+                    'isCompleted' => false,
+                ],
             ],
         ];
 

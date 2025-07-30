@@ -12,6 +12,7 @@ use AzimKordpour\PowerEnum\Traits\PowerEnum;
  * @method bool isPromo()
  * @method bool isContact()
  * @method bool isTraveller()
+ * @method bool isAdditionalService()
  */
 enum Section: string
 {
@@ -20,4 +21,5 @@ enum Section: string
     case Promo = 'promo';
     case Contact = 'contact';
     case Traveller = 'traveller';
+    case AdditionalService = 'additional_service';
 }
