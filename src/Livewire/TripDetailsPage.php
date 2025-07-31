@@ -62,6 +62,7 @@ class TripDetailsPage extends Component
             'countriesResponse' => $result['countries'],
             'prices' => $result['checkout']->prices,
             'model' => $model,
+            'upsellItems' => $result['upsellItems'],
         ]);
     }
 }
