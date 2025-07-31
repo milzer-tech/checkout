@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Resources;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\ApplyPromoCodeRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\DeletePromoCodeRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\SaveTravelerDetailsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
@@ -80,6 +81,19 @@ class CheckoutResource extends BaseResource
     {
         return $this->connector->send(
             new DeletePromoCodeRequest($checkoutId)
+        );
+    }
+
+    /**
+     * Retrieve available upsell items for a checkout.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function upsellItems(string $checkoutId): Response
+    {
+        return $this->connector->send(
+            new GetAvailableUpsellItemsRequest($checkoutId)
         );
     }
 }
