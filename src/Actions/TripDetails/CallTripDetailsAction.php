@@ -10,6 +10,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountriesRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountryCodesRequest;
@@ -45,6 +46,7 @@ class CallTripDetailsAction
             'checkout' => new RetrieveCheckoutRequest($checkoutId),
             'travelerRequirements' => new TravelerRequirementsRequest($checkoutId),
             'upsellItems' => new GetAvailableUpsellItemsRequest($checkoutId),
+            'addedUpsellItems' => new RetrieveCheckoutUpsellItemsRequest($checkoutId),
             'countryCodes' => new CountryCodesRequest,
             'countries' => new CountriesRequest,
         ];
