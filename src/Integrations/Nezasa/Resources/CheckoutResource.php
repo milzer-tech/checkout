@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Resources;
 
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddOrRemoveUpsellItemsPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\AddOrRemoveUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\ApplyPromoCodeRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\DeletePromoCodeRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\SaveTravelerDetailsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
 use Nezasa\Checkout\Models\Checkout;
@@ -94,6 +97,32 @@ class CheckoutResource extends BaseResource
     {
         return $this->connector->send(
             new GetAvailableUpsellItemsRequest($checkoutId)
+        );
+    }
+
+    /**
+     * Retrieve upsell items for a specific checkout.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function retrieveUpsellItems(string $checkoutId): Response
+    {
+        return $this->connector->send(
+            new RetrieveCheckoutUpsellItemsRequest($checkoutId)
+        );
+    }
+
+    /**
+     * Add or update upsell items for a checkout.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function addOrUpdateUpsellItem(AddOrRemoveUpsellItemsPayload $payload): Response
+    {
+        return $this->connector->send(
+            new AddOrRemoveUpsellItemsRequest($payload)
         );
     }
 }
