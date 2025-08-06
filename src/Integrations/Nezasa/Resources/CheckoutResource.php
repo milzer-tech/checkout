@@ -14,6 +14,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutReques
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\SaveTravelerDetailsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\VerifyAvailabilityRequest;
 use Nezasa\Checkout\Models\Checkout;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
@@ -119,10 +120,23 @@ class CheckoutResource extends BaseResource
      * @throws FatalRequestException
      * @throws RequestException
      */
-    public function addOrUpdateUpsellItem(AddOrRemoveUpsellItemsPayload $payload): Response
+    public function addOrUpdateUpsellItem(string $checkoutId, AddOrRemoveUpsellItemsPayload $payload): Response
     {
         return $this->connector->send(
-            new AddOrRemoveUpsellItemsRequest($payload)
+            new AddOrRemoveUpsellItemsRequest($checkoutId, $payload)
+        );
+    }
+
+    /**
+     * Retrieve a checkout by its model.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function varifyAvailability(string $checkoutId): Response
+    {
+        return $this->connector->send(
+            new VerifyAvailabilityRequest($checkoutId)
         );
     }
 }
