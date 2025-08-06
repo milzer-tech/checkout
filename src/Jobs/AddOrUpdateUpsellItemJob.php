@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddOrRemoveUpsellItemsPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\UpsellItemOfferPayloadEntity;
@@ -32,6 +33,9 @@ class AddOrUpdateUpsellItemJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
+        dd(
+            $this->offerId
+        );
         NezasaConnector::make()->checkout()->addOrUpdateUpsellItem(
             checkoutId: $this->checkoutId,
             payload: new AddOrRemoveUpsellItemsPayload(
@@ -44,6 +48,8 @@ class AddOrUpdateUpsellItemJob implements ShouldBeUnique, ShouldQueue
                 ])
             )
         );
+
+        SaveSectionStatusJob::make($this->checkoutId, Section::Summary, true)->handle();
     }
 
     /**

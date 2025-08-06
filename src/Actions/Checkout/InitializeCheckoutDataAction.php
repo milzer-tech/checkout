@@ -49,7 +49,7 @@ class InitializeCheckoutDataAction
                     'isCompleted' => false,
                 ],
                 Section::Summary->value => [
-                    'isExpanded' => false,
+                    'isExpanded' => true,
                     'isCompleted' => true,
                 ],
             ],

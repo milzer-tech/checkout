@@ -329,7 +329,18 @@
     <div>
         <div class="flex justify-between items-center">
             <h3 class="font-semibold text-xl dark:text-white">Total ({{strtoupper($itinerary->price->currency)}})</h3>
-            <span class="text-2xl font-bold dark:text-white">{{ Number::currency($itinerary->price->amount, $itinerary->price->currency) }}</span>
+
+
+            <span wire:loading.remove class="text-2xl font-bold dark:text-white">{{ Number::currency($itinerary->price->amount, $itinerary->price->currency) }}</span>
+
+            <svg wire:loading class="animate-spin h-4 w-4 text-blue-500"
+                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+            </svg>
+
+
+
         </div>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Includes all taxes, fees, surcharges, and Tripbuilder service fees. Tripbuilder service

@@ -18,8 +18,16 @@ class SaveSectionStatusJob implements ShouldBeUnique, ShouldQueue
         public string $checkoutId,
         public Section $section,
         public bool $isCompleted,
-        public bool $isExpanded,
+        public ?bool $isExpanded = null,
     ) {}
+
+    /**
+     * Create a new instance of SaveSectionStatusJob statically.
+     */
+    public static function make(string $checkoutId, Section $section, bool $isCompleted, ?bool $isExpanded = null): self
+    {
+        return new self($checkoutId, $section, $isCompleted, $isExpanded);
+    }
 
     /**
      * Handle the job to save the section status.
@@ -28,10 +36,15 @@ class SaveSectionStatusJob implements ShouldBeUnique, ShouldQueue
     {
         $model = Checkout::whereCheckoutId($this->checkoutId)->first();
 
-        $model->updateData([
+        $data = [
             'status.'.$this->section->value.'.isCompleted' => $this->isCompleted,
-            'status.'.$this->section->value.'.isExpanded' => $this->isExpanded,
-        ]);
+        ];
+
+        if ($this->isExpanded) {
+            $data['status.'.$this->section->value.'.isExpanded'] = $this->isExpanded;
+        }
+
+        $model->updateData($data);
     }
 
     /**

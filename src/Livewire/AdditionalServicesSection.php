@@ -2,52 +2,104 @@
 
 namespace Nezasa\Checkout\Livewire;
 
-use Livewire\Component;
+use Illuminate\Contracts\View\View;
+use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\AddedUpsellItemResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\UpsellItemsResponse;
+use Nezasa\Checkout\Jobs\AddOrUpdateUpsellItemJob;
+use Nezasa\Checkout\Jobs\SaveSectionStatusJob;
+use Nezasa\Checkout\Models\Checkout;
 
-class AdditionalServicesSection extends Component
+class AdditionalServicesSection extends BaseCheckoutComponent
 {
-    public $selectedServices = [];
+    /**
+     * The upsell items response containing available upsell items.
+     */
+    public UpsellItemsResponse $upsellItemsResponse;
 
-    public $services = [
-        [
-            'id' => 'airport_transfer',
-            'name' => 'Airport Transfer',
-            'description' => 'Private transfer from/to the airport',
-            'price' => 75,
-        ],
-        [
-            'id' => 'breakfast',
-            'name' => 'Breakfast Package',
-            'description' => 'Daily breakfast included',
-            'price' => 25,
-        ],
-        [
-            'id' => 'wifi',
-            'name' => 'Premium WiFi',
-            'description' => 'High-speed WiFi throughout your stay',
-            'price' => 15,
-        ],
-        [
-            'id' => 'spa',
-            'name' => 'Spa Access',
-            'description' => 'Access to spa facilities',
-            'price' => 50,
-        ],
-    ];
+    /**
+     * @var array<int, AddedUpsellItemResponseEntity>
+     */
+    public array $addedUpsellItems;
 
-    public function toggleService($serviceId)
+    public array $items = [];
+
+    public array $adHocItems = [];
+
+    public function mount(): void
     {
-        if (in_array($serviceId, $this->selectedServices)) {
-            $this->selectedServices = array_diff($this->selectedServices, [$serviceId]);
-        } else {
-            $this->selectedServices[] = $serviceId;
+        foreach ($this->upsellItemsResponse->offers as $offer) {
+            foreach ($offer->serviceCategories as $service) {
+                $this->items[$offer->offerId][$service->serviceCategoryRefId] = collect($this->addedUpsellItems)
+                    ->where('productRefId', $offer->offerId)
+                    ->where('serviceCategoryRefId', $service->serviceCategoryRefId)
+                    ->count();
+            }
         }
-
-        $this->dispatch('servicesUpdated', ['services' => $this->selectedServices]);
     }
 
-    public function render()
+    /**
+     * Render the view for the additional services section.
+     */
+    public function render(): View
     {
         return view('checkout::trip-details-page.additional-services-section');
+    }
+
+    public function addItem(bool $isAdHoc, string $offerId, string $serviceCategoryRefId): void
+    {
+        if ($isAdHoc) {
+
+        } else {
+            $this->items[$offerId][$serviceCategoryRefId]++;
+
+            $this->updateUpsellItems($offerId, $serviceCategoryRefId);
+        }
+    }
+
+    public function removeItem(bool $isAdHoc, string $offerId, string $serviceCategoryRefId): void
+    {
+        if ($isAdHoc) {
+        } else {
+            $this->items[$offerId][$serviceCategoryRefId] == 0 ?: $this->items[$offerId][$serviceCategoryRefId]--;
+
+            $this->updateUpsellItems($offerId, $serviceCategoryRefId);
+        }
+    }
+
+    public function noNeed(bool $isAdHoc, string $offerId): void
+    {
+        if ($isAdHoc) {
+        } else {
+            foreach ($this->items[$offerId] as $serviceId => $quantity) {
+                if ($quantity !== 0) {
+                    $this->items[$offerId][$serviceId] = 0;
+
+                    $this->updateUpsellItems($offerId, $serviceId);
+                }
+            }
+        }
+    }
+
+    /**
+     * Update the upsell items in the checkout.
+     */
+    protected function updateUpsellItems(string $offerId, string $serviceCategoryRefId): void
+    {
+        $quantity = $this->items[$offerId][$serviceCategoryRefId];
+
+        foreach ($this->items[$offerId] as $serId => $service) {
+            if ($serId === $serviceCategoryRefId) {
+                continue;
+            }
+
+            $this->items[$offerId][$serId] = 0;
+        }
+
+        SaveSectionStatusJob::make($this->checkoutId, Section::Summary, false)->handle();
+
+        AddOrUpdateUpsellItemJob::dispatch($this->checkoutId, $offerId, $serviceCategoryRefId, $quantity);
+
+        $this->dispatch('summary-updated');
     }
 }
