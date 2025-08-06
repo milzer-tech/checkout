@@ -8,9 +8,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddOrRemoveUpsellItemsPayl
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
-use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
-use Throwable;
 
 class AddOrRemoveUpsellItemsRequest extends Request implements HasBody
 {
@@ -24,14 +22,17 @@ class AddOrRemoveUpsellItemsRequest extends Request implements HasBody
     /**
      * Create a new instance of RetrieveCheckoutUpsellItemsRequest
      */
-    public function __construct(public AddOrRemoveUpsellItemsPayload $payload) {}
+    public function __construct(
+        public string $checkoutId,
+        public AddOrRemoveUpsellItemsPayload $payload
+    ) {}
 
     /**
      * Define the endpoint for the request.
      */
     public function resolveEndpoint(): string
     {
-        return '/checkout/v1/checkouts/'.$this->payload->checkoutId.'/upsell-items/offers';
+        return '/checkout/v1/checkouts/'.$this->checkoutId.'/upsell-items/offers';
     }
 
     /**
@@ -42,15 +43,5 @@ class AddOrRemoveUpsellItemsRequest extends Request implements HasBody
     protected function defaultBody(): array
     {
         return $this->payload->toArray();
-    }
-
-    /**
-     * Cast the response to a DTO.
-     *
-     * @throws Throwable
-     */
-    public function createDtoFromResponse(Response $response): mixed
-    {
-        return $response->array();
     }
 }
