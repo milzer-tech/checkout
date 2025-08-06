@@ -48,6 +48,10 @@ class InitializeCheckoutDataAction
                     'isExpanded' => false,
                     'isCompleted' => false,
                 ],
+                Section::Summary->value => [
+                    'isExpanded' => false,
+                    'isCompleted' => true,
+                ],
             ],
         ];
 
