@@ -28,7 +28,13 @@
                     :is-expanded="$model->data['status']['promo']['isExpanded']"
                 />
                 <livewire:travel-insurance-section />
-                <livewire:additional-services-section />
+                <livewire:additional-services-section
+                    :$upsellItemsResponse
+                    :$addedUpsellItems
+                    :$model
+                    :is-completed="$model->data['status']['traveller']['isCompleted']"
+                    :is-expanded="$model->data['status']['traveller']['isExpanded']"
+                />
                 <livewire:payment-options-section />
                 <div class="mt-6"></div>
             </section>
