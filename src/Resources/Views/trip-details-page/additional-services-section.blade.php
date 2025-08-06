@@ -4,7 +4,7 @@
 
 <x-checkout::editable-box
     title="Additional services"
-    state="editing"
+    :state="$state"
     :showEdit="true"
     :showCheck="true"
     class="{{$upsellItemsResponse->offers->isEmpty() ? 'hidden' : ''}}"
@@ -22,12 +22,12 @@
                         <label
                             class="border border-gray-200 rounded-xl p-4 flex flex-col justify-between cursor-pointer hover:shadow-sm">
                             <div class="flex items-center gap-2 mb-2">
-                                <input type="radio" name="{{$offer->offerId}}"
-                                           @if($items[$offer->offerId][$service->serviceCategoryRefId] > 0)
-                                               checked
-                                           @elseif($service->serviceCategoryRefId === $offer->description)
-                                                checked
-                                           @endif
+                                <input  type="radio" name="{{$offer->offerId}}"
+                                       @if(intval($items[$offer->offerId][$service->serviceCategoryRefId]) > 0)
+                                           checked
+                                       @elseif($service->serviceCategoryRefId === $offer->description)
+                                           checked
+                                       @endif
                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500">
                                 <span class="text-gray-800">{{ucfirst($service->name)}}</span>
                             </div>
@@ -35,30 +35,42 @@
                                 <span
                                     class="font-semibold">{{Number::currency($service->salesPrice->amount, $service->salesPrice->currency)}}</span>
                                 <div class="flex items-center gap-2 text-gray-500">
-                                    <button wire:click="removeItem(false, '{{$offer->offerId}}', '{{$service->serviceCategoryRefId}}')" class="text-xl leading-none opacity-50">−</button>
+                                    <button wire:loading.attr="disabled"
+                                            wire:click="removeItem(false, '{{$offer->offerId}}', '{{$service->serviceCategoryRefId}}')"
+                                            class="text-xl leading-none opacity-50">−
+                                    </button>
+
                                     <span class="text-black cursor-default">{{$items[$offer->offerId][$service->serviceCategoryRefId]}}</span>
-                                    <button wire:click="addItem(false, '{{$offer->offerId}}', '{{$service->serviceCategoryRefId}}')" class="text-blue-600 text-xl leading-none">+</button>
+                                    <button wire:loading.attr="disabled" wire:click="addItem(false, '{{$offer->offerId}}', '{{$service->serviceCategoryRefId}}')" class="text-blue-600 text-xl leading-none">+
+                                    </button>
                                 </div>
                             </div>
                         </label>
                     @endforeach
 
                     @if($offer->optOutPossible)
-                            <label
-                                class="border border-blue-700 rounded-xl px-4 py-2 flex items-center gap-2 cursor-pointer hover:shadow-sm w-full h-[48px]">
-                                <input type="radio"
-                                       name="{{$offer->offerId}}"
-                                       wire:click="noNeed(false, '{{$offer->offerId}}', '{{$service->serviceCategoryRefId}}')"
-                                       @checked(collect($items[$offer->offerId])->filter()->isEmpty())
-                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                >
-                                <span class="text-gray-900 font-medium text-sm">No need</span>
-                            </label>
+                        <label
+                            class="border border-blue-700 rounded-xl px-4 py-2 flex items-center gap-2 cursor-pointer hover:shadow-sm w-full h-[48px]">
+                            <input type="radio"
+                                   name="{{$offer->offerId}}"
+                                   wire:click="noNeed(false, '{{$offer->offerId}}', '{{$service->serviceCategoryRefId}}')"
+                                   @checked(collect($items[$offer->offerId])->filter()->isEmpty())
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                            >
+                            <span class="text-gray-900 font-medium text-sm">No need</span>
+                        </label>
                     @endif
                 </div>
             </div>
         @endforeach
 
+            <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
+            <div class="flex justify-between items-center">
+                <div></div>
+                <button type="button" wire:click="next" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
+                    Next
+                </button>
+            </div>
     </div>
 
 

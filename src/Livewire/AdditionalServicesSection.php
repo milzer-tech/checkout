@@ -18,14 +18,27 @@ class AdditionalServicesSection extends BaseCheckoutComponent
     public UpsellItemsResponse $upsellItemsResponse;
 
     /**
+     * The items that have been added to the checkout.
+     *
      * @var array<int, AddedUpsellItemResponseEntity>
      */
     public array $addedUpsellItems;
 
+    /**
+     * The items that are displayed in the additional services section.
+     */
     public array $items = [];
 
+    /**
+     * The ad-hoc items that are displayed in the additional services section.
+     *
+     * @var array<int, AddedUpsellItemResponseEntity>
+     */
     public array $adHocItems = [];
 
+    /**
+     * Create a new instance of the component.
+     */
     public function mount(): void
     {
         foreach ($this->upsellItemsResponse->offers as $offer) {
@@ -46,6 +59,19 @@ class AdditionalServicesSection extends BaseCheckoutComponent
         return view('checkout::trip-details-page.additional-services-section');
     }
 
+    /**
+     * Edit the promo code section, allowing the user to enter a new promo code.
+     */
+    public function next(): void
+    {
+        $this->collapse(Section::AdditionalService);
+
+        $this->dispatch(Section::AdditionalService->value);
+    }
+
+    /**
+     * Add an item to the checkout.
+     */
     public function addItem(bool $isAdHoc, string $offerId, string $serviceCategoryRefId): void
     {
         if ($isAdHoc) {
@@ -57,6 +83,9 @@ class AdditionalServicesSection extends BaseCheckoutComponent
         }
     }
 
+    /**
+     * Remove an item from the checkout.
+     */
     public function removeItem(bool $isAdHoc, string $offerId, string $serviceCategoryRefId): void
     {
         if ($isAdHoc) {
@@ -67,6 +96,9 @@ class AdditionalServicesSection extends BaseCheckoutComponent
         }
     }
 
+    /**
+     * Make all ids of an offer zero.
+     */
     public function noNeed(bool $isAdHoc, string $offerId): void
     {
         if ($isAdHoc) {

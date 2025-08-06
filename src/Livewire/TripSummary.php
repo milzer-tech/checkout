@@ -58,11 +58,15 @@ class TripSummary extends Component
     #[On('summary-updated')]
     public function summaryUpdated(): void
     {
-        do {
-            sleep(1);
-
+        for ($i = 0; $i < 15; $i++) {
             $summary = Checkout::whereCheckoutId($this->itineraryId)->value('data')->get('status')['summary'];
-        } while (! $summary['isCompleted']);
+
+            if ($summary['isCompleted']) {
+                break;
+            }
+
+            sleep(1);
+        }
 
         $prices = NezasaConnector::make()->checkout()->retrieve($this->itineraryId)->dto()->prices;
 
