@@ -12,8 +12,10 @@ use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryRentalCar;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryTransfer;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\AddedRentalCarResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\LegResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RentalCarResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse as ItineraryResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RetrieveCheckoutResponse as CheckoutResponse;
 use Throwable;
@@ -30,14 +32,19 @@ class SummarizeItineraryAction
      *
      * @throws Throwable
      */
-    public function run(ItineraryResponse $itineraryResponse, CheckoutResponse $checkoutResponse): ItinerarySummary
-    {
+    public function run(
+        ItineraryResponse $itineraryResponse,
+        CheckoutResponse $checkoutResponse,
+        AddedRentalCarResponse $addedRentalCarResponse,
+    ): ItinerarySummary {
         $this->initializeResult($itineraryResponse, $checkoutResponse);
         $this->pushTransport($itineraryResponse->startConnections);
         $this->pushTransport($itineraryResponse->returnConnections);
+        $this->pushRentalCar($addedRentalCarResponse->rentalCars);
 
         foreach ($itineraryResponse->modules as $module) {
             $this->pushTransport($module->returnConnections);
+
             foreach ($module->legs as $leg) {
                 $this->pushAccommodation($leg);
                 $this->pushActivities($leg);
@@ -100,7 +107,6 @@ class SummarizeItineraryAction
     {
         foreach ($connections as $connection) {
             match ($connection->connectionType) {
-                'RentalCar' => $this->pushRentalCar($connection),
                 'Transfer' => $this->pushTransfer($connection),
                 'Flight' => $this->pushFlight($connection),
                 'Activity' => $this->pushActivity(
@@ -108,23 +114,28 @@ class SummarizeItineraryAction
                     $connection->startDateTime,
                     $connection->endDateTime
                 ),
+                default => ''
             };
         }
     }
 
     /**
      * Push a rental car to the itinerary summary.
+     *
+     * @param  Collection<int, RentalCarResponseEntity>  $cars
      */
-    private function pushRentalCar(LegConnectionEntity $connection): void
+    private function pushRentalCar(Collection $cars): void
     {
-        $this->result->rentalCars->push(
-            new ItineraryRentalCar(
-                name: $connection->name,
-                startDateTime: $connection->startDateTime,
-                endDateTime: $connection->endDateTime,
-                isPlaceholder: $connection->isPlaceholder
-            )
-        );
+        foreach ($cars as $car) {
+            $this->result->rentalCars->push(
+                new ItineraryRentalCar(
+                    name: $car->name,
+                    startDateTime: $car->pickupDateTime,
+                    endDateTime: $car->dropoffDateTime,
+                    isPlaceholder: $car->isPlaceholder
+                )
+            );
+        }
     }
 
     /**

@@ -7,13 +7,14 @@ namespace Nezasa\Checkout\Actions\TripDetails;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Exceptions\NotFoundException;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\VerifyAvailabilityRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountriesRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountryCodesRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\AddedRentalCarsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\GetItineraryRequest;
 use Saloon\Http\Response;
 use Throwable;
@@ -44,6 +45,8 @@ class CallTripDetailsAction
         $requests = [
             'itinerary' => new GetItineraryRequest($itineraryId),
             'checkout' => new RetrieveCheckoutRequest($checkoutId),
+            'addedRentalCars' => new AddedRentalCarsRequest($itineraryId),
+            //            'savedTravellers' => new VerifyAvailabilityRequest($checkoutId),
             'travelerRequirements' => new TravelerRequirementsRequest($checkoutId),
             'upsellItems' => new GetAvailableUpsellItemsRequest($checkoutId),
             'addedUpsellItems' => new RetrieveCheckoutUpsellItemsRequest($checkoutId),

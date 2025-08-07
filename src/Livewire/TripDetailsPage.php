@@ -54,7 +54,11 @@ class TripDetailsPage extends Component
         $model = $initializeCheckoutData->run(checkoutId: $this->checkoutId, allocatedPax: $result['itinerary']->allocatedPax);
 
         return view('checkout::trip-details-page.index', [
-            'itinerary' => $summerizeItinerary->run($result['itinerary'], $result['checkout']),
+            'itinerary' => $summerizeItinerary->run(
+                itineraryResponse: $result['itinerary'],
+                checkoutResponse: $result['checkout'],
+                addedRentalCarResponse: $result['addedRentalCars']
+            ),
             'contactRequirements' => $result['travelerRequirements']->contact,
             'countryCodes' => $result['countryCodes'],
             'allocatedPax' => $result['itinerary']->allocatedPax,
