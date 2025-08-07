@@ -40,6 +40,6 @@ class AddedRentalCarsRequest extends Request
     {
         throw_unless(condition: $response->ok(), exception: NotFoundException::class);
 
-        return AddedRentalCarResponse::from($response->array(key: 'itinerary'));
+        return AddedRentalCarResponse::from($response->array());
     }
 }
