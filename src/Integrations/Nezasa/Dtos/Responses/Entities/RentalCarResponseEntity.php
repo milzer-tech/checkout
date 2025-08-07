@@ -17,6 +17,7 @@ class RentalCarResponseEntity extends BaseDto
      * @note: There are more properties available in the API response, but we only include the ones we need.
      */
     public function __construct(
+        public string $id,
         public string $name,
         public CarbonImmutable $pickupDateTime,
         public CarbonImmutable $dropoffDateTime,

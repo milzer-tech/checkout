@@ -12,6 +12,7 @@ class UpsellItem extends BaseDto
      * Create a new instance of class UpsellItem extends BaseDto
      */
     public function __construct(
+        public string $id,
         public string $name,
     ) {}
 }

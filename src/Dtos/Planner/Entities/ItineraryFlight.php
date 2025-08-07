@@ -13,6 +13,7 @@ class ItineraryFlight extends BaseDto
      * Create a new instance of ItineraryFlight
      */
     public function __construct(
+        public string $id,
         public string $startLocationName,
         public string $endLocationName,
         public CarbonImmutable $startDateTime,

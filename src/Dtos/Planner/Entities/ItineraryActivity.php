@@ -13,6 +13,7 @@ class ItineraryActivity extends BaseDto
      * Create a new instance of ItineraryActivity.
      */
     public function __construct(
+        public string $id,
         public string $name,
         public CarbonImmutable $startDateTime,
         public CarbonImmutable $endDateTime,

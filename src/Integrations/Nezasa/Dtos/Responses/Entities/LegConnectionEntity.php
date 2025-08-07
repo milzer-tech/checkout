@@ -13,6 +13,7 @@ class LegConnectionEntity extends Data
      * Create a new instance of the LegConnectionEntity
      */
     public function __construct(
+        public string $id,
         public string $name,
         public string $connectionType,
         public LocationResponseEntity $startLocation,

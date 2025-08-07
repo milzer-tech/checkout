@@ -13,6 +13,7 @@ class ItineraryTransfer extends BaseDto
      * Create a new instance of ItineraryTransfer
      */
     public function __construct(
+        public string $id,
         public string $startLocationName,
         public string $endLocationName,
         public CarbonImmutable $startDateTime,

@@ -17,6 +17,7 @@ class AccommodationResponseEntity extends Data
      * @note There are other properties in the response, but we are only interested in the modules for now.
      */
     public function __construct(
+        public string $id,
         public string $name,
         public CarbonImmutable $startDate,
         public int $nights,

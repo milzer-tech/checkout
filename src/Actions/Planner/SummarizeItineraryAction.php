@@ -42,7 +42,6 @@ class SummarizeItineraryAction
         AddedRentalCarResponse $addedRentalCarResponse,
         Collection $addedUpsellItemsResponse
     ): ItinerarySummary {
-
         $this->initializeResult($itineraryResponse, $checkoutResponse);
         $this->pushTransport($itineraryResponse->startConnections);
         $this->pushTransport($itineraryResponse->returnConnections);
@@ -87,6 +86,7 @@ class SummarizeItineraryAction
         foreach ($leg->stop->accommodations as $hotel) {
             $this->result->stays->push(
                 new ItineraryStay(
+                    id: $hotel->id,
                     name: $hotel->location->name,
                     checkIn: $hotel->startDate,
                     nights: $hotel->nights
@@ -101,7 +101,7 @@ class SummarizeItineraryAction
     private function pushActivities(LegResponseEntity $leg): void
     {
         foreach ($leg->stop->activities as $activity) {
-            $this->pushActivity($activity->name, $activity->startDateTime, $activity->endDateTime);
+            $this->pushActivity($activity->id, $activity->name, $activity->startDateTime, $activity->endDateTime);
         }
     }
 
@@ -117,6 +117,7 @@ class SummarizeItineraryAction
                 'Transfer' => $this->pushTransfer($connection),
                 'Flight' => $this->pushFlight($connection),
                 'Activity' => $this->pushActivity(
+                    $connection->id,
                     $connection->name,
                     $connection->startDateTime,
                     $connection->endDateTime
@@ -136,6 +137,7 @@ class SummarizeItineraryAction
         foreach ($cars as $car) {
             $this->result->rentalCars->push(
                 new ItineraryRentalCar(
+                    id: $car->id,
                     name: $car->name,
                     startDateTime: $car->pickupDateTime,
                     endDateTime: $car->dropoffDateTime,
@@ -154,7 +156,7 @@ class SummarizeItineraryAction
     {
         foreach ($items as $item) {
             $this->result->upsellItems->push(
-                new UpsellItem($item->name)
+                new UpsellItem($item->componentRefId, $item->name)
             );
         }
     }
@@ -166,6 +168,7 @@ class SummarizeItineraryAction
     {
         $this->result->transfers->push(
             new ItineraryTransfer(
+                id: $connection->id,
                 startLocationName: $connection->startLocation->name,
                 endLocationName: $connection->endLocation->name,
                 startDateTime: $connection->startDateTime,
@@ -183,6 +186,7 @@ class SummarizeItineraryAction
     {
         $this->result->flights->push(
             new ItineraryFlight(
+                id: $connection->id,
                 startLocationName: $connection->startLocation->name,
                 endLocationName: $connection->endLocation->name,
                 startDateTime: $connection->startDateTime,
@@ -196,10 +200,11 @@ class SummarizeItineraryAction
     /**
      * Push an activity to the itinerary summary.
      */
-    private function pushActivity(string $name, CarbonImmutable $start, CarbonImmutable $end): void
+    private function pushActivity(string $id, string $name, CarbonImmutable $start, CarbonImmutable $end): void
     {
         $this->result->activities->push(
             new ItineraryActivity(
+                id: $id,
                 name: $name,
                 startDateTime: $start,
                 endDateTime: $end
