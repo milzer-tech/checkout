@@ -11,8 +11,10 @@ use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryFlight;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryRentalCar;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryTransfer;
+use Nezasa\Checkout\Dtos\Planner\Entities\UpsellItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\AddedRentalCarResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\AddedUpsellItemResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\LegResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RentalCarResponseEntity;
@@ -30,17 +32,22 @@ class SummarizeItineraryAction
     /**
      * Handle summarizing the itinerary by its ID.
      *
+     * @param  Collection<int, AddedUpsellItemResponseEntity>  $addedUpsellItemsResponse
+     *
      * @throws Throwable
      */
     public function run(
         ItineraryResponse $itineraryResponse,
         CheckoutResponse $checkoutResponse,
         AddedRentalCarResponse $addedRentalCarResponse,
+        Collection $addedUpsellItemsResponse
     ): ItinerarySummary {
+
         $this->initializeResult($itineraryResponse, $checkoutResponse);
         $this->pushTransport($itineraryResponse->startConnections);
         $this->pushTransport($itineraryResponse->returnConnections);
         $this->pushRentalCar($addedRentalCarResponse->rentalCars);
+        $this->pushUpsellItems($addedUpsellItemsResponse);
 
         foreach ($itineraryResponse->modules as $module) {
             $this->pushTransport($module->returnConnections);
@@ -120,7 +127,7 @@ class SummarizeItineraryAction
     }
 
     /**
-     * Push a rental car to the itinerary summary.
+     * Push rental cars to the itinerary summary.
      *
      * @param  Collection<int, RentalCarResponseEntity>  $cars
      */
@@ -134,6 +141,20 @@ class SummarizeItineraryAction
                     endDateTime: $car->dropoffDateTime,
                     isPlaceholder: $car->isPlaceholder
                 )
+            );
+        }
+    }
+
+    /**
+     * Push a rental car to the itinerary summary.
+     *
+     * @param  Collection<int, AddedUpsellItemResponseEntity>  $items
+     */
+    private function pushUpsellItems(Collection $items): void
+    {
+        foreach ($items as $item) {
+            $this->result->upsellItems->push(
+                new UpsellItem($item->name)
             );
         }
     }

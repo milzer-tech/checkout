@@ -12,6 +12,7 @@ use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryFlight;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryRentalCar;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryTransfer;
+use Nezasa\Checkout\Dtos\Planner\Entities\UpsellItem;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 
@@ -31,6 +32,7 @@ class ItinerarySummary extends BaseDto
      * @param  Collection<int, ItineraryTransfer>  $transfers
      * @param  Collection<int, ItineraryActivity>  $activities
      * @param  Collection<int, ItineraryRentalCar>  $rentalCars
+     * @param  Collection<int, UpsellItem>  $upsellItems
      */
     public function __construct(
         public Price $price,
@@ -45,6 +47,7 @@ class ItinerarySummary extends BaseDto
         public Collection $transfers = new Collection,
         public Collection $activities = new Collection,
         public Collection $rentalCars = new Collection,
+        public Collection $upsellItems = new Collection,
         public ?ApplyPromoCodeResponse $promoCodeResponse = null,
     ) {
         $this->nights = (int) $this->startDate->diffInDays($this->endDate);
@@ -82,5 +85,13 @@ class ItinerarySummary extends BaseDto
         return $this->rentalCars
             ->filter(fn (ItineraryRentalCar $rentalCar) => ! $rentalCar->isPlaceholder)
             ->isNotEmpty();
+    }
+
+    /**
+     * Check if the itinerary has upsell items.
+     */
+    public function hasUpsellItem(): bool
+    {
+        return $this->upsellItems->isNotEmpty();
     }
 }

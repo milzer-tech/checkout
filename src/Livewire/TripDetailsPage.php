@@ -57,7 +57,8 @@ class TripDetailsPage extends Component
             'itinerary' => $summerizeItinerary->run(
                 itineraryResponse: $result['itinerary'],
                 checkoutResponse: $result['checkout'],
-                addedRentalCarResponse: $result['addedRentalCars']
+                addedRentalCarResponse: $result['addedRentalCars'],
+                addedUpsellItemsResponse: collect($result['addedUpsellItems']),
             ),
             'contactRequirements' => $result['travelerRequirements']->contact,
             'countryCodes' => $result['countryCodes'],
