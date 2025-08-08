@@ -94,4 +94,64 @@ class ItinerarySummary extends BaseDto
     {
         return $this->upsellItems->isNotEmpty();
     }
+
+    /**
+     * Check if all hotels in the itinerary are available.
+     */
+    public function areAllHotelsAvailable(): bool
+    {
+        return $this->stays
+            ->reject(fn (ItineraryStay $item) => $item->availability?->isOpen())
+            ->isEmpty();
+    }
+
+    /**
+     * Check if all activities in the itinerary are available.
+     */
+    public function areAllActivitiesAvailable(): bool
+    {
+        return $this->activities
+            ->reject(fn (ItineraryActivity $item) => $item->availability?->isOpen())
+            ->isEmpty();
+    }
+
+    /**
+     * Check if all transfers in the itinerary are available.
+     */
+    public function areAllTransfersAvailable(): bool
+    {
+        return $this->transfers
+            ->reject(fn (ItineraryTransfer $item) => $item->availability?->isOpen())
+            ->isEmpty();
+    }
+
+    /**
+     * Check if all flights in the itinerary are available.
+     */
+    public function areAllFlightsAvailable(): bool
+    {
+        return $this->flights
+            ->reject(fn (ItineraryFlight $item) => $item->availability?->isOpen())
+            ->isEmpty();
+    }
+
+    /**
+     * Check if all rental cars in the itinerary are available.
+     */
+    public function areAllRentalCarsAvailable(): bool
+    {
+        return $this->rentalCars
+            ->reject(fn (ItineraryRentalCar $item) => $item->availability?->isOpen())
+            ->isEmpty();
+    }
+
+    /**
+     * Check if all upsell items in the itinerary are available.
+     */
+    public function areAllUpsellItemsAvailable(): bool
+    {
+        return $this->upsellItems
+            ->reject(fn (UpsellItem $item) => $item->availability?->isOpen())
+            ->isEmpty();
+    }
 }

@@ -114,15 +114,7 @@
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-semibold dark:text-white">Stay</h3>
-                            <span
-                                class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Available
-                        </span>
+                            @includeWhen($itinerary->areAllHotelsAvailable(), 'checkout::components.available')
                         </div>
 
                         @foreach($itinerary->stays as $stay)
@@ -157,15 +149,7 @@
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-semibold dark:text-white">Activities</h3>
-                            <span
-                                class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Available
-                        </span>
+                            @includeIf($itinerary->areAllActivitiesAvailable(), 'checkout::components.available')
                         </div>
 
                         @foreach($itinerary->activities as $activity)
@@ -180,7 +164,8 @@
                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->name }}</span>
                                 </div>
                                 <div class="ml-auto text-right">
-                                    <div class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
+                                    <div
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
                                 </div>
                             </div>
                         @endforeach
@@ -194,15 +179,7 @@
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-semibold dark:text-white">Flights</h3>
-                            <span
-                                class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Available
-                        </span>
+                            @includeWhen($itinerary->areAllFlightsAvailable(), 'checkout::components.available')
                         </div>
                         <div class="space-y-2">
                             @foreach($itinerary->flights as $flight)
@@ -230,15 +207,7 @@
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-semibold dark:text-white">Transfers</h3>
-                            <span
-                                class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Available
-                        </span>
+                            @includeWhen($itinerary->areAllTransfersAvailable(), 'checkout::components.available')
                         </div>
                         <div class="space-y-2">
                             @foreach($itinerary->transfers as $transfer)
@@ -267,15 +236,7 @@
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-semibold dark:text-white">Rental cars</h3>
-                            <span
-                                class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Available
-                        </span>
+                            @includeWhen($itinerary->areAllRentalCarsAvailable(), 'checkout::components.available')
                         </div>
                         <div class="space-y-2">
                             @foreach($itinerary->rentalCars as $rentalCar)
@@ -299,39 +260,33 @@
                     </div>
                 @endif
 
-                    @if($itinerary->hasUpsellItem())
-                        {{-- renal car section --}}
-                        <div class="mb-4">
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="font-semibold dark:text-white">Upsell items</h3>
-                                <span
-                                    class="inline-flex items-center px-3 py-1 bg-[#F2FCE2] dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Available
-                        </span>
-                            </div>
-                            <div class="space-y-2">
-                                @foreach($itinerary->upsellItems as $item)
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            <svg class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="none"
-                                                 stroke="currentColor" viewBox="0 0 24 24"
-                                                 xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                      d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            <span class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
-                                        </div>
-                                        <div class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200"></div>
-                                    </div>
-                                @endforeach
-                            </div>
+                @if($itinerary->hasUpsellItem())
+                    {{-- renal car section --}}
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-semibold dark:text-white">Upsell items</h3>
+                            @includeWhen($itinerary->areAllUpsellItemsAvailable(), 'checkout::components.available')
                         </div>
-                    @endif
+                        <div class="space-y-2">
+                            @foreach($itinerary->upsellItems as $item)
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="none"
+                                             stroke="currentColor" viewBox="0 0 24 24"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span
+                                            class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
+                                    </div>
+                                    <div
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200"></div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
 
         @endif
@@ -342,21 +297,23 @@
 
 
     @if($itinerary->promoCodeResponse->promoCode)
-    {{-- Discount row --}}
-    <div class="flex justify-between items-center text-sm text-gray-700 dark:text-gray-300 mb-2">
-        <div class="flex items-center gap-1">
-            {{-- Correct icon (smaller) --}}
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
+        {{-- Discount row --}}
+        <div class="flex justify-between items-center text-sm text-gray-700 dark:text-gray-300 mb-2">
+            <div class="flex items-center gap-1">
+                {{-- Correct icon (smaller) --}}
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none"
+                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                </svg>
 
-            <span class="font-semibold">{{$itinerary->promoCodeResponse->promoCode->code}}</span>
-            <span class="font-semibold">(-{{$itinerary->promoCodeResponse->decreasePercent()}}%)</span>
-        </div>
-        <span class="font-semibold dark:text-white">
+                <span class="font-semibold">{{$itinerary->promoCodeResponse->promoCode->code}}</span>
+                <span class="font-semibold">(-{{$itinerary->promoCodeResponse->decreasePercent()}}%)</span>
+            </div>
+            <span class="font-semibold dark:text-white">
         -{{Number::currency($itinerary->promoCodeResponse->decreaseAmount(), $itinerary->price->currency)}}
     </span>
-    </div>
+        </div>
     @endif
 
     {{-- Total price section --}}
@@ -365,14 +322,14 @@
             <h3 class="font-semibold text-xl dark:text-white">Total ({{strtoupper($itinerary->price->currency)}})</h3>
 
 
-            <span wire:loading.remove class="text-2xl font-bold dark:text-white">{{ Number::currency($itinerary->price->amount, $itinerary->price->currency) }}</span>
+            <span wire:loading.remove
+                  class="text-2xl font-bold dark:text-white">{{ Number::currency($itinerary->price->amount, $itinerary->price->currency) }}</span>
 
             <svg wire:loading class="animate-spin h-4 w-4 text-blue-500"
                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
             </svg>
-
 
 
         </div>

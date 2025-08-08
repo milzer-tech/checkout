@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Dtos\Planner\Entities;
 
 use Carbon\CarbonImmutable;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 
 class ItineraryRentalCar extends BaseDto
 {
@@ -18,5 +19,6 @@ class ItineraryRentalCar extends BaseDto
         public CarbonImmutable $startDateTime,
         public CarbonImmutable $endDateTime,
         public bool $isPlaceholder,
+        public ?AvailabilityEnum $availability = null,
     ) {}
 }
