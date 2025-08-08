@@ -40,7 +40,12 @@
             </section>
         </div>
         <div class="overflow-auto min-w-[300px]">
-            <livewire:trip-summary :$itinerary/>
+            <livewire:trip-summary
+                :$itinerary
+                :$model
+                :is-completed="$model->data['status']['summary']['isCompleted']"
+                :is-expanded="$model->data['status']['summary']['isExpanded']"
+            />
         </div>
     </div>
     <!-- Footer with navigation buttons - takes 2 columns out of 3 on larger screens -->
