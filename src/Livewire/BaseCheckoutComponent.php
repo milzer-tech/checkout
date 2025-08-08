@@ -13,6 +13,12 @@ use Nezasa\Checkout\Models\Checkout;
 class BaseCheckoutComponent extends Component
 {
     /**
+     * The unique identifier for the itinerary
+     */
+    #[Url]
+    public string $itineraryId;
+
+    /**
      * The unique identifier for the checkout process.
      */
     #[Url]
