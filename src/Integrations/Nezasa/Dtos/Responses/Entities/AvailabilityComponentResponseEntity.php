@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\ComponentEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NoneBookableReasonEnum;
 
 class AvailabilityComponentResponseEntity extends BaseDto
@@ -20,7 +21,7 @@ class AvailabilityComponentResponseEntity extends BaseDto
      */
     public function __construct(
         public string $id,
-        public string $componentType,
+        public ComponentEnum $componentType,
         public AvailabilityEnum $status,
         public bool $nonBookable,
         public Price $price,
