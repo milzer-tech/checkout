@@ -55,6 +55,14 @@ class BaseCheckoutComponent extends Component
         SaveSectionStatusJob::dispatch($this->checkoutId, $section, $this->isCompleted, $this->isExpanded);
     }
 
+    public function markAsCompletedAdnCollapse(Section $section): void
+    {
+        $this->isCompleted = true;
+        $this->isExpanded = false;
+
+        SaveSectionStatusJob::dispatch($this->checkoutId, $section, $this->isCompleted, $this->isExpanded);
+    }
+
     /**
      * Mark the section as completed and save the status.
      */

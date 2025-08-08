@@ -40,7 +40,7 @@ class SaveSectionStatusJob implements ShouldBeUnique, ShouldQueue
             'status.'.$this->section->value.'.isCompleted' => $this->isCompleted,
         ];
 
-        if ($this->isExpanded) {
+        if ($this->isExpanded !== null) {
             $data['status.'.$this->section->value.'.isExpanded'] = $this->isExpanded;
         }
 

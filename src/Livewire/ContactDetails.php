@@ -75,8 +75,7 @@ class ContactDetails extends BaseCheckoutComponent
         Checkout::firstWhere(['checkout_id' => $this->checkoutId])
             ->updateData(['contact' => $validatedData['contact']]);
 
-        $this->markAsCompleted(Section::Contact);
-        $this->collapse(Section::Contact);
+        $this->markAsCompletedAdnCollapse(Section::Contact);
 
         $this->dispatch('contact-processed');
     }

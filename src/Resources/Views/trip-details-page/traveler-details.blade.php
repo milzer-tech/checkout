@@ -2,6 +2,7 @@
 @use(Nezasa\Checkout\Dtos\View\ShowTraveller)
 @php($state = $isExpanded ? 'editing' : 'valid')
 
+
 <x-checkout::editable-box
     title="Traveller details"
     :state="$state"

@@ -49,6 +49,7 @@ class TravelerDetails extends BaseCheckoutComponent
         $paxInfo = $this->model->data->get('paxInfo');
 
         $this->setUpPaxData($paxInfo);
+
         $this->setShowingTravellers();
 
         $this->updateFormStatus();
@@ -78,9 +79,7 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     public function save(): void
     {
-        $this->collapse(Section::Traveller);
-
-        $this->markAsCompleted(Section::Traveller);
+        $this->markAsCompletedAdnCollapse(Section::Traveller);
 
         $this->dispatch('traveller-processed');
     }
@@ -184,8 +183,7 @@ class TravelerDetails extends BaseCheckoutComponent
             $this->paxInfo[$room][0]['showTraveller']->isShowing = true;
 
             $this->updateFormStatus();
-            $this->collapse(Section::Traveller);
-            $this->markAsCompleted(Section::Traveller);
+            $this->markAsCompletedAdnCollapse(Section::Traveller);
             $this->dispatch('traveller-processed');
         }
     }

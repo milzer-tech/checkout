@@ -7,6 +7,7 @@
     :showEdit="true"
     :showCheck="$isCompleted"
     onEdit="expand('{{Section::Promo->value}}')"
+
 >
     <div class="space-y-4">
         <form wire:submit="save" class="mb-6">

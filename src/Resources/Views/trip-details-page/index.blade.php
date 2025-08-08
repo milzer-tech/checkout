@@ -32,8 +32,8 @@
                     :$upsellItemsResponse
                     :$addedUpsellItems
                     :$model
-                    :is-completed="$model->data['status']['traveller']['isCompleted']"
-                    :is-expanded="$model->data['status']['traveller']['isExpanded']"
+                    :is-completed="$model->data['status']['additional_service']['isCompleted']"
+                    :is-expanded="$model->data['status']['additional_service']['isExpanded']"
                 />
                 <livewire:payment-options-section />
                 <div class="mt-6"></div>
