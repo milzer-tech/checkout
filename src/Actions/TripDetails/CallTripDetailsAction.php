@@ -11,7 +11,6 @@ use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItem
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
-use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\VerifyAvailabilityRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountriesRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountryCodesRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\AddedRentalCarsRequest;
@@ -46,7 +45,6 @@ class CallTripDetailsAction
             'itinerary' => new GetItineraryRequest($itineraryId),
             'checkout' => new RetrieveCheckoutRequest($checkoutId),
             'addedRentalCars' => new AddedRentalCarsRequest($itineraryId),
-            //            'savedTravellers' => new VerifyAvailabilityRequest($checkoutId),
             'travelerRequirements' => new TravelerRequirementsRequest($checkoutId),
             'upsellItems' => new GetAvailableUpsellItemsRequest($checkoutId),
             'addedUpsellItems' => new RetrieveCheckoutUpsellItemsRequest($checkoutId),
