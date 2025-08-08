@@ -13,6 +13,10 @@ class AvailabilityComponentResponseEntity extends BaseDto
 {
     /**
      * Create a new instance of AvailabilityComponentResponseEntity.
+     *
+     * @see https://docs.tripbuilder.app/Mo9reezaehiengah/checkout-api-v1.html#tag/Availability/paths/~1checkout~1v1~1checkouts~1%7BcheckoutId%7D~1availability-check/post
+     *
+     * @note There are more properties in the response, but we only include the ones we need.
      */
     public function __construct(
         public string $id,
