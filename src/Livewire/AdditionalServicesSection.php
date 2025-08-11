@@ -64,7 +64,7 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      */
     public function next(): void
     {
-        $this->collapse(Section::AdditionalService);
+        $this->markAsCompletedAdnCollapse(Section::AdditionalService);
 
         $this->dispatch(Section::AdditionalService->value);
     }

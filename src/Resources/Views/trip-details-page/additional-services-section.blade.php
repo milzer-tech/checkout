@@ -6,7 +6,7 @@
     title="Additional services"
     :state="$state"
     :showEdit="true"
-    :showCheck="true"
+    :showCheck="$isCompleted"
     class="{{$upsellItemsResponse->offers->isEmpty() ? 'hidden' : ''}}"
     onEdit="expand('{{Section::AdditionalService->value}}')"
 >

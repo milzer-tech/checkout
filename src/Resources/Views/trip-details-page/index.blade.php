@@ -34,7 +34,11 @@
                     :is-completed="$model->data['status']['additional_service']['isCompleted']"
                     :is-expanded="$model->data['status']['additional_service']['isExpanded']"
                 />
-                <livewire:payment-options-section />
+                <livewire:payment-options-section
+                    :$model
+                    :is-completed="$model->data['status']['payment-options']['isCompleted']"
+                    :is-expanded="$model->data['status']['payment-options']['isExpanded']"
+                />
                 <div class="mt-6"></div>
             </section>
         </div>
