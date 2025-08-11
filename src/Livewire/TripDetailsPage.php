@@ -6,11 +6,13 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 use Throwable;
 
 class TripDetailsPage extends BaseCheckoutComponent
@@ -62,5 +64,20 @@ class TripDetailsPage extends BaseCheckoutComponent
             'upsellItemsResponse' => $this->result['upsellItems'],
             'addedUpsellItems' => $this->result['addedUpsellItems'],
         ]);
+    }
+
+    /**
+     * Handle the promo code applied event.
+     *
+     * @param  array<string, array<string, float>>  $prices
+     */
+    #[On('price-changed')]
+    public function priceChanged(array $prices): void
+    {
+        $prices = ApplyPromoCodeResponse::from($prices);
+
+        $this->itinerary->price = $prices->discountedPackagePrice ?? $prices->packagePrice;
+
+        $this->itinerary->promoCodeResponse = $prices;
     }
 }
