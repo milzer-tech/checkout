@@ -45,11 +45,11 @@ class TripSummary extends BaseCheckoutComponent
     #[On('price-changed')]
     public function priceChanged(array $prices): void
     {
-        $promoCodeResponse = ApplyPromoCodeResponse::from($prices);
+        $prices = ApplyPromoCodeResponse::from($prices);
 
-        $this->itinerary->price = $promoCodeResponse->discountedPackagePrice;
+        $this->itinerary->price = $prices->discountedPackagePrice ?? $prices->packagePrice;
 
-        $this->itinerary->promoCodeResponse = $promoCodeResponse;
+        $this->itinerary->promoCodeResponse = $prices;
     }
 
     /**
