@@ -25,6 +25,19 @@ class BaseCheckoutComponent extends Component
     public string $checkoutId;
 
     /**
+     * Indicates the request's source from the IBE or the APP.
+     * This can help determine if the user is authenticated (APP) or not (IBE).
+     */
+    #[Url]
+    public string $origin;
+
+    /**
+     * The ISO 639-1 language code representing the user's language preference for the itinerary.
+     */
+    #[Url]
+    public string $lang;
+
+    /**
      * The unique identifier for the checkout process.
      */
     public Checkout $model;

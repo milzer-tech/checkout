@@ -5,70 +5,62 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Url;
+use Illuminate\Support\Collection;
 use Livewire\Component;
 use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Throwable;
 
-class TripDetailsPage extends Component
+class TripDetailsPage extends BaseCheckoutComponent
 {
     /**
-     * The unique identifier for the checkout process.
+     * The itinerary summary of the trip details page.
      */
-    #[Url]
-    public string $checkoutId;
+    public ItinerarySummary $itinerary;
 
     /**
-     * The unique identifier for the itinerary
+     * The object containing the checkout data.
      */
-    #[Url]
-    public string $itineraryId;
+    public Collection $result;
 
-    /**
-     * Indicates the request's source from the IBE or the APP.
-     * This can help determine if the user is authenticated (APP) or not (IBE).
-     */
-    #[Url]
-    public string $origin;
+    public function mount(
+        CallTripDetailsAction $callTripDetails,
+        SummarizeItineraryAction $summerizeItinerary,
+        InitializeCheckoutDataAction $initializeCheckoutData
+    ): void {
+        $this->result = $callTripDetails->run($this->itineraryId, $this->checkoutId);
 
-    /**
-     * The ISO 639-1 language code representing the user's language preference for the itinerary.
-     */
-    #[Url]
-    public string $lang;
+        $this->model = $initializeCheckoutData->run(
+            checkoutId: $this->checkoutId,
+            allocatedPax: $this->result['itinerary']->allocatedPax
+        );
+
+        $this->itinerary = $summerizeItinerary->run(
+            itineraryResponse: $this->result['itinerary'],
+            checkoutResponse: $this->result['checkout'],
+            addedRentalCarResponse: $this->result['addedRentalCars'],
+            addedUpsellItemsResponse: collect($this->result['addedUpsellItems']),
+        );
+    }
 
     /**
      * Render the component view.
      *
      * @throws Throwable
      */
-    public function render(
-        CallTripDetailsAction $callTripDetails,
-        SummarizeItineraryAction $summerizeItinerary,
-        InitializeCheckoutDataAction $initializeCheckoutData
-    ): View {
-        $result = $callTripDetails->run($this->itineraryId, $this->checkoutId);
-
-        $model = $initializeCheckoutData->run(checkoutId: $this->checkoutId, allocatedPax: $result['itinerary']->allocatedPax);
-
+    public function render(): View
+    {
         return view('checkout::trip-details-page.index', [
-            'itinerary' => $summerizeItinerary->run(
-                itineraryResponse: $result['itinerary'],
-                checkoutResponse: $result['checkout'],
-                addedRentalCarResponse: $result['addedRentalCars'],
-                addedUpsellItemsResponse: collect($result['addedUpsellItems']),
-            ),
-            'contactRequirements' => $result['travelerRequirements']->contact,
-            'countryCodes' => $result['countryCodes'],
-            'allocatedPax' => $result['itinerary']->allocatedPax,
-            'passengerRequirements' => $result['travelerRequirements']->passenger,
-            'countriesResponse' => $result['countries'],
-            'prices' => $result['checkout']->prices,
-            'model' => $model,
-            'upsellItemsResponse' => $result['upsellItems'],
-            'addedUpsellItems' => $result['addedUpsellItems'],
+            'contactRequirements' => $this->result['travelerRequirements']->contact,
+            'countryCodes' => $this->result['countryCodes'],
+            'allocatedPax' => $this->result['itinerary']->allocatedPax,
+            'passengerRequirements' => $this->result['travelerRequirements']->passenger,
+            'countriesResponse' => $this->result['countries'],
+            'prices' => $this->result['checkout']->prices,
+            'upsellItemsResponse' => $this->result['upsellItems'],
+            'addedUpsellItems' => $this->result['addedUpsellItems'],
         ]);
     }
 }
