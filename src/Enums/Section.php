@@ -24,4 +24,5 @@ enum Section: string
     case Traveller = 'traveller';
     case AdditionalService = 'additional_service';
     case Summary = 'summary';
+    case PaymentOptions = 'payment-options';
 }
