@@ -27,7 +27,6 @@
                     :is-completed="$model->data['status']['promo']['isCompleted']"
                     :is-expanded="$model->data['status']['promo']['isExpanded']"
                 />
-                <livewire:travel-insurance-section />
                 <livewire:additional-services-section
                     :$upsellItemsResponse
                     :$addedUpsellItems

@@ -15,6 +15,7 @@ use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryTransfer;
 use Nezasa\Checkout\Dtos\Planner\Entities\UpsellItem;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 
 class ItinerarySummary extends BaseDto
 {
@@ -105,6 +106,15 @@ class ItinerarySummary extends BaseDto
             ->isEmpty();
     }
 
+    public function getHotelsGroupStatus(): ?AvailabilityEnum
+    {
+        return $this->areAllHotelsAvailable()
+            ? AvailabilityEnum::Open
+            : $this->stays
+                ->firstWhere(fn (ItineraryStay $item) => ! $item->availability?->isOpen())
+                ->availability;
+    }
+
     /**
      * Check if all activities in the itinerary are available.
      */
@@ -113,6 +123,15 @@ class ItinerarySummary extends BaseDto
         return $this->activities
             ->reject(fn (ItineraryActivity $item) => $item->availability?->isOpen())
             ->isEmpty();
+    }
+
+    public function getActivitiesGroupStatus(): ?AvailabilityEnum
+    {
+        return $this->areAllActivitiesAvailable()
+            ? AvailabilityEnum::Open
+            : $this->activities
+                ->firstWhere(fn (ItineraryActivity $item) => ! $item->availability?->isOpen())
+                ->availability;
     }
 
     /**
@@ -125,6 +144,15 @@ class ItinerarySummary extends BaseDto
             ->isEmpty();
     }
 
+    public function getTransfersGroupStatus(): ?AvailabilityEnum
+    {
+        return $this->areAllTransfersAvailable()
+            ? AvailabilityEnum::Open
+            : $this->transfers
+                ->firstWhere(fn (ItineraryTransfer $item) => ! $item->availability?->isOpen())
+                ->availability;
+    }
+
     /**
      * Check if all flights in the itinerary are available.
      */
@@ -133,6 +161,15 @@ class ItinerarySummary extends BaseDto
         return $this->flights
             ->reject(fn (ItineraryFlight $item) => $item->availability?->isOpen())
             ->isEmpty();
+    }
+
+    public function getFlightsGroupStatus(): ?AvailabilityEnum
+    {
+        return $this->areAllFlightsAvailable()
+            ? AvailabilityEnum::Open
+            : $this->flights
+                ->firstWhere(fn (ItineraryFlight $item) => ! $item->availability?->isOpen())
+                ->availability;
     }
 
     /**
@@ -145,6 +182,15 @@ class ItinerarySummary extends BaseDto
             ->isEmpty();
     }
 
+    public function rentalCarGroupStatus(): ?AvailabilityEnum
+    {
+        return $this->areAllRentalCarsAvailable()
+            ? AvailabilityEnum::Open
+            : $this->rentalCars
+                ->firstWhere(fn (ItineraryRentalCar $car) => ! $car->availability?->isOpen())
+                ->availability;
+    }
+
     /**
      * Check if all upsell items in the itinerary are available.
      */
@@ -153,5 +199,14 @@ class ItinerarySummary extends BaseDto
         return $this->upsellItems
             ->reject(fn (UpsellItem $item) => $item->availability?->isOpen())
             ->isEmpty();
+    }
+
+    public function getUpsellItemsGroupStatus(): ?AvailabilityEnum
+    {
+        return $this->areAllUpsellItemsAvailable()
+            ? AvailabilityEnum::Open
+            : $this->upsellItems
+                ->firstWhere(fn (UpsellItem $item) => ! $item->availability?->isOpen())
+                ->availability;
     }
 }
