@@ -19,7 +19,15 @@ class TripSummary extends BaseCheckoutComponent
      */
     public ItinerarySummary $itinerary;
 
-    public function mount(): void {}
+    /**
+     * The unique identifier for the itinerary.
+     */
+    public function mount(bool $travellerProcessed = false): void
+    {
+        if ($travellerProcessed) {
+            $this->verifyAvailability();
+        }
+    }
 
     /**
      * Render the component view.

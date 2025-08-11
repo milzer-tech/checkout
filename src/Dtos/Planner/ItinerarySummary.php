@@ -96,117 +96,81 @@ class ItinerarySummary extends BaseDto
         return $this->upsellItems->isNotEmpty();
     }
 
-    /**
-     * Check if all hotels in the itinerary are available.
-     */
-    public function areAllHotelsAvailable(): bool
-    {
-        return $this->stays
-            ->reject(fn (ItineraryStay $item) => $item->availability?->isOpen())
-            ->isEmpty();
-    }
-
     public function getHotelsGroupStatus(): ?AvailabilityEnum
     {
-        return $this->areAllHotelsAvailable()
-            ? AvailabilityEnum::Open
-            : $this->stays
-                ->firstWhere(fn (ItineraryStay $item) => ! $item->availability?->isOpen())
-                ->availability;
-    }
+        $count = $this->stays->count();
 
-    /**
-     * Check if all activities in the itinerary are available.
-     */
-    public function areAllActivitiesAvailable(): bool
-    {
-        return $this->activities
-            ->reject(fn (ItineraryActivity $item) => $item->availability?->isOpen())
-            ->isEmpty();
+        $grouped = $this->stays->groupBy('availability');
+
+        if ($grouped->isNotEmpty() && $grouped->first()->count() === $count) {
+            return $this->stays->first()->availability;
+        }
+
+        return null;
     }
 
     public function getActivitiesGroupStatus(): ?AvailabilityEnum
     {
-        return $this->areAllActivitiesAvailable()
-            ? AvailabilityEnum::Open
-            : $this->activities
-                ->firstWhere(fn (ItineraryActivity $item) => ! $item->availability?->isOpen())
-                ->availability;
-    }
+        $count = $this->activities->count();
 
-    /**
-     * Check if all transfers in the itinerary are available.
-     */
-    public function areAllTransfersAvailable(): bool
-    {
-        return $this->transfers
-            ->reject(fn (ItineraryTransfer $item) => $item->availability?->isOpen())
-            ->isEmpty();
+        $grouped = $this->activities->groupBy('availability');
+
+        if ($grouped->isNotEmpty() && $grouped->first()->count() === $count) {
+            return $this->activities->first()->availability;
+        }
+
+        return null;
     }
 
     public function getTransfersGroupStatus(): ?AvailabilityEnum
     {
-        return $this->areAllTransfersAvailable()
-            ? AvailabilityEnum::Open
-            : $this->transfers
-                ->firstWhere(fn (ItineraryTransfer $item) => ! $item->availability?->isOpen())
-                ->availability;
-    }
+        $count = $this->transfers->count();
 
-    /**
-     * Check if all flights in the itinerary are available.
-     */
-    public function areAllFlightsAvailable(): bool
-    {
-        return $this->flights
-            ->reject(fn (ItineraryFlight $item) => $item->availability?->isOpen())
-            ->isEmpty();
+        $grouped = $this->transfers->groupBy('availability');
+
+        if ($grouped->isNotEmpty() && $grouped->first()->count() === $count) {
+            return $this->transfers->first()->availability;
+        }
+
+        return null;
     }
 
     public function getFlightsGroupStatus(): ?AvailabilityEnum
     {
-        return $this->areAllFlightsAvailable()
-            ? AvailabilityEnum::Open
-            : $this->flights
-                ->firstWhere(fn (ItineraryFlight $item) => ! $item->availability?->isOpen())
-                ->availability;
-    }
+        $count = $this->flights->count();
 
-    /**
-     * Check if all rental cars in the itinerary are available.
-     */
-    public function areAllRentalCarsAvailable(): bool
-    {
-        return $this->rentalCars
-            ->reject(fn (ItineraryRentalCar $item) => $item->availability?->isOpen())
-            ->isEmpty();
+        $grouped = $this->flights->groupBy('availability');
+
+        if ($grouped->isNotEmpty() && $grouped->first()->count() === $count) {
+            return $this->flights->first()->availability;
+        }
+
+        return null;
     }
 
     public function rentalCarGroupStatus(): ?AvailabilityEnum
     {
-        return $this->areAllRentalCarsAvailable()
-            ? AvailabilityEnum::Open
-            : $this->rentalCars
-                ->firstWhere(fn (ItineraryRentalCar $car) => ! $car->availability?->isOpen())
-                ->availability;
-    }
+        $count = $this->rentalCars->count();
 
-    /**
-     * Check if all upsell items in the itinerary are available.
-     */
-    public function areAllUpsellItemsAvailable(): bool
-    {
-        return $this->upsellItems
-            ->reject(fn (UpsellItem $item) => $item->availability?->isOpen())
-            ->isEmpty();
+        $grouped = $this->rentalCars->groupBy('availability');
+
+        if ($grouped->isNotEmpty() && $grouped->first()->count() === $count) {
+            return $this->rentalCars->first()->availability;
+        }
+
+        return null;
     }
 
     public function getUpsellItemsGroupStatus(): ?AvailabilityEnum
     {
-        return $this->areAllUpsellItemsAvailable()
-            ? AvailabilityEnum::Open
-            : $this->upsellItems
-                ->firstWhere(fn (UpsellItem $item) => ! $item->availability?->isOpen())
-                ->availability;
+        $count = $this->upsellItems->count();
+
+        $grouped = $this->upsellItems->groupBy('availability');
+
+        if ($grouped->isNotEmpty() && $grouped->first()->count() === $count) {
+            return $this->upsellItems->first()->availability;
+        }
+
+        return null;
     }
 }

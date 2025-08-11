@@ -44,6 +44,7 @@
                 :$model
                 :is-completed="$model->data['status']['summary']['isCompleted']"
                 :is-expanded="$model->data['status']['summary']['isExpanded']"
+                :traveller-processed="$model->data['status']['traveller']['isCompleted']"
             />
         </div>
     </div>
