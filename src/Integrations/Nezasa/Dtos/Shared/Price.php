@@ -15,4 +15,16 @@ class Price extends BaseDto
         public float $amount,
         public string $currency,
     ) {}
+
+    /**
+     * Get the formatted amount as a string.
+     *
+     * For payment method
+     */
+    public function getPaymentAmount(?string $payment = null): string
+    {
+        return match ($payment) {
+            default => number_format(num: $this->amount, decimals: 2, decimal_separator: '.', thousands_separator: '')
+        };
+    }
 }
