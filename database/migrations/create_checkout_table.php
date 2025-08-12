@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('checkout_id')->unique();
             $table->json('data')->nullable();
+            $table->string('payment_method')->nullable();
+            $table->json('payment_data')->nullable();
             $table->timestamps();
         });
     }

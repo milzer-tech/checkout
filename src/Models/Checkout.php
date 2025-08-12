@@ -17,6 +17,7 @@ class Checkout extends Model
     protected $fillable = [
         'checkout_id',
         'data',
+        'payment_data',
     ];
 
     /**
@@ -28,6 +29,7 @@ class Checkout extends Model
     {
         return [
             'data' => AsCollection::class,
+            'payment_data' => 'json',
         ];
     }
 
