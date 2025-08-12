@@ -42,17 +42,6 @@ abstract class BaseDto extends Data implements Wireable
             $payloads[0][$dateName] = null;
         }
 
-        //
-        //        if($payloads[0]['refId'] === 'pax-3'){
-        //            dd($date,
-        //                isset($date['year'], $date['month'], $date['day']),
-        //                filled($date['year']) && filled($date['month']) && filled($date['day']),
-        //                $payloads[0][$dateName]
-        //
-        //            );
-        //
-        //        }
-
         return $payloads;
     }
 
@@ -66,5 +55,10 @@ abstract class BaseDto extends Data implements Wireable
         return [
             // 'dateOfBirth',
         ];
+    }
+
+    public function toQueryString(): string
+    {
+        return http_build_query($this->toArray());
     }
 }
