@@ -35,7 +35,7 @@ class BaseCheckoutComponent extends Component
      * The ISO 639-1 language code representing the user's language preference for the itinerary.
      */
     #[Url]
-    public string $lang;
+    public ?string $lang = null;
 
     /**
      * The unique identifier for the checkout process.
@@ -100,5 +100,20 @@ class BaseCheckoutComponent extends Component
         $this->isCompleted = false;
 
         SaveSectionStatusJob::dispatch($this->checkoutId, $section, $this->isCompleted, $this->isExpanded);
+    }
+
+    /**
+     * Get the query parameters for the component.
+     *
+     * @return array<string, string>
+     */
+    protected function getQueryParams(): array
+    {
+        return [
+            'checkoutId' => $this->checkoutId,
+            'itineraryId' => $this->itineraryId,
+            'origin' => $this->origin,
+            'lang' => $this->lang,
+        ];
     }
 }
