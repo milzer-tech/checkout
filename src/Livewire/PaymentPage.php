@@ -3,18 +3,21 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\URL;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Models\Checkout;
+use Nezasa\Checkout\Payments\Contracts\AddQueryParamsToReturnUrl;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
+use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiation;
 
 class PaymentPage extends BaseCheckoutComponent
 {
-    public $totalPrice = 100;
-
-    public $itinerary;
+    public ItinerarySummary $itinerary;
 
     public PaymentAsset $payment;
 
@@ -33,7 +36,12 @@ class PaymentPage extends BaseCheckoutComponent
 
         $payment = new OppwaInitiation;
 
-        $init = $payment->prepare($this->model, $this->itinerary->price);
+        $init = $payment->prepare(
+            data: new PaymentPrepareData(
+                contact: ContactInfoPayloadEntity::from($this->model->data['contact']),
+                price: $this->itinerary->price
+            )
+        );
 
         $this->model->transactions()->create([
             'gateway' => $init->gateway,
@@ -41,7 +49,15 @@ class PaymentPage extends BaseCheckoutComponent
             'status' => PaymentStatusEnum::Pending,
         ]);
 
-        $this->payment = $payment->getAssets($init, route('payment-result', $this->getQueryParams()));
+        $parameters = array_merge(
+            $this->getQueryParams(),
+            $payment instanceof AddQueryParamsToReturnUrl ? $payment->addQueryParamsToReturnUrl($init) : []
+        );
+
+        $this->payment = $payment->getAssets(
+            paymentInit: $init,
+            returnUrl: URL::temporarySignedRoute('payment-result', now()->addMinutes(45), $parameters)
+        );
     }
 
     public function render(): View

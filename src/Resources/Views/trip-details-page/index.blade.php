@@ -61,7 +61,8 @@
             Back
         </button>
         <button class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-md">
-            <a href="{{route('payment', request()->query() )}}">
+{{--            <a href="{{route('payment', request()->query() )}}">--}}
+            <a href="{{\Illuminate\Support\Facades\URL::temporarySignedRoute('payment',now()->addMinutes(90),request()->query() )}}">
             Pay {{\Illuminate\Support\Number::currency($itinerary->price->amount, $itinerary->price->currency)}}
             </a>
         </button>

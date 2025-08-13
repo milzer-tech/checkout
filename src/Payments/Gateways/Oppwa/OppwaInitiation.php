@@ -5,33 +5,29 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Gateways\Oppwa;
 
 use Illuminate\Support\Collection;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Oppwa\Connectors\OppwaConnector;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaPreparePayload;
-use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Contracts\PaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
+use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 
 final class OppwaInitiation implements PaymentInitiation
 {
-    public function prepare(Checkout $checkout, Price $price): PaymentInit
+    public function prepare(PaymentPrepareData $data): PaymentInit
     {
-        $contact = ContactInfoPayloadEntity::from($checkout->data['contact']);
-
         $response = OppwaConnector::make()->checkout()->prepare(
             payload: new OppwaPreparePayload(
-                amount: $price->getPaymentAmount(),
-                currency: $price->currency,
-                customerEmail: $contact->email,
-                customerGivenName: $contact->firstName,
-                customerSurname: $contact->lastName,
-                billingStreet1: $contact->address->street1,
-                billingCity: $contact->address->city,
-                billingPostcode: $contact->address->postalCode,
-                billingCountry: str($contact->address->country)->before('-')->toString(),
+                amount: $data->price->getPaymentAmount(),
+                currency: $data->price->currency,
+                customerEmail: $data->contact->email,
+                customerGivenName: $data->contact->firstName,
+                customerSurname: $data->contact->lastName,
+                billingStreet1: $data->contact->address->street1,
+                billingCity: $data->contact->address->city,
+                billingPostcode: $data->contact->address->postalCode,
+                billingCountry: str($data->contact->address->country)->before('-')->toString(),
             )
         );
 
