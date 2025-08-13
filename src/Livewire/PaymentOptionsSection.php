@@ -2,66 +2,37 @@
 
 namespace Nezasa\Checkout\Livewire;
 
-use Livewire\Component;
+use Illuminate\Contracts\View\View;
+use Nezasa\Checkout\Dtos\View\PaymentOption;
 
-class PaymentOptionsSection extends Component
+class PaymentOptionsSection extends BaseCheckoutComponent
 {
-    public $selectedPaymentMethod = 'credit_card';
+    public array $options = [];
 
-    public $cardNumber = '';
-
-    public $cardHolderName = '';
-
-    public $expiryDate = '';
-
-    public $cvv = '';
-
-    public $billingAddress = '';
-
-    public $billingCity = '';
-
-    public $billingCountry = '';
-
-    public $billingPostalCode = '';
-
-    protected $rules = [
-        'cardNumber' => 'required|digits:16',
-        'cardHolderName' => 'required|min:3',
-        'expiryDate' => 'required|regex:/^\d{2}\/\d{2}$/',
-        'cvv' => 'required|digits:3',
-        'billingAddress' => 'required',
-        'billingCity' => 'required',
-        'billingCountry' => 'required',
-        'billingPostalCode' => 'required',
-    ];
-
-    public function selectPaymentMethod($method)
+    public function mount(): void
     {
-        $this->selectedPaymentMethod = $method;
-        $this->dispatch('paymentMethodSelected', ['method' => $method]);
+        $this->options[] = new PaymentOption('Oppwa');
+
+        foreach ($this->options as $option) {
+            if ($option->name == $this->model->payment_method) {
+                $option->isSelected = true;
+            }
+        }
     }
 
-    public function savePaymentDetails()
+    public function select(string $name): void
     {
-        $this->validate();
-
-        // Here you would typically process the payment
-        // For now, we'll just dispatch an event
-        $this->dispatch('paymentDetailsSaved', [
-            'method' => $this->selectedPaymentMethod,
-            'details' => [
-                'cardNumber' => $this->cardNumber,
-                'cardHolderName' => $this->cardHolderName,
-                'expiryDate' => $this->expiryDate,
-                'billingAddress' => $this->billingAddress,
-                'billingCity' => $this->billingCity,
-                'billingCountry' => $this->billingCountry,
-                'billingPostalCode' => $this->billingPostalCode,
-            ],
-        ]);
+        if (collect($this->options)->where('name', $name)->isNotEmpty()) {
+            $this->model->update([
+                'payment_method' => $name,
+            ]);
+        }
     }
 
-    public function render()
+    /**
+     * Render the view for the payment options section.
+     */
+    public function render(): View
     {
         return view('checkout::trip-details-page.payment-options-section');
     }
