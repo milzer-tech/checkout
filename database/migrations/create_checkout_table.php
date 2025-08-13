@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
 return new class extends Migration
 {
@@ -15,8 +16,16 @@ return new class extends Migration
             $table->id();
             $table->string('checkout_id')->unique();
             $table->json('data')->nullable();
-            $table->string('payment_method')->nullable();
-            $table->json('payment_data')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('checkout_transactions', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('checkout_id')->constrained('checkouts')->cascadeOnDelete();
+            $table->string('gateway');
+            $table->json('prepare_data')->nullable();
+            $table->json('result_data')->nullable();
+            $table->tinyInteger('status')->default(PaymentStatusEnum::Pending->value);
             $table->timestamps();
         });
     }
@@ -26,6 +35,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('transactions');
         Schema::dropIfExists('checkouts');
     }
 };
