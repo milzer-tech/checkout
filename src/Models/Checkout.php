@@ -6,6 +6,8 @@ namespace Nezasa\Checkout\Models;
 
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Checkout extends Model
 {
@@ -47,5 +49,20 @@ class Checkout extends Model
         $this->data = $array;
 
         return $this->save();
+    }
+
+    /**
+     * Get the transactions for the checkout.
+     *
+     * @return HasMany<Transaction>
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function lastestTransaction(): HasOne
+    {
+        return $this->hasOne(Transaction::class)->latestOfMany();
     }
 }
