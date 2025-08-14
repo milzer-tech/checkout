@@ -4,6 +4,7 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Nezasa\Checkout\Dtos\View\PaymentOption;
+use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 
 class PaymentOptionsSection extends BaseCheckoutComponent
 {
@@ -11,21 +12,13 @@ class PaymentOptionsSection extends BaseCheckoutComponent
 
     public function mount(): void
     {
-        $this->options[] = new PaymentOption('Oppwa');
+
+        $this->options[] = new PaymentOption('Oppwa', PaymentGatewayEnum::Oppwa);
 
         foreach ($this->options as $option) {
             if ($option->name == $this->model->payment_method) {
                 $option->isSelected = true;
             }
-        }
-    }
-
-    public function select(string $name): void
-    {
-        if (collect($this->options)->where('name', $name)->isNotEmpty()) {
-            $this->model->update([
-                'payment_method' => $name,
-            ]);
         }
     }
 

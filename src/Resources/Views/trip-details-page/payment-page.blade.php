@@ -60,10 +60,6 @@
                 </svg>
                 Back
             </button>
-
-            {{--            <button wire:click="goToPayment" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-md">--}}
-            {{--                Pay {{ $totalPrice }} € (EUR)--}}
-            {{--            </button>--}}
         </div>
 
         <div class="text-center mt-10 text-gray-500 dark:text-gray-400">
