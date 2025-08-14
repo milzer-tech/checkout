@@ -13,12 +13,16 @@ class PaymentAsset extends BaseDto
     /**
      * Create a new instance of PaymentAsset.
      *
-     * @param  Collection<int, string>  $scripts,  each string is a script tag.
+     * @param  Collection<int, string>|array<int, string>  $scripts,  each string is a script tag.
      */
     public function __construct(
         public PaymentGatewayEnum $gateway,
         public bool $isAvailable,
-        public Collection $scripts = new Collection,
+        public Collection|array $scripts = new Collection,
         public ?string $html = null,
-    ) {}
+    ) {
+        if (is_array($this->scripts)) {
+            $this->scripts = new Collection($this->scripts);
+        }
+    }
 }
