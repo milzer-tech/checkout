@@ -6,7 +6,6 @@ namespace Nezasa\Checkout\Payments\Handlers;
 
 use Illuminate\Http\Request;
 use Nezasa\Checkout\Models\Checkout;
-use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentCallBack;
 use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidation;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
