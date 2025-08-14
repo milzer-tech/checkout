@@ -39,7 +39,7 @@ class OppwaConnector extends Connector
      */
     public function resolveBaseUrl(): string
     {
-        return Config::string('checkout.payment.oppwa.base_url');
+        return Config::string('checkout.payment.widget.oppwa.base_url');
     }
 
     /**
@@ -62,7 +62,7 @@ class OppwaConnector extends Connector
     protected function defaultQuery(): array
     {
         return [
-            'entityId' => Config::string('checkout.payment.oppwa.entity_id'),
+            'entityId' => Config::string('checkout.payment.widget.oppwa.entity_id'),
         ];
     }
 
@@ -71,7 +71,7 @@ class OppwaConnector extends Connector
      */
     protected function defaultAuth(): TokenAuthenticator
     {
-        return new TokenAuthenticator(Config::string('checkout.payment.oppwa.token'));
+        return new TokenAuthenticator(Config::string('checkout.payment.widget.oppwa.token'));
     }
 
     /**
