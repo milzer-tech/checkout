@@ -11,7 +11,7 @@ use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
-use Nezasa\Checkout\Payments\Handlers\WidgetHandler;
+use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
 
 class PaymentPage extends BaseCheckoutComponent
 {
@@ -75,7 +75,7 @@ class PaymentPage extends BaseCheckoutComponent
 
         abort_unless($gateway->isWidget(), 404, 'The payment gateway is not supported.');
 
-        $this->payment = resolve(WidgetHandler::class)->run(
+        $this->payment = resolve(WidgetInitiationHandler::class)->run(
             model: $this->model,
             prepareData: new PaymentPrepareData(
                 contact: ContactInfoPayloadEntity::from($this->model->data['contact']),
