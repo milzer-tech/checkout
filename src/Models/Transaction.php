@@ -30,11 +30,18 @@ class Transaction extends Model
         return [
             'prepare_data' => 'json',
             'result_data' => 'json',
+            'nezasa_transaction' => 'json',
+            'nezasa_transaction_ref_id' => 'string',
             'status' => PaymentStatusEnum::class,
             'gateway' => PaymentGatewayEnum::class,
         ];
     }
 
+    /**
+     * The checkout that this transaction belongs to.
+     *
+     * @return BelongsTo<Checkout, self>
+     */
     public function checkout(): BelongsTo
     {
         return $this->belongsTo(Checkout::class);
