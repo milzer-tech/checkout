@@ -6,32 +6,18 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Http\Request;
 use Nezasa\Checkout\Models\Checkout;
-use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidation;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBack;
+use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
 
 class PaymentResult extends BaseCheckoutComponent
 {
     public function mount(Request $request): void
     {
-        $callback = new OppwaCallBack;
-        $igonreQuery = $callback instanceof ReturnUrlHasInvalidQueryParamsForValidation
-            ? $callback->addedParamsToReturnedUrl($request)
-            : [];
+        $model = Checkout::with('lastestTransaction')->whereCheckoutId($this->checkoutId)->firstOrFail();
 
-        if (! $request->hasValidSignatureWhileIgnoring($igonreQuery)) {
-            abort(403, 'Invalid signature');
-        }
+        $result = resolve(WidgetCallBackHandler::class)->run($model, $request);
 
-        $this->model = Checkout::with('lastestTransaction')->whereCheckoutId($this->checkoutId)->firstOrFail();
-
-        $callback = new OppwaCallBack;
-        $result = $callback->check(request(), $this->model->lastestTransaction->prepare_data);
-
-        $this->model->lastestTransaction->result_data = $result->persistentData;
-        $this->model->lastestTransaction->status = $result->status->value;
-
-        $this->model->lastestTransaction->save();
-
-        dd($result);
+        dd(
+            $result
+        );
     }
 }
