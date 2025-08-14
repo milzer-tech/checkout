@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Oppwa\Requests;
 
-use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaPreparePayload;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Responses\OppwaPrepareResponse;
 use Saloon\Contracts\Body\HasBody;
@@ -37,18 +36,6 @@ class OppwaPrepareRequest extends Request implements HasBody
 
     protected function defaultBody(): array
     {
-        //        if(! $this->payload->entityId){
-        //            $this->payload->entityId = Config::string('checkout.payment.oppwa.entity_id');
-        //        }
-        //        $data = $this->payload->toArray();
-        //        $data['customer.email'] = 'azim@milzer.de';
-        //        $data['customer.givenName'] = 'John';
-        //        $data['customer.surname'] = 'Doe';
-        //        $data['billing.street1'] = '123 Main St';
-        //        $data['billing.city'] = 'Anytown';
-        //        $data['billing.postcode'] = '12345';
-        //        $data['billing.country'] = 'US';
-
         return $this->payload->toArray();
     }
 
