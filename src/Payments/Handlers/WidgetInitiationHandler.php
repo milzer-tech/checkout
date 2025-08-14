@@ -15,7 +15,7 @@ use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiation;
 
-class WidgetHandler
+class WidgetInitiationHandler
 {
     /**
      * Implementations of payment gateways.
