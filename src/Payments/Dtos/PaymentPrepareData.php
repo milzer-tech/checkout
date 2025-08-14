@@ -13,5 +13,9 @@ class PaymentPrepareData extends BaseDto
     public function __construct(
         public ContactInfoPayloadEntity $contact,
         public Price $price,
+        public string $checkoutId,
+        public string $itineraryId,
+        public string $origin,
+        public ?string $lang = null,
     ) {}
 }
