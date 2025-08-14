@@ -80,7 +80,7 @@ class WidgetInitiationHandler
             'prepare_data' => (array) $init->persistentData,
             'status' => PaymentStatusEnum::Pending,
             'nezasa_transaction' => $nezasaTransaction,
-            'nezasa_transaction_ref_id' => $nezasaTransaction['transaction']['transactionRefId'] ?? null,
+            'nezasa_transaction_ref_id' => $nezasaTransaction['transactionRefId'] ?? null,
         ]);
     }
 
@@ -105,7 +105,7 @@ class WidgetInitiationHandler
         return NezasaConnector::make()
             ->paymentTransaction()
             ->create($checkoutId, $payload)
-            ->array();
+            ->array('transaction');
     }
 
     /**
