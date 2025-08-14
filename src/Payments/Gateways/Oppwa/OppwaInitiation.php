@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Gateways\Oppwa;
 
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Oppwa\Connectors\OppwaConnector;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaPreparePayload;
 use Nezasa\Checkout\Payments\Contracts\PaymentInitiation;
@@ -58,6 +60,18 @@ final class OppwaInitiation implements PaymentInitiation
             scripts: new Collection([$script]),
             html: $form,
             isAvailable: true
+        );
+    }
+
+    /**
+     * Get the Nezasa transaction payload for the payment.
+     */
+    public function getNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
+    {
+        return new NezasaPayload(
+            externalRefId: $paymentInit->data->id,
+            amount: $data->price,
+            paymentMethod: NezasaPaymentMethodEnum::CreditCard
         );
     }
 }
