@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('gateway');
             $table->json('prepare_data')->nullable();
             $table->json('result_data')->nullable();
+            $table->json('nezasa_transaction')->nullable();
+            $table->string('nezasa_transaction_id')->nullable();
             $table->tinyInteger('status')->default(PaymentStatusEnum::Pending->value);
             $table->timestamps();
         });
