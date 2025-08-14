@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Handlers;
 
 use Illuminate\Support\Facades\URL;
+use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Contracts\AddQueryParamsToReturnUrl;
 use Nezasa\Checkout\Payments\Contracts\PaymentInitiation;
@@ -29,22 +31,27 @@ class WidgetInitiationHandler
     /**
      * Run the widget handler to prepare payment assets.
      */
-    public function run(Checkout $model, PaymentPrepareData $prepareData, PaymentGatewayEnum $gateway): PaymentAsset
+    public function run(Checkout $model, PaymentPrepareData $data, PaymentGatewayEnum $gateway): PaymentAsset
     {
         $this->validateGateway($gateway);
 
+        /** @var PaymentInitiation $payment */
         $payment = new $this->implementations[$gateway->value];
 
-        $init = $payment->prepare($prepareData);
+        $init = $payment->prepare($data);
 
-        $this->createTransaction($model, $init);
+        $this->checkIfServiceAvailable($init);
+
+        $nezasa = $this->createNezasaTransaction($data->checkoutId, $payment->getNezasaTransactionPayload($data, $init));
+
+        $this->createTransaction($model, $init, $nezasa);
 
         return $payment->getAssets(
             paymentInit: $init,
             returnUrl: URL::temporarySignedRoute(
                 name: 'payment-result',
                 expiration: now()->addMinutes(45),
-                parameters: $this->getReturnUrlParams($prepareData, $payment, $init)
+                parameters: $this->getReturnUrlParams($data, $payment, $init)
             )
         );
     }
@@ -66,12 +73,14 @@ class WidgetInitiationHandler
     /**
      * Create a transaction record for the payment.
      */
-    private function createTransaction(Checkout $model, PaymentInit $init): void
+    private function createTransaction(Checkout $model, PaymentInit $init, array $nezasaTransaction): void
     {
         $model->transactions()->create([
             'gateway' => $init->gateway,
             'prepare_data' => (array) $init->persistentData,
             'status' => PaymentStatusEnum::Pending,
+            'nezasa_transaction' => $nezasaTransaction,
+            'nezasa_transaction_ref_id' => $nezasaTransaction['transaction']['transactionRefId'] ?? null,
         ]);
     }
 
@@ -89,5 +98,23 @@ class WidgetInitiationHandler
             ],
             $payment instanceof AddQueryParamsToReturnUrl ? $payment->addQueryParamsToReturnUrl($init) : []
         );
+    }
+
+    private function createNezasaTransaction(string $checkoutId, CreatePaymentTransactionPayload $payload): array
+    {
+        return NezasaConnector::make()
+            ->paymentTransaction()
+            ->create($checkoutId, $payload)
+            ->array();
+    }
+
+    /**
+     * Check if the payment service is available.
+     */
+    private function checkIfServiceAvailable(PaymentInit $init): void
+    {
+        if (! $init->isAvailable) {
+            throw new \RuntimeException('Payment gateway is not available.');
+        }
     }
 }

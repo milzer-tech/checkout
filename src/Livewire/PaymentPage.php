@@ -77,7 +77,7 @@ class PaymentPage extends BaseCheckoutComponent
 
         $this->payment = resolve(WidgetInitiationHandler::class)->run(
             model: $this->model,
-            prepareData: new PaymentPrepareData(
+            data: new PaymentPrepareData(
                 contact: ContactInfoPayloadEntity::from($this->model->data['contact']),
                 price: $this->itinerary->price,
                 checkoutId: $this->checkoutId,
