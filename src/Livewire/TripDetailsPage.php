@@ -14,6 +14,7 @@ use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 use Throwable;
+use URL;
 
 class TripDetailsPage extends BaseCheckoutComponent
 {
@@ -21,6 +22,11 @@ class TripDetailsPage extends BaseCheckoutComponent
      * The itinerary summary of the trip details page.
      */
     public ItinerarySummary $itinerary;
+
+    /**
+     * The url of the payment page.
+     */
+    public ?string $paymentPageUrl = null;
 
     /**
      * The object containing the checkout data.
@@ -79,5 +85,17 @@ class TripDetailsPage extends BaseCheckoutComponent
         $this->itinerary->price = $prices->discountedPackagePrice ?? $prices->packagePrice;
 
         $this->itinerary->promoCodeResponse = $prices;
+    }
+
+    public function createPaymentPageUrl(string $gateway): void
+    {
+        $this->paymentPageUrl = URL::temporarySignedRoute(
+            name: 'payment',
+            expiration: now()->addMinutes(30),
+            parameters: array_merge(
+                $this->getQueryParams(),
+                ['payment_method' => $gateway]
+            )
+        );
     }
 }

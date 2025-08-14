@@ -3,7 +3,7 @@
     <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-8">
         <div class="space-y-6">
             <section class="space-y-6">
-                <livewire:banner />
+                <livewire:banner/>
                 <livewire:contact-details
                     :$contactRequirements
                     :$countryCodes
@@ -54,17 +54,20 @@
     </div>
     <!-- Footer with navigation buttons - takes 2 columns out of 3 on larger screens -->
     <div class="mt-10 mb-6 flex justify-between max-w-full md:max-w-[64.66%]">
-        <button wire:click="goBack" class="flex items-center gap-2 px-6 py-3 rounded-md border border-gray-300 dark:border-gray-600">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <button wire:click="goBack"
+                class="flex items-center gap-2 px-6 py-3 rounded-md border border-gray-300 dark:border-gray-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
             Back
         </button>
         <button class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-md">
-{{--            <a href="{{route('payment', request()->query() )}}">--}}
-            <a href="{{\Illuminate\Support\Facades\URL::temporarySignedRoute('payment',now()->addMinutes(90),request()->query() )}}">
-            Pay {{\Illuminate\Support\Number::currency($itinerary->price->amount, $itinerary->price->currency)}}
-            </a>
+            {{--            <a href="{{route('payment', request()->query() )}}">--}}
+            @if($paymentPageUrl) <a href="{{$paymentPageUrl}}"> @endif
+                    Pay {{\Illuminate\Support\Number::currency($itinerary->price->amount, $itinerary->price->currency)}}
+            @if($paymentPageUrl) </a> @endif
+
         </button>
     </div>
     <div class="text-center mb-10 text-gray-500 dark:text-gray-400 max-w-full md:max-w-[66.66%]">
