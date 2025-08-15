@@ -13,48 +13,59 @@
             </div>
         </div>
 
-        <!-- Main image and trip summary - moved image here -->
-        <div class="overflow-hidden mb-6">
-            <div class="p-0">
-                <!-- Image moved here with full width -->
-                <div class="w-full h-[170px] relative overflow-hidden">
-                    <img src="/images/42912e66-032b-40fd-ab59-fb16306d9ad5.png" alt="Palma de Mallorca" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 flex items-end">
-                        <div class="p-6 text-white">
-                        </div>
-                    </div>
-                </div>
 
-                <div class="p-6 space-y-4">
-                    <h2 class="text-2xl font-bold">{{ $tripDetails['title'] }}</h2>
+        <!-- ONE card for image + content (matches Figma) -->
+        <div class="rounded-2xl overflow-hidden border border-gray-200 bg-white dark:bg-gray-800 shadow-sm">
+            <!-- Image with clipped corners -->
+            <div class="relative w-full h-[220px]">
+                <img
+                    src="https://thumbs.dreamstime.com/b/luxury-hotel-bellagio-las-vegas-nv-june-june-usa-casino-located-36820850.jpg"
+                    alt="Palma de Mallorca"
+                    class="w-full h-full object-cover"
+                />
+            </div>
 
-                    <div class="flex flex-wrap gap-8">
+            <!-- Content -->
+            <div class="p-6 border-t border-gray-100 flex justify-between items-center">
+                <!-- Left: title + details -->
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">{{ $tripDetails['title'] }}</h2>
+
+                    <div class="flex flex-wrap items-center gap-6 text-gray-700 dark:text-gray-200">
                         <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-gray-600" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8.53689 6.00181L8.26578 5.87381L8.46667 5.65159C9.36089 4.65959 9.58044 3.28892 9.04 2.0747C8.49778 0.855146 7.33245 0.0969238 6 0.0969238C4.66667 0.0969238 3.50222 0.855146 2.96 2.0747C2.41956 3.28892 2.63911 4.65959 3.53333 5.65159L3.73422 5.87381L3.46311 6.00181C1.35911 6.98848 0 9.11915 0 11.4303C0 11.7974 0.298668 12.0969 0.666664 12.0969H7.77778C8.14578 12.0969 8.44445 11.7974 8.44445 11.4303C8.44445 11.0631 8.14578 10.7636 7.77778 10.7636H1.37245L1.42667 10.4969C1.86844 8.33426 3.79111 6.76359 6 6.76359C8.57333 6.76359 10.6667 8.85693 10.6667 11.4303C10.6667 11.7974 10.9653 12.0969 11.3333 12.0969C11.7013 12.0969 12 11.7974 12 11.4303C12 9.11915 10.6409 6.98848 8.53689 6.00181ZM6 5.43026C4.89689 5.43026 4 4.53248 4 3.43026C4 2.32803 4.89689 1.43026 6 1.43026C7.10311 1.43026 8 2.32803 8 3.43026C8 4.53248 7.10311 5.43026 6 5.43026Z" fill="currentColor" />
+                            <svg class="w-5 h-5 text-gray-500" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.53689 6.00181L8.26578 5.87381L8.46667 5.65159C9.36089 4.65959 9.58044 3.28892 9.04 2.0747C8.49778 0.855146 7.33245 0.0969238 6 0.0969238C4.66667 0.0969238 3.50222 0.855146 2.96 2.0747C2.41956 3.28892 2.63911 4.65959 3.53333 5.65159L3.73422 5.87381L3.46311 6.00181C1.35911 6.98848 0 9.11915 0 11.4303C0 11.7974 0.298668 12.0969 0.666664 12.0969H7.77778C8.14578 12.0969 8.44445 11.7974 8.44445 11.4303C8.44445 11.0631 8.14578 10.7636 7.77778 10.7636H1.37245L1.42667 10.4969C1.86844 8.33426 3.79111 6.76359 6 6.76359C8.57333 6.76359 10.6667 8.85693 10.6667 11.4303C10.6667 11.7974 10.9653 12.0969 11.3333 12.0969C11.7013 12.0969 12 11.7974 12 11.4303C12 9.11915 10.6409 6.98848 8.53689 6.00181ZM6 5.43026C4.89689 5.43026 4 4.53248 4 3.43026C4 2.32803 4.89689 1.43026 6 1.43026C7.10311 1.43026 8 2.32803 8 3.43026C8 4.53248 7.10311 5.43026 6 5.43026Z" fill="currentColor"/>
                             </svg>
-                            <span class="text-gray-700 dark:text-gray-200">2 Adults, 2 Children</span>
+                            <span>2 Adults, 2 Children</span>
                         </div>
 
+                        <div class="hidden h-5 w-px bg-gray-300 sm:block"></div> <!-- thin divider like Figma -->
+
                         <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-gray-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M16 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M8 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="text-gray-700 dark:text-gray-200">Tue, 1 Apr 2025 - Sat, 5 Apr 2025</span>
+                            <span>Tue, 1 Apr 2025 - Sat, 5 Apr 2025</span>
                         </div>
                     </div>
-
-                    <div class="flex justify-end">
-                        <button wire:click="viewFullItinerary" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-md">
-                            View full itinerary
-                        </button>
-                    </div>
                 </div>
+
+                <!-- Right: CTA (vertically centered to the left block) -->
+                <button
+                    wire:click="viewFullItinerary"
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl">
+                    View full itinerary
+                </button>
             </div>
         </div>
+
+
+
+
+
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Booking details card -->
