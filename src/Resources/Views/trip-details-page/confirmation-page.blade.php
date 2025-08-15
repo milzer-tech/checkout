@@ -15,7 +15,7 @@
 
 
         <!-- ONE card for image + content (matches Figma) -->
-        <div class="rounded-2xl overflow-hidden border border-gray-200 bg-white dark:bg-gray-800 shadow-sm">
+        <div class="border rounded-lg overflow-hidden border-gray-200 bg-white dark:bg-gray-800 shadow-sm">
             <!-- Image with clipped corners -->
             <div class="relative w-full h-[220px]">
                 <img
@@ -61,76 +61,69 @@
                 </button>
             </div>
         </div>
-
-
-
-
-
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
+            <!-- LEFT: Your trip has been booked -->
             <div class="self-start">
-                <div class="rounded-2xl border border-gray-200 bg-white dark:bg-gray-800 shadow-sm">
+                <div class="p-6 border border-gray-200 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
+
                     <!-- Title -->
-                    <h2 class="text-2xl font-semibold tracking-tight flex items-center gap-2 p-6 pb-0">
+                    <h2 class="text-2xl font-semibold tracking-tight flex items-center gap-2 mb-4">
                         Your trip has been booked <span>🎉</span>
                     </h2>
 
-                    <!-- inset divider under title -->
-                    <div class="mt-4 h-px bg-gray-200 mx-6"></div>
+                    <!-- divider under title (inset by padding) -->
+                    <div class="h-px bg-gray-200 mb-2"></div>
 
                     <!-- Booking reference -->
-                    <div class="py-5 px-6 flex items-center justify-between">
+                    <div class="py-4 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
-                                <path d="M19 5H5c-1.105 0-2 .895-2 2v10c0 1.105.895 2 2 2h14c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2Z"
-                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M19 5H5c-1.105 0-2 .895-2 2v10c0 1.105.895 2 2 2h14c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-900">Booking reference</span>
+                            <span class="font-medium text-gray-900"><b>Booking reference</b></span>
                         </div>
                         <span class="text-gray-900">{{ $bookingReference }}</span>
                     </div>
 
                     <!-- Order date -->
-                    <div class="py-5 px-6 flex items-center justify-between">
+                    <div class="py-4 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
-                                <path d="M19 5H5c-1.105 0-2 .895-2 2v10c0 1.105.895 2 2 2h14c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2Z"
-                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M19 5H5c-1.105 0-2 .895-2 2v10c0 1.105.895 2 2 2h14c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M16 3v4M8 3v4M3 11h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-900">Order date</span>
+                            <span class="font-medium text-gray-900"><b>Order date</b></span>
                         </div>
                         <span class="text-gray-900">{{ $orderDate }}</span>
                     </div>
 
                     <!-- Booking status -->
-                    <div class="py-5 px-6 flex items-center justify-between">
+                    <div class="py-4 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-900">Booking status</span>
+                            <span class="font-medium text-gray-900"><b>Booking status</b></span>
                         </div>
                         <span class="inline-flex items-center gap-2 rounded-full bg-green-50 text-green-700 px-4 py-1.5 text-sm font-medium ring-1 ring-green-200">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-      </svg>
-      Confirmed
-    </span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          Confirmed
+        </span>
                     </div>
 
-                    <!-- inset divider under status -->
-                    <div class="h-px bg-gray-200 mx-6"></div>
+                    <!-- divider under status -->
+                    <div class="h-px bg-gray-200"></div>
 
-                    <!-- Print link with no extra bottom padding -->
-                    <!-- Print link with no extra bottom space -->
+                    <!-- Print link -->
                     <button
                         type="button"
                         wire:click="printBookingConfirmation"
-                        class="px-6 py-4 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline w-full text-left"
+                        class="py-4 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline w-full text-left"
                     >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -143,107 +136,270 @@
             </div>
 
 
-            
-            <!-- Travel information card -->
+
+
+
             <div class="p-6 border border-gray-200 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-                <h2 class="text-xl font-bold mb-4">Travel information</h2>
+                <h2 class="text-xl font-bold">Travel information</h2>
 
-                <div class="space-y-4 divide-y">
-                    <div class="py-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M16 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M8 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span class="font-medium text-gray-700 dark:text-gray-200">Travel date</span>
-                        </div>
-                        <div class="pl-7 space-y-1">
-                            <p class="text-gray-700 dark:text-gray-200">Tue, 1 Apr 2025 - Sat, 5 Apr 2025</p>
-                            <p class="text-gray-700 dark:text-gray-200">4 nights</p>
-                        </div>
+                <!-- divider under title -->
+                <div class="mt-4 h-px bg-gray-200"></div>
+
+                <!-- Travel date (NO divider after this block) -->
+                <div class="pt-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none">
+                            <path d="M19 4H5c-1.105 0-2 .895-2 2v14c0 1.105.895 2 2 2h14c1.105 0 2-.895 2-2V6c0-1.105-.895-2-2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="font-medium text-gray-700 dark:text-gray-200"><b>Travel date</b></span>
                     </div>
-
-                    <div class="py-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <svg class="w-5 h-5 text-gray-500" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8.53689 6.00181L8.26578 5.87381L8.46667 5.65159C9.36089 4.65959 9.58044 3.28892 9.04 2.0747C8.49778 0.855146 7.33245 0.0969238 6 0.0969238C4.66667 0.0969238 3.50222 0.855146 2.96 2.0747C2.41956 3.28892 2.63911 4.65959 3.53333 5.65159L3.73422 5.87381L3.46311 6.00181C1.35911 6.98848 0 9.11915 0 11.4303C0 11.7974 0.298668 12.0969 0.666664 12.0969H7.77778C8.14578 12.0969 8.44445 11.7974 8.44445 11.4303C8.44445 11.0631 8.14578 10.7636 7.77778 10.7636H1.37245L1.42667 10.4969C1.86844 8.33426 3.79111 6.76359 6 6.76359C8.57333 6.76359 10.6667 8.85693 10.6667 11.4303C10.6667 11.7974 10.9653 12.0969 11.3333 12.0969C11.7013 12.0969 12 11.7974 12 11.4303C12 9.11915 10.6409 6.98848 8.53689 6.00181ZM6 5.43026C4.89689 5.43026 4 4.53248 4 3.43026C4 2.32803 4.89689 1.43026 6 1.43026C7.10311 1.43026 8 2.32803 8 3.43026C8 4.53248 7.10311 5.43026 6 5.43026Z" fill="currentColor" />
-                            </svg>
-                            <span class="font-medium text-gray-700 dark:text-gray-200">Travellers</span>
-                        </div>
-                        <div class="pl-7">
-                            @foreach($travelers as $traveler)
-                                <p class="text-gray-700 dark:text-gray-200">{{ $traveler }}</p>
-                            @endforeach
-                        </div>
+                    <div class="pl-7 space-y-1">
+                        <p class="text-gray-700 dark:text-gray-200">Tue, 1 Apr 2025 - Sat, 5 Apr 2025</p>
+                        <p class="text-gray-700 dark:text-gray-200">4 nights</p>
                     </div>
+                </div>
 
-                    <div class="py-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="font-medium text-gray-700 dark:text-gray-200">Booking details</span>
-                        </div>
-                        <div class="pl-7 space-y-4">
-                            <div>
-                                <h3 class="font-medium mb-2">Stay</h3>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    <span class="text-gray-700 dark:text-gray-200">Hotel Sol Palma (4 nights)</span>
-                                </div>
-                            </div>
 
-                            <div>
-                                <h3 class="font-medium mb-2">Flights</h3>
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        <span class="text-gray-700 dark:text-gray-200">Lisbon - Palma (Tue, 1 Apr)</span>
+                <!-- Travellers -->
+                <div>
+                    <div class="flex items-center gap-2 mb-2 mt-6">
+                        <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none">
+                            <path d="M5.5 7a3.5 3.5 0 1 0 7 0a3.5 3.5 0 0 0-7 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 21a6 6 0 0 1 12 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="font-medium text-gray-700 dark:text-gray-200"><b>Travellers</b></span>
+                    </div>
+                    <div class="pl-7">
+                        @foreach($travelers as $traveler)
+                            <p class="text-gray-700 dark:text-gray-200">{{ $traveler }}</p>
+                        @endforeach
+                    </div>
+                </div>
+
+
+                {{-- Booking details collapsible section --}}
+                <div class="mb-5 mt-6">
+                    <button wire:click="$toggle('isExpanded')"
+                            class="text-blue-600 font-medium text-sm hover:underline focus:outline-none bg-transparent px-2 py-1 rounded transition flex items-center gap-1.5">
+                        <span>Booking details</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    @if($isExpanded)
+                        <div class="mt-5 space-y-6">
+
+                            @if($itinerary->stays->isNotEmpty())
+                                {{-- Stay section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">Stay</h3>
+                                        @include('checkout::components.available',['availability' => $itinerary->getHotelsGroupStatus()])
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        <span class="text-gray-700 dark:text-gray-200">Palma - Lisbon (Sat, 5 Apr)</span>
+
+                                    @foreach($itinerary->stays as $stay)
+                                        <div class="flex items-start">
+                                            <div class="flex items-center">
+                                                @include('checkout::components.availability-status', ['availability' => $stay->availability])
+                                                <span
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->name }}</span>
+                                            </div>
+                                            <div class="ml-auto text-right">
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->checkIn->format('D, j M') }}
+                                                    - {{$stay->checkOut->format('D, j M')}}</div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(128,128,128,1)] dark:text-gray-400">{{ $stay->nights }}
+                                                    nights
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+
+                                </div>
+                            @endif
+
+                            @if($itinerary->activities->isNotEmpty())
+                                {{-- Stay section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">Activities</h3>
+                                        @include('checkout::components.available',['availability' => $itinerary->getActivitiesGroupStatus()])
+                                    </div>
+
+                                    @foreach($itinerary->activities as $activity)
+                                        <div class="flex items-start">
+                                            <div class="flex items-center">
+                                                @include('checkout::components.availability-status', ['availability' => $activity->availability])
+                                                <span
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->name }}</span>
+                                            </div>
+                                            <div class="ml-auto text-right">
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+
+                                </div>
+                            @endif
+
+                            @if($itinerary->hasFlights())
+                                {{-- Flights section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">Flights</h3>
+                                        @include('checkout::components.available',['availability' => $itinerary->getFlightsGroupStatus()])
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->flights as $flight)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => $flight->availability])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
-                            </div>
+                            @endif
+
+                            @if($itinerary->hasTransfers())
+                                {{-- Transfers section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">Transfers</h3>
+                                        @include('checkout::components.available',['availability' => $itinerary->getTransfersGroupStatus()])
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->transfers as $transfer)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => $transfer->availability])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+
+                            @if($itinerary->hasRentalCar())
+                                {{-- renal car section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">Rental cars</h3>
+                                        @include('checkout::components.available',['availability' => $itinerary->rentalCarGroupStatus()])
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->rentalCars as $rentalCar)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => $rentalCar->availability])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}}
+                                                    - {{$rentalCar->endDateTime->format('D, j M')}}</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if($itinerary->hasUpsellItem())
+                                {{-- renal car section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">Upsell items</h3>
+                                        @include('checkout::components.available',['availability' => $itinerary->getUpsellItemsGroupStatus()])
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->upsellItems as $item)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => $item->availability])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200"></div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
+
+                    @endif
+                </div>
+
+                <!-- divider BEFORE booking details -->
+                <div class="my-6 h-px bg-gray-200"></div>
+
+                <!-- Total paid + link -->
+                <div class="pt-1">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-lg">Total paid (EUR)</span>
+                        <span class="font-bold text-lg">{{ $totalPrice }} €</span>
                     </div>
 
-                    <div class="pt-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-lg">Total paid (EUR)</span>
-                            <span class="font-bold text-lg">{{ $totalPrice }} €</span>
-                        </div>
-
-                        <button wire:click="viewCancellationPolicy" class="w-full flex items-center justify-center gap-2 text-blue-500 hover:bg-blue-50 hover:text-blue-600">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            Cancelation policy
-                        </button>
-                    </div>
+                    <button wire:click="viewCancellationPolicy" class="w-full flex items-center gap-2 pt-4 text-blue-500 hover:bg-blue-50 hover:text-blue-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Cancelation policy
+                    </button>
                 </div>
             </div>
+
+
+
+
         </div>
 
-        <!-- Need help section -->
-        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 my-8">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                        Need help?
+
+        <div class="my-8 rounded-lg border bg-[#2681FF14] border-[#2681FF14]">
+            <div class="px-6 py-6 md:px-10 md:py-8 flex items-center justify-between gap-6 flex-wrap">
+                <div class="grid grid-cols-[auto,1fr] gap-x-4 gap-y-2 items-start">
+                    <svg class="w-7 h-7 text-gray-700" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M21 12a8 8 0 01-8 8H9l-4 3v-3.5A6.5 6.5 0 013.5 12a8.5 8.5 0 018.5-8.5h1A8 8 0 0121 12Z"
+                              stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+
+                    <h3 class="text-xl md:text-2xl font-semibold text-gray-900">
+                        Need help with your booking?
                     </h3>
-                    <p class="text-gray-600 dark:text-gray-300">Contact our support team</p>
+
+                    <p class="col-span-2 text-lg text-gray-700">
+                        Our travel experts are available 24/7
+                    </p>
                 </div>
-                <button wire:click="contactSupport" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-md">
+
+                <button
+                    type="button"
+                    wire:click="contactSupport"
+                    class="inline-flex items-center justify-center rounded-xl border px-6 py-3 md:px-8 md:py-3 font-medium
+                 bg-[#2681FF14] text-[#2681FF] border-[#2681FF]
+                 hover:bg-[#2681FF14] focus:outline-none focus:ring-2 focus:ring-[#2681FF33] focus:ring-offset-2">
                     Contact support
                 </button>
             </div>
         </div>
+
+
     </div>
 </div>
