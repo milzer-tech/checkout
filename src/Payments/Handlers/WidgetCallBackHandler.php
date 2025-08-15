@@ -78,7 +78,7 @@ class WidgetCallBackHandler
     /**
      * Store the result of the payment callback in the transaction.
      */
-    private function storeResult(PaymentResult $result, Checkout $model, ?array $nezasaTransaction): void
+    private function storeResult(PaymentResult $result, Checkout $model, false|array $nezasaTransaction): void
     {
         $model->lastestTransaction->update([
             'result_data' => $result->persistentData,
