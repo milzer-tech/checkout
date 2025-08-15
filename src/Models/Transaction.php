@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
@@ -46,5 +48,17 @@ class Transaction extends Model
     public function checkout(): BelongsTo
     {
         return $this->belongsTo(Checkout::class);
+    }
+
+    /**
+     * Get the price attribute as a Price object.
+     *
+     * @return Attribute<Price>
+     */
+    protected function price(): Attribute
+    {
+        return Attribute::get(
+            get: fn ($value, array $attributes) => new Price((float) $attributes['amount'], $attributes['currency'])
+        );
     }
 }
