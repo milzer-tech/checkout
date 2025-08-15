@@ -23,6 +23,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('checkout_id')->constrained('checkouts')->cascadeOnDelete();
             $table->string('gateway');
+            $table->decimal('amount', 10, 2);
+            $table->char('currency', 3);
             $table->json('prepare_data')->nullable();
             $table->json('result_data')->nullable();
             $table->json('nezasa_transaction')->nullable();

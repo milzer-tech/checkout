@@ -34,6 +34,7 @@ class Transaction extends Model
             'nezasa_transaction_ref_id' => 'string',
             'status' => PaymentStatusEnum::class,
             'gateway' => PaymentGatewayEnum::class,
+            'amount' => 'decimal:2',
         ];
     }
 
