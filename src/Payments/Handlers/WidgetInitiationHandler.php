@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Payments\Handlers;
 use Illuminate\Support\Facades\URL;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Contracts\AddQueryParamsToReturnUrl;
 use Nezasa\Checkout\Payments\Contracts\PaymentInitiation;
@@ -44,7 +45,7 @@ class WidgetInitiationHandler
 
         $nezasa = $this->createNezasaTransaction($data->checkoutId, $payment->getNezasaTransactionPayload($data, $init));
 
-        $this->createTransaction($model, $init, $nezasa);
+        $this->createTransaction($model, $init, $nezasa, $data->price);
 
         return $payment->getAssets(
             paymentInit: $init,
@@ -73,7 +74,7 @@ class WidgetInitiationHandler
     /**
      * Create a transaction record for the payment.
      */
-    private function createTransaction(Checkout $model, PaymentInit $init, array $nezasaTransaction): void
+    private function createTransaction(Checkout $model, PaymentInit $init, array $nezasaTransaction, Price $price): void
     {
         $model->transactions()->create([
             'gateway' => $init->gateway,
@@ -81,6 +82,8 @@ class WidgetInitiationHandler
             'status' => PaymentStatusEnum::Pending,
             'nezasa_transaction' => $nezasaTransaction,
             'nezasa_transaction_ref_id' => $nezasaTransaction['transactionRefId'] ?? null,
+            'amount' => $price->amount,
+            'currency' => $price->currency,
         ]);
     }
 
