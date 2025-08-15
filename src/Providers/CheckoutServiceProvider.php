@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Nezasa\Checkout\Livewire\AdditionalServicesSection;
 use Nezasa\Checkout\Livewire\Banner;
+use Nezasa\Checkout\Livewire\ConfirmationPage;
 use Nezasa\Checkout\Livewire\ContactDetails;
 use Nezasa\Checkout\Livewire\PaymentOptionsSection;
 use Nezasa\Checkout\Livewire\PaymentPage;
@@ -59,6 +60,8 @@ class CheckoutServiceProvider extends ServiceProvider
         Livewire::component(name: 'trip-summary', class: TripSummary::class);
         Livewire::component(name: 'trip-details-page', class: TripDetailsPage::class);
         Livewire::component(name: 'payment-page', class: PaymentPage::class);
+        Livewire::component(name: 'confirmation-page', class: ConfirmationPage::class);
+
     }
 
     /**

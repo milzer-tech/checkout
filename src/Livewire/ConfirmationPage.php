@@ -2,62 +2,54 @@
 
 namespace Nezasa\Checkout\Livewire;
 
-use Livewire\Component;
+use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
+use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Nezasa\Checkout\Models\Checkout;
 
-class ConfirmationPage extends Component
+class ConfirmationPage extends BaseCheckoutComponent
 {
-    public $tripDetails = [
-        'title' => 'Palma de Mallorca',
-    ];
+    /**
+     * Holds the names of the travelers.
+     *
+     * @var array<int, string>
+     */
+    public array $travelers = [];
 
-    public $totalPrice = '1,234.56';
-
-    public $bookingReference = 'arqwjf82ow';
-
-    public $orderDate = 'Mon, 2 Feb 2025';
-
-    public $travelers = ['Hillary Cash', 'Johnny Cash', 'Josh Cash', 'Jake Cash'];
+    public $itinerary;
 
     public function mount()
     {
-        // Example data - replace with actual data from your database
-        $this->tripDetails = [
-            'title' => 'Palma de Mallorca',
-            'image' => '/images/42912e66-032b-40fd-ab59-fb16306d9ad5.png',
-        ];
-        $this->totalPrice = 1000;
-        $this->bookingReference = 'ABC123';
-        $this->orderDate = 'March 15, 2024';
-        $this->travelers = [
-            'John Doe',
-            'Jane Doe',
-            'Child 1',
-            'Child 2',
-        ];
-    }
+        $this->initializeRequirements();
 
-    public function viewFullItinerary()
-    {
-        // Implement view full itinerary logic
-    }
+        foreach ($this->model->data['paxInfo'] as $room) {
+            foreach ($room as $pax) {
+                $this->travelers[] = $pax['firstName'].' '.$pax['lastName'];
+            }
+        }
 
-    public function printBookingConfirmation()
-    {
-        // Implement print booking confirmation logic
-    }
-
-    public function viewCancellationPolicy()
-    {
-        // Implement the logic to view the cancellation policy
-    }
-
-    public function contactSupport()
-    {
-        // Implement the logic to contact support
     }
 
     public function render()
     {
         return view('checkout::trip-details-page.confirmation-page');
+    }
+
+    /**
+     * Initialize the requirements for the payment page.
+     */
+    protected function initializeRequirements(): void
+    {
+        $this->model = Checkout::with('lastestTransaction')->whereCheckoutId($this->checkoutId)->firstOrFail();
+
+        $result = resolve(CallTripDetailsAction::class)->run($this->itineraryId, $this->checkoutId);
+
+        $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
+            itineraryResponse: $result['itinerary'],
+            checkoutResponse: $result['checkout'],
+            addedRentalCarResponse: $result['addedRentalCars'],
+            addedUpsellItemsResponse: collect($result['addedUpsellItems']),
+        );
+
+        $this->itinerary->price = $this->model->lastestTransaction->price;
     }
 }

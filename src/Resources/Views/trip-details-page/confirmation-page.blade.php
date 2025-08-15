@@ -29,14 +29,32 @@
             <div class="p-6 border-t border-gray-100 flex justify-between items-center">
                 <!-- Left: title + details -->
                 <div>
-                    <h2 class="text-2xl font-bold mb-2">{{ $tripDetails['title'] }}</h2>
+                    <h2 class="text-2xl font-bold mb-2">{{str($itinerary->title)->limit(40) }}</h2>
 
                     <div class="flex flex-wrap items-center gap-6 text-gray-700 dark:text-gray-200">
                         <div class="flex items-center gap-2">
                             <svg class="w-5 h-5 text-gray-500" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M8.53689 6.00181L8.26578 5.87381L8.46667 5.65159C9.36089 4.65959 9.58044 3.28892 9.04 2.0747C8.49778 0.855146 7.33245 0.0969238 6 0.0969238C4.66667 0.0969238 3.50222 0.855146 2.96 2.0747C2.41956 3.28892 2.63911 4.65959 3.53333 5.65159L3.73422 5.87381L3.46311 6.00181C1.35911 6.98848 0 9.11915 0 11.4303C0 11.7974 0.298668 12.0969 0.666664 12.0969H7.77778C8.14578 12.0969 8.44445 11.7974 8.44445 11.4303C8.44445 11.0631 8.14578 10.7636 7.77778 10.7636H1.37245L1.42667 10.4969C1.86844 8.33426 3.79111 6.76359 6 6.76359C8.57333 6.76359 10.6667 8.85693 10.6667 11.4303C10.6667 11.7974 10.9653 12.0969 11.3333 12.0969C11.7013 12.0969 12 11.7974 12 11.4303C12 9.11915 10.6409 6.98848 8.53689 6.00181ZM6 5.43026C4.89689 5.43026 4 4.53248 4 3.43026C4 2.32803 4.89689 1.43026 6 1.43026C7.10311 1.43026 8 2.32803 8 3.43026C8 4.53248 7.10311 5.43026 6 5.43026Z" fill="currentColor"/>
                             </svg>
-                            <span>2 Adults, 2 Children</span>
+                            <span>@php
+                                    $str = str($itinerary->adults)
+                                    ->append(' ')
+                                    ->append(str('Adult')->plural($itinerary->adults));
+
+                                    if($itinerary->childrenAges->isNotEmpty()){
+                                       $str = $str->append(', ' . $itinerary->children. ' ')
+                                       ->append(str('Child')->plural($itinerary->children))
+                                       ->append(' (')
+                                       ->append(
+                                            $itinerary->childrenAges->map(function ( $age) {
+                                                return  $age . ' ' . str('year')->plural($age) . ' old';
+                                            })->implode(', ')
+                                        )
+                                        ->append(')');
+                                    }
+
+                                    echo $str;
+                                @endphp</span>
                         </div>
 
                         <div class="hidden h-5 w-px bg-gray-300 sm:block"></div> <!-- thin divider like Figma -->
@@ -48,7 +66,7 @@
                                 <path d="M8 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span>Tue, 1 Apr 2025 - Sat, 5 Apr 2025</span>
+                            <span>{{$itinerary->startDate->format('D, j M Y')}} - {{$itinerary->endDate->format('D, j M Y')}}</span>
                         </div>
                     </div>
                 </div>
@@ -84,7 +102,7 @@
                             </svg>
                             <span class="font-medium text-gray-900"><b>Booking reference</b></span>
                         </div>
-                        <span class="text-gray-900">{{ $bookingReference }}</span>
+                        <span class="text-gray-900">bookingReference</span>
                     </div>
 
                     <!-- Order date -->
@@ -96,7 +114,7 @@
                             </svg>
                             <span class="font-medium text-gray-900"><b>Order date</b></span>
                         </div>
-                        <span class="text-gray-900">{{ $orderDate }}</span>
+                        <span class="text-gray-900">orderDate</span>
                     </div>
 
                     <!-- Booking status -->
@@ -155,8 +173,8 @@
                         <span class="font-medium text-gray-700 dark:text-gray-200"><b>Travel date</b></span>
                     </div>
                     <div class="pl-7 space-y-1">
-                        <p class="text-gray-700 dark:text-gray-200">Tue, 1 Apr 2025 - Sat, 5 Apr 2025</p>
-                        <p class="text-gray-700 dark:text-gray-200">4 nights</p>
+                        <p class="text-gray-700 dark:text-gray-200">{{$itinerary->startDate->format('D, j M Y')}} - {{$itinerary->endDate->format('D, j M Y')}}</p>
+                        <p class="text-gray-700 dark:text-gray-200">{{$itinerary->nights}} nights</p>
                     </div>
                 </div>
 
@@ -354,7 +372,7 @@
                 <div class="pt-1">
                     <div class="flex justify-between items-center mb-2">
                         <span class="font-bold text-lg">Total paid (EUR)</span>
-                        <span class="font-bold text-lg">{{ $totalPrice }} €</span>
+                        <span class="font-bold text-lg">{{ Number::currency($itinerary->price->amount, $itinerary->price->currency) }}</span>
                     </div>
 
                     <button wire:click="viewCancellationPolicy" class="w-full flex items-center gap-2 pt-4 text-blue-500 hover:bg-blue-50 hover:text-blue-600">
