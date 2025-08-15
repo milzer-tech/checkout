@@ -13,6 +13,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItem
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\SaveTravelerDetailsRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\SynchronousBookingRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\VerifyAvailabilityRequest;
 use Nezasa\Checkout\Models\Checkout;
@@ -137,6 +138,19 @@ class CheckoutResource extends BaseResource
     {
         return $this->connector->send(
             new VerifyAvailabilityRequest($checkoutId)
+        );
+    }
+
+    /**
+     * Synchronous booking for a checkout.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function synchronousBooking(string $checkoutId): Response
+    {
+        return $this->connector->send(
+            new SynchronousBookingRequest($checkoutId)
         );
     }
 }
