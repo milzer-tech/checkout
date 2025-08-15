@@ -67,65 +67,83 @@
 
 
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Booking details card -->
-            <div class="p-6 border border-gray-200 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-                    Your trip has been booked <span>🎉</span>
-                </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
-                <div class="space-y-4 divide-y">
-                    <div class="py-4 flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M3 7L12 13L21 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <div class="self-start">
+                <div class="rounded-2xl border border-gray-200 bg-white dark:bg-gray-800 shadow-sm">
+                    <!-- Title -->
+                    <h2 class="text-2xl font-semibold tracking-tight flex items-center gap-2 p-6 pb-0">
+                        Your trip has been booked <span>🎉</span>
+                    </h2>
+
+                    <!-- inset divider under title -->
+                    <div class="mt-4 h-px bg-gray-200 mx-6"></div>
+
+                    <!-- Booking reference -->
+                    <div class="py-5 px-6 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 5H5c-1.105 0-2 .895-2 2v10c0 1.105.895 2 2 2h14c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2Z"
+                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-700 dark:text-gray-200">Booking reference</span>
+                            <span class="font-medium text-gray-900">Booking reference</span>
                         </div>
-                        <span class="text-gray-700 dark:text-gray-200">{{ $bookingReference }}</span>
+                        <span class="text-gray-900">{{ $bookingReference }}</span>
                     </div>
 
-                    <div class="py-4 flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M16 3V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M8 3V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M3 11H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <!-- Order date -->
+                    <div class="py-5 px-6 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 5H5c-1.105 0-2 .895-2 2v10c0 1.105.895 2 2 2h14c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2Z"
+                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 3v4M8 3v4M3 11h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-700 dark:text-gray-200">Order date</span>
+                            <span class="font-medium text-gray-900">Order date</span>
                         </div>
-                        <span class="text-gray-700 dark:text-gray-200">{{ $orderDate }}</span>
+                        <span class="text-gray-900">{{ $orderDate }}</span>
                     </div>
 
-                    <div class="py-4 flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <!-- Booking status -->
+                    <div class="py-5 px-6 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-700 dark:text-gray-200">Booking status</span>
+                            <span class="font-medium text-gray-900">Booking status</span>
                         </div>
-                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Confirmed
-                        </span>
+                        <span class="inline-flex items-center gap-2 rounded-full bg-green-50 text-green-700 px-4 py-1.5 text-sm font-medium ring-1 ring-green-200">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      Confirmed
+    </span>
                     </div>
-                </div>
 
-                <div class="mt-6">
-                    <button wire:click="printBookingConfirmation" class="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md border border-gray-300 dark:border-gray-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    <!-- inset divider under status -->
+                    <div class="h-px bg-gray-200 mx-6"></div>
+
+                    <!-- Print link with no extra bottom padding -->
+                    <!-- Print link with no extra bottom space -->
+                    <button
+                        type="button"
+                        wire:click="printBookingConfirmation"
+                        class="px-6 py-4 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline w-full text-left"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                         </svg>
                         Print booking confirmation
                     </button>
+
                 </div>
             </div>
 
+
+            
             <!-- Travel information card -->
             <div class="p-6 border border-gray-200 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
                 <h2 class="text-xl font-bold mb-4">Travel information</h2>
