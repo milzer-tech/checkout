@@ -1,5 +1,5 @@
 <div class="flex flex-col min-h-screen">
-    <h1 class="text-2xl font-bold mb-6">Trip details</h1>
+    <h1 class="text-2xl font-bold mb-6">{{trans('checkout::page.trip_details.trip_details')}}</h1>
     <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-8">
         <div class="space-y-6">
             <section class="space-y-6">

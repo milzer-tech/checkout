@@ -4,7 +4,7 @@
 @endphp
 
 <x-checkout::editable-box
-        title="Contact details"
+        title="{{trans('checkout::page.trip_details.contact_details')}}"
         :state="$state"
         :showEdit="$state === 'valid'"
         :showCheck="$isCompleted"
@@ -23,7 +23,7 @@
                     type="submit"
                     class="w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md"
                 >
-                    Save Contact
+                   {{trans('checkout::page.trip_details.save_contact')}}
                 </button>
             </div>
     </form>

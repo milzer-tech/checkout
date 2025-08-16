@@ -11,6 +11,6 @@
         <p>Tue, 1 Apr - Sat, 5 Apr</p>
     </div>
     <button class="absolute bottom-6 right-6 border border-white text-white px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 transition">
-        View full itinerary
+        {{trans('checkout::page.trip_details.view_full_itinerary')}}
     </button>
 </div>
