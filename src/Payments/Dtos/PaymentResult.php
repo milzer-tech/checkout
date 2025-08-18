@@ -16,8 +16,6 @@ class PaymentResult extends BaseDto
     public function __construct(
         public PaymentGatewayEnum $gateway,
         public PaymentStatusEnum $status,
-        public array|BaseDto $data = [],
-        public array|BaseDto $persistentData = [],
-        public ?string $description = null,
+        public array $persistentData = [],
     ) {}
 }
