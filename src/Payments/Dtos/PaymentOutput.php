@@ -16,6 +16,6 @@ class PaymentOutput extends BaseDto
     public function __construct(
         public PaymentGatewayEnum $gateway,
         public PaymentStatusEnum $status,
-        public array|BaseDto $data = [],
+        public array $data = [],
     ) {}
 }
