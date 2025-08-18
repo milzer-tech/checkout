@@ -61,6 +61,11 @@ class Checkout extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    /**
+     * Get the latest transaction for the checkout.
+     *
+     * @return HasOne<Transaction>
+     */
     public function lastestTransaction(): HasOne
     {
         return $this->hasOne(Transaction::class)->latestOfMany();
