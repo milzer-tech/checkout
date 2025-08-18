@@ -37,7 +37,6 @@ final class OppwaInitiation implements PaymentInitiation
             return new PaymentInit(
                 gateway: PaymentGatewayEnum::Oppwa,
                 isAvailable: true,
-                data: $response->dto(),
                 persistentData: $response->dto(),
             );
         }
@@ -48,8 +47,8 @@ final class OppwaInitiation implements PaymentInitiation
     public function getAssets(PaymentInit $paymentInit, string $returnUrl): PaymentAsset
     {
         $script = '<script
-        src="https://eu-test.oppwa.com/v1/paymentWidgets.js?checkoutId='.$paymentInit->data->id.'"
-        integrity="'.$paymentInit->data->integrity.'"
+        src="https://eu-test.oppwa.com/v1/paymentWidgets.js?checkoutId='.$paymentInit->persistentData->id.'"
+        integrity="'.$paymentInit->persistentData->integrity.'"
         crossorigin="anonymous">
         </script>';
 
@@ -69,7 +68,7 @@ final class OppwaInitiation implements PaymentInitiation
     public function getNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
     {
         return new NezasaPayload(
-            externalRefId: $paymentInit->data->id,
+            externalRefId: $paymentInit->persistentData->id,
             amount: $data->price,
             paymentMethod: NezasaPaymentMethodEnum::CreditCard
         );
