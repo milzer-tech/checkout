@@ -23,9 +23,7 @@ final class OppwaCallBack implements PaymentCallBack, ReturnUrlHasInvalidQueryPa
         return new PaymentResult(
             gateway: PaymentGatewayEnum::Oppwa,
             status: $response->ok() ? PaymentStatusEnum::Succeeded : PaymentStatusEnum::Failed,
-            data: $response->array(),
-            persistentData: $response->array(),
-            description: $response->array('result')['description'],
+            persistentData: $response->array()
         );
     }
 

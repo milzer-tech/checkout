@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\UpdatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
-use Nezasa\Checkout\Models\Checkout;
+use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentCallBack;
 use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidation;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
@@ -29,24 +29,28 @@ class WidgetCallBackHandler
         PaymentGatewayEnum::Oppwa->value => OppwaCallBack::class,
     ];
 
-    public function run(Checkout $model, Request $request): PaymentOutput
+    public function run(Transaction $transaction, Request $request): PaymentOutput
     {
-        $this->validateGateway($model->lastestTransaction->gateway);
+        $this->validateGateway($transaction->gateway);
 
         /** @var PaymentCallBack $callback */
-        $callback = new $this->implementations[$model->lastestTransaction->gateway->value];
+        $callback = new $this->implementations[$transaction->gateway->value];
+
+        if ($transaction->result_data) {
+            return $this->returnStoredOutput($transaction, $callback);
+        }
 
         $this->validateReturnUrl($callback, $request);
 
-        $result = $callback->check(request(), $model->lastestTransaction->prepare_data);
+        $result = $callback->check(request(), $transaction->prepare_data);
 
-        $nezasaTransaction = $this->updateNezasaTransaction($result->status, $model);
+        $nezasaTransaction = $this->updateNezasaTransaction($result->status, $transaction);
 
-        $this->storeResult($result, $model, $nezasaTransaction);
+        $this->storeResult($result, $transaction, $nezasaTransaction);
 
         return $callback->show(
             result: $result,
-            output: new PaymentOutput($result->gateway, $result->status, $result->data)
+            output: new PaymentOutput($result->gateway, $result->status, $result->persistentData)
         );
     }
 
@@ -78,16 +82,16 @@ class WidgetCallBackHandler
     /**
      * Store the result of the payment callback in the transaction.
      */
-    private function storeResult(PaymentResult $result, Checkout $model, false|array $nezasaTransaction): void
+    private function storeResult(PaymentResult $result, Transaction $model, false|array $nezasaTransaction): void
     {
-        $model->lastestTransaction->update([
+        $model->update([
             'result_data' => $result->persistentData,
             'status' => $result->status->value,
-            'nezasa_transaction' => $nezasaTransaction ?: $model->lastestTransaction->nezasa_transaction,
+            'nezasa_transaction' => $nezasaTransaction ?: $model->nezasa_transaction,
         ]);
     }
 
-    private function updateNezasaTransaction(PaymentStatusEnum $status, Checkout $model): false|array
+    private function updateNezasaTransaction(PaymentStatusEnum $status, Transaction $transaction): false|array
     {
         try {
             $payload = new UpdatePaymentTransactionPayload(
@@ -98,12 +102,29 @@ class WidgetCallBackHandler
 
             return NezasaConnector::make()
                 ->paymentTransaction()
-                ->update($model->checkout_id, $model->lastestTransaction->nezasa_transaction_ref_id, $payload)
+                ->update($transaction->checkout->checkout_id, $transaction->nezasa_transaction_ref_id, $payload)
                 ->array('transaction');
         } catch (Throwable $exception) {
             report($exception);
 
             return false;
         }
+    }
+
+    /**
+     * Return the stored output if the transaction already has result data.
+     */
+    private function returnStoredOutput(Transaction $transaction, PaymentCallBack $callback): PaymentOutput
+    {
+        $result = new PaymentResult(
+            gateway: $transaction->gateway,
+            status: $transaction->status,
+            persistentData: $transaction->result_data,
+        );
+
+        return $callback->show(
+            result: $result,
+            output: new PaymentOutput($result->gateway, $result->status, $result->persistentData)
+        );
     }
 }

@@ -24,9 +24,11 @@ class PaymentResult extends BaseCheckoutComponent
 
     public function mount(Request $request): void
     {
-        $this->model = Checkout::with('lastestTransaction')->whereCheckoutId($this->checkoutId)->firstOrFail();
+        $this->model = Checkout::with('lastestTransaction')
+            ->whereCheckoutId($this->checkoutId)
+            ->firstOrFail();
 
-        $result = resolve(WidgetCallBackHandler::class)->run($this->model, $request);
+        $result = resolve(WidgetCallBackHandler::class)->run($this->model->lastestTransaction, $request);
 
         $this->initializeRequirements();
 
