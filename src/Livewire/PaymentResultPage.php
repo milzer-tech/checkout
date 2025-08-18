@@ -11,7 +11,7 @@ use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
 
-class PaymentResult extends BaseCheckoutComponent
+class PaymentResultPage extends BaseCheckoutComponent
 {
     /**
      * Holds the names of the travelers.
