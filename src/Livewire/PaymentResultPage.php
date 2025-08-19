@@ -9,6 +9,7 @@ use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Models\Checkout;
+use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
 
 class PaymentResultPage extends BaseCheckoutComponent
@@ -22,13 +23,15 @@ class PaymentResultPage extends BaseCheckoutComponent
 
     public ItinerarySummary $itinerary;
 
+    public PaymentOutput $output;
+
     public function mount(Request $request): void
     {
         $this->model = Checkout::with('lastestTransaction')
             ->whereCheckoutId($this->checkoutId)
             ->firstOrFail();
 
-        $result = resolve(WidgetCallBackHandler::class)->run($this->model->lastestTransaction, $request);
+        $this->output = resolve(WidgetCallBackHandler::class)->run($this->model->lastestTransaction, $request);
 
         $this->initializeRequirements();
 
@@ -37,7 +40,6 @@ class PaymentResultPage extends BaseCheckoutComponent
                 $this->travelers[] = $pax['firstName'].' '.$pax['lastName'];
             }
         }
-
     }
 
     public function render()

@@ -42,6 +42,7 @@ class TripDetailsPage extends BaseCheckoutComponent
 
         $this->model = $initializeCheckoutData->run(
             checkoutId: $this->checkoutId,
+            itineraryId: $this->itineraryId,
             allocatedPax: $this->result['itinerary']->allocatedPax
         );
 
