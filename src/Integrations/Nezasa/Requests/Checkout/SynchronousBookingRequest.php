@@ -8,10 +8,16 @@ use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Traits\Body\HasJsonBody;
+use Saloon\Traits\Plugins\HasTimeout;
 
 class SynchronousBookingRequest extends Request implements HasBody
 {
     use HasJsonBody;
+    use HasTimeout;
+
+    protected int $connectTimeout = 60;
+
+    protected int $requestTimeout = 120;
 
     protected Method $method = Method::POST;
 
