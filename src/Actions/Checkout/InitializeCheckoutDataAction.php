@@ -11,13 +11,13 @@ use Nezasa\Checkout\Models\Checkout;
 
 class InitializeCheckoutDataAction
 {
-    public function run(string $checkoutId, PaxAllocationResponseEntity $allocatedPax): Checkout
+    public function run(string $checkoutId, string $itineraryId, PaxAllocationResponseEntity $allocatedPax): Checkout
     {
         if (Checkout::whereCheckoutId($checkoutId)->exists()) {
             $model = Checkout::whereCheckoutId($checkoutId)->first();
 
         } else {
-            $model = Checkout::create(['checkout_id' => $checkoutId]);
+            $model = Checkout::create(['checkout_id' => $checkoutId, 'itinerary_id' => $itineraryId]);
 
             $this->firstConfiguration($allocatedPax, $model);
         }
