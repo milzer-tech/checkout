@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('checkouts', function (Blueprint $table) {
             $table->id();
             $table->string('checkout_id')->unique();
+            $table->string('itinerary_id');
             $table->json('data')->nullable();
             $table->timestamps();
         });

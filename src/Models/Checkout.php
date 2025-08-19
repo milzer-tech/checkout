@@ -18,6 +18,7 @@ class Checkout extends Model
      */
     protected $fillable = [
         'checkout_id',
+        'itinerary_id',
         'data',
         'payment_data',
     ];
