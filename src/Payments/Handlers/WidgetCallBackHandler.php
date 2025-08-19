@@ -7,7 +7,9 @@ namespace Nezasa\Checkout\Payments\Handlers;
 use Illuminate\Http\Request;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\UpdatePaymentTransactionPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\BookingStateEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
+use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentCallBack;
 use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidation;
@@ -37,7 +39,7 @@ class WidgetCallBackHandler
         $callback = new $this->implementations[$transaction->gateway->value];
 
         if ($transaction->result_data) {
-            return $this->returnStoredOutput($transaction, $callback);
+            return $this->getOutput($transaction, $callback);
         }
 
         $this->validateReturnUrl($callback, $request);
@@ -48,10 +50,9 @@ class WidgetCallBackHandler
 
         $this->storeResult($result, $transaction, $nezasaTransaction);
 
-        return $callback->show(
-            result: $result,
-            output: new PaymentOutput($result->gateway, $result->status, $result->persistentData)
-        );
+        $this->bookItinerary($transaction->checkout);
+
+        return $this->getOutput($transaction, $callback);
     }
 
     private function validateGateway(PaymentGatewayEnum $gateway): void
@@ -70,11 +71,11 @@ class WidgetCallBackHandler
      */
     private function validateReturnUrl(mixed $callback, Request $request): void
     {
-        $igonreQuery = $callback instanceof ReturnUrlHasInvalidQueryParamsForValidation
+        $ignoreQuery = $callback instanceof ReturnUrlHasInvalidQueryParamsForValidation
             ? $callback->addedParamsToReturnedUrl($request)
             : [];
 
-        if (! $request->hasValidSignatureWhileIgnoring($igonreQuery)) {
+        if (! $request->hasValidSignatureWhileIgnoring($ignoreQuery)) {
             abort(403, 'Invalid signature');
         }
     }
@@ -114,17 +115,38 @@ class WidgetCallBackHandler
     /**
      * Return the stored output if the transaction already has result data.
      */
-    private function returnStoredOutput(Transaction $transaction, PaymentCallBack $callback): PaymentOutput
+    private function getOutput(Transaction $transaction, PaymentCallBack $callback): PaymentOutput
     {
+        /** @var BookingStateEnum $state */
+        $state = NezasaConnector::make()->checkout()->retrieve($transaction->checkout->checkout_id)->dto()->checkoutState;
+
         $result = new PaymentResult(
             gateway: $transaction->gateway,
             status: $transaction->status,
             persistentData: $transaction->result_data,
         );
 
-        return $callback->show(
-            result: $result,
-            output: new PaymentOutput($result->gateway, $result->status, $result->persistentData)
+        $output = new PaymentOutput(
+            gateway: $result->gateway,
+            isNezasaBookingSuccessful: $state->isSuccessfulState(),
+            bookingReference: $transaction->checkout->itinerary_id,
+            orderDate: $transaction->updated_at->toImmutable(),
+            data: $result->persistentData
         );
+
+        return $callback->show($result, $output);
+    }
+
+    private function bookItinerary(Checkout $checkout): bool
+    {
+        try {
+            $response = NezasaConnector::make()->checkout()->synchronousBooking($checkout->checkout_id);
+
+            return $response->ok();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return false;
+        }
     }
 }
