@@ -53,4 +53,8 @@ enum BookingStateEnum: string
     case OptionChangeCompleted = 'OptionChangeCompleted';
     case OptionCancellationCompleted = 'OptionCancellationCompleted';
 
+    public function isSuccessfulState(): bool
+    {
+        return $this->value === self::BookingRequested || $this->value === self::BookingCompleted;
+    }
 }
