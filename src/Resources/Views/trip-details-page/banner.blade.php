@@ -6,9 +6,9 @@
     />
     <div class="absolute bottom-0 left-0 p-6 text-white bg-gradient-to-t from-black/70 to-transparent w-full">
         <h2 class="text-xl font-semibold flex items-center">
-            Lisbon <span class="mx-2">↔</span>Palma, Majorca
+            {{str($itinerary->title)->limit(50) }}
         </h2>
-        <p>Tue, 1 Apr - Sat, 5 Apr</p>
+        <p>{{$itinerary->startDate->format('D, j M Y')}} - {{$itinerary->endDate->format('D, j M Y')}}</p>
     </div>
     <button class="absolute bottom-6 right-6 border border-white text-white px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 transition">
         {{trans('checkout::page.trip_details.view_full_itinerary')}}
