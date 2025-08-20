@@ -7,5 +7,11 @@ return [
         'contact_details' => 'Contact details',
         'save_contact' => 'Save Contact',
     ],
+    'payment' => [
+        'payment' => 'Payment',
+    ],
+    'booking_confirmation' => [
+        'booking_confirmation' => 'Booking confirmation',
+    ],
 
 ];

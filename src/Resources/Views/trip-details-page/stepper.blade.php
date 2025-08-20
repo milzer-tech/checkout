@@ -5,7 +5,7 @@
             wire:click="navigate('trip.details')"
             class="flex flex-col items-center relative z-10 w-full cursor-pointer"
         >
-            <div class="absolute top-3 left-0 w-full h-0.5 {{ $this->isActive('trip.details') || $this->isCompleted(1) ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700' }}"></div>
+            <div class="absolute top-3 left-0 w-full h-0.5 {{ $this->isActive('traveler-details') || $this->isCompleted(1) ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700' }}"></div>
             <div class="flex items-center justify-center w-6 h-6 rounded-full text-xs relative z-20 {{ $this->isActive('trip.details') ? 'bg-blue-500 text-white shadow-[0px_0px_0px_4px] shadow-blue-300' : ($this->isCompleted(1) ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300') }}">
                 @if($this->isCompleted(1))
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -16,7 +16,7 @@
                 @endif
             </div>
             <div class="mt-2 text-[12px] {{ $this->isActive('trip.details') ? 'font-bold text-gray-800 dark:text-gray-200' : 'font-medium text-gray-600 dark:text-gray-400' }}">
-                Trip details
+                {{trans('checkout::page.trip_details.trip_details')}}
             </div>
         </div>
 
@@ -36,7 +36,7 @@
                 @endif
             </div>
             <div class="mt-2 text-[12px] {{ $this->isActive('payment') ? 'font-bold text-gray-800 dark:text-gray-200' : 'font-medium text-gray-600 dark:text-gray-400' }}">
-                Payment
+                {{trans('checkout::page.payment.payment')}}
             </div>
         </div>
 
@@ -56,7 +56,7 @@
                 @endif
             </div>
             <div class="mt-2 text-[12px] {{ $this->isActive('confirmation') ? 'font-bold text-gray-800 dark:text-gray-200' : 'font-medium text-gray-600 dark:text-gray-400' }}">
-                Booking confirmation
+                {{trans('checkout::page.booking_confirmation.booking_confirmation')}}
             </div>
         </div>
     </div>
