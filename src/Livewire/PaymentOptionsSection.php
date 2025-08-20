@@ -3,7 +3,9 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\View\PaymentOption;
+use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 
 class PaymentOptionsSection extends BaseCheckoutComponent
@@ -28,5 +30,14 @@ class PaymentOptionsSection extends BaseCheckoutComponent
     public function render(): View
     {
         return view('checkout::trip-details-page.payment-options-section');
+    }
+
+    /**
+     * Listen for the 'traveller-processed' event to determine if the promo code section should be expanded or completed.
+     */
+    #[On(Section::AdditionalService->value)]
+    public function listen(): void
+    {
+        $this->expand(Section::PaymentOptions);
     }
 }

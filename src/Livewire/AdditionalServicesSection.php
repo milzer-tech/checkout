@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\AddedUpsellItemResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\UpsellItemsResponse;
@@ -133,5 +134,16 @@ class AdditionalServicesSection extends BaseCheckoutComponent
         AddOrUpdateUpsellItemJob::dispatch($this->checkoutId, $offerId, $serviceCategoryRefId, $quantity);
 
         $this->dispatch('summary-updated');
+    }
+
+    /**
+     * Listen for the 'traveller-processed' event to determine if the promo code section should be expanded or completed.
+     */
+    #[On(Section::Promo->value)]
+    public function listen(): void
+    {
+        $this->isCompleted
+            ? $this->next()
+            : $this->expand(Section::AdditionalService);
     }
 }

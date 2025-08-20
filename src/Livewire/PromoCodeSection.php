@@ -59,7 +59,7 @@ class PromoCodeSection extends BaseCheckoutComponent
     public function listen(): void
     {
         $this->isCompleted
-            ? $this->dispatch('promo-processed')
+            ? $this->dispatch(Section::Promo->value)
             : $this->expand(Section::Promo);
     }
 
@@ -89,9 +89,9 @@ class PromoCodeSection extends BaseCheckoutComponent
      */
     public function next(): void
     {
-        $this->collapse(Section::Promo);
+        $this->markAsCompletedAdnCollapse(Section::Promo);
 
-        $this->dispatch('promo-processed');
+        $this->dispatch(Section::Promo->value);
     }
 
     /**
@@ -100,8 +100,6 @@ class PromoCodeSection extends BaseCheckoutComponent
     public function noPromoCode(): void
     {
         $this->notHavePromoCode = true;
-
-        $this->markAsCompleted(Section::Promo);
 
         $this->next();
     }
