@@ -20,6 +20,6 @@ class LegResponseEntity extends Data
      */
     public function __construct(
         public StopResponseEntity $stop,
-        public Collection $connections,
+        public Collection $connections = new Collection,
     ) {}
 }
