@@ -33,5 +33,8 @@ return [
     'booking_confirmation' => [
         'booking_confirmation' => 'Booking confirmation',
     ],
+    'footer' => [
+        'copyright' => 'Copyright 2025 :name. All rights reserved',
+    ],
 
 ];
