@@ -22,7 +22,6 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white font-mulish">
     <div class="max-w-[1200px] mx-auto px-[30px] py-8">
         <div class="flex justify-end mb-4">
-            @include('checkout::components.theme-switcher')
         </div>
         <livewire:stepper />
         <div x-data="{ currentPath: '{{ Route::current()->getName() }}' }"
