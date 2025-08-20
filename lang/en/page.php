@@ -16,7 +16,12 @@ return [
         'adult' => 'Adult',
         'child' => 'Child',
         'room' => 'Room',
-
+        'add_promo_code' => 'Add promo code',
+        'enter_promo_code' => 'Enter promo code',
+        'apply' => 'Apply',
+        'have_no_promo_code' => 'I don’t have a promo code',
+        'next' => 'Next',
+        'promo_code_successful_message' => 'Promo code :code applied! You saved :amount on your booking.',
     ],
     'payment' => [
         'payment' => 'Payment',

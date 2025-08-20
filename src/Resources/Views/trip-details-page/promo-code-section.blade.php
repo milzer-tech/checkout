@@ -2,7 +2,7 @@
 @php($state = $isExpanded ? 'editing' : 'valid')
 
 <x-checkout::editable-box
-    title="Add Promo code"
+    title="{{trans('checkout::page.trip_details.add_promo_code')}}"
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
@@ -13,7 +13,7 @@
         <form wire:submit="save" class="mb-6">
             <div class="flex gap-4 items-start">
                 <div class="flex-1">
-                    <input type="text" wire:model="promoCode" placeholder="Enter promo code"
+                    <input type="text" wire:model="promoCode" placeholder="{{trans('checkout::page.trip_details.enter_promo_code')}}"
                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                            @if(!$isExpanded) disabled @endif>
                     @error('promoCode') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
@@ -23,7 +23,7 @@
                 <button type="submit" class="bg-white border border-blue-500 text-blue-500 hover:bg-blue-50 px-6 py-2 rounded-md"
                         @if(!$isExpanded) disabled @endif>
                     <span class="inline-flex items-center gap-2">
-                        <span>Apply</span>
+                        <span>{{trans('checkout::page.trip_details.apply')}}</span>
 
                         <svg wire:loading wire:target="save" class="animate-spin h-4 w-4 text-blue-500"
                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -41,7 +41,11 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
-                    <span>Promo code {{$promoCode}} applied! You saved {{\Illuminate\Support\Number::percentage($prices->decreasePercent())}} on your booking.</span>
+{{--                    <span>Promo code {{$promoCode}} applied! You saved {{\Illuminate\Support\Number::percentage($prices->decreasePercent())}} on your booking.</span>--}}
+                    <span>{{trans('checkout::page.trip_details.promo_code_successful_message', [
+    'code' => $promoCode,
+    'amount' => \Illuminate\Support\Number::percentage($prices->decreasePercent()),
+])}}</span>
                 </div>
             </div>
         @endif
@@ -52,7 +56,7 @@
         <div class="flex justify-between items-center">
             @if(! $prices->promoCode?->code)
                         <a href="#" wire:click.prevent="noPromoCode" class="text-blue-600 hover:underline font-medium">
-                            I don’t have a promo code
+                            {{trans('checkout::page.trip_details.have_no_promo_code')}}
                         </a>
             @else
                 <div></div>
@@ -60,7 +64,7 @@
             <button type="button"
                     wire:click="next"
                     class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                Next
+                {{trans('checkout::page.trip_details.next')}}
             </button>
         </div>
 
