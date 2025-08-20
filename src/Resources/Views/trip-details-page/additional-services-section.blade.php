@@ -3,7 +3,7 @@
 @php($state = $isExpanded ? 'editing' : 'valid')
 
 <x-checkout::editable-box
-    title="Additional services"
+    title="{{trans('checkout::page.trip_details.additional_services')}}"
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
@@ -57,7 +57,7 @@
                                    @checked(collect($items[$offer->offerId])->filter()->isEmpty())
                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500"
                             >
-                            <span class="text-gray-900 font-medium text-sm">No need</span>
+                            <span class="text-gray-900 font-medium text-sm">{{trans('checkout::page.trip_details.no_need')}}</span>
                         </label>
                     @endif
                 </div>
@@ -68,7 +68,7 @@
             <div class="flex justify-between items-center">
                 <div></div>
                 <button type="button" wire:click="next" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                    Next
+                    {{trans('checkout::page.trip_details.next')}}
                 </button>
             </div>
     </div>

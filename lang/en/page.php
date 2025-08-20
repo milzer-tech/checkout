@@ -22,6 +22,8 @@ return [
         'have_no_promo_code' => 'I don’t have a promo code',
         'next' => 'Next',
         'promo_code_successful_message' => 'Promo code :code applied! You saved :amount on your booking.',
+        'additional_services' => 'Additional services',
+        'no_need' => 'No need',
     ],
     'payment' => [
         'payment' => 'Payment',
