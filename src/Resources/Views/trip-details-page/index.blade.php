@@ -62,12 +62,12 @@
                  xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
-            Back
+            {{trans('checkout::page.trip_details.back')}}
         </button>
         <button class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-md">
             {{--            <a href="{{route('payment', request()->query() )}}">--}}
             @if($paymentPageUrl) <a href="{{$paymentPageUrl}}"> @endif
-                    Pay {{\Illuminate\Support\Number::currency($itinerary->price->amount, $itinerary->price->currency)}}
+                    {{trans('checkout::page.trip_details.pay')}} {{\Illuminate\Support\Number::currency($itinerary->price->amount, $itinerary->price->currency)}}
             @if($paymentPageUrl) </a> @endif
 
         </button>

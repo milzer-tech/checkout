@@ -3,6 +3,8 @@
 return [
     'trip_details' => [
         'edit' => 'Edit',
+        'back' => 'Back',
+        'pay' => 'Pay',
         'trip_details' => 'Trip details',
         'view_full_itinerary' => 'View full itinerary',
         'contact_details' => 'Contact details',
