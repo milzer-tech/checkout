@@ -105,7 +105,7 @@ class TravelerDetails extends BaseCheckoutComponent
             'passportExpirationDate' => ['array'],
             'passportExpirationDate.day' => ['integer', 'min:1', 'max:31'],
             'passportExpirationDate.month' => ['integer', 'min:1', 'max:12'],
-            'passportExpirationDate.year' => ['integer', 'min:1900', 'max:'.date('Y')],
+            'passportExpirationDate.year' => ['integer', 'min:'.date('Y'), 'max:'.date('Y') + 20],
             'passportIssuingCountry' => ['string'], // country response
             'postalCode' => ['string', 'max:20'],
             'city' => ['string', 'max:255'],
