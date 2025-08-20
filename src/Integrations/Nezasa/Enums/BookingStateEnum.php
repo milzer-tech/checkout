@@ -55,6 +55,6 @@ enum BookingStateEnum: string
 
     public function isSuccessfulState(): bool
     {
-        return $this->value === self::BookingRequested || $this->value === self::BookingCompleted;
+        return $this->is(self::BookingRequested) || $this->is(self::BookingCompleted);
     }
 }
