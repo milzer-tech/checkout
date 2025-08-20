@@ -53,7 +53,7 @@
         <div class="flex items-center gap-4">
             @if($showEdit && $state === 'valid')
                 <button @if($onEdit) wire:click.stop="{{ $onEdit }}" @endif class="text-blue-600 font-medium hover:underline focus:outline-none bg-transparent px-2 py-1 rounded transition">
-                    Edit
+                    {{trans('checkout::page.trip_details.edit')}}
                 </button>
             @endif
         </div>
