@@ -4,7 +4,7 @@
 
 
 <x-checkout::editable-box
-    title="Traveller details"
+    title="{{trans('checkout::page.trip_details.traveller_details')}}"
     :state="$state"
     :showEdit="$state === 'valid'"
     :showCheck="$isCompleted"
@@ -14,7 +14,7 @@
 
         @foreach($paxInfo as $roomNumber => $room)
 
-            <h2 class="text-xl font-semibold mb-4">Room {{$roomNumber + 1}}</h2>
+            <h2 class="text-xl font-semibold mb-4">{{trans('checkout::page.trip_details.room')}} {{$roomNumber + 1}}</h2>
 
         @php($showThis = collect($paxInfo[$roomNumber])->pluck('showTraveller')->filter(fn(ShowTraveller $item) => $item->isShowing)->isEmpty())
         @if($showThis)
@@ -41,10 +41,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M5.121 17.804A10.97 10.97 0 0112 15c2.136 0 4.113.635 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
-                            <span>Traveller {{$i+1}} - @if($showTraveller->isAdult)
-                                    Adult
+                            <span>{{trans('checkout::page.trip_details.traveller')}} {{$i+1}} - @if($showTraveller->isAdult)
+                                    {{trans('checkout::page.trip_details.adult')}}
                                 @else
-                                    Child
+                                    {{trans('checkout::page.trip_details.child')}}
                                 @endif</span>
                         </button>
                     @endforeach
@@ -64,11 +64,11 @@
                          ])
                     <div class="flex justify-between items-center mt-8">
                         @if(!$loop->first)
-                            @php($label = "Previous traveller")
+                            @php($label = trans('checkout::page.trip_details.previous_traveller'))
                         @endif
 
                         @if($loop->first && !$loop->parent->first)
-                            @php($label = "Previous room")
+                            @php($label = trans('checkout::page.trip_details.previous_room'))
                         @endif
 
                         <button type="button" wire:click="showPreviousTraveller('{{$roomNumber}}-{{$i}}')"
@@ -81,15 +81,15 @@
                         </button>
 
                             @if(!$loop->last)
-                                @php($label = "Next traveller")
+                                @php($label = trans('checkout::page.trip_details.next_traveller'))
                             @endif
 
                             @if($loop->last && !$loop->parent->last)
-                                @php($label = "Next room")
+                                @php($label = trans('checkout::page.trip_details.next_room'))
                             @endif
 
                             @if($loop->last && $loop->parent->last)
-                                @php($label = "Next step")
+                                @php($label = trans('checkout::page.trip_details.next_step'))
                             @endif
 
                             <button type="button" wire:click="showNextTraveller('{{$roomNumber}}-{{$i}}')" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">{{$label}}</button>
