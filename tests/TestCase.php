@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Illuminate\Support\Carbon;
+use Livewire\LivewireServiceProvider;
 use Nezasa\Checkout\Providers\CheckoutServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Saloon\Http\Faking\MockClient;
@@ -26,6 +27,7 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app)
     {
         return [
+            LivewireServiceProvider::class,
             LaravelDataServiceProvider::class,
             CheckoutServiceProvider::class,
         ];
