@@ -6,7 +6,7 @@
         <div class="w-[60px] h-[60px] rounded-lg overflow-hidden">
             <img
                     src="/images/hotel-preview.png"
-                    alt="Palma destination"
+                    alt="{{$itinerary->title }}"
                     class="w-full h-full object-cover"
             />
         </div>
@@ -27,7 +27,7 @@
                                 d="M6.03503 3.74925C5.41478 3.74925 4.91003 3.2446 4.91003 2.62447C4.91003 2.00434 5.41478 1.49969 6.03503 1.49969C6.65528 1.49969 7.16003 2.00434 7.16003 2.62447C7.16003 3.2446 6.65528 3.74925 6.03503 3.74925ZM6.03503 2.24955C5.82803 2.24955 5.66003 2.41751 5.66003 2.62447C5.66003 2.83143 5.82803 2.99939 6.03503 2.99939C6.24203 2.99939 6.41003 2.83143 6.41003 2.62447C6.41003 2.41751 6.24203 2.24955 6.03503 2.24955Z"
                                 fill="currentColor"/>
                     </svg>
-                    <span><a href="{{config('checkout.nezasa.base_url')}}/itineraries/{{$this->itineraryId}}">View full itinerary</a></span>
+                    <span><a href="{{config('checkout.nezasa.base_url')}}/itineraries/{{$this->itineraryId}}">{{trans('checkout::page.trip_details.view_full_itinerary')}}</a></span>
                 </button>
             </div>
         </div>
@@ -49,13 +49,13 @@
                 <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                       stroke-linejoin="round"/>
             </svg>
-            <h3 class="text-base font-bold text-[rgba(37,42,49,1)] dark:text-white leading-6">Travel date</h3>
+            <h3 class="text-base font-bold text-[rgba(37,42,49,1)] dark:text-white leading-6">{{trans('checkout::page.trip_details.travel_date')}}</h3>
         </div>
         <div class="ml-7">
             <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->startDate->format('D, j M Y')}}
                 - {{$itinerary->endDate->format('D, j M Y')}}</p>
             <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->nights}}
-                nights</p>
+                {{str(trans('checkout::page.trip_details.night'))->plural($itinerary->nights)}}</p>
         </div>
     </div>
 
@@ -68,7 +68,7 @@
                         d="M8.53689 6.00181L8.26578 5.87381L8.46667 5.65159C9.36089 4.65959 9.58044 3.28892 9.04 2.0747C8.49778 0.855146 7.33245 0.0969238 6 0.0969238C4.66667 0.0969238 3.50222 0.855146 2.96 2.0747C2.41956 3.28892 2.63911 4.65959 3.53333 5.65159L3.73422 5.87381L3.46311 6.00181C1.35911 6.98848 0 9.11915 0 11.4303C0 11.7974 0.298668 12.0969 0.666664 12.0969H7.77778C8.14578 12.0969 8.44445 11.7974 8.44445 11.4303C8.44445 11.0631 8.14578 10.7636 7.77778 10.7636H1.37245L1.42667 10.4969C1.86844 8.33426 3.79111 6.76359 6 6.76359C8.57333 6.76359 10.6667 8.85693 10.6667 11.4303C10.6667 11.7974 10.9653 12.0969 11.3333 12.0969C11.7013 12.0969 12 11.7974 12 11.4303C12 9.11915 10.6409 6.98848 8.53689 6.00181ZM6 5.43026C4.89689 5.43026 4 4.53248 4 3.43026C4 2.32803 4.89689 1.43026 6 1.43026C7.10311 1.43026 8 2.32803 8 3.43026C8 4.53248 7.10311 5.43026 6 5.43026Z"
                         fill="currentColor"/>
             </svg>
-            <h3 class="text-base font-bold text-[rgba(37,42,49,1)] dark:text-white leading-6">Travellers</h3>
+            <h3 class="text-base font-bold text-[rgba(37,42,49,1)] dark:text-white leading-6">{{trans('checkout::page.trip_details.travellers')}}</h3>
         </div>
         <div class="ml-7">
             <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">
@@ -99,7 +99,7 @@
     <div class="mb-5">
         <button wire:click="$toggle('isExpanded')"
                 class="text-blue-600 font-medium text-sm hover:underline focus:outline-none bg-transparent px-2 py-1 rounded transition flex items-center gap-1.5">
-            <span>Booking details</span>
+            <span>{{trans('checkout::page.trip_details.booking_details')}}</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                  xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -113,7 +113,7 @@
                     {{-- Stay section --}}
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-semibold dark:text-white">Stay</h3>
+                            <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.stay')}}</h3>
                             @include('checkout::components.available',['availability' => $itinerary->getHotelsGroupStatus()])
                         </div>
 
@@ -129,8 +129,8 @@
                                             class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->checkIn->format('D, j M') }}
                                         - {{$stay->checkOut->format('D, j M')}}</div>
                                     <div
-                                            class="text-base font-normal leading-6 text-[rgba(128,128,128,1)] dark:text-gray-400">{{ $stay->nights }}
-                                        nights
+                                            class="text-base font-normal leading-6 text-[rgba(128,128,128,1)] dark:text-gray-400">{{$stay->nights}}
+                                        {{str(trans('checkout::page.trip_details.night'))->plural($stay->nights)}}
                                     </div>
                                 </div>
                             </div>
@@ -144,7 +144,7 @@
                     {{-- Stay section --}}
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-semibold dark:text-white">Activities</h3>
+                            <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.activities')}}</h3>
                             @include('checkout::components.available',['availability' => $itinerary->getActivitiesGroupStatus()])
                         </div>
 
@@ -170,7 +170,7 @@
                     {{-- Flights section --}}
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-semibold dark:text-white">Flights</h3>
+                            <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.flights')}}</h3>
                             @include('checkout::components.available',['availability' => $itinerary->getFlightsGroupStatus()])
                         </div>
                         <div class="space-y-2">
@@ -193,7 +193,7 @@
                     {{-- Transfers section --}}
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-semibold dark:text-white">Transfers</h3>
+                            <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.transfers')}}</h3>
                             @include('checkout::components.available',['availability' => $itinerary->getTransfersGroupStatus()])
                         </div>
                         <div class="space-y-2">
@@ -217,7 +217,7 @@
                     {{-- renal car section --}}
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-semibold dark:text-white">Rental cars</h3>
+                            <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.rental_cars')}}</h3>
                             @include('checkout::components.available',['availability' => $itinerary->rentalCarGroupStatus()])
                         </div>
                         <div class="space-y-2">
@@ -241,7 +241,7 @@
                     {{-- renal car section --}}
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-semibold dark:text-white">Upsell items</h3>
+                            <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.upsell_items')}}</h3>
                             @include('checkout::components.available',['availability' => $itinerary->getUpsellItemsGroupStatus()])
                         </div>
                         <div class="space-y-2">
@@ -291,7 +291,7 @@
     {{-- Total price section --}}
     <div>
         <div class="flex justify-between items-center">
-            <h3 class="font-semibold text-xl dark:text-white">Total ({{strtoupper($itinerary->price->currency)}})</h3>
+            <h3 class="font-semibold text-xl dark:text-white">{{trans('checkout::page.trip_details.total')}} ({{strtoupper($itinerary->price->currency)}})</h3>
 
 
             <span wire:loading.remove
@@ -305,10 +305,7 @@
 
 
         </div>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
-            Includes all taxes, fees, surcharges, and Tripbuilder service fees. Tripbuilder service
-            fees are calculated per passenger and are not refundable.
-        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">{{trans('checkout::page.trip_details.total_below_message')}}</p>
     </div>
 
 </div>
