@@ -86,6 +86,8 @@ class CheckoutServiceProvider extends ServiceProvider
         Config::set(key: 'livewire.layout', value: 'checkout::layouts.layout');
 
         Config::set(key: 'data.date_format', value: [DATE_ATOM, 'Y-m-d', 'Y-m-d\TH:i:s.uP', 'Y-m-d H:i:sO']);
+
+        Config::set('app.locale', request()->input('lang', 'en'));
     }
 
     /**
