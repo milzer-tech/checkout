@@ -24,6 +24,7 @@ return [
         'promo_code_successful_message' => 'Promo code :code applied! You saved :amount on your booking.',
         'additional_services' => 'Additional services',
         'no_need' => 'No need',
+        'payment_options' => 'Payment options',
     ],
     'payment' => [
         'payment' => 'Payment',
