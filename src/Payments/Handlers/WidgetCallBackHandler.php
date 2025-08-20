@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Handlers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\UpdatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\BookingStateEnum;
@@ -117,8 +118,12 @@ class WidgetCallBackHandler
      */
     private function getOutput(Transaction $transaction, PaymentCallBack $callback): PaymentOutput
     {
+        $response = NezasaConnector::make()->checkout()->retrieve($transaction->checkout->checkout_id);
+
+        Log::info('checkout response', $response->json());
+
         /** @var BookingStateEnum $state */
-        $state = NezasaConnector::make()->checkout()->retrieve($transaction->checkout->checkout_id)->dto()->checkoutState;
+        $state = $response->dto()->checkoutState;
 
         $result = new PaymentResult(
             gateway: $transaction->gateway,
@@ -141,6 +146,8 @@ class WidgetCallBackHandler
     {
         try {
             $response = NezasaConnector::make()->checkout()->synchronousBooking($checkout->checkout_id);
+
+            Log::info('booking response', $response->json());
 
             return $response->ok();
         } catch (Throwable $exception) {
