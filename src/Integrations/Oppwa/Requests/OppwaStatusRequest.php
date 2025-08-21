@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Oppwa\Requests;
 
+use Illuminate\Support\Facades\Config;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
+use Saloon\Http\Response;
+use Throwable;
 
 class OppwaStatusRequest extends Request
 {
@@ -25,5 +28,18 @@ class OppwaStatusRequest extends Request
     public function resolveEndpoint(): string
     {
         return $this->resourcePath;
+    }
+
+    public function hasRequestFailed(Response $response): ?bool
+    {
+        $successfulResultCode = Config::string('checkout.payment.widget.oppwa.successful_result_code');
+
+        try {
+            return $response->array('result.code') !== $successfulResultCode;
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return true;
+        }
     }
 }
