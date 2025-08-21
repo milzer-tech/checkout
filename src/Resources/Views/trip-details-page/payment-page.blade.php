@@ -7,7 +7,7 @@
                 <h1 class="text-2xl font-bold mb-6">Payment</h1>
 
                 <div class="p-8 border border-gray-200 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-                    <div class="items-center justify-center max-w-xl">
+                    <div class="items-center justify-center">
                             @if($payment->isAvailable)
                                 @foreach($payment->scripts as $script)
                                     @push('scripts')
