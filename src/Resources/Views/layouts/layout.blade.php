@@ -17,6 +17,8 @@
      'resources/vendor/checkout/js/app.js'
      ])
     @livewireStyles
+    @livewireScripts
+    @stack('scripts')
 </head>
 <body class="h-full">
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white font-mulish">
@@ -31,6 +33,6 @@
     </div>
 </div>
 
-@livewireScripts
+
 </body>
 </html>

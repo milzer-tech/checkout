@@ -44,6 +44,7 @@ return [
     ],
     'payment' => [
         'payment' => 'Payment',
+        'not_available_service' => 'The selected payment method is not available.',
     ],
     'booking_confirmation' => [
         'booking_confirmation' => 'Booking confirmation',
