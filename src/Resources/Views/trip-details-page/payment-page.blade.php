@@ -7,9 +7,7 @@
                 <h1 class="text-2xl font-bold mb-6">Payment</h1>
 
                 <div class="p-8 border border-gray-200 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-                    <div class="flex items-center justify-center h-48">
-                        <p class="text-lg text-gray-700 dark:text-gray-300">
-
+                    <div class="items-center justify-center max-w-xl">
                             @if($payment->isAvailable)
                                 @foreach($payment->scripts as $script)
                                     {!! $script !!}
@@ -18,7 +16,6 @@
                                 {!! $payment->html !!}
                             @endif
 
-                            </p>
 
                         @unless($payment->isAvailable)
                             <div class="flex flex-col items-center justify-center h-48 text-center">

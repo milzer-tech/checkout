@@ -65,7 +65,6 @@
             {{trans('checkout::page.trip_details.back')}}
         </button>
         <button class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-md">
-            {{--            <a href="{{route('payment', request()->query() )}}">--}}
             @if($paymentPageUrl) <a href="{{$paymentPageUrl}}"> @endif
                     {{trans('checkout::page.trip_details.pay')}} {{\Illuminate\Support\Number::currency($itinerary->price->amount, $itinerary->price->currency)}}
             @if($paymentPageUrl) </a> @endif
