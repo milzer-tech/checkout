@@ -3,12 +3,14 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\VerifyAvailabilityResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\ComponentEnum;
 use Nezasa\Checkout\Models\Checkout;
 
@@ -80,6 +82,9 @@ class TripSummary extends BaseCheckoutComponent
         /** @var VerifyAvailabilityResponse $dto */
         $dto = NezasaConnector::make()->checkout()->varifyAvailability($this->checkoutId)->dto();
 
+        /** @var Collection<int, AvailabilityEnum> $statuses */
+        $statuses = new Collection;
+
         foreach ($dto->summary->components as $component) {
             $item = match ($component->componentType) {
                 ComponentEnum::Accommodation => $this->itinerary->stays->firstWhere('id', $component->id),
@@ -93,9 +98,13 @@ class TripSummary extends BaseCheckoutComponent
 
             if ($item) {
                 $item->availability = $component->status;
+
+                $statuses->add($item->availability);
             }
         }
 
-        $this->dispatch('availability-verified', result: true);
+        $availability = $statuses->reject(fn (AvailabilityEnum $item) => $item->isBookable())->isEmpty();
+
+        $this->dispatch('availability-verified', result: $availability);
     }
 }

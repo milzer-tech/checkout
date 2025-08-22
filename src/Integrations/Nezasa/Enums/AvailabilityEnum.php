@@ -28,4 +28,9 @@ enum AvailabilityEnum: string
     case NoneBookable = 'NoneBookable';
     case Cancelled = 'Cancelled';
     case None = 'None';
+
+    public function isBookable(): bool
+    {
+        return $this->isOpen() || $this->isOnRequest();
+    }
 }

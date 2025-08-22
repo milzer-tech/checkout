@@ -95,7 +95,9 @@ class TripDetailsPage extends BaseCheckoutComponent
     public function createPaymentPageUrl($gateway): void
     {
         $this->gateway = $gateway;
+
         $this->checkingAvailability = true;
+
         $this->dispatch('payment-selected', run: true);
     }
 
