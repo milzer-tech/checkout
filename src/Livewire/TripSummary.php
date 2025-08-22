@@ -22,12 +22,7 @@ class TripSummary extends BaseCheckoutComponent
     /**
      * The unique identifier for the itinerary.
      */
-    public function mount(bool $travellerProcessed = false): void
-    {
-        if ($travellerProcessed) {
-            $this->verifyAvailability();
-        }
-    }
+    public function mount(bool $travellerProcessed = false): void {}
 
     /**
      * Render the component view.
@@ -78,7 +73,8 @@ class TripSummary extends BaseCheckoutComponent
      *
      * @param  array<string, array<string, float>>  $prices
      */
-    #[On('traveller-processed')]
+    //    #[On('traveller-processed')]
+    #[On('payment-selected')]
     public function verifyAvailability(): void
     {
         /** @var VerifyAvailabilityResponse $dto */
@@ -99,5 +95,7 @@ class TripSummary extends BaseCheckoutComponent
                 $item->availability = $component->status;
             }
         }
+
+        $this->dispatch('availability-verified', result: true);
     }
 }

@@ -28,6 +28,10 @@ class TripDetailsPage extends BaseCheckoutComponent
      */
     public ?string $paymentPageUrl = null;
 
+    public ?bool $checkingAvailability = null;
+
+    public ?string $gateway = null;
+
     /**
      * The object containing the checkout data.
      */
@@ -88,15 +92,27 @@ class TripDetailsPage extends BaseCheckoutComponent
         $this->itinerary->promoCodeResponse = $prices;
     }
 
-    public function createPaymentPageUrl(string $gateway): void
+    public function createPaymentPageUrl($gateway): void
     {
-        $this->paymentPageUrl = URL::temporarySignedRoute(
-            name: 'payment',
-            expiration: now()->addMinutes(30),
-            parameters: array_merge(
-                $this->getQueryParams(),
-                ['payment_method' => $gateway]
-            )
-        );
+        $this->gateway = $gateway;
+        $this->checkingAvailability = true;
+        $this->dispatch('payment-selected', run: true);
+    }
+
+    #[On('availability-verified')]
+    public function generatePaymentPageUrl(bool $result): void
+    {
+        if ($result) {
+            $this->paymentPageUrl = URL::temporarySignedRoute(
+                name: 'payment',
+                expiration: now()->addMinutes(30),
+                parameters: array_merge(
+                    $this->getQueryParams(),
+                    ['payment_method' => $this->gateway]
+                )
+            );
+        }
+
+        $this->checkingAvailability = null;
     }
 }
