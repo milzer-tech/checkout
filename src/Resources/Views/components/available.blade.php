@@ -5,7 +5,7 @@
          xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
     </svg>
-    Available
+    {{trans('checkout::page.trip_details.available')}}
 </span>
 @endif
 
@@ -15,7 +15,7 @@
         <path d="M12 4v8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
         <circle cx="12" cy="17" r="2" fill="currentColor"/>
     </svg>
-    On request
+    {{trans('checkout::page.trip_details.on_request')}}
 </span>
 @endif
 
@@ -26,7 +26,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M6 18L18 6M6 6l12 12" stroke="currentColor"/>
     </svg>
-    Unavailable
+    {{trans('checkout::page.trip_details.unavailable')}}
 </span>
 @endif
 

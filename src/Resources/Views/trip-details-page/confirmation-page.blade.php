@@ -3,7 +3,7 @@
         <!-- Page header - removed the image from here -->
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold flex items-center gap-2">
-                Booking confirmation <span class="text-2xl">@if($output->isNezasaBookingSuccessful)🎉@endif</span>
+                {{trans('checkout::page.booking_confirmation.booking_confirmation')}} <span class="text-2xl">@if($output->isNezasaBookingSuccessful)🎉@endif</span>
             </h1>
 
             @if($output->isNezasaBookingSuccessful)

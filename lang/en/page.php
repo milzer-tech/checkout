@@ -41,6 +41,9 @@ return [
         'total' => 'Total',
         'total_below_message' => 'Includes all taxes, fees, surcharges, and Tripbuilder service fees. Tripbuilder service
             fees are calculated per passenger and are not refundable.',
+        'available' => 'Available',
+        'on_request' => 'On request',
+        'unavailable' => 'Unavailable',
     ],
     'payment' => [
         'payment' => 'Payment',
