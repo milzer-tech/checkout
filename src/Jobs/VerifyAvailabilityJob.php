@@ -7,8 +7,8 @@ namespace Nezasa\Checkout\Jobs;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Cache;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
-use Nezasa\Checkout\Models\Checkout;
 
 class VerifyAvailabilityJob implements ShouldBeUnique, ShouldQueue
 {
@@ -27,10 +27,11 @@ class VerifyAvailabilityJob implements ShouldBeUnique, ShouldQueue
         $response = NezasaConnector::make()->checkout()->varifyAvailability($this->checkoutId);
 
         if ($response->ok()) {
-            Checkout::query()->where('checkout_id', $this->checkoutId)->update([
-                'availability_response' => $response->array(),
-                'availability_at' => now(),
-            ]);
+            Cache::put(
+                key: 'varifyAvailability-'.$this->checkoutId,
+                value: $response->array(),
+                ttl: now()->addMinutes(10)
+            );
         }
     }
 
