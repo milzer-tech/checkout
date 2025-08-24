@@ -21,8 +21,6 @@ class Checkout extends Model
         'itinerary_id',
         'data',
         'payment_data',
-        'availability_response',
-        'availability_at',
     ];
 
     /**
@@ -35,7 +33,6 @@ class Checkout extends Model
         return [
             'data' => AsCollection::class,
             'payment_data' => 'json',
-            'availability_response' => 'json',
         ];
     }
 
