@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('checkout_id')->unique();
             $table->string('itinerary_id');
             $table->json('data')->nullable();
+            $table->json('availability_response')->nullable();
+            $table->timestamp('availability_at')->nullable();
             $table->timestamps();
         });
 
