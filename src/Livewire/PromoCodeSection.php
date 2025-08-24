@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
+use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
 
 class PromoCodeSection extends BaseCheckoutComponent
 {
@@ -58,6 +59,8 @@ class PromoCodeSection extends BaseCheckoutComponent
     #[On('traveller-processed')]
     public function listen(): void
     {
+        VerifyAvailabilityJob::dispatch($this->checkoutId);
+
         $this->isCompleted
             ? $this->dispatch(Section::Promo->value)
             : $this->expand(Section::Promo);

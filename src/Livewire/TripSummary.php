@@ -4,6 +4,7 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
@@ -79,8 +80,11 @@ class TripSummary extends BaseCheckoutComponent
     #[On('payment-selected')]
     public function verifyAvailability(): void
     {
-        /** @var VerifyAvailabilityResponse $dto */
-        $dto = NezasaConnector::make()->checkout()->varifyAvailability($this->checkoutId)->dto();
+        if ((int) Cache::get('varifyAvailability-status-'.$this->checkoutId, 500) === 200) {
+            $dto = VerifyAvailabilityResponse::from(Cache::get('varifyAvailability-'.$this->checkoutId));
+        } else {
+            $dto = NezasaConnector::make()->checkout()->varifyAvailability($this->checkoutId)->dto();
+        }
 
         /** @var Collection<int, AvailabilityEnum> $statuses */
         $statuses = new Collection;
