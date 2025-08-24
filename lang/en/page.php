@@ -44,6 +44,9 @@ return [
         'available' => 'Available',
         'on_request' => 'On request',
         'unavailable' => 'Unavailable',
+        'need_help_with_your_booking' => 'Need help with your booking?',
+        'our_travel_experts_are_available' => 'Our travel experts are available 24/7',
+        'contact_support' => 'Contact support',
     ],
     'payment' => [
         'payment' => 'Payment',
@@ -51,6 +54,15 @@ return [
     ],
     'booking_confirmation' => [
         'booking_confirmation' => 'Booking confirmation',
+        'confirmed' => 'Confirmed',
+        'failed' => 'Failed',
+        'your_trip_has_been_booked' => 'Your trip has been booked',
+        'your_trip_could_not_be_booked' => 'Your trip could not be booked',
+        'booking_reference' => 'Booking reference',
+        'order_date' => 'Order date',
+        'booking_status' => 'Booking status',
+        'print_booking_confirmation' => 'Print booking confirmation',
+        'traveller_information' => 'Traveller information',
     ],
     'footer' => [
         'copyright' => 'Copyright 2025 :name. All rights reserved',

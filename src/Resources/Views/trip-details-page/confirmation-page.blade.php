@@ -12,7 +12,7 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
-                Confirmed
+                {{trans('checkout::page.booking_confirmation.confirmed')}}
             </div>
             @else
             <span
@@ -22,7 +22,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M6 18L18 6M6 6l12 12" stroke="currentColor"/>
     </svg>
-    Failed
+    {{trans('checkout::page.booking_confirmation.failed')}}
 </span>
             @endif
 
@@ -100,7 +100,7 @@
                 <button
                     wire:click="viewFullItinerary"
                     class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl">
-                    View full itinerary
+                    {{trans('checkout::page.trip_details.view_full_itinerary')}}
                 </button>
             </div>
         </div>
@@ -113,9 +113,9 @@
                     <!-- Title -->
                     <h2 class="text-2xl font-semibold tracking-tight flex items-center gap-2 mb-4">
                         @if($output->isNezasaBookingSuccessful)
-                        Your trip has been booked <span>🎉</span>
+                        {{trans('checkout::page.booking_confirmation.your_trip_has_been_booked')}} <span>🎉</span>
                         @else
-                        Your trip could not be booked
+                        {{trans('checkout::page.booking_confirmation.your_trip_could_not_be_booked')}}
                         @endif
                     </h2>
 
@@ -133,7 +133,7 @@
                                 <path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                       stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-900"><b>Booking reference</b></span>
+                            <span class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.booking_reference')}}</b></span>
                         </div>
                         <span class="text-gray-900">{{$output?->bookingReference}}</span>
                     </div>
@@ -149,7 +149,7 @@
                                 <path d="M16 3v4M8 3v4M3 11h18" stroke="currentColor" stroke-width="2"
                                       stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-900"><b>Order date</b></span>
+                            <span class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.order_date')}}</b></span>
                         </div>
                         <span class="text-gray-900">{{$output->orderDate?->format('D, j M Y')}}</span>
                     </div>
@@ -163,7 +163,7 @@
                                 <path d="M22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2"
                                       stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-900"><b>Booking status</b></span>
+                            <span class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.booking_status')}}</b></span>
                         </div>
 
                         @if($output->isNezasaBookingSuccessful)
@@ -172,7 +172,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
           </svg>
-          Confirmed
+          {{trans('checkout::page.booking_confirmation.confirmed')}}
         </span>
                         @else
                             <span
@@ -182,7 +182,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M6 18L18 6M6 6l12 12" stroke="currentColor"/>
     </svg>
-    Failed
+    {{trans('checkout::page.booking_confirmation.failed')}}
 </span>
                         @endif
 
@@ -201,7 +201,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                         </svg>
-                        Print booking confirmation
+                        {{trans('checkout::page.booking_confirmation.print_booking_confirmation')}}
                     </button>
 
                 </div>
@@ -209,7 +209,7 @@
 
 
             <div class="p-6 border border-gray-200 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-                <h2 class="text-xl font-bold">Travel information</h2>
+                <h2 class="text-xl font-bold">{{trans('checkout::page.booking_confirmation.traveller_information')}}</h2>
 
                 <!-- divider under title -->
                 <div class="mt-4 h-px bg-gray-200"></div>
@@ -224,7 +224,7 @@
                             <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2"
                                   stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span class="font-medium text-gray-700 dark:text-gray-200"><b>Travel date</b></span>
+                        <span class="font-medium text-gray-700 dark:text-gray-200"><b>{{trans('checkout::page.trip_details.travel_date')}}</b></span>
                     </div>
                     <div class="pl-7 space-y-1">
                         <p class="text-gray-700 dark:text-gray-200">{{$itinerary->startDate->format('D, j M Y')}}
@@ -243,7 +243,7 @@
                             <path d="M2 21a6 6 0 0 1 12 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                   stroke-linejoin="round"/>
                         </svg>
-                        <span class="font-medium text-gray-700 dark:text-gray-200"><b>Travellers</b></span>
+                        <span class="font-medium text-gray-700 dark:text-gray-200"><b>{{trans('checkout::page.trip_details.travellers')}}</b></span>
                     </div>
                     <div class="pl-7">
                         @foreach($travelers as $traveler)
@@ -257,7 +257,7 @@
                 <div class="mb-5 mt-6">
                     <button wire:click="$toggle('isExpanded')"
                             class="text-blue-600 font-medium text-sm hover:underline focus:outline-none bg-transparent px-2 py-1 rounded transition flex items-center gap-1.5">
-                        <span>Booking details</span>
+                        <span>{{trans('checkout::page.trip_details.booking_details')}}</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                              xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -289,7 +289,7 @@
                                                     - {{$stay->checkOut->format('D, j M')}}</div>
                                                 <div
                                                     class="text-base font-normal leading-6 text-[rgba(128,128,128,1)] dark:text-gray-400">{{ $stay->nights }}
-                                                    nights
+                                                    {{trans('checkout::page.trip_details.night')}}
                                                 </div>
                                             </div>
                                         </div>
@@ -459,11 +459,11 @@
                     </svg>
 
                     <h3 class="text-xl md:text-2xl font-semibold text-gray-900">
-                        Need help with your booking?
+                        {{trans('checkout::page.trip_details.need_help_with_your_booking')}}
                     </h3>
 
                     <p class="col-span-2 text-lg text-gray-700">
-                        Our travel experts are available 24/7
+                        {{trans('checkout::page.trip_details.our_travel_experts_are_available')}}
                     </p>
                 </div>
 
@@ -473,7 +473,7 @@
                     class="inline-flex items-center justify-center rounded-xl border px-6 py-3 md:px-8 md:py-3 font-medium
                  bg-[#2681FF14] text-[#2681FF] border-[#2681FF]
                  hover:bg-[#2681FF14] focus:outline-none focus:ring-2 focus:ring-[#2681FF33] focus:ring-offset-2">
-                    Contact support
+                    {{trans('checkout::page.trip_details.contact_support')}}
                 </button>
             </div>
         </div>
