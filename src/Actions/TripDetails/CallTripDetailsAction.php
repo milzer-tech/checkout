@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Actions\TripDetails;
 
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Exceptions\NotFoundException;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
@@ -28,13 +29,13 @@ class CallTripDetailsAction
     /**
      * Execute the action to retrieve itinerary and checkout details.
      *
-     * @return Collection {
-     *                    'itinerary': GetItineraryResponse,
-     *                    'checkout': RetrieveCheckoutResponse,
-     *                    'travelerRequirements': TravelerRequirementsResponse,
-     *                    'countryCodes': CountryCodesResponse,
-     *                    `                  'countries': CountriesResponse
-     *                    }
+     * @return Collection<string, BaseDto> {
+     *                                     'itinerary': GetItineraryResponse,
+     *                                     'checkout': RetrieveCheckoutResponse,
+     *                                     'travelerRequirements': TravelerRequirementsResponse,
+     *                                     'countryCodes': CountryCodesResponse,
+     *                                     `                  'countries': CountriesResponse
+     *                                     }
      *
      * @throws Throwable
      */
@@ -55,7 +56,9 @@ class CallTripDetailsAction
         $this->nezasaConnector
             ->pool(requests: $requests, concurrency: count($requests))
             ->withExceptionHandler(fn ($exception) => throw new NotFoundException)
-            ->withResponseHandler(fn (Response $response, string $key) => $results->put($key, $response->dto()))
+            ->withResponseHandler(function (Response $response, string $key) use ($results) {
+                $results->put($key, $response->dto());
+            })
             ->send()
             ->wait();
 

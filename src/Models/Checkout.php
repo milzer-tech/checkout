@@ -5,25 +5,28 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Models;
 
 use Illuminate\Database\Eloquent\Casts\AsCollection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 /**
  * Eloquent model for checkout state.
  *
  * @property string $checkout_id
  * @property string|null $itinerary_id
- * @property \Illuminate\Support\Collection|array|null $data
+ * @property Collection<string, mixed>|array<string, mixed>|null $data
  * @property array|null $payment_data
  *
  * Relationships
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Transaction> $transactions
+ * @property-read EloquentCollection<int, Transaction> $transactions
  * @property-read Transaction|null $lastestTransaction
  *
  * Timestamps
- * @property-read \Illuminate\Support\Carbon|null $created_at
- * @property-read \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Carbon|null $created_at
+ * @property-read Carbon|null $updated_at
  */
 class Checkout extends Model
 {
