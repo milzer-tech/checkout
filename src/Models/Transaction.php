@@ -19,9 +19,9 @@ use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
  *
  * @property int|string $id
  * @property int|string|null $checkout_id
- * @property array|null $prepare_data
- * @property array|null $result_data
- * @property array|null $nezasa_transaction
+ * @property array<string, mixed>|null $prepare_data
+ * @property array<string, mixed>|null $result_data
+ * @property array<string, mixed>|null $nezasa_transaction
  * @property string|null $nezasa_transaction_ref_id
  * @property PaymentStatusEnum|null $status
  * @property PaymentGatewayEnum|null $gateway
@@ -40,6 +40,9 @@ use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
  */
 class Transaction extends Model
 {
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'checkout_transactions';
 
     /**
@@ -70,7 +73,7 @@ class Transaction extends Model
     /**
      * The checkout that this transaction belongs to.
      *
-     * @return BelongsTo<Checkout, self>
+     * @return BelongsTo<Checkout, $this>
      */
     public function checkout(): BelongsTo
     {
@@ -80,7 +83,7 @@ class Transaction extends Model
     /**
      * Get the price attribute as a Price object.
      *
-     * @return Attribute<Price>
+     * @return Attribute<Price, null>
      */
     protected function price(): Attribute
     {

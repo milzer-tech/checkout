@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
  * @property string $checkout_id
  * @property string|null $itinerary_id
  * @property Collection<string, mixed>|array<string, mixed>|null $data
- * @property array|null $payment_data
+ * @property array<string, string|int>|null $payment_data
  *
  * Relationships
  * @property-read EloquentCollection<int, Transaction> $transactions
@@ -33,7 +33,7 @@ class Checkout extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * {@inheritdoc}
      */
     protected $fillable = [
         'checkout_id',
@@ -57,6 +57,8 @@ class Checkout extends Model
 
     /**
      * Update a specific key in the data collection;
+     *
+     * @param  array<string, mixed>  $data
      */
     public function updateData(array $data): bool
     {
@@ -74,7 +76,7 @@ class Checkout extends Model
     /**
      * Get the transactions for the checkout.
      *
-     * @return HasMany<Transaction>
+     * @return HasMany<Transaction, $this>
      */
     public function transactions(): HasMany
     {
@@ -84,7 +86,7 @@ class Checkout extends Model
     /**
      * Get the latest transaction for the checkout.
      *
-     * @return HasOne<Transaction>
+     * @return HasOne<Transaction, $this>
      */
     public function lastestTransaction(): HasOne
     {
