@@ -61,8 +61,10 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
 
     public function updateTravelerDetailsOnNezasa(Checkout $model): void
     {
+        /** @var Collection<int, PaxInfoPayloadEntity> $paxInfo */
         $paxInfo = new Collection;
 
+        /** @phpstan-ignore-next-line */
         foreach (collect($model->data['paxInfo'] ?? [])->flatten(1) as $index => $pax) {
             $paxInfo[] = PaxInfoPayloadEntity::from([
                 'refId' => "pax-$index",

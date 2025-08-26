@@ -37,6 +37,8 @@ class SaveTravelerDetailsRequest extends Request implements HasBody
 
     /**
      * Define the body of the request.
+     *
+     * @return array<string, string|array<string, mixed>>
      */
     protected function defaultBody(): array
     {

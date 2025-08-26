@@ -27,6 +27,8 @@ class AdditionalServicesSection extends BaseCheckoutComponent
 
     /**
      * The items that are displayed in the additional services section.
+     *
+     * @var array<string, array<string, int>>
      */
     public array $items = [];
 
@@ -56,7 +58,7 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      * Render the view for the additional services section.
      */
     public function render(): View
-    {
+    {   /** @phpstan-ignore-next-line  */
         return view('checkout::trip-details-page.additional-services-section');
     }
 

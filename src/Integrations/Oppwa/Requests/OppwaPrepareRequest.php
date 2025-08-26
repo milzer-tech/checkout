@@ -34,6 +34,11 @@ class OppwaPrepareRequest extends Request implements HasBody
         return 'v1/checkouts';
     }
 
+    /**
+     * Define the body of the request.
+     *
+     * @return array<string, string>
+     */
     protected function defaultBody(): array
     {
         return $this->payload->toArray();

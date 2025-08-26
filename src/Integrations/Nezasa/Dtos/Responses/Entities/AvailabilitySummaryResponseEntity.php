@@ -18,6 +18,7 @@ class AvailabilitySummaryResponseEntity extends BaseDto
      * @note There are more properties in the response, but we only include the ones we need.
      *
      * @param  Collection<int, AvailabilityComponentResponseEntity>  $components
+     * @param  array<int, string>  $remarks
      */
     public function __construct(
         public Collection $components,

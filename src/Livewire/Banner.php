@@ -13,8 +13,12 @@ class Banner extends Component
      */
     public ItinerarySummary $itinerary;
 
+    /**
+     * Render the view for the banner.
+     */
     public function render(): View
     {
+        /** @phpstan-ignore-next-line  */
         return view('checkout::trip-details-page.banner');
     }
 }

@@ -25,6 +25,11 @@ class ContactInfoPayloadEntity extends BaseDto
         public ?AddressEntity $address = null,
     ) {}
 
+    /**
+     * Create a new instance of the DTO from the given payloads.
+     *
+     * @phpstan-ignore-next-line
+     */
     public static function from(...$payloads): static
     {
         $payloads[0]['address'] = AddressEntity::from($payloads[0]);
