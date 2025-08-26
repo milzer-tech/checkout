@@ -2,8 +2,10 @@
 
 namespace Nezasa\Checkout\Livewire;
 
+use Illuminate\Contracts\View\View;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Models\Checkout;
 
 class ConfirmationPage extends BaseCheckoutComponent
@@ -15,9 +17,9 @@ class ConfirmationPage extends BaseCheckoutComponent
      */
     public array $travelers = [];
 
-    public $itinerary;
+    public ItinerarySummary $itinerary;
 
-    public function mount()
+    public function mount(): void
     {
         $this->initializeRequirements();
 
@@ -29,8 +31,9 @@ class ConfirmationPage extends BaseCheckoutComponent
 
     }
 
-    public function render()
+    public function render(): View
     {
+        /** @phpstan-ignore-next-line */
         return view('checkout::trip-details-page.confirmation-page');
     }
 
@@ -44,10 +47,8 @@ class ConfirmationPage extends BaseCheckoutComponent
         $result = resolve(CallTripDetailsAction::class)->run($this->itineraryId, $this->checkoutId);
 
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
-            itineraryResponse: $result['itinerary'],
-            checkoutResponse: $result['checkout'],
-            addedRentalCarResponse: $result['addedRentalCars'],
-            addedUpsellItemsResponse: collect($result['addedUpsellItems']),
+            /** @phpstan-ignore-next-line */
+            $result['itinerary'], $result['checkout'], $result['addedRentalCars'], collect($result['addedUpsellItems']),
         );
 
         $this->itinerary->price = $this->model->lastestTransaction->price;

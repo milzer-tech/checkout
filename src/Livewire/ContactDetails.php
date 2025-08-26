@@ -10,6 +10,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ContactRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 use Nezasa\Checkout\Models\Checkout;
 
@@ -17,13 +18,17 @@ class ContactDetails extends BaseCheckoutComponent
 {
     /**
      * The data for the contact details.
+     *
+     * @var array<string, string|int>
      */
     public array $contact;
 
     /**
      * Contact requirements for the checkout.
+     *
+     * @var ContactRequirementEntity|iterable<string, TravelerRequirementFieldEnum>
      */
-    public ContactRequirementEntity $contactRequirements;
+    public ContactRequirementEntity|iterable $contactRequirements;
 
     /**
      * The country calling codes for the contact details.
@@ -47,7 +52,7 @@ class ContactDetails extends BaseCheckoutComponent
      * Render the component view.
      */
     public function render(): View
-    {
+    { /** @phpstan-ignore-next-line */
         return view('checkout::trip-details-page.contact-details');
     }
 
@@ -68,7 +73,7 @@ class ContactDetails extends BaseCheckoutComponent
     /**
      * Save the contact details.
      */
-    public function save()
+    public function save(): void
     {
         $validatedData = $this->validate();
 
