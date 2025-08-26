@@ -28,7 +28,7 @@ class CheckoutServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(path: __DIR__.'/../Config/checkout.php', key: 'checkout');
+        $this->mergeConfigFrom(path: __DIR__.'/../../config/checkout.php', key: 'checkout');
     }
 
     /**
