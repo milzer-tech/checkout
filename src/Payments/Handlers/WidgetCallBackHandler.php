@@ -83,6 +83,8 @@ class WidgetCallBackHandler
 
     /**
      * Store the result of the payment callback in the transaction.
+     *
+     * @param  false|array<string, mixed>  $nezasaTransaction
      */
     private function storeResult(PaymentResult $result, Transaction $model, false|array $nezasaTransaction): void
     {
@@ -93,6 +95,11 @@ class WidgetCallBackHandler
         ]);
     }
 
+    /**
+     * Update the Nezasa transaction with the payment status.
+     *
+     * @return false|array<string, mixed>
+     */
     private function updateNezasaTransaction(PaymentStatusEnum $status, Transaction $transaction): false|array
     {
         try {

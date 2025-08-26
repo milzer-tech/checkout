@@ -23,7 +23,7 @@ final class OppwaCallBack implements PaymentCallBack, ReturnUrlHasInvalidQueryPa
         return new PaymentResult(
             gateway: PaymentGatewayEnum::Oppwa,
             status: $response->failed() ? PaymentStatusEnum::Failed : PaymentStatusEnum::Succeeded,
-            persistentData: $response->array() ?? [],
+            persistentData: (array) $response->array(),
         );
     }
 
@@ -32,6 +32,11 @@ final class OppwaCallBack implements PaymentCallBack, ReturnUrlHasInvalidQueryPa
         return $output;
     }
 
+    /**
+     * Returns the list of query parameters that were added to the return URL after payment.
+     *
+     * @return array<string>
+     */
     public function addedParamsToReturnedUrl(Request $request): array
     {
         return [

@@ -22,9 +22,6 @@ enum PaymentGatewayEnum: int
      */
     public function isWidget(): bool
     {
-        return match ($this) {
-            self::Oppwa => true,
-            default => false,
-        };
+        return $this->isOppwa();
     }
 }

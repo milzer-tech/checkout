@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Payments\Gateways\Oppwa;
 
+use Exception;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Oppwa\Connectors\OppwaConnector;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaPreparePayload;
+use Nezasa\Checkout\Integrations\Oppwa\Dtos\Responses\OppwaPrepareResponse;
 use Nezasa\Checkout\Payments\Contracts\PaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
@@ -46,6 +48,13 @@ final class OppwaInitiation implements PaymentInitiation
 
     public function getAssets(PaymentInit $paymentInit, string $returnUrl): PaymentAsset
     {
+        if (! $paymentInit->persistentData instanceof OppwaPrepareResponse) {
+            throw new Exception('The persistent data is not correct');
+        }
+
+        /** @var Collection<int, string> $scripts */
+        $scripts = new Collection;
+
         $script = '<script
         src="https://eu-test.oppwa.com/v1/paymentWidgets.js?checkoutId='.$paymentInit->persistentData->id.'"
         integrity="'.$paymentInit->persistentData->integrity.'"
@@ -56,9 +65,9 @@ final class OppwaInitiation implements PaymentInitiation
 
         return new PaymentAsset(
             gateway: PaymentGatewayEnum::Oppwa,
-            scripts: new Collection([$script]),
-            html: $form,
-            isAvailable: true
+            isAvailable: true,
+            scripts: $scripts->add($script),
+            html: $form
         );
     }
 
@@ -67,6 +76,10 @@ final class OppwaInitiation implements PaymentInitiation
      */
     public function getNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
     {
+        if (! $paymentInit->persistentData instanceof OppwaPrepareResponse) {
+            throw new Exception('The persistent data is not correct');
+        }
+
         return new NezasaPayload(
             externalRefId: $paymentInit->persistentData->id,
             amount: $data->price,

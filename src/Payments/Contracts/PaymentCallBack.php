@@ -11,6 +11,11 @@ use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 
 interface PaymentCallBack
 {
+    /**
+     * Handles the callback from the payment gateway.
+     *
+     * @param  array<string, mixed>|BaseDto  $persistentData
+     */
     public function check(Request $request, array|BaseDto $persistentData): PaymentResult;
 
     public function show(PaymentResult $result, PaymentOutput $output): PaymentOutput;

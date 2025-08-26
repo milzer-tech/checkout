@@ -11,6 +11,8 @@ class PaymentInit extends BaseDto
 {
     /**
      * Create a new instance of PaymentInit.
+     *
+     * @param  BaseDto|array<string, mixed>  $persistentData
      */
     public function __construct(
         public PaymentGatewayEnum $gateway,

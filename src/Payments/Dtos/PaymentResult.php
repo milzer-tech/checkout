@@ -12,6 +12,8 @@ class PaymentResult extends BaseDto
 {
     /**
      * Create a new instance of PaymentResult.
+     *
+     * @param  array<string, mixed>  $persistentData
      */
     public function __construct(
         public PaymentGatewayEnum $gateway,

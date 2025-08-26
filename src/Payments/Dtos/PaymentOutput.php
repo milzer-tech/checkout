@@ -12,6 +12,8 @@ class PaymentOutput extends BaseDto
 {
     /**
      * Create a new instance of PaymentOutput.
+     *
+     * @param  array<string, mixed>  $data
      */
     public function __construct(
         public readonly PaymentGatewayEnum $gateway,
