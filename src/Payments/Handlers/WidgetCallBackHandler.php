@@ -45,7 +45,7 @@ class WidgetCallBackHandler
 
         $this->validateReturnUrl($callback, $request);
 
-        $result = $callback->check(request(), $transaction->prepare_data);
+        $result = $callback->check(request(), (array) $transaction->prepare_data);
 
         $nezasaTransaction = $this->updateNezasaTransaction($result->status, $transaction);
 

@@ -73,6 +73,8 @@ class WidgetInitiationHandler
 
     /**
      * Create a transaction record for the payment.
+     *
+     * @param  array<string, string|array<string, mixed>>  $nezasaTransaction
      */
     private function createTransaction(Checkout $model, PaymentInit $init, array $nezasaTransaction, Price $price): void
     {
@@ -88,7 +90,9 @@ class WidgetInitiationHandler
     }
 
     /**
-     * Create the return URL parameters for the payment.
+     * Create the return URL parameters for the payment
+     *
+     * @return array<string, string> $params
      */
     private function getReturnUrlParams(PaymentPrepareData $data, PaymentInitiation $payment, PaymentInit $init): array
     {
@@ -103,9 +107,14 @@ class WidgetInitiationHandler
         );
     }
 
+    /**
+     * Create a payment transaction in Nezasa.
+     *
+     * @return array<string, string|array<string, mixed>>
+     */
     private function createNezasaTransaction(string $checkoutId, CreatePaymentTransactionPayload $payload): array
     {
-        return NezasaConnector::make()
+        return (array) NezasaConnector::make()
             ->paymentTransaction()
             ->create($checkoutId, $payload)
             ->array('transaction');
