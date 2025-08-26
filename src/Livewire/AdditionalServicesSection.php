@@ -22,7 +22,7 @@ class AdditionalServicesSection extends BaseCheckoutComponent
     /**
      * The items that have been added to the checkout.
      *
-     * @var array<int, AddedUpsellItemResponseEntity>
+     * @var array<int, AddedUpsellItemResponseEntity>|Collection<int, AddedUpsellItemResponseEntity>
      */
     public array|Collection $addedUpsellItems;
 

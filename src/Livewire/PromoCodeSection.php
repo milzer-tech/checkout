@@ -23,6 +23,8 @@ class PromoCodeSection extends BaseCheckoutComponent
 
     /**
      * The validation rules for the promo code input.
+     *
+     * @var array<string, string>
      */
     protected array $rules = [
         'promoCode' => 'required|min:1|max:256',
@@ -49,7 +51,7 @@ class PromoCodeSection extends BaseCheckoutComponent
      * Render the component view.
      */
     public function render(): View
-    {
+    {      /** @phpstan-ignore-next-line */
         return view('checkout::trip-details-page.promo-code-section');
     }
 

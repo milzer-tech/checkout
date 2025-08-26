@@ -84,7 +84,7 @@ class PaymentPage extends BaseCheckoutComponent
                 checkoutId: $this->checkoutId,
                 itineraryId: $this->itineraryId,
                 origin: $this->origin,
-                lang: $this->model->lang
+                lang: request()->input('lang', 'en'),
             ),
             gateway: $gateway
         );
