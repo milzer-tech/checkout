@@ -115,6 +115,6 @@ class TripDetailsPage extends BaseCheckoutComponent
             );
         }
 
-        $this->checkingAvailability = null;
+        $this->checkingAvailability = false;
     }
 }
