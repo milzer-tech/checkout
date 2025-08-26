@@ -25,8 +25,11 @@ class NotFoundException extends HttpException
      */
     public function render(): LaravelResponse
     {
+        /** @var view-string $viewName */
+        $viewName = 'checkout::exceptions.all';
+
         return new LaravelResponse(
-            content: view(view: 'checkout::exceptions.all')->with('exception', $this),
+            content: view(view: $viewName)->with('exception', $this),
             status: SymfonyResponse::HTTP_NOT_FOUND
         );
     }
