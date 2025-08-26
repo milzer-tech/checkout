@@ -47,8 +47,10 @@ class ConfirmationPage extends BaseCheckoutComponent
         $result = resolve(CallTripDetailsAction::class)->run($this->itineraryId, $this->checkoutId);
 
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
-            /** @phpstan-ignore-next-line */
-            $result['itinerary'], $result['checkout'], $result['addedRentalCars'], collect($result['addedUpsellItems']),
+            $result->itinerary,
+            $result->checkout,
+            $result->addedRentalCars,
+            collect($result->addedUpsellItems),
         );
 
         $this->itinerary->price = $this->model->lastestTransaction->price;

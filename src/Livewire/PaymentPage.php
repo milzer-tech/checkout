@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
@@ -39,11 +40,11 @@ class PaymentPage extends BaseCheckoutComponent
      * Render the component view.
      */
     public function render(): View
-    {
+    {/** @phpstan-ignore-next-line */
         return view('checkout::trip-details-page.payment-page');
     }
 
-    public function goBack()
+    public function goBack(): RedirectResponse
     {
 
         return to_route('traveler-details', $this->getQueryParams());
@@ -59,10 +60,10 @@ class PaymentPage extends BaseCheckoutComponent
         $result = resolve(CallTripDetailsAction::class)->run($this->itineraryId, $this->checkoutId);
 
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
-            itineraryResponse: $result['itinerary'],
-            checkoutResponse: $result['checkout'],
-            addedRentalCarResponse: $result['addedRentalCars'],
-            addedUpsellItemsResponse: collect($result['addedUpsellItems']),
+            itineraryResponse: $result->itinerary,
+            checkoutResponse: $result->checkout,
+            addedRentalCarResponse: $result->addedRentalCars,
+            addedUpsellItemsResponse: collect($result->addedUpsellItems),
         );
     }
 

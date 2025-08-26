@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Actions\TripDetails;
 
 use Illuminate\Support\Collection;
-use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Exceptions\NotFoundException;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
@@ -29,17 +29,9 @@ class CallTripDetailsAction
     /**
      * Execute the action to retrieve itinerary and checkout details.
      *
-     * @return Collection<string, BaseDto> {
-     *                                     'itinerary': GetItineraryResponse,
-     *                                     'checkout': RetrieveCheckoutResponse,
-     *                                     'travelerRequirements': TravelerRequirementsResponse,
-     *                                     'countryCodes': CountryCodesResponse,
-     *                                     `                  'countries': CountriesResponse
-     *                                     }
-     *
      * @throws Throwable
      */
-    public function run(string $itineraryId, string $checkoutId): Collection
+    public function run(string $itineraryId, string $checkoutId): RequiredResponses
     {
         $results = new Collection;
         $requests = [
@@ -62,6 +54,6 @@ class CallTripDetailsAction
             ->send()
             ->wait();
 
-        return $results;
+        return RequiredResponses::from($results);
     }
 }

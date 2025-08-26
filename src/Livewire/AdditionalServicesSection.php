@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\AddedUpsellItemResponseEntity;
@@ -23,7 +24,7 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      *
      * @var array<int, AddedUpsellItemResponseEntity>
      */
-    public array $addedUpsellItems;
+    public array|Collection $addedUpsellItems;
 
     /**
      * The items that are displayed in the additional services section.
