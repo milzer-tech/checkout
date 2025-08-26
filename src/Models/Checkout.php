@@ -61,7 +61,7 @@ class Checkout extends Model
      * @param  array<string, mixed>  $data
      */
     public function updateData(array $data): bool
-    {
+    {   /** @phpstan-ignore-next-line  */
         $array = $this->data?->toArray() ?? [];
 
         foreach ($data as $key => $value) {

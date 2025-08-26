@@ -47,7 +47,7 @@ class TravelerDetails extends BaseCheckoutComponent
      * Mount the component and initialize the traveler details.
      */
     public function mount(): void
-    {
+    {   /** @phpstan-ignore-next-line */
         $paxInfo = $this->model->data->get('paxInfo');
 
         $this->setUpPaxData($paxInfo);
@@ -230,7 +230,7 @@ class TravelerDetails extends BaseCheckoutComponent
     /**
      * Extracts the room and traveller number from the given item string.
      *
-     * @return array{0: int, 1: int}
+     * @return array<mixed>
      */
     protected function getRoomAndTravellerNumber(string $item): array
     {

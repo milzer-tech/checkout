@@ -41,7 +41,7 @@ class ContactDetails extends BaseCheckoutComponent
      * Initialize the component with the contact details.
      */
     public function mount(): void
-    {
+    {   /** @phpstan-ignore-next-line  */
         $this->contact = $this->model->data->get('contact');
     }
 

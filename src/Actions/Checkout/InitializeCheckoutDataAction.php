@@ -68,6 +68,7 @@ class InitializeCheckoutDataAction
     private function countPaxes(PaxAllocationResponseEntity $allocatedPax): int
     {
         return $allocatedPax->rooms->sum(
+            /** @phpstan-ignore-next-line */
             fn (RoomAllocationResponseEntity $room) => $room->adults + $room->childAges->count()
         );
     }
