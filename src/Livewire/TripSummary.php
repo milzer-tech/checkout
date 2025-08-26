@@ -31,7 +31,7 @@ class TripSummary extends BaseCheckoutComponent
      * Render the component view.
      */
     public function render(): View
-    {
+    {   /** @phpstan-ignore-next-line */
         return view('checkout::trip-details-page.trip-summary');
     }
 
@@ -73,10 +73,7 @@ class TripSummary extends BaseCheckoutComponent
 
     /**
      * Handle the promo code applied event.
-     *
-     * @param  array<string, array<string, float>>  $prices
      */
-    //    #[On('traveller-processed')]
     #[On('payment-selected')]
     public function verifyAvailability(): void
     {

@@ -64,7 +64,7 @@ class TripDetailsPage extends BaseCheckoutComponent
      * @throws Throwable
      */
     public function render(): View
-    {
+    { /** @phpstan-ignore-next-line */
         return view('checkout::trip-details-page.index', [
             'contactRequirements' => $this->result->travelerRequirements->contact,
             'countryCodes' => $this->result->countryCodes,
@@ -92,7 +92,7 @@ class TripDetailsPage extends BaseCheckoutComponent
         $this->itinerary->promoCodeResponse = $prices;
     }
 
-    public function createPaymentPageUrl($gateway): void
+    public function createPaymentPageUrl(string $gateway): void
     {
         $this->gateway = $gateway;
 

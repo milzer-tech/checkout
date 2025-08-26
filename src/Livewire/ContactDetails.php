@@ -10,7 +10,6 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ContactRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
-use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 use Nezasa\Checkout\Models\Checkout;
 
@@ -25,10 +24,8 @@ class ContactDetails extends BaseCheckoutComponent
 
     /**
      * Contact requirements for the checkout.
-     *
-     * @var ContactRequirementEntity|iterable<string, TravelerRequirementFieldEnum>
      */
-    public ContactRequirementEntity|iterable $contactRequirements;
+    public ContactRequirementEntity $contactRequirements;
 
     /**
      * The country calling codes for the contact details.
@@ -111,7 +108,7 @@ class ContactDetails extends BaseCheckoutComponent
 
         ];
 
-        foreach ($this->contactRequirements as $name => $item) {
+        foreach ($this->contactRequirements->all() as $name => $item) {
             $rules[$name] = array_merge($item->isRequired() ? ['required'] : ['nullable'], $rules[$name]);
         }
 

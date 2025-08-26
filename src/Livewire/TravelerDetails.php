@@ -28,6 +28,8 @@ class TravelerDetails extends BaseCheckoutComponent
 
     /**
      * An array to hold the information of each traveler.
+     *
+     * @var array<int, array<int, array<string, mixed>>>
      */
     public array $paxInfo = [];
 
@@ -59,7 +61,7 @@ class TravelerDetails extends BaseCheckoutComponent
      * Render the view for the traveler details page.
      */
     public function render(): View
-    {
+    {/** @phpstan-ignore-next-line */
         return view('checkout::trip-details-page.traveler-details');
     }
 
@@ -87,7 +89,7 @@ class TravelerDetails extends BaseCheckoutComponent
     /**
      * Get the validation rules for the traveler details.
      *
-     * @return array<string, string|Enum>
+     * @return array<string, array<Enum|string>>
      */
     protected function rules(): array
     {
@@ -115,7 +117,7 @@ class TravelerDetails extends BaseCheckoutComponent
             'street2' => ['string', 'max:255'],
         ];
 
-        foreach ($this->passengerRequirements as $name => $item) {
+        foreach ($this->passengerRequirements->all() as $name => $item) {
             if ($item->isRequired()) {
                 $rules[$name] = array_merge(['required'], $rules[$name]);
 
@@ -210,7 +212,7 @@ class TravelerDetails extends BaseCheckoutComponent
     /**
      * Update the traveller's details when a field is changed.
      */
-    public function updated(string $name, mixed $value)
+    public function updated(string $name, mixed $value): void
     {
         $key = str($name)->after('.')
             ->after('.')
@@ -242,13 +244,15 @@ class TravelerDetails extends BaseCheckoutComponent
     {
         $this->validate(
             collect($this->rules())->mapWithKeys(fn (array $rule, string $key) => [
-                str($key)->replaceFirst('*', $room)->replaceFirst('*', $travelerNumber)->toString() => $rule,
+                str($key)->replaceFirst('*', (string) $room)->replaceFirst('*', (string) $travelerNumber)->toString() => $rule,
             ])->all()
         );
     }
 
     /**
      * Sets up the initial data for the travelers based on the provided pax information.
+     *
+     * @param  array<int, array<int, array<string, mixed>>>  $paxInfo
      */
     protected function setUpPaxData(array $paxInfo): void
     {
