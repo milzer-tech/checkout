@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Livewire;
 
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Jobs\SaveSectionStatusJob;
 use Nezasa\Checkout\Models\Checkout;
 
+#[Layout('checkout::layouts.layout')]
 class BaseCheckoutComponent extends Component
 {
     /**
