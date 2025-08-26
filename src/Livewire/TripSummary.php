@@ -87,6 +87,10 @@ class TripSummary extends BaseCheckoutComponent
         $statuses = new Collection;
 
         foreach ($dto->summary->components as $component) {
+            if ($component->isPlaceholder) {
+                continue;
+            }
+
             $item = match ($component->componentType) {
                 ComponentEnum::Accommodation => $this->itinerary->stays->firstWhere('id', $component->id),
                 ComponentEnum::Activity => $this->itinerary->activities->firstWhere('id', $component->id),
