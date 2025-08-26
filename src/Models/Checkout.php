@@ -9,6 +9,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * Eloquent model for checkout state.
+ *
+ * @property string $checkout_id
+ * @property string|null $itinerary_id
+ * @property \Illuminate\Support\Collection|array|null $data
+ * @property array|null $payment_data
+ *
+ * Relationships
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Transaction> $transactions
+ * @property-read Transaction|null $lastestTransaction
+ *
+ * Timestamps
+ * @property-read \Illuminate\Support\Carbon|null $created_at
+ * @property-read \Illuminate\Support\Carbon|null $updated_at
+ */
 class Checkout extends Model
 {
     /**

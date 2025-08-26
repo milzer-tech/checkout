@@ -7,10 +7,37 @@ namespace Nezasa\Checkout\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
+/**
+ * Eloquent model for payment transactions related to a checkout.
+ *
+ * Scalar/database attributes
+ *
+ * @property int|string $id
+ * @property int|string|null $checkout_id
+ * @property array|null $prepare_data
+ * @property array|null $result_data
+ * @property array|null $nezasa_transaction
+ * @property string|null $nezasa_transaction_ref_id
+ * @property PaymentStatusEnum|null $status
+ * @property PaymentGatewayEnum|null $gateway
+ * @property string|null $currency
+ * @property string|null $amount
+ *
+ * Accessors
+ * @property-read Price $price
+ *
+ * Relationships
+ * @property-read Checkout $checkout
+ *
+ * Timestamps
+ * @property-read Carbon|null $created_at
+ * @property-read Carbon|null $updated_at
+ */
 class Transaction extends Model
 {
     protected $table = 'checkout_transactions';
