@@ -7,11 +7,16 @@ use Nezasa\Checkout\Livewire\PaymentResultPage;
 use Nezasa\Checkout\Livewire\TripDetailsPage;
 
 Route::get('checkout/details', TripDetailsPage::class)
+    ->middleware('web')
     ->name('traveler-details');
 
 Route::get('checkout/payment', PaymentPage::class)
-    ->middleware(ValidateSignature::class)
+    ->middleware([
+        'web',
+        ValidateSignature::class,
+    ])
     ->name('payment');
 
 Route::get('checkout/result', PaymentResultPage::class)
+    ->middleware('web')
     ->name('payment-result');
