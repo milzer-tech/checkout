@@ -9,12 +9,10 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
 it('sends OppwaPrepareRequest with correct method, endpoint, headers, query and body; returns mapped DTO', function (): void {
-    // Configure connector settings
     Config::set('checkout.payment.widget.oppwa.base_url', 'https://oppwa.example.test');
     Config::set('checkout.payment.widget.oppwa.entity_id', 'entity-999');
     Config::set('checkout.payment.widget.oppwa.token', 'secret-token-123');
 
-    // Prepare payload
     $payload = new OppwaPreparePayload(
         amount: '199.90',
         currency: 'EUR',
@@ -27,7 +25,6 @@ it('sends OppwaPrepareRequest with correct method, endpoint, headers, query and 
         billingCountry: 'DE'
     );
 
-    // Define mock client with the fixture response
     $mockClient = new MockClient([
         OppwaPrepareRequest::class => MockResponse::fixture('oppwa_prepare_response'),
     ]);
