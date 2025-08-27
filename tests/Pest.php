@@ -11,4 +11,13 @@
 |
 */
 
+use Illuminate\Support\Carbon;
+
 uses(Tests\TestCase::class)->in(__DIR__);
+
+function fakeCarbon(int $year = 2025, int $month = 8, int $day = 27, int $hour = 11, int $minute = 20, int $second = 19): void
+{
+    Carbon::setTestNow(
+        Carbon::create($year, $month, $day, $hour, $minute, $second)
+    );
+}
