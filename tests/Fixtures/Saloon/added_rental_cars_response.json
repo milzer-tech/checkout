@@ -1,0 +1,15 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Date": "Wed, 24 Apr 2024 14:37:58 GMT",
+        "Content-Type": "application\/json; charset=utf-8",
+        "Content-Length": "5662",
+        "Connection": "keep-alive",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Expires": "-1",
+        "Server": "WebServer",
+        "X-Frame-Options": "SAMEORIGIN"
+    },
+    "data": "{\"rentalCars\":[{\"id\":\"68ad5b0d590000525ed5cb46\",\"name\":\"Rental Car\",\"componentType\":\"RentalCar\",\"isPlaceholder\":true,\"salesPrice\":{\"amount\":\"0.00\",\"currency\":\"EUR\",\"amountInMinorUnits\":0,\"currencyValueStringRounded\":\"EUR 0\"},\"unitSalesPrice\":{\"amount\":\"0.00\",\"currency\":\"EUR\",\"amountInMinorUnits\":0,\"currencyValueStringRounded\":\"EUR 0\"},\"netPrice\":{\"amount\":\"0.00\",\"currency\":\"EUR\",\"amountInMinorUnits\":0,\"currencyValueStringRounded\":\"EUR 0\"},\"netPriceSupplierCurrency\":{\"amount\":\"0.00\",\"currency\":\"EUR\",\"amountInMinorUnits\":0,\"currencyValueStringRounded\":\"EUR 0\"},\"pickupLocation\":{\"name\":\"Rome (CIA)\",\"coordinates\":{\"lat\":41.799361,\"lon\":12.594936},\"countryCode\":\"IT\",\"locationType\":\"Airport\",\"refId\":\"CIA\"},\"dropoffLocation\":{\"name\":\"Rome (CIA)\",\"coordinates\":{\"lat\":41.799361,\"lon\":12.594936},\"countryCode\":\"IT\",\"locationType\":\"Airport\",\"refId\":\"CIA\"},\"pickupDateTime\":\"2025-12-18T12:00:00.000+01:00\",\"dropoffDateTime\":\"2025-12-21T06:39:56.000+01:00\",\"rentalDurationInDays\":3,\"externallyPaidCharges\":[],\"included\":[],\"excluded\":[],\"externalRefs\":[{\"id\":\"offline-car\",\"system\":\"USR\"}],\"bookingInfo\":{\"state\":\"None\",\"sourcingType\":\"Offline\",\"consolidator\":\"NEZASA\"},\"isOnRequest\":false}]}"
+}

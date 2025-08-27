@@ -22,11 +22,6 @@ use Throwable;
 class CallTripDetailsAction
 {
     /**
-     * Create a new instance of the CallTripDetailsAction.
-     */
-    public function __construct(private readonly NezasaConnector $nezasaConnector) {}
-
-    /**
      * Execute the action to retrieve itinerary and checkout details.
      *
      * @throws Throwable
@@ -44,12 +39,14 @@ class CallTripDetailsAction
             'countryCodes' => new CountryCodesRequest,
             'countries' => new CountriesRequest,
         ];
+        $json = [];
 
-        $this->nezasaConnector
+        NezasaConnector::make()
             ->pool(requests: $requests, concurrency: count($requests))
             ->withExceptionHandler(fn ($exception) => throw new NotFoundException)
-            ->withResponseHandler(function (Response $response, string $key) use ($results) {
+            ->withResponseHandler(function (Response $response, string $key) use ($results, &$json) {
                 $results->put($key, $response->dto());
+                $json[$key] = json_encode($response->array());
             })
             ->send()
             ->wait();
