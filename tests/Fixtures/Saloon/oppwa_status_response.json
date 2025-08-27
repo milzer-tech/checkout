@@ -1,0 +1,15 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Date": "Wed, 24 Apr 2024 14:37:58 GMT",
+        "Content-Type": "application\/json; charset=utf-8",
+        "Content-Length": "5662",
+        "Connection": "keep-alive",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Expires": "-1",
+        "Server": "WebServer",
+        "X-Frame-Options": "SAMEORIGIN"
+    },
+    "data": "{\"id\": \"8ac7a4a198c97c2b0198cc4676cd7058\", \"ndc\": \"2C70F0246A8EB5005ED09C806C21D3A4.uat01-vm-tx03\", \"card\": {\"bin\": \"420000\", \"holder\": \"Test\", \"expiryYear\": \"2029\", \"expiryMonth\": \"11\", \"last4Digits\": \"0091\"}, \"risk\": {\"score\": \"0\"}, \"amount\": \"475.00\", \"result\": {\"code\": \"000.100.110\", \"description\": \"Request successfully processed in 'Merchant in Integrator Test Mode'\"}, \"billing\": {\"city\": \"Dusseldorf\", \"country\": \"DE\", \"street1\": \"Test street\"}, \"currency\": \"EUR\", \"customer\": {\"ip\": \"2a02:8071:5941:8480:a840:6b33:e2b5:bcf0\", \"email\": \"test@gmail.com\", \"surname\": \"test contact last nmae\", \"givenName\": \"test contact\"}, \"timestamp\": \"2025-08-21 10:57:08+0000\", \"descriptor\": \"Nezasa\", \"buildNumber\": \"1316435f48dff01171ea928767c24b51510892b9@2025-08-21 09:50:59 +0000\", \"paymentType\": \"DB\", \"paymentBrand\": \"VISA\", \"threeDSecure\": {\"eci\": \"05\", \"flow\": \"frictionless\", \"version\": \"2.2.0\", \"purchaseDate\": \"20250821105706\", \"cardHolderInfo\": \"\", \"dsTransactionId\": \"a4a87433-953c-43c0-a3e1-a574edcb3ee9\", \"acsTransactionId\": \"67194477-b054-4eb5-a304-1e67a94cceff\", \"dsReferenceNumber\": \"13db2d60d08c4f6b83de194ca5245e57\", \"acsReferenceNumber\": \"b04ea28d11294692a29f63d2f5c84bfc\", \"authenticationStatus\": \"Y\", \"transactionStatusReason\": \"\", \"challengeMandatedIndicator\": \"\"}, \"customParameters\": {\"CTPE_DESCRIPTOR_TEMPLATE\": \"Nezasa\", \"SHOPPER_EndToEndIdentity\": \"ed2ac66ed737ff60d4908ca1fbf36c62b7e616b7f99bf3b32217939bc573c392\"}}"
+}
