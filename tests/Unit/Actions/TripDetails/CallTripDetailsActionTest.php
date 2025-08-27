@@ -14,7 +14,6 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
 it('can retrieve a trip details', function (): void {
-
     MockClient::global([
         GetItineraryRequest::class => MockResponse::fixture('get_itinerary_response'),
         RetrieveCheckoutRequest::class => MockResponse::fixture('retrieve_checkout_response'),

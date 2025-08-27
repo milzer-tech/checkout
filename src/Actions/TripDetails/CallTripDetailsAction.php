@@ -39,14 +39,12 @@ class CallTripDetailsAction
             'countryCodes' => new CountryCodesRequest,
             'countries' => new CountriesRequest,
         ];
-        $json = [];
 
         NezasaConnector::make()
             ->pool(requests: $requests, concurrency: count($requests))
             ->withExceptionHandler(fn ($exception) => throw new NotFoundException)
-            ->withResponseHandler(function (Response $response, string $key) use ($results, &$json) {
+            ->withResponseHandler(function (Response $response, string $key) use ($results) {
                 $results->put($key, $response->dto());
-                $json[$key] = json_encode($response->array());
             })
             ->send()
             ->wait();
