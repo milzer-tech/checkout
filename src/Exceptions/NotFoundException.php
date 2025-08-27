@@ -17,7 +17,8 @@ class NotFoundException extends HttpException
     {
         parent::__construct(
             statusCode: SymfonyResponse::HTTP_NOT_FOUND,
-            message: 'The requested resource could not be retrieved from Nezasa API.');
+            message: trans('checkout::exceptions.not_found_resource')
+        );
     }
 
     /**
@@ -25,11 +26,9 @@ class NotFoundException extends HttpException
      */
     public function render(): LaravelResponse
     {
-        /** @var view-string $viewName */
-        $viewName = 'checkout::exceptions.all';
-
         return new LaravelResponse(
-            content: view(view: $viewName)->with('exception', $this),
+            /** @phpstan-ignore-next-line  */
+            content: view(view: 'checkout::exceptions.all')->with('exception', $this),
             status: SymfonyResponse::HTTP_NOT_FOUND
         );
     }

@@ -17,7 +17,8 @@ class UnavailableServiceException extends HttpException
     {
         parent::__construct(
             statusCode: SymfonyResponse::HTTP_SERVICE_UNAVAILABLE,
-            message: 'The requested service is currently unavailable. Please try again later.');
+            message: trans('checkout::exceptions.unavailable_service')
+        );
     }
 
     /**
@@ -25,11 +26,9 @@ class UnavailableServiceException extends HttpException
      */
     public function render(): LaravelResponse
     {
-        /** @var view-string $viewName */
-        $viewName = 'checkout::exceptions.all';
-
         return new LaravelResponse(
-            content: view(view: $viewName)->with('exception', $this),
+            /** @phpstan-ignore-next-line  */
+            content: view(view: 'checkout::exceptions.all')->with('exception', $this),
             status: SymfonyResponse::HTTP_SERVICE_UNAVAILABLE
         );
     }
