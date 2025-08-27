@@ -7,7 +7,6 @@ use Livewire\LivewireServiceProvider;
 use Nezasa\Checkout\Providers\CheckoutServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Saloon\Http\Faking\MockClient;
-use Saloon\MockConfig;
 use Spatie\LaravelData\LaravelDataServiceProvider;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -42,13 +41,6 @@ abstract class TestCase extends OrchestraTestCase
         parent::setUp();
 
         MockClient::destroyGlobal();
-
-        MockConfig::setFixturePath(__DIR__.'/'.str(get_class($this))
-            ->after('P\Tests\\')
-            ->replace('\\', '/')
-            ->beforeLast('/')
-            ->append('/saloon_responses/')
-        );
     }
 
     /**
