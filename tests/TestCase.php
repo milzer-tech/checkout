@@ -2,7 +2,9 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 use Livewire\LivewireServiceProvider;
 use Nezasa\Checkout\Providers\CheckoutServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
@@ -12,6 +14,7 @@ use Spatie\Snapshots\MatchesSnapshots;
 
 abstract class TestCase extends OrchestraTestCase
 {
+    use LazilyRefreshDatabase;
     use MatchesSnapshots;
 
     /**
@@ -33,6 +36,22 @@ abstract class TestCase extends OrchestraTestCase
     }
 
     /**
+     * Define environment setup for tests.
+     * This configures an in-memory SQLite database so all tests run against a transient DB.
+     */
+    #[\Override]
+    protected function getEnvironmentSetUp($app): void
+    {
+        $app['config']->set('database.default', 'testing');
+        $app['config']->set('database.connections.testing', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+            'foreign_key_constraints' => true,
+        ]);
+    }
+
+    /**
      * Clean up the testing environment before the next test.
      */
     #[\Override]
@@ -41,6 +60,12 @@ abstract class TestCase extends OrchestraTestCase
         parent::setUp();
 
         MockClient::destroyGlobal();
+
+        if (! Schema::hasTable('checkouts')) {
+            $migration = require __DIR__.'/../database/migrations/create_checkout_table.php';
+
+            $migration->up();
+        }
     }
 
     /**
