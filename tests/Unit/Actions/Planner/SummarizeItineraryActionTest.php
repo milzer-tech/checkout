@@ -15,7 +15,7 @@ it('summarizes an itinerary', function () {
     fakeCarbon();
     $responses = prepare();
 
-    $result = (new SummarizeItineraryAction())->run(
+    $result = (new SummarizeItineraryAction)->run(
         $responses['itinerary'],
         $responses['checkout'],
         $responses['addedRentalCars'],
