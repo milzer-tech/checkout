@@ -21,7 +21,7 @@ class FindCheckoutModelAction
 
         if ($model) {
             throw_if(
-                condition: $model->transactions()->whereStatus(PaymentStatusEnum::Succeeded),
+                condition: $model->transactions()->whereStatus(PaymentStatusEnum::Succeeded)->exists(),
                 exception: AlreadyPaidException::class
             );
         }
