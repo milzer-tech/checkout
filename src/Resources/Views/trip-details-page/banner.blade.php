@@ -11,6 +11,9 @@
         <p>{{$itinerary->startDate->format('D, j M Y')}} - {{$itinerary->endDate->format('D, j M Y')}}</p>
     </div>
     <button class="absolute bottom-6 right-6 border border-white text-white px-4 py-2 rounded-lg bg-transparent hover:bg-white/10 transition">
-        {{trans('checkout::page.trip_details.view_full_itinerary')}}
+        <a href="{{config('checkout.nezasa.base_url')}}/itineraries/{{$this->itineraryId}}">
+            {{trans('checkout::page.trip_details.view_full_itinerary')}}
+        </a>
+
     </button>
 </div>

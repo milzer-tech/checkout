@@ -3,10 +3,9 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Livewire\Component;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 
-class Banner extends Component
+class Banner extends BaseCheckoutComponent
 {
     /**
      * The summary of the itinerary.
