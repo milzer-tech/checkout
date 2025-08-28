@@ -97,10 +97,10 @@
                 </div>
 
                 <!-- Right: CTA (vertically centered to the left block) -->
-                <button
-                    wire:click="viewFullItinerary"
-                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl">
-                    {{trans('checkout::page.trip_details.view_full_itinerary')}}
+                <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl">
+                    <a href="{{config('checkout.nezasa.base_url')}}/itineraries/{{$this->itineraryId}}/travel-summary">
+                        {{trans('checkout::page.trip_details.view_full_itinerary')}}
+                    </a>
                 </button>
             </div>
         </div>
@@ -194,14 +194,18 @@
                     <!-- Print link -->
                     <button
                         type="button"
-                        wire:click="printBookingConfirmation"
                         class="py-4 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline w-full text-left"
                     >
+
+
+
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                         </svg>
+                        <a href="{{config('checkout.nezasa.base_url')}}/checkouts/{{$checkoutId}}">
                         {{trans('checkout::page.booking_confirmation.print_booking_confirmation')}}
+                        </a>
                     </button>
 
                 </div>
@@ -434,8 +438,8 @@
                             class="font-bold text-lg">{{ Number::currency($itinerary->price->amount, $itinerary->price->currency) }}</span>
                     </div>
 
-                    <button wire:click="viewCancellationPolicy"
-                            class="w-full flex items-center gap-2 pt-4 text-blue-500 hover:bg-blue-50 hover:text-blue-600">
+                    <button
+                            class="invisible w-full flex items-center gap-2 pt-4 text-blue-500 hover:bg-blue-50 hover:text-blue-600">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
