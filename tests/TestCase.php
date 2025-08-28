@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Livewire\LivewireServiceProvider;
 use Nezasa\Checkout\Providers\CheckoutServiceProvider;
@@ -11,6 +10,7 @@ use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Saloon\Http\Faking\MockClient;
 use Spatie\LaravelData\LaravelDataServiceProvider;
 use Spatie\Snapshots\MatchesSnapshots;
+use Tests\Fixtures\NoViteServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
@@ -32,6 +32,7 @@ abstract class TestCase extends OrchestraTestCase
             LivewireServiceProvider::class,
             LaravelDataServiceProvider::class,
             CheckoutServiceProvider::class,
+            NoViteServiceProvider::class,
         ];
     }
 
@@ -42,6 +43,7 @@ abstract class TestCase extends OrchestraTestCase
     #[\Override]
     protected function getEnvironmentSetUp($app): void
     {
+        $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
@@ -78,21 +80,5 @@ abstract class TestCase extends OrchestraTestCase
             ->replace('\\', '/')
             ->beforeLast('/')
             ->append('/__snapshots__');
-    }
-
-    /**
-     * Set a fake Carbon datetime for testing purposes.
-     */
-    protected function fakeCarbon(
-        int $year = 2025,
-        int $month = 5,
-        int $day = 26,
-        int $hour = 11,
-        int $minute = 20,
-        int $second = 19
-    ): void {
-        Carbon::setTestNow(
-            Carbon::create($year, $month, $day, $hour, $minute, $second)
-        );
     }
 }
