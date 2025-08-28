@@ -4,11 +4,11 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
-use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
@@ -55,7 +55,7 @@ class PaymentPage extends BaseCheckoutComponent
      */
     protected function initializeRequirements(): void
     {
-        $this->model = Checkout::whereCheckoutId($this->checkoutId)->firstOrFail();
+        $this->model = resolve(FindCheckoutModelAction::class)->run($this->checkoutId, $this->itineraryId);
 
         $result = resolve(CallTripDetailsAction::class)->run($this->itineraryId, $this->checkoutId);
 
