@@ -31,7 +31,7 @@ class Stepper extends Component
     {
         $currentStep = $this->getCurrentStepIndex();
 
-        return $stepIndex < $currentStep;
+        return $stepIndex <= $currentStep;
     }
 
     public function getCurrentStepIndex(): int
