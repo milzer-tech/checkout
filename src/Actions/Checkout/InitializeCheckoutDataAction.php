@@ -5,24 +5,17 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Actions\Checkout;
 
 use Nezasa\Checkout\Enums\Section;
-use Nezasa\Checkout\Exceptions\AlreadyPaidException;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
 use Nezasa\Checkout\Models\Checkout;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
 class InitializeCheckoutDataAction
 {
     public function run(string $checkoutId, string $itineraryId, PaxAllocationResponseEntity $allocatedPax): Checkout
     {
-        $model = Checkout::whereCheckoutId($checkoutId)->whereItineraryId($itineraryId)->first();
+        $model = resolve(FindCheckoutModelAction::class)->run($checkoutId, $itineraryId);
 
-        if ($model) {
-            throw_if(
-                condition: $model->transactions()->whereStatus(PaymentStatusEnum::Succeeded),
-                exception: AlreadyPaidException::class
-            );
-        } else {
+        if (! $model) {
             $model = Checkout::create(['checkout_id' => $checkoutId, 'itinerary_id' => $itineraryId]);
 
             $this->firstConfiguration($allocatedPax, $model);
