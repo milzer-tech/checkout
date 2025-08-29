@@ -2,7 +2,6 @@
     <div class="relative w-full grid grid-cols-3 gap-0">
         <!-- Step 1 -->
         <div
-            wire:click="navigate('trip.details')"
             class="flex flex-col items-center relative z-10 w-full cursor-pointer"
         >
             <div class="absolute top-3 left-0 w-full h-0.5 {{ $this->isActive('traveler-details') || $this->isCompleted(1) ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700' }}"></div>
@@ -22,7 +21,6 @@
 
         <!-- Step 2 -->
         <div
-            wire:click="navigate('payment')"
             class="flex flex-col items-center relative z-10 w-full cursor-pointer"
         >
             <div class="absolute top-3 left-0 w-full h-0.5 {{ $this->isActive('payment') || $this->isCompleted(2) ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700' }}"></div>
@@ -42,7 +40,6 @@
 
         <!-- Step 3 -->
         <div
-            wire:click="navigate('confirmation')"
             class="flex flex-col items-center relative z-10 w-full cursor-pointer"
         >
             <div class="absolute top-3 left-0 w-full h-0.5 {{ $this->isActive('confirmation') || $this->isCompleted(3) ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700' }}"></div>
