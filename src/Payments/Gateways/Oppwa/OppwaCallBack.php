@@ -17,6 +17,11 @@ use Throwable;
 
 final class OppwaCallBack implements PaymentCallBack, ReturnUrlHasInvalidQueryParamsForValidation
 {
+    /**
+     * Check the payment status after returning from the payment gateway.
+     *
+     * @param  BaseDto|array<string, mixed>  $persistentData  Data that was stored before redirecting to the payment gateway.
+     */
     public function check(Request $request, BaseDto|array $persistentData): PaymentResult
     {
         try {
@@ -34,6 +39,9 @@ final class OppwaCallBack implements PaymentCallBack, ReturnUrlHasInvalidQueryPa
         }
     }
 
+    /**
+     * Show the payment result to the user.
+     */
     public function show(PaymentResult $result, PaymentOutput $output): PaymentOutput
     {
         return $output;

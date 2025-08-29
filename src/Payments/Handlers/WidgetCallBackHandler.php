@@ -32,6 +32,9 @@ class WidgetCallBackHandler
         PaymentGatewayEnum::Oppwa->value => OppwaCallBack::class,
     ];
 
+    /**
+     * Handle the payment callback process.
+     */
     public function run(Transaction $transaction, Request $request): PaymentOutput
     {
         $this->validateGateway($transaction->gateway);
@@ -56,6 +59,9 @@ class WidgetCallBackHandler
         return $this->getOutput($transaction, $callback);
     }
 
+    /**
+     * Validate if the payment gateway is supported and implemented correctly.
+     */
     private function validateGateway(PaymentGatewayEnum $gateway): void
     {
         if (! array_key_exists($gateway->value, $this->implementations)) {
@@ -149,6 +155,9 @@ class WidgetCallBackHandler
         return $callback->show($result, $output);
     }
 
+    /**
+     * Attempt to book the itinerary if the payment was successful.
+     */
     private function bookItinerary(Checkout $checkout): bool
     {
         try {

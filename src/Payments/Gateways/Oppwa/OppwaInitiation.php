@@ -19,6 +19,9 @@ use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 
 final class OppwaInitiation implements PaymentInitiation
 {
+    /**
+     * Prepare the payment before redirecting to the payment gateway.
+     */
     public function prepare(PaymentPrepareData $data): PaymentInit
     {
         $response = OppwaConnector::make()->checkout()->prepare(
@@ -46,6 +49,11 @@ final class OppwaInitiation implements PaymentInitiation
         return new PaymentInit(gateway: PaymentGatewayEnum::Oppwa, isAvailable: false);
     }
 
+    /**
+     * Get the assets (scripts, html) to render the payment form.
+     *
+     * @throws Exception
+     */
     public function getAssets(PaymentInit $paymentInit, string $returnUrl): PaymentAsset
     {
         if (! $paymentInit->persistentData instanceof OppwaPrepareResponse) {

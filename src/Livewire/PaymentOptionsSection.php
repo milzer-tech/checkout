@@ -17,6 +17,9 @@ class PaymentOptionsSection extends BaseCheckoutComponent
      */
     public array $options = [];
 
+    /**
+     * Create a new instance of the component.
+     */
     public function mount(): void
     {
         $this->options[] = new PaymentOption('Oppwa', PaymentGatewayEnum::Oppwa);

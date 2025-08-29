@@ -22,8 +22,14 @@ class PaymentResultPage extends BaseCheckoutComponent
      */
     public array $travelers = [];
 
+    /**
+     * The summary of the itinerary.
+     */
     public ItinerarySummary $itinerary;
 
+    /**
+     * The output from the payment widget.
+     */
     public PaymentOutput $output;
 
     public function mount(Request $request): void

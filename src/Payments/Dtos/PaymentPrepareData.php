@@ -10,6 +10,9 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 
 class PaymentPrepareData extends BaseDto
 {
+    /**
+     * Create a new instance of PaymentPrepareData.
+     */
     public function __construct(
         public ContactInfoPayloadEntity $contact,
         public Price $price,

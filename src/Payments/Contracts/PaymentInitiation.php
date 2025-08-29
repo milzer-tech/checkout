@@ -11,9 +11,18 @@ use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 
 interface PaymentInitiation
 {
+    /**
+     * Prepares the payment initiation process.
+     */
     public function prepare(PaymentPrepareData $data): PaymentInit;
 
+    /**
+     * Returns the assets required for the payment initiation process.
+     */
     public function getAssets(PaymentInit $paymentInit, string $returnUrl): PaymentAsset;
 
+    /**
+     * Returns the payload required for creating a transaction in Nezasa.
+     */
     public function getNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload;
 }

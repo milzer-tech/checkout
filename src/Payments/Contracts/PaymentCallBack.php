@@ -18,5 +18,8 @@ interface PaymentCallBack
      */
     public function check(Request $request, array|BaseDto $persistentData): PaymentResult;
 
+    /**
+     * Shows the result of the payment process to the user.
+     */
     public function show(PaymentResult $result, PaymentOutput $output): PaymentOutput;
 }

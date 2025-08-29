@@ -17,8 +17,14 @@ class ConfirmationPage extends BaseCheckoutComponent
      */
     public array $travelers = [];
 
+    /**
+     * The summary of the itinerary.
+     */
     public ItinerarySummary $itinerary;
 
+    /**
+     * Mount the component and initialize requirements.
+     */
     public function mount(): void
     {
         $this->initializeRequirements();
@@ -31,6 +37,9 @@ class ConfirmationPage extends BaseCheckoutComponent
 
     }
 
+    /**
+     * Render the view for the confirmation page.
+     */
     public function render(): View
     {
         /** @phpstan-ignore-next-line */

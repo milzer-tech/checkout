@@ -11,6 +11,9 @@ use Nezasa\Checkout\Models\Checkout;
 
 class InitializeCheckoutDataAction
 {
+    /**
+     * Create or find existing checkout model and initialize the data if created.
+     */
     public function run(string $checkoutId, string $itineraryId, PaxAllocationResponseEntity $allocatedPax): Checkout
     {
         $model = resolve(FindCheckoutModelAction::class)->run($checkoutId, $itineraryId);
@@ -24,6 +27,9 @@ class InitializeCheckoutDataAction
         return $model;
     }
 
+    /**
+     * Initialize the checkout data on first creation.
+     */
     private function firstConfiguration(PaxAllocationResponseEntity $allocatedPax, Checkout $checkout): void
     {
         $checkout->data = [
