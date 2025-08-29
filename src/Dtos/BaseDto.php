@@ -17,7 +17,7 @@ abstract class BaseDto extends Data implements Wireable
      *
      * @phpstan-ignore-next-line
      */
-    public static function from(...$payloads): static
+    public static function from(mixed ...$payloads): static
     {
         foreach (static::getManipulatedAttributes() as $attribute) {
             $payloads = self::manipulateDate($payloads, $attribute);

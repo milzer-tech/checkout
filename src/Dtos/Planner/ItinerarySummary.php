@@ -64,7 +64,7 @@ class ItinerarySummary extends BaseDto
     public function hasTransfers(): bool
     {
         return $this->transfers
-            ->filter(fn (ItineraryTransfer $transfer) => ! $transfer->isPlaceholder)
+            ->filter(fn (ItineraryTransfer $transfer): bool => ! $transfer->isPlaceholder)
             ->isNotEmpty();
     }
 
@@ -74,7 +74,7 @@ class ItinerarySummary extends BaseDto
     public function hasFlights(): bool
     {
         return $this->flights
-            ->filter(fn (ItineraryFlight $flight) => ! $flight->isPlaceholder)
+            ->filter(fn (ItineraryFlight $flight): bool => ! $flight->isPlaceholder)
             ->isNotEmpty();
     }
 
@@ -84,7 +84,7 @@ class ItinerarySummary extends BaseDto
     public function hasRentalCar(): bool
     {
         return $this->rentalCars
-            ->filter(fn (ItineraryRentalCar $rentalCar) => ! $rentalCar->isPlaceholder)
+            ->filter(fn (ItineraryRentalCar $rentalCar): bool => ! $rentalCar->isPlaceholder)
             ->isNotEmpty();
     }
 

@@ -78,11 +78,8 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      */
     public function addItem(bool $isAdHoc, string $offerId, string $serviceCategoryRefId): void
     {
-        if ($isAdHoc) {
-
-        } else {
+        if (! $isAdHoc) {
             $this->items[$offerId][$serviceCategoryRefId]++;
-
             $this->updateUpsellItems($offerId, $serviceCategoryRefId);
         }
     }
@@ -92,10 +89,8 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      */
     public function removeItem(bool $isAdHoc, string $offerId, string $serviceCategoryRefId): void
     {
-        if ($isAdHoc) {
-        } else {
+        if (! $isAdHoc) {
             $this->items[$offerId][$serviceCategoryRefId] == 0 ?: $this->items[$offerId][$serviceCategoryRefId]--;
-
             $this->updateUpsellItems($offerId, $serviceCategoryRefId);
         }
     }
@@ -105,8 +100,7 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      */
     public function noNeed(bool $isAdHoc, string $offerId): void
     {
-        if ($isAdHoc) {
-        } else {
+        if (! $isAdHoc) {
             foreach ($this->items[$offerId] as $serviceId => $quantity) {
                 if ($quantity !== 0) {
                     $this->items[$offerId][$serviceId] = 0;

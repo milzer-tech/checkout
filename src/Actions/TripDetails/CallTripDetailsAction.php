@@ -43,7 +43,7 @@ class CallTripDetailsAction
         NezasaConnector::make()
             ->pool(requests: $requests, concurrency: count($requests))
             ->withExceptionHandler(fn ($exception) => throw new NotFoundException)
-            ->withResponseHandler(function (Response $response, string $key) use ($results) {
+            ->withResponseHandler(function (Response $response, string $key) use ($results): void {
                 $results->put($key, $response->dto());
             })
             ->send()

@@ -75,7 +75,7 @@ abstract class TestCase extends OrchestraTestCase
      */
     protected function getSnapshotDirectory(): string
     {
-        return __DIR__.'/'.str(get_class($this))
+        return __DIR__.'/'.str(static::class)
             ->after('P\Tests\\')
             ->replace('\\', '/')
             ->beforeLast('/')

@@ -88,7 +88,7 @@ class Transaction extends Model
     protected function price(): Attribute
     {
         return Attribute::get(
-            get: fn ($value, array $attributes) => new Price((float) $attributes['amount'], $attributes['currency'])
+            get: fn ($value, array $attributes): Price => new Price((float) $attributes['amount'], $attributes['currency'])
         );
     }
 }

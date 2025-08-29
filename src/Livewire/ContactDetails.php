@@ -113,7 +113,7 @@ class ContactDetails extends BaseCheckoutComponent
         }
 
         return array_combine(
-            array_map(fn ($key) => "contact.$key", array_keys($rules)),
+            array_map(fn (string $key): string => "contact.$key", array_keys($rules)),
             array_values($rules)
         );
     }

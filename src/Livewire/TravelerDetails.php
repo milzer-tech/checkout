@@ -130,7 +130,7 @@ class TravelerDetails extends BaseCheckoutComponent
         }
 
         return array_combine(
-            array_map(fn ($key) => 'paxInfo.*.*.'.$key, array_keys($rules)),
+            array_map(fn (string $key): string => 'paxInfo.*.*.'.$key, array_keys($rules)),
             array_values($rules)
         );
     }
@@ -143,8 +143,8 @@ class TravelerDetails extends BaseCheckoutComponent
         $this->isCompleted = collect($this->paxInfo)
             ->flatten(1)
             ->pluck('showTraveller')
-            ->transform(fn ($item) => ShowTraveller::from($item))
-            ->reject(fn (ShowTraveller $item) => $item->isFilled)
+            ->transform(fn ($item): ShowTraveller => ShowTraveller::from($item))
+            ->reject(fn (ShowTraveller $item): bool => $item->isFilled)
             ->isEmpty();
     }
 
@@ -200,9 +200,9 @@ class TravelerDetails extends BaseCheckoutComponent
         $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
 
         if ($traveler > 0) {
-            $traveler = $traveler - 1;
+            $traveler -= 1;
         } else {
-            $room = $room - 1;
+            $room -= 1;
             $traveler = count($this->paxInfo[$room]) - 1;
         }
 
@@ -234,7 +234,7 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     protected function getRoomAndTravellerNumber(string $item): array
     {
-        return str($item)->explode('-')->transform(fn ($item) => intval($item))->toArray();
+        return str($item)->explode('-')->transform(fn ($item): int => intval($item))->toArray();
     }
 
     /**
@@ -295,10 +295,10 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     protected function setShowingTravellers(): void
     {
-        foreach ($this->paxInfo as $roomNumber => $room) {
+        foreach (array_keys($this->paxInfo) as $roomNumber) {
             if (collect($this->paxInfo[$roomNumber])
                 ->pluck('showTraveller')
-                ->filter(fn (ShowTraveller $item) => $item->isShowing)
+                ->filter(fn (ShowTraveller $item): bool => $item->isShowing)
                 ->isNotEmpty()
             ) {
                 return;
@@ -316,7 +316,7 @@ class TravelerDetails extends BaseCheckoutComponent
     protected function validationAttributes(): array
     {
         return collect($this->rules())
-            ->reject(fn ($item, $key) => $key === 'paxInfo.*.*.address1' || $key === 'paxInfo.*.*.address2')
+            ->reject(fn ($item, $key): bool => $key === 'paxInfo.*.*.address1' || $key === 'paxInfo.*.*.address2')
             ->mapWithKeys(function ($item, $key) {
                 $translatedKey = str($key)->afterLast('.')->toString();
 

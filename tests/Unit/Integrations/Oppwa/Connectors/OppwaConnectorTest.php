@@ -43,7 +43,6 @@ it('checks the default query parameters (entityId)', function (): void {
 
     $ref = new ReflectionClass($connector);
     $method = $ref->getMethod('defaultQuery');
-    $method->setAccessible(true);
     $query = $method->invoke($connector);
 
     expect($query)->toBeArray()->toEqualCanonicalizing([

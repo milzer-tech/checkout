@@ -108,7 +108,7 @@ class TripSummary extends BaseCheckoutComponent
             }
         }
 
-        $availability = $statuses->reject(fn (AvailabilityEnum $item) => $item->isBookable())->isEmpty();
+        $availability = $statuses->reject(fn (AvailabilityEnum $item): bool => $item->isBookable())->isEmpty();
 
         $this->dispatch('availability-verified', result: $availability);
     }

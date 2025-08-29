@@ -68,7 +68,7 @@ class InitializeCheckoutDataAction
     {
         return $allocatedPax->rooms->sum(
             /** @phpstan-ignore-next-line */
-            fn (RoomAllocationResponseEntity $room) => $room->adults + $room->childAges->count()
+            fn (RoomAllocationResponseEntity $room): int => $room->adults + $room->childAges->count()
         );
     }
 }

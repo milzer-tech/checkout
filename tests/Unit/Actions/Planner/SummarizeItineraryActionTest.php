@@ -11,7 +11,7 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Saloon\Http\Response;
 
-it('summarizes an itinerary', function () {
+it('summarizes an itinerary', function (): void {
     fakeCarbon();
     $responses = prepare();
 
@@ -46,7 +46,7 @@ function prepare(): array
             'addedRentalCars' => new AddedRentalCarsRequest('test-checkout-id'),
             'addedUpsellItems' => new RetrieveCheckoutUpsellItemsRequest('test-checkout-id'),
         ])
-        ->withResponseHandler(function (Response $response, string $key) use (&$responses) {
+        ->withResponseHandler(function (Response $response, string $key) use (&$responses): void {
             $responses[$key] = $response->dto();
         })
         ->send()

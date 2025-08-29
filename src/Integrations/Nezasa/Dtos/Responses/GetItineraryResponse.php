@@ -45,7 +45,7 @@ class GetItineraryResponse extends BaseDto
     public function countAdults(): int
     {
         return $this->paxDetails
-            ->reject(fn (PaxDetailEntity $pax) => $pax->age && $pax->age < 18)
+            ->reject(fn (PaxDetailEntity $pax): bool => $pax->age && $pax->age < 18)
             ->count();
     }
 
@@ -55,7 +55,7 @@ class GetItineraryResponse extends BaseDto
     public function countChildren(): int
     {
         return $this->paxDetails
-            ->filter(fn (PaxDetailEntity $pax) => $pax->age && $pax->age < 18)
+            ->filter(fn (PaxDetailEntity $pax): bool => $pax->age && $pax->age < 18)
             ->count();
     }
 
@@ -67,7 +67,7 @@ class GetItineraryResponse extends BaseDto
     public function getChildrenAges(): Collection
     {
         return $this->paxDetails
-            ->filter(fn (PaxDetailEntity $detail) => $detail->age < 18)
+            ->filter(fn (PaxDetailEntity $detail): bool => $detail->age < 18)
             ->pluck('age')
             ->filter()
             ->values();
