@@ -4,7 +4,7 @@ This package handles the checkout process for Nezasa web application.
 
 > **Requires: Php 8.3, Mysql 8**
 
-⚡️ Create your package using [Composer](https://getcomposer.org):
+⚡️ Install the package using [Composer](https://getcomposer.org):
 
 ```bash
 composer milzer/checkout
