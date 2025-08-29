@@ -60,7 +60,7 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      */
     public function render(): View
     {   /** @phpstan-ignore-next-line  */
-        return view('checkout::trip-details-page.additional-services-section');
+        return view('checkout::blades.additional-services-section');
     }
 
     /**

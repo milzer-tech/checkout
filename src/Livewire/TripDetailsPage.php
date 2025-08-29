@@ -65,7 +65,7 @@ class TripDetailsPage extends BaseCheckoutComponent
      */
     public function render(): View
     { /** @phpstan-ignore-next-line */
-        return view('checkout::trip-details-page.index', [
+        return view('checkout::blades.index', [
             'contactRequirements' => $this->result->travelerRequirements->contact,
             'countryCodes' => $this->result->countryCodes,
             'allocatedPax' => $this->result->itinerary->allocatedPax,

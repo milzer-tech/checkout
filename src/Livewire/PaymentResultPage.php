@@ -45,7 +45,7 @@ class PaymentResultPage extends BaseCheckoutComponent
 
     public function render(): View
     {   /** @phpstan-ignore-next-line */
-        return view('checkout::trip-details-page.confirmation-page');
+        return view('checkout::blades.confirmation-page');
     }
 
     /**

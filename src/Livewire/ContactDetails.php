@@ -50,7 +50,7 @@ class ContactDetails extends BaseCheckoutComponent
      */
     public function render(): View
     { /** @phpstan-ignore-next-line */
-        return view('checkout::trip-details-page.contact-details');
+        return view('checkout::blades.contact-details');
     }
 
     /**

@@ -52,7 +52,7 @@ class PromoCodeSection extends BaseCheckoutComponent
      */
     public function render(): View
     {      /** @phpstan-ignore-next-line */
-        return view('checkout::trip-details-page.promo-code-section');
+        return view('checkout::blades.promo-code-section');
     }
 
     /**

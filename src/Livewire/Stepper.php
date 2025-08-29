@@ -51,6 +51,6 @@ class Stepper extends Component
 
     public function render(): View
     {   /** @phpstan-ignore-next-line */
-        return view('checkout::trip-details-page.stepper');
+        return view('checkout::blades.stepper');
     }
 }

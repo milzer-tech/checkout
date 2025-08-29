@@ -62,7 +62,7 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     public function render(): View
     {/** @phpstan-ignore-next-line */
-        return view('checkout::trip-details-page.traveler-details');
+        return view('checkout::blades.traveler-details');
     }
 
     /**

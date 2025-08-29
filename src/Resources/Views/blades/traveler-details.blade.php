@@ -60,7 +60,7 @@
             </div>
             @foreach($room as $i => ['showTraveller' =>$showTraveller])
                 <div @if(! $showTraveller->isShowing) class="hidden" @endif>
-                    @include('checkout::trip-details-page.inputs',[
+                    @include('checkout::blades.inputs',[
                              'requirements' => $passengerRequirements,
                              'countryCodes' => $countryCodes,
                              'countriesResponse' => $countriesResponse,

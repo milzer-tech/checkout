@@ -27,7 +27,7 @@ class PaymentOptionsSection extends BaseCheckoutComponent
      */
     public function render(): View
     { /** @phpstan-ignore-next-line */
-        return view('checkout::trip-details-page.payment-options-section');
+        return view('checkout::blades.payment-options-section');
     }
 
     /**

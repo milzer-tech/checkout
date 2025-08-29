@@ -18,6 +18,6 @@ class Banner extends BaseCheckoutComponent
     public function render(): View
     {
         /** @phpstan-ignore-next-line  */
-        return view('checkout::trip-details-page.banner');
+        return view('checkout::blades.banner');
     }
 }

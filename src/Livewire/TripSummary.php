@@ -32,7 +32,7 @@ class TripSummary extends BaseCheckoutComponent
      */
     public function render(): View
     {   /** @phpstan-ignore-next-line */
-        return view('checkout::trip-details-page.trip-summary');
+        return view('checkout::blades.trip-summary');
     }
 
     /**

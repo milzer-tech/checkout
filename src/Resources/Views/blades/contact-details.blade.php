@@ -12,7 +12,7 @@
 >
     <form wire:submit="save" class="space-y-6">
 
-        @include('checkout::trip-details-page.inputs',[
+        @include('checkout::blades.inputs',[
             'requirements' => $contactRequirements,
             'countryCodes' => $countryCodes,
             'saveTo' => 'contact'
