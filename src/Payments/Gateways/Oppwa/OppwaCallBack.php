@@ -13,18 +13,25 @@ use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Throwable;
 
 final class OppwaCallBack implements PaymentCallBack, ReturnUrlHasInvalidQueryParamsForValidation
 {
     public function check(Request $request, BaseDto|array $persistentData): PaymentResult
     {
-        $response = OppwaConnector::make()->checkout()->status($request->query('resourcePath'));
+        try {
+            $response = OppwaConnector::make()->checkout()->status($request->query('resourcePath'));
 
-        return new PaymentResult(
-            gateway: PaymentGatewayEnum::Oppwa,
-            status: $response->failed() ? PaymentStatusEnum::Failed : PaymentStatusEnum::Succeeded,
-            persistentData: (array) $response->array(),
-        );
+            return new PaymentResult(
+                gateway: PaymentGatewayEnum::Oppwa,
+                status: $response->failed() ? PaymentStatusEnum::Failed : PaymentStatusEnum::Succeeded,
+                persistentData: (array) $response->array(),
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return new PaymentResult(gateway: PaymentGatewayEnum::Oppwa, status: PaymentStatusEnum::Failed);
+        }
     }
 
     public function show(PaymentResult $result, PaymentOutput $output): PaymentOutput
