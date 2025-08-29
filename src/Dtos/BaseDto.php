@@ -14,8 +14,6 @@ abstract class BaseDto extends Data implements Wireable
 
     /**
      * Create a new instance of the DTO from the given payloads.
-     *
-     * @phpstan-ignore-next-line
      */
     public static function from(mixed ...$payloads): static
     {
