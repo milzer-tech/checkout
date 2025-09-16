@@ -3,7 +3,6 @@
 This Laravel package provides a **complete checkout process** for the Nezasa web application.  
 It integrates with **Nezasa’s APIs** to handle all the necessary steps for booking an itinerary, ensuring a smooth and reliable booking experience.
 
----
 
 ## Requirements
 Make sure your environment meets the following requirements:
@@ -13,11 +12,10 @@ Make sure your environment meets the following requirements:
 3. **Laravel** 11 or higher
 4. **Redis (optional)** 
 
-The package relies heavily on **cache** and **queues** to ensure better performance.  
+The package relies heavily on cache** and **queues** to ensure better performance.  
 It is **highly recommended** to use **Redis** as both the queue driver and cache driver for optimal speed and reliability.
----
-## Installation & Setup
 
+## Installation & Setup
 This package is already installed and pre-configured in the [checkout-main-app repository](https://github.com/milzer-tech/checkout-main-app).
 
 The repository also includes useful configurations and dependencies to help you set up and run a Laravel application faster:
@@ -27,10 +25,7 @@ The repository also includes useful configurations and dependencies to help you 
 
 With these configurations in place, you can quickly get started with the Nezasa checkout.
 
----
-
-### Features of the Package
-
+## Features of the Package
 Below is a list of the key features included in this package:
 
 1. **Itinerary Summary** – Summarizes itinerary details such as travel dates, travelers, and pricing.
