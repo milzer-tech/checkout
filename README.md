@@ -6,7 +6,6 @@ It integrates with **Nezasa’s APIs** to handle all the necessary steps for boo
 ---
 
 ## Requirements
-
 Make sure your environment meets the following requirements:
 
 1. **PHP** 8.3 or higher
