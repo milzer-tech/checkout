@@ -46,6 +46,22 @@ Below is a list of the key features included in this package:
 
 ---
 
+### Setting up Configuration
+
+Add the following variables to the `.env` file of your Laravel application:
+
+```bash
+# Nezasa API
+CHECKOUT_NEZASA_BASE_URL="https://your-instance.tripbuilder.app"
+CHECKOUT_NEZASA_USERNAME="test@nezasa.com"
+CHECKOUT_NEZASA_PASSWORD="password"
+
+# Oppwa Payment Provider
+CHECKOUT_WIDGET_OPPWA_ENTITY_ID="8acadsf701ad"
+CHECKOUT_WIDGET_OPPWA_TOKEN="OdasfpOnFyM0ZlQEBIQUI="
+CHECKOUT_WIDGET_OPPWA_ACTIVE=true
+```
+
 ### Useful commands:
 
 ⚡️ Install the package using [Composer](https://getcomposer.org):
