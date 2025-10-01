@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Dtos\View;
 
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 
 class PaymentOption extends BaseDto
 {
@@ -14,7 +13,7 @@ class PaymentOption extends BaseDto
      */
     public function __construct(
         public string $name,
-        public PaymentGatewayEnum $gateway,
+        public string $encryptedGateway,
         public bool $isSelected = false,
         public ?string $description = null,
         public ?string $icon = null,

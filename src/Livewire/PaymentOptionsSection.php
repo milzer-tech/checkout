@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Config;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\View\PaymentOption;
 use Nezasa\Checkout\Enums\Section;
@@ -22,14 +23,20 @@ class PaymentOptionsSection extends BaseCheckoutComponent
      */
     public function mount(): void
     {
-        $this->options[] = new PaymentOption('Oppwa', PaymentGatewayEnum::Oppwa);
+        foreach (Config::array('checkout.payment.widget') as $gateway) {
+            $this->options[] = new PaymentOption(
+                name: $gateway['name'],
+                encryptedGateway: encrypt(PaymentGatewayEnum::from($gateway['payment_gateway_enum_value'])->value)
+            );
+        }
     }
 
     /**
      * Render the view for the payment options section.
      */
     public function render(): View
-    { /** @phpstan-ignore-next-line */
+    {
+        /** @phpstan-ignore-next-line */
         return view('checkout::blades.payment-options-section');
     }
 

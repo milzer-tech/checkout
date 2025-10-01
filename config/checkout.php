@@ -16,6 +16,7 @@ return [
             'oppwa' => [
                 'active' => env('CHECKOUT_WIDGET_OPPWA_ACTIVE', false),
                 'name' => env('CHECKOUT_WIDGET_OPPWA_NAME', 'oppwa'),
+                'payment_gateway_enum_value' => 1,
                 'base_url' => env('CHECKOUT_WIDGET_OPPWA_BASE_URL', 'https://eu-test.oppwa.com'),
                 'entity_id' => env('CHECKOUT_WIDGET_OPPWA_ENTITY_ID', 'must_be_set_in_env'),
                 'token' => env('CHECKOUT_WIDGET_OPPWA_TOKEN', 'must_be_set_in_env'),

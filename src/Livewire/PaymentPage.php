@@ -46,7 +46,6 @@ class PaymentPage extends BaseCheckoutComponent
 
     public function goBack(): RedirectResponse
     {
-
         return to_route('traveler-details', $this->getQueryParams());
     }
 
