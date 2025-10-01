@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('checkouts', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('checkout_id')->unique();
             $table->string('itinerary_id');
             $table->json('data')->nullable();
@@ -21,8 +21,8 @@ return new class extends Migration
         });
 
         Schema::create('checkout_transactions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('checkout_id')->constrained('checkouts')->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('checkout_id')->constrained('checkouts', 'id')->cascadeOnDelete();
             $table->string('gateway');
             $table->decimal('amount', 10, 2);
             $table->char('currency', 3);
@@ -40,7 +40,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('checkout_transactions');
         Schema::dropIfExists('checkouts');
     }
 };

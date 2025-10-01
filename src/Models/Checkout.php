@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Models;
 
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -30,6 +31,8 @@ use Illuminate\Support\Collection;
  */
 class Checkout extends Model
 {
+    use HasUlids;
+
     /**
      * The attributes that are mass assignable.
      *
