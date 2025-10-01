@@ -63,9 +63,9 @@ class Transaction extends Model
     protected function casts(): array
     {
         return [
-            'prepare_data' => 'json',
-            'result_data' => 'json',
-            'nezasa_transaction' => 'json',
+            'prepare_data' => 'encrypted:json',
+            'result_data' => 'encrypted:json',
+            'nezasa_transaction' => 'encrypted:json',
             'nezasa_transaction_ref_id' => 'string',
             'status' => PaymentStatusEnum::class,
             'gateway' => PaymentGatewayEnum::class,
