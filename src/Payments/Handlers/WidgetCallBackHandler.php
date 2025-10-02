@@ -140,15 +140,15 @@ class WidgetCallBackHandler
 
         $result = new PaymentResult(
             gateway: $transaction->gateway,
-            status: $transaction->status,
-            persistentData: $transaction->result_data,
+            status: $transaction->status ?? PaymentStatusEnum::Failed,
+            persistentData: $transaction->result_data ?? [],
         );
 
         $output = new PaymentOutput(
             gateway: $result->gateway,
             isNezasaBookingSuccessful: $state->isSuccessfulState(),
             bookingReference: $transaction->checkout->itinerary_id,
-            orderDate: $transaction->updated_at->toImmutable(),
+            orderDate: $transaction->updated_at?->toImmutable(),
             data: $result->persistentData
         );
 
