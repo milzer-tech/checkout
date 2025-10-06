@@ -10,7 +10,7 @@ use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBack;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
-it('checks payment status and returns Succeeded with persistent data on successful Oppwa status', function () {
+it('checks payment status and returns Succeeded with persistent data on successful Oppwa status', function (): void {
     config()->set('checkout.payment.widget.oppwa.successful_result_code', '000.100.110');
 
     MockClient::global([
@@ -33,7 +33,7 @@ it('checks payment status and returns Succeeded with persistent data on successf
         ->not()->toBeEmpty();
 });
 
-it('returns Failed when Oppwa status indicates failure (non-matching result.code)', function () {
+it('returns Failed when Oppwa status indicates failure (non-matching result.code)', function (): void {
     config()->set('checkout.payment.widget.oppwa.successful_result_code', '999.999.999');
 
     MockClient::global([
@@ -49,7 +49,7 @@ it('returns Failed when Oppwa status indicates failure (non-matching result.code
         ->and($result->persistentData)->toBeArray()->not()->toBeEmpty();
 });
 
-it('returns Failed when an exception occurs while checking status', function () {
+it('returns Failed when an exception occurs while checking status', function (): void {
     config()->set('checkout.payment.widget.oppwa.successful_result_code', '000.100.110');
 
     MockClient::global([
@@ -65,7 +65,7 @@ it('returns Failed when an exception occurs while checking status', function () 
         ->and($result->persistentData)->toBe([]);
 });
 
-it('show returns the provided PaymentOutput without modification', function () {
+it('show returns the provided PaymentOutput without modification', function (): void {
     $callback = new OppwaCallBack;
 
     $result = new PaymentResult(PaymentGatewayEnum::Oppwa, PaymentStatusEnum::Succeeded, ['foo' => 'bar']);
@@ -83,7 +83,7 @@ it('show returns the provided PaymentOutput without modification', function () {
         ->and($returned->data)->toBe(['baz' => 'qux']);
 });
 
-it('returns the list of added params to be ignored for signature validation', function () {
+it('returns the list of added params to be ignored for signature validation', function (): void {
     $callback = new OppwaCallBack;
 
     $request = Request::create('/callback', 'GET', [

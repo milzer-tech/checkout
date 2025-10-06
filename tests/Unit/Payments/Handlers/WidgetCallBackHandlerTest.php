@@ -21,7 +21,7 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-it('validates the given gateway in the callback handler', function () {
+it('validates the given gateway in the callback handler', function (): void {
     $handler = new WidgetCallBackHandler;
 
     $transaction = new Transaction;
@@ -33,7 +33,7 @@ it('validates the given gateway in the callback handler', function () {
     $handler->run($transaction, m::mock(Request::class));
 })->throws(InvalidArgumentException::class, 'The payment gateway is not supported.');
 
-it('validates the given gateway implements the correct interface', function () {
+it('validates the given gateway implements the correct interface', function (): void {
     $handler = new WidgetCallBackHandler;
 
     $transaction = new Transaction;
@@ -47,7 +47,7 @@ it('validates the given gateway implements the correct interface', function () {
     $handler->run($transaction, m::mock(Request::class));
 })->throws(InvalidArgumentException::class, 'The payment callback is not implemented correctly.');
 
-it('aborts when the signature is invalid', function () {
+it('aborts when the signature is invalid', function (): void {
     $handler = new WidgetCallBackHandler;
 
     $transaction = new Transaction;
@@ -68,7 +68,7 @@ it('aborts when the signature is invalid', function () {
     $handler->run($transaction, $request);
 })->throws(HttpException::class, 'Invalid signature');
 
-it('ignores added query params when validating signature', function () {
+it('ignores added query params when validating signature', function (): void {
     MockClient::global([
         UpdatePaymentTransactionRequest::class => MockResponse::make([
             'transaction' => ['transactionRefId' => 'nez-1', 'status' => 'Closed'],
@@ -114,7 +114,7 @@ it('ignores added query params when validating signature', function () {
         ->and($output->gateway)->toBe(PaymentGatewayEnum::Oppwa);
 });
 
-it('returns stored output immediately when result data already exists', function () {
+it('returns stored output immediately when result data already exists', function (): void {
     MockClient::global([
         RetrieveCheckoutRequest::class => MockResponse::make([
             'checkoutState' => BookingStateEnum::BookingRequested->value,
@@ -148,7 +148,7 @@ it('returns stored output immediately when result data already exists', function
         ->and($output->data)->toBe(['saved' => true]);
 });
 
-it('updates nezasa transaction, stores result and tries to book itinerary', function () {
+it('updates nezasa transaction, stores result and tries to book itinerary', function (): void {
     $stored = [];
 
     MockClient::global([
@@ -174,7 +174,7 @@ it('updates nezasa transaction, stores result and tries to book itinerary', func
     $transaction->nezasa_transaction_ref_id = 'nez-1';
     $transaction->setRelation('checkout', new Checkout(['checkout_id' => 'chk_1', 'itinerary_id' => 'itn_1']));
 
-    $transaction->shouldReceive('update')->once()->with(m::type('array'))->andReturnUsing(function (array $attrs) use (&$stored) {
+    $transaction->shouldReceive('update')->once()->with(m::type('array'))->andReturnUsing(function (array $attrs) use (&$stored): true {
         $stored = $attrs;
 
         return true;
@@ -205,7 +205,7 @@ it('updates nezasa transaction, stores result and tries to book itinerary', func
         ->and($output->isNezasaBookingSuccessful)->toBeTrue();
 });
 
-it('handles exceptions from nezasa update and booking gracefully', function () {
+it('handles exceptions from nezasa update and booking gracefully', function (): void {
     $stored = [];
 
     // Make update request throw by not registering a mock and using a connector without a mock; we will mock the connector call to throw.
@@ -233,7 +233,7 @@ it('handles exceptions from nezasa update and booking gracefully', function () {
     $transaction->nezasa_transaction_ref_id = 'nez-1';
     $transaction->setRelation('checkout', new Checkout(['checkout_id' => 'chk_1', 'itinerary_id' => 'itn_1']));
 
-    $transaction->shouldReceive('update')->once()->with(m::type('array'))->andReturnUsing(function (array $attrs) use (&$stored) {
+    $transaction->shouldReceive('update')->once()->with(m::type('array'))->andReturnUsing(function (array $attrs) use (&$stored): true {
         $stored = $attrs;
 
         return true;

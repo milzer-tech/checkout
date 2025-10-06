@@ -12,7 +12,7 @@ use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiation;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
-it('prepares payment successfully and returns PaymentInit with OppwaPrepareResponse persistent data', function () {
+it('prepares payment successfully and returns PaymentInit with OppwaPrepareResponse persistent data', function (): void {
     MockClient::global([
         OppwaPrepareRequest::class => MockResponse::fixture('oppwa_prepare_response'),
     ]);
@@ -46,7 +46,7 @@ it('prepares payment successfully and returns PaymentInit with OppwaPrepareRespo
         ->and($init->persistentData)->not()->toBeEmpty();
 });
 
-it('returns isAvailable=false when prepare call fails', function () {
+it('returns isAvailable=false when prepare call fails', function (): void {
     MockClient::global([
         OppwaPrepareRequest::class => MockResponse::make('server-error', 500),
     ]);
@@ -77,7 +77,7 @@ it('returns isAvailable=false when prepare call fails', function () {
         ->and($init->persistentData)->toBe([]);
 });
 
-it('getAssets throws when persistentData is not OppwaPrepareResponse', function () {
+it('getAssets throws when persistentData is not OppwaPrepareResponse', function (): void {
     $gateway = new OppwaInitiation;
 
     $init = new PaymentInit(
@@ -89,7 +89,7 @@ it('getAssets throws when persistentData is not OppwaPrepareResponse', function 
     $gateway->getAssets($init, 'https://return.url');
 })->throws(Exception::class, 'The persistent data is not correct');
 
-it('getAssets returns PaymentAsset with expected script and form', function () {
+it('getAssets returns PaymentAsset with expected script and form', function (): void {
     MockClient::global([
         OppwaPrepareRequest::class => MockResponse::fixture('oppwa_prepare_response'),
     ]);
@@ -134,7 +134,7 @@ it('getAssets returns PaymentAsset with expected script and form', function () {
         ->toContain('crossorigin="anonymous"');
 });
 
-it('getNezasaTransactionPayload throws when persistentData is not OppwaPrepareResponse', function () {
+it('getNezasaTransactionPayload throws when persistentData is not OppwaPrepareResponse', function (): void {
     $gateway = new OppwaInitiation;
 
     $data = new PaymentPrepareData(
@@ -154,7 +154,7 @@ it('getNezasaTransactionPayload throws when persistentData is not OppwaPrepareRe
     $gateway->getNezasaTransactionPayload($data, $init);
 })->throws(Exception::class, 'The persistent data is not correct');
 
-it('getNezasaTransactionPayload returns Nezasa payload with expected values', function () {
+it('getNezasaTransactionPayload returns Nezasa payload with expected values', function (): void {
     MockClient::global([
         OppwaPrepareRequest::class => MockResponse::fixture('oppwa_prepare_response'),
     ]);

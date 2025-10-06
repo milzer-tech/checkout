@@ -7,7 +7,7 @@ use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
-it('builds Price accessor from amount and currency', function () {
+it('builds Price accessor from amount and currency', function (): void {
     $t = new Transaction;
     $t->amount = '123.45';
     $t->currency = 'EUR';
@@ -20,18 +20,18 @@ it('builds Price accessor from amount and currency', function () {
         ->and($price->currency)->toBe('EUR');
 });
 
-it('returns BelongsTo relation for checkout()', function () {
+it('returns BelongsTo relation for checkout()', function (): void {
     $t = new Transaction;
 
     $relation = $t->checkout();
 
     expect($relation)
         ->toBeInstanceOf(BelongsTo::class)
-        ->and(get_class($relation->getRelated()))
+        ->and($relation->getRelated()::class)
         ->toBe(Checkout::class);
 });
 
-it('defines expected casts and respects enum/decimal casting', function () {
+it('defines expected casts and respects enum/decimal casting', function (): void {
     $t = new Transaction;
 
     $t->status = PaymentStatusEnum::Pending;

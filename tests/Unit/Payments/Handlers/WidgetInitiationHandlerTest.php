@@ -19,7 +19,7 @@ use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
-it('validates the given gateway in the handler', function () {
+it('validates the given gateway in the handler', function (): void {
     $prepareData = new PaymentPrepareData(
         contact: new ContactInfoPayloadEntity,
         price: new Price(amount: 100.00, currency: 'USD'),
@@ -36,7 +36,7 @@ it('validates the given gateway in the handler', function () {
     $handler->run(new Checkout, $prepareData, PaymentGatewayEnum::Oppwa);
 })->throws(InvalidArgumentException::class, 'The payment gateway is not supported.');
 
-it('validates the given gateway that implements the correct interface', function () {
+it('validates the given gateway that implements the correct interface', function (): void {
     $prepareData = new PaymentPrepareData(
         contact: new ContactInfoPayloadEntity,
         price: new Price(amount: 100.00, currency: 'USD'),
@@ -55,18 +55,17 @@ it('validates the given gateway that implements the correct interface', function
     $handler->run(new Checkout, $prepareData, PaymentGatewayEnum::Oppwa);
 })->throws(InvalidArgumentException::class, 'The gateway does not implement PaymentInitiation.');
 
-it('throws when service is not available', function () {
+it('throws when service is not available', function (): void {
     $handler = new WidgetInitiationHandler;
 
     $method = new ReflectionMethod($handler, 'checkIfServiceAvailable');
-    $method->setAccessible(true);
 
     $init = new PaymentInit(PaymentGatewayEnum::Oppwa, false);
 
     $method->invoke($handler, $init);
 })->throws(RuntimeException::class, 'Payment gateway is not available.');
 
-it('creates base return url params without extra additions', function () {
+it('creates base return url params without extra additions', function (): void {
     $handler = new WidgetInitiationHandler;
 
     $payment = new FakeGateway;
@@ -83,7 +82,6 @@ it('creates base return url params without extra additions', function () {
     $init = $payment->prepare($prepareData);
 
     $method = new ReflectionMethod($handler, 'getReturnUrlParams');
-    $method->setAccessible(true);
 
     $params = $method->invoke($handler, $prepareData, $payment, $init);
 
@@ -95,7 +93,7 @@ it('creates base return url params without extra additions', function () {
     ]);
 });
 
-it('merges extra query params when gateway implements AddQueryParamsToReturnUrl', function () {
+it('merges extra query params when gateway implements AddQueryParamsToReturnUrl', function (): void {
     $handler = new WidgetInitiationHandler;
 
     $payment = new FakeGatewayWithParams;
@@ -112,7 +110,6 @@ it('merges extra query params when gateway implements AddQueryParamsToReturnUrl'
     $init = $payment->prepare($prepareData);
 
     $method = new ReflectionMethod($handler, 'getReturnUrlParams');
-    $method->setAccessible(true);
 
     $params = $method->invoke($handler, $prepareData, $payment, $init);
 
@@ -127,7 +124,7 @@ it('merges extra query params when gateway implements AddQueryParamsToReturnUrl'
         ]);
 });
 
-it('creates Nezasa transaction and returns the transaction array', function () {
+it('creates Nezasa transaction and returns the transaction array', function (): void {
     MockClient::global([
         CreatePaymentTransactionRequest::class => MockResponse::make([
             'transaction' => [
@@ -140,7 +137,6 @@ it('creates Nezasa transaction and returns the transaction array', function () {
     $handler = new WidgetInitiationHandler;
 
     $method = new ReflectionMethod($handler, 'createNezasaTransaction');
-    $method->setAccessible(true);
 
     $payload = new CreatePaymentTransactionPayload(
         externalRefId: 'ext-1',
@@ -156,7 +152,7 @@ it('creates Nezasa transaction and returns the transaction array', function () {
     ]);
 });
 
-it('persists a transaction with correct payload', function () {
+it('persists a transaction with correct payload', function (): void {
     $handler = new WidgetInitiationHandler;
 
     $created = [];
@@ -165,7 +161,7 @@ it('persists a transaction with correct payload', function () {
     $relation->shouldReceive('create')
         ->once()
         ->with(m::type('array'))
-        ->andReturnUsing(function (array $attrs) use (&$created) {
+        ->andReturnUsing(function (array $attrs) use (&$created): \stdClass {
             $created = $attrs;
 
             return (object) $attrs;
@@ -178,7 +174,6 @@ it('persists a transaction with correct payload', function () {
     $price = new Price(amount: 55.5, currency: 'EUR');
 
     $method = new ReflectionMethod($handler, 'createTransaction');
-    $method->setAccessible(true);
 
     $method->invoke($handler, $model, $init, $nezasa, $price);
 
@@ -193,14 +188,13 @@ it('persists a transaction with correct payload', function () {
     ]);
 });
 
-it('runs the handler end-to-end and returns assets with a signed return url', function () {
+it('runs the handler end-to-end and returns assets with a signed return url', function (): void {
     URL::shouldReceive('temporarySignedRoute')
         ->once()
-        ->withArgs(function ($name, $expiration, $parameters) {
+        ->withArgs(fn ($name, $expiration, $parameters): bool =>
             // basic sanity checks on parameters
-            return $name === 'payment-result'
-                && isset($parameters['checkoutId'], $parameters['itineraryId'], $parameters['origin']);
-        })
+            $name === 'payment-result'
+            && isset($parameters['checkoutId'], $parameters['itineraryId'], $parameters['origin']))
         ->andReturn('https://example.com/return?sig=abc');
 
     MockClient::global([
@@ -230,7 +224,7 @@ it('runs the handler end-to-end and returns assets with a signed return url', fu
     $created = [];
     $model = m::mock(Checkout::class)->makePartial();
     $relation = m::mock(HasMany::class);
-    $relation->shouldReceive('create')->once()->with(m::type('array'))->andReturnUsing(function (array $attrs) use (&$created) {
+    $relation->shouldReceive('create')->once()->with(m::type('array'))->andReturnUsing(function (array $attrs) use (&$created): \stdClass {
         $created = $attrs;
 
         return (object) $attrs;
@@ -250,8 +244,8 @@ it('runs the handler end-to-end and returns assets with a signed return url', fu
 class FakeGateway implements PaymentInitiation
 {
     public function __construct(
-        private bool $available = true,
-        private array $persistent = ['key' => 'value'],
+        private readonly bool $available = true,
+        private readonly array $persistent = ['key' => 'value'],
     ) {}
 
     public function prepare(PaymentPrepareData $data): PaymentInit
