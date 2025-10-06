@@ -24,7 +24,7 @@ class VerifyAvailabilityJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
-        $response = NezasaConnector::make()->checkout()->varifyAvailability($this->checkoutId);
+        $response = resolve(NezasaConnector::class)->checkout()->varifyAvailability($this->checkoutId);
 
         Cache::put(
             key: 'varifyAvailability-'.$this->checkoutId,
