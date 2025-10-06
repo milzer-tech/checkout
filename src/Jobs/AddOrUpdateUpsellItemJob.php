@@ -34,7 +34,7 @@ class AddOrUpdateUpsellItemJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
-        NezasaConnector::make()->checkout()->addOrUpdateUpsellItem(
+        resolve(NezasaConnector::class)->checkout()->addOrUpdateUpsellItem(
             checkoutId: $this->checkoutId,
             payload: new AddOrRemoveUpsellItemsPayload(
                 selection: new Collection([
