@@ -121,5 +121,5 @@ it('failed handler also marks summary completed', function (): void {
 it('uniqueId is md5 of concatenated properties', function (): void {
     $job = new AddOrUpdateUpsellItemJob('A', 'B', 'C', 5);
 
-    expect($job->uniqueId())->toBe(md5('A'.'B'.'C'.'5'));
+    expect($job->uniqueId())->toBe(md5('ABC5'));
 });

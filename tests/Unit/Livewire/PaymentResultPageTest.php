@@ -44,9 +44,7 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
     $handler = m::mock(WidgetCallBackHandler::class);
     $handler->shouldReceive('run')
         ->once()
-        ->withArgs(function ($transaction, $request): bool {
-            return $transaction instanceof Transaction && $request instanceof Request;
-        })
+        ->withArgs(fn ($transaction, $request): bool => $transaction instanceof Transaction && $request instanceof Request)
         ->andReturn(new PaymentOutput(
             gateway: PaymentGatewayEnum::Oppwa,
             isNezasaBookingSuccessful: true,

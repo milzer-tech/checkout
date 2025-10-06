@@ -42,12 +42,10 @@ it('expand accepts string section, sets isExpanded=true and dispatches SaveSecti
         ->and($this->component->isCompleted)->toBeFalse();
 
     // Assert dispatch
-    Bus::assertDispatched(SaveSectionStatusJob::class, function (SaveSectionStatusJob $job): bool {
-        return $job->checkoutId === 'co-123'
-            && $job->section === Section::Contact
-            && $job->isCompleted === false
-            && $job->isExpanded === true;
-    });
+    Bus::assertDispatched(SaveSectionStatusJob::class, fn (SaveSectionStatusJob $job): bool => $job->checkoutId === 'co-123'
+        && $job->section === Section::Contact
+        && $job->isCompleted === false
+        && $job->isExpanded === true);
 });
 
 it('collapse sets isExpanded=false and dispatches SaveSectionStatusJob', function (): void {
@@ -59,12 +57,10 @@ it('collapse sets isExpanded=false and dispatches SaveSectionStatusJob', functio
 
     expect($this->component->isExpanded)->toBeFalse();
 
-    Bus::assertDispatched(SaveSectionStatusJob::class, function (SaveSectionStatusJob $job): bool {
-        return $job->checkoutId === 'co-123'
-            && $job->section === Section::Promo
-            && $job->isCompleted === false
-            && $job->isExpanded === false;
-    });
+    Bus::assertDispatched(SaveSectionStatusJob::class, fn (SaveSectionStatusJob $job): bool => $job->checkoutId === 'co-123'
+        && $job->section === Section::Promo
+        && $job->isCompleted === false
+        && $job->isExpanded === false);
 });
 
 it('markAsCompletedAdnCollapse marks completed and collapses, then dispatches SaveSectionStatusJob', function (): void {
@@ -77,12 +73,10 @@ it('markAsCompletedAdnCollapse marks completed and collapses, then dispatches Sa
     expect($this->component->isCompleted)->toBeTrue()
         ->and($this->component->isExpanded)->toBeFalse();
 
-    Bus::assertDispatched(SaveSectionStatusJob::class, function (SaveSectionStatusJob $job): bool {
-        return $job->checkoutId === 'co-123'
-            && $job->section === Section::Traveller
-            && $job->isCompleted === true
-            && $job->isExpanded === false;
-    });
+    Bus::assertDispatched(SaveSectionStatusJob::class, fn (SaveSectionStatusJob $job): bool => $job->checkoutId === 'co-123'
+        && $job->section === Section::Traveller
+        && $job->isCompleted
+        && $job->isExpanded === false);
 });
 
 it('markAsCompleted sets isCompleted=true and dispatches', function (): void {
@@ -95,7 +89,7 @@ it('markAsCompleted sets isCompleted=true and dispatches', function (): void {
     Bus::assertDispatched(SaveSectionStatusJob::class, function (SaveSectionStatusJob $job): bool {
         return $job->checkoutId === 'co-123'
             && $job->section === Section::Summary
-            && $job->isCompleted === true
+            && $job->isCompleted
             && $job->isExpanded === false; // unchanged
     });
 });
@@ -109,12 +103,10 @@ it('markAsNotCompleted sets isCompleted=false and dispatches', function (): void
 
     expect($this->component->isCompleted)->toBeFalse();
 
-    Bus::assertDispatched(SaveSectionStatusJob::class, function (SaveSectionStatusJob $job): bool {
-        return $job->checkoutId === 'co-123'
-            && $job->section === Section::AdditionalService
-            && $job->isCompleted === false
-            && $job->isExpanded === false;
-    });
+    Bus::assertDispatched(SaveSectionStatusJob::class, fn (SaveSectionStatusJob $job): bool => $job->checkoutId === 'co-123'
+        && $job->section === Section::AdditionalService
+        && $job->isCompleted === false
+        && $job->isExpanded === false);
 });
 
 it('getQueryParams returns expected URL parameters', function (): void {

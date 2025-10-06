@@ -43,20 +43,16 @@ it('mount() initializes result, model and itinerary via injected actions', funct
     $initMock = m::mock(InitializeCheckoutDataAction::class);
     $initMock->shouldReceive('run')
         ->once()
-        ->withArgs(function (string $checkoutId, string $itineraryId, $allocatedPax): bool {
-            return $checkoutId === 'co-td-1' && $itineraryId === 'it-td-1' && $allocatedPax !== null;
-        })
+        ->withArgs(fn (string $checkoutId, string $itineraryId, $allocatedPax): bool => $checkoutId === 'co-td-1' && $itineraryId === 'it-td-1' && $allocatedPax !== null)
         ->andReturn($model);
 
     $sumMock = m::mock(SummarizeItineraryAction::class);
     $sumMock->shouldReceive('run')
         ->once()
-        ->withArgs(function (...$args) use ($responses): bool {
-            return $args[0] === $responses->itinerary
-                && $args[1] === $responses->checkout
-                && $args[2] === $responses->addedRentalCars
-                && (is_iterable($args[3]));
-        })
+        ->withArgs(fn (...$args): bool => $args[0] === $responses->itinerary
+            && $args[1] === $responses->checkout
+            && $args[2] === $responses->addedRentalCars
+            && (is_iterable($args[3])))
         ->andReturn($summary);
 
     $component = new TripDetailsPage;
@@ -208,7 +204,7 @@ it('generatePaymentPageUrl() builds signed URL on success and resets checkingAva
     expect($component->checkingAvailability)->toBeFalse();
     expect($component->paymentPageUrl)->not->toBeNull();
 
-    $parts = parse_url($component->paymentPageUrl);
+    $parts = parse_url((string) $component->paymentPageUrl);
     parse_str($parts['query'] ?? '', $query);
 
     expect($query['checkoutId'] ?? null)->toBe('co-td-5')
