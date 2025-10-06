@@ -78,7 +78,7 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
                 paxInfo: $paxInfo
             );
 
-            NezasaConnector::make()->checkout()->saveTravelerDetails($this->checkoutId, $payload);
+            resolve(NezasaConnector::class)->checkout()->saveTravelerDetails($this->checkoutId, $payload);
         }
     }
 }
