@@ -5,7 +5,7 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\On;
-use Nezasa\Checkout\Dtos\View\ShowTraveller;
+use Nezasa\Checkout\Actions\Checkout\TravellerDetails\TravellerSupporter;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
@@ -47,13 +47,11 @@ class TravelerDetails extends BaseCheckoutComponent
      * Mount the component and initialize the traveler details.
      */
     public function mount(): void
-    {   /** @phpstan-ignore-next-line */
+    {
+        /** @phpstan-ignore-next-line */
         $paxInfo = $this->model->data->get('paxInfo');
-
-        $this->setUpPaxData($paxInfo);
-
-        $this->setShowingTravellers();
-
+        $this->paxInfo = TravellerSupporter::setUpPaxData($this->allocatedPax, $paxInfo);
+        $this->paxInfo = TravellerSupporter::setShowingTravellers($this->paxInfo);
         $this->updateFormStatus();
     }
 
@@ -61,7 +59,8 @@ class TravelerDetails extends BaseCheckoutComponent
      * Render the view for the traveler details page.
      */
     public function render(): View
-    {/** @phpstan-ignore-next-line */
+    {
+        /** @phpstan-ignore-next-line */
         return view('checkout::blades.traveler-details');
     }
 
@@ -71,9 +70,7 @@ class TravelerDetails extends BaseCheckoutComponent
     #[On('contact-processed')]
     public function listen(): void
     {
-        $this->isCompleted
-            ? $this->dispatch('traveller-processed')
-            : $this->expand(Section::Traveller);
+        $this->isCompleted ? $this->dispatch('traveller-processed') : $this->expand(Section::Traveller);
     }
 
     /**
@@ -140,12 +137,7 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     public function updateFormStatus(): void
     {
-        $this->isCompleted = collect($this->paxInfo)
-            ->flatten(1)
-            ->pluck('showTraveller')
-            ->transform(fn ($item): ShowTraveller => ShowTraveller::from($item))
-            ->reject(fn (ShowTraveller $item): bool => $item->isFilled)
-            ->isEmpty();
+        $this->isCompleted = TravellerSupporter::isFormCompleted($this->paxInfo);
     }
 
     /**
@@ -154,33 +146,16 @@ class TravelerDetails extends BaseCheckoutComponent
     public function showNextTraveller(string $item): void
     {
         [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
-
         $this->validateTravellerData($room, $traveler);
-
-        $this->paxInfo[$room][$traveler]['showTraveller']->isFilled = true;
-        $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
-
-        SaveTraverDetailsJob::dispatch(
-            $this->checkoutId, "paxInfo.$room.$traveler", $this->paxInfo[$room][$traveler]
-        );
+        $this->paxInfo = TravellerSupporter::saveActiveTraveller($this->paxInfo, $this->checkoutId, $room, $traveler);
 
         $nextTraveler = $traveler + 1;
         $nextRoom = $room + 1;
 
         if (isset($this->paxInfo[$room][$nextTraveler])) {
-            $this->paxInfo[$room][$nextTraveler]['showTraveller']->isFilled = false;
-            $this->paxInfo[$room][$nextTraveler]['showTraveller']->isShowing = true;
-
-            SaveTraverDetailsJob::dispatch(
-                $this->checkoutId, "paxInfo.$room.$nextTraveler", $this->paxInfo[$room][$nextTraveler]
-            );
+            $this->paxInfo = TravellerSupporter::nextInactiveTraveller($this->paxInfo, $this->checkoutId, $room, $nextTraveler);
         } elseif (isset($this->paxInfo[$nextRoom])) {
-            $this->paxInfo[$nextRoom][0]['showTraveller']->isFilled = false;
-            $this->paxInfo[$nextRoom][0]['showTraveller']->isShowing = true;
-
-            SaveTraverDetailsJob::dispatch(
-                $this->checkoutId, "paxInfo.$nextRoom.0", $this->paxInfo[$nextRoom][0]
-            );
+            $this->paxInfo = TravellerSupporter::nextInactiveTraveller($this->paxInfo, $this->checkoutId, $nextRoom, 0);
         } else {
             $this->paxInfo[$room][0]['showTraveller']->isShowing = true;
 
@@ -196,7 +171,6 @@ class TravelerDetails extends BaseCheckoutComponent
     public function showPreviousTraveller(string $item): void
     {
         [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
-
         $this->paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
 
         if ($traveler > 0) {
@@ -214,15 +188,9 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     public function updated(string $name, mixed $value): void
     {
-        $key = str($name)->after('.')
-            ->after('.')
-            ->after('.')
-            ->prepend('paxInfo.*.*.')
-            ->toString();
+        $key = str($name)->after('.')->after('.')->after('.')->prepend('paxInfo.*.*.');
 
-        $this->validate([
-            $name => $this->rules()[$key],
-        ]);
+        $this->validate([$name => $this->rules()[$key->toString()]]);
 
         SaveTraverDetailsJob::dispatch($this->checkoutId, $name, $value);
     }
@@ -242,70 +210,9 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     protected function validateTravellerData(int $room, int $travelerNumber): void
     {
-        $this->validate(
-            collect($this->rules())->mapWithKeys(fn (array $rule, string $key) => [
-                str($key)->replaceFirst('*', (string) $room)->replaceFirst('*', (string) $travelerNumber)->toString() => $rule,
-            ])->all()
-        );
-    }
-
-    /**
-     * Sets up the initial data for the travelers based on the provided pax information.
-     *
-     * @param  array<int, array<int, array<string, mixed>>>  $paxInfo
-     */
-    protected function setUpPaxData(array $paxInfo): void
-    {
-        $paxNumber = 0;
-
-        foreach ($this->allocatedPax->rooms as $number => $room) {
-            for ($i = 0; $i < $room->adults; $i++) {
-
-                $this->paxInfo[$number][$i] = $paxInfo[$number][$i] ?? [];
-                if (! isset($this->paxInfo[$number][$i]['showTraveller'])) {
-                    $this->paxInfo[$number][$i]['showTraveller'] = new ShowTraveller(isAdult: true);
-                } else {
-                    $this->paxInfo[$number][$i]['showTraveller'] = ShowTraveller::from($paxInfo[$number][$i]['showTraveller']);
-                }
-
-                $this->paxInfo[$number][$i]['refId'] = "pax-$paxNumber";
-
-                $paxNumber++;
-            }
-
-            foreach ($room->childAges as $index => $age) {
-                $this->paxInfo[$number][$index + $i] = $paxInfo[$number][$index + $i] ?? [];
-
-                if (! isset($this->paxInfo[$number][$index + $i]['showTraveller'])) {
-                    $this->paxInfo[$number][$index + $i]['showTraveller'] = new ShowTraveller(isAdult: false, age: $age);
-                } else {
-                    $this->paxInfo[$number][$index + $i]['showTraveller'] = ShowTraveller::from($paxInfo[$number][$index + $i]['showTraveller']);
-                    $this->paxInfo[$number][$index + $i]['showTraveller']->age = $age;
-                }
-
-                $this->paxInfo[$number][$index + $i]['refId'] = "pax-$paxNumber";
-
-                $paxNumber++;
-            }
-        }
-    }
-
-    /**
-     * Sets the first traveller to be shown if no travellers are currently showing.
-     */
-    protected function setShowingTravellers(): void
-    {
-        foreach (array_keys($this->paxInfo) as $roomNumber) {
-            if (collect($this->paxInfo[$roomNumber])
-                ->pluck('showTraveller')
-                ->filter(fn (ShowTraveller $item): bool => $item->isShowing)
-                ->isNotEmpty()
-            ) {
-                return;
-            }
-        }
-
-        $this->paxInfo[0][0]['showTraveller']->isShowing = true;
+        $this->validate(collect($this->rules())->mapWithKeys(fn (array $rule, string $key) => [
+            str($key)->replaceFirst('*', (string) $room)->replaceFirst('*', (string) $travelerNumber)->toString() => $rule,
+        ])->all());
     }
 
     /**
