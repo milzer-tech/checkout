@@ -5,7 +5,6 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\On;
-use Nezasa\Checkout\Actions\Checkout\TravellerDetails\TravellerSupporter;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
@@ -13,6 +12,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequire
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
+use Nezasa\Checkout\Supporters\TravellerSupporter;
 
 class TravelerDetails extends BaseCheckoutComponent
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nezasa\Checkout\Actions\Checkout\TravellerDetails;
+namespace Nezasa\Checkout\Supporters;
 
 use Nezasa\Checkout\Dtos\View\ShowTraveller;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
