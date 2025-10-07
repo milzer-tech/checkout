@@ -65,9 +65,16 @@ CHECKOUT_WIDGET_OPPWA_ACTIVE=true
 ### Useful commands:
 
 ⚡️ Install the package using [Composer](https://getcomposer.org):
-
 ```bash
 composer milzer/checkout
+```
+Then you need to run the following command to publish the migration file:
+```bash
+php artisan vendor:publish --tag=checkout-migrations
+```
+And execute the migration:
+```bash
+php artisan migrate
 ```
 
 🧹 Keep a modern codebase with **Pint**:
