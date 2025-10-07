@@ -3,13 +3,13 @@
 <div class="border border-[color:var(--border)] dark:border-gray-600 bg-transparent rounded-[12px] p-4 sm:p-6 mb-6">
     {{-- Header with image and title --}}
     <div class="flex items-center gap-4 mb-6">
-        <div class="w-[60px] h-[60px] rounded-lg overflow-hidden">
-            <img
-                    src="/images/hotel-preview.png"
-                    alt="{{$itinerary->title }}"
-                    class="w-full h-full object-cover"
-            />
-        </div>
+{{--        <div class="w-[60px] h-[60px] rounded-lg overflow-hidden">--}}
+{{--            <img--}}
+{{--                    src="/images/hotel-preview.png"--}}
+{{--                    alt="{{$itinerary->title }}"--}}
+{{--                    class="w-full h-full object-cover"--}}
+{{--            />--}}
+{{--        </div>--}}
         <div class="flex-1">
             <h2 class="font-mulish font-bold text-[18px] leading-[28px] tracking-[0%] align-middle mb-2 dark:text-white">{{str($itinerary->title)->limit(40) }}</h2>
             <div class="flex justify-end">
