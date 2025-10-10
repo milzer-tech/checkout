@@ -210,7 +210,7 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     protected function validateTravellerData(int $room, int $travelerNumber): void
     {
-        $this->validate(collect($this->rules())->mapWithKeys(fn (array $rule, string $key) => [
+        $this->validate(collect($this->rules())->mapWithKeys(fn (array $rule, string $key): array => [
             str($key)->replaceFirst('*', (string) $room)->replaceFirst('*', (string) $travelerNumber)->toString() => $rule,
         ])->all());
     }
@@ -224,7 +224,7 @@ class TravelerDetails extends BaseCheckoutComponent
     {
         return collect($this->rules())
             ->reject(fn ($item, $key): bool => $key === 'paxInfo.*.*.address1' || $key === 'paxInfo.*.*.address2')
-            ->mapWithKeys(function ($item, $key) {
+            ->mapWithKeys(function ($item, $key): array {
                 $translatedKey = str($key)->afterLast('.')->toString();
 
                 return [$key => strtolower(trans("checkout::input.attributes.$translatedKey"))];

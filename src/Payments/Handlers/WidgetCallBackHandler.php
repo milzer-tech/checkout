@@ -55,10 +55,11 @@ class WidgetCallBackHandler
     private function getCallBackClass(string $gateway): string
     {
         $gateway = Config::collection('checkout.payment.widget')
-            ->filter(fn ($callback, $initiation) => $initiation::name() === $gateway)
+            /** @phpstan-ignore-next-line */
+            ->filter(fn ($callback, $initiation): bool => $initiation::name() === $gateway)
             ->first();
 
-        if (! in_array(WidgetPaymentCallBack::class, class_implements($gateway))) {
+        if (! in_array(WidgetPaymentCallBack::class, (array) class_implements($gateway))) {
             throw new \InvalidArgumentException('The payment callback is not implemented correctly.');
         }
 

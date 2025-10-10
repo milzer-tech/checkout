@@ -76,9 +76,10 @@ class PaymentPage extends BaseCheckoutComponent
         $name = decrypt(request()->query('payment_method'));
 
         $className = Config::collection('checkout.payment.widget', [])
-            ->filter(fn ($callback, $initiation) => $initiation::name() === $name)
+            /** @phpstan-ignore-next-line  */
+            ->filter(fn ($callback, $initiation): bool => $initiation::name() === $name)
             ->keys()
-            ->first();
+            ->firstOrFail();
 
         $this->payment = resolve(WidgetInitiationHandler::class)->run(
             model: $this->model,
@@ -90,7 +91,7 @@ class PaymentPage extends BaseCheckoutComponent
                 origin: $this->origin,
                 lang: request()->input('lang', 'en'),
             ),
-            gateway: $className
+            gateway: (string) $className
         );
     }
 }

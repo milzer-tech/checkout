@@ -19,15 +19,6 @@ use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 class WidgetInitiationHandler
 {
     /**
-     * Implementations of payment gateways.
-     *
-     * @var array<int, class-string<WidgetPaymentInitiation>>
-     */
-    //    private array $implementations = [
-    //        PaymentGatewayEnum::Oppwa->value => OppwaInitiationWidget::class,
-    //    ];
-
-    /**
      * Run the widget handler to prepare payment assets.
      */
     public function run(Checkout $model, PaymentPrepareData $data, string $gateway): PaymentAsset
@@ -60,7 +51,7 @@ class WidgetInitiationHandler
      */
     private function validateGateway(string $gateway): void
     {
-        if (! in_array(WidgetPaymentInitiation::class, class_implements($gateway))) {
+        if (! in_array(WidgetPaymentInitiation::class, (array) class_implements($gateway))) {
             throw new \InvalidArgumentException('The gateway does not implement PaymentInitiation.');
         }
     }

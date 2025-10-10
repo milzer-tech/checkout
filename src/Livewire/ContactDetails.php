@@ -126,7 +126,7 @@ class ContactDetails extends BaseCheckoutComponent
     protected function validationAttributes(): array
     {
         return collect($this->rules())
-            ->mapWithKeys(function ($item, $key) {
+            ->mapWithKeys(function ($item, $key): array {
                 $translatedKey = str_replace('contact.', '', $key);
 
                 return [$key => strtolower(trans("checkout::input.attributes.$translatedKey"))];

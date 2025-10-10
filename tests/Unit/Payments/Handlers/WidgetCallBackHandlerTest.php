@@ -267,9 +267,9 @@ class FakeCallback implements WidgetPaymentCallBack
     public function check(Request $request, $persistentData): PaymentResult
     {
         return new PaymentResult(
-            gatewayName: PaymentGatewayEnum::Oppwa,
             status: PaymentStatusEnum::Succeeded,
-            persistentData: ['checked' => true]
+            persistentData: ['checked' => true],
+            gatewayName: PaymentGatewayEnum::Oppwa
         );
     }
 
@@ -285,9 +285,9 @@ final class FakeCallbackFailed implements WidgetPaymentCallBack
     public function check(Request $request, $persistentData): PaymentResult
     {
         return new PaymentResult(
-            gatewayName: PaymentGatewayEnum::Oppwa,
             status: PaymentStatusEnum::Failed,
-            persistentData: ['failed' => true]
+            persistentData: ['failed' => true],
+            gatewayName: PaymentGatewayEnum::Oppwa
         );
     }
 
@@ -302,9 +302,9 @@ class FakeCallbackWithIgnoredParams implements ReturnUrlHasInvalidQueryParamsFor
     public function check(Request $request, $persistentData): PaymentResult
     {
         return new PaymentResult(
-            gatewayName: PaymentGatewayEnum::Oppwa,
             status: PaymentStatusEnum::Succeeded,
-            persistentData: ['checked' => true]
+            persistentData: ['checked' => true],
+            gatewayName: PaymentGatewayEnum::Oppwa
         );
     }
 

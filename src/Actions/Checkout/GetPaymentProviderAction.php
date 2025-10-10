@@ -21,8 +21,8 @@ class GetPaymentProviderAction
     {
         $result = [];
 
-        /** @var WidgetPaymentInitiation $initiation */
-        /** @var WidgetPaymentCallBack $callback */
+        /** @var class-string<WidgetPaymentInitiation> $initiation */
+        /** @var class-string<WidgetPaymentCallBack> $callback */
         foreach (Config::array('checkout.payment.widget', []) as $initiation => $callback) {
             if (! in_array(WidgetPaymentInitiation::class, class_implements($initiation))) {
                 throw new InvalidArgumentException("the payment initiation $initiation is not an instance of WidgetPaymentInitiation");

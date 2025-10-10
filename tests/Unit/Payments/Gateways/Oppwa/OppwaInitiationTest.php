@@ -81,9 +81,9 @@ it('getAssets throws when persistentData is not OppwaPrepareResponse', function 
     $gateway = new OppwaInitiationWidget;
 
     $init = new PaymentInit(
-        gatewayName: PaymentGatewayEnum::Oppwa,
         isAvailable: true,
-        persistentData: []
+        persistentData: [],
+        gatewayName: PaymentGatewayEnum::Oppwa
     );
 
     $gateway->getAssets($init, 'https://return.url');
@@ -146,9 +146,9 @@ it('getNezasaTransactionPayload throws when persistentData is not OppwaPrepareRe
     );
 
     $init = new PaymentInit(
-        gatewayName: PaymentGatewayEnum::Oppwa,
         isAvailable: true,
-        persistentData: []
+        persistentData: [],
+        gatewayName: PaymentGatewayEnum::Oppwa
     );
 
     $gateway->getNezasaTransactionPayload($data, $init);

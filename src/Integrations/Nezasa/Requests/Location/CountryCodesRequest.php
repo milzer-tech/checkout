@@ -19,13 +19,6 @@ class CountryCodesRequest extends Request
     protected Method $method = Method::GET;
 
     /**
-     * Create a new instance of RetrieveCheckoutRequest
-     *
-     * @see https://docs.tripbuilder.app/Mo9reezaehiengah/location-api-v1.html#/paths/~1countries~1calling-codes/get
-     */
-    public function __construct() {}
-
-    /**
      * Define the endpoint for the request.
      */
     public function resolveEndpoint(): string

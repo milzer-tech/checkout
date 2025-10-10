@@ -90,7 +90,7 @@ class NoViteServiceProvider extends ServiceProvider
                 return '';
             }
 
-            public function __call($name, $arguments)
+            public function __call(string $name, array $arguments)
             {
                 $renderish = ['render', 'tags', 'scripts', 'styles'];
                 if (in_array($name, $renderish, true)) {
