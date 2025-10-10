@@ -40,13 +40,12 @@ final class OppwaInitiationWidget implements WidgetPaymentInitiation
 
         if ($response->ok()) {
             return new PaymentInit(
-                gatewayName: self::name(),
                 isAvailable: true,
                 persistentData: $response->dto(),
             );
         }
 
-        return new PaymentInit(gatewayName: self::name(), isAvailable: false);
+        return new PaymentInit(isAvailable: false);
     }
 
     /**
@@ -72,7 +71,6 @@ final class OppwaInitiationWidget implements WidgetPaymentInitiation
         $form = '<form action="'.$returnUrl.'" class="paymentWidgets" data-brands="VISA MASTER AMEX"> </form>';
 
         return new PaymentAsset(
-            gatewayName: $paymentInit->gatewayName,
             isAvailable: true,
             scripts: $scripts->add($script),
             html: $form

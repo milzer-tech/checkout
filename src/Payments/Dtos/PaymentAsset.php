@@ -15,7 +15,6 @@ class PaymentAsset extends BaseDto
      * @param  Collection<int, string>|array<int, string>  $scripts,  each string is a script tag.
      */
     public function __construct(
-        public string $gatewayName,
         public bool $isAvailable,
         public Collection|array $scripts = new Collection,
         public ?string $html = null,

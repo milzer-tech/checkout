@@ -131,13 +131,12 @@ class WidgetCallBackHandler
         $state = $response->dto()->checkoutState;
 
         $result = new PaymentResult(
-            gatewayName: $transaction->gateway,
             status: $transaction->status ?? PaymentStatusEnum::Failed,
             persistentData: $transaction->result_data ?? [],
         );
 
         $output = new PaymentOutput(
-            gatewayName: $result->gatewayName,
+            gatewayName: $transaction->gateway,
             isNezasaBookingSuccessful: $state->isSuccessfulState(),
             bookingReference: $transaction->checkout->itinerary_id,
             orderDate: $transaction->updated_at?->toImmutable(),

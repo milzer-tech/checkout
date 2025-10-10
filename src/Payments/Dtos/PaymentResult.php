@@ -15,7 +15,6 @@ class PaymentResult extends BaseDto
      * @param  array<string, mixed>  $persistentData
      */
     public function __construct(
-        public string $gatewayName,
         public PaymentStatusEnum $status,
         public array $persistentData = [],
     ) {}

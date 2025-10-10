@@ -43,7 +43,7 @@ class WidgetInitiationHandler
 
         $nezasa = $this->createNezasaTransaction($data->checkoutId, $payment->getNezasaTransactionPayload($data, $init));
 
-        $this->createTransaction($model, $init, $nezasa, $data->price);
+        $this->createTransaction($model, $init, $nezasa, $data->price, $payment::name());
 
         return $payment->getAssets(
             paymentInit: $init,
@@ -70,10 +70,10 @@ class WidgetInitiationHandler
      *
      * @param  array<string, string|array<string, mixed>>  $nezasaTransaction
      */
-    private function createTransaction(Checkout $model, PaymentInit $init, array $nezasaTransaction, Price $price): void
+    private function createTransaction(Checkout $model, PaymentInit $init, array $nezasaTransaction, Price $price, string $gatewayName): void
     {
         $model->transactions()->create([
-            'gateway' => $init->gatewayName,
+            'gateway' => $gatewayName,
             'prepare_data' => (array) $init->persistentData,
             'status' => PaymentStatusEnum::Pending,
             'nezasa_transaction' => $nezasaTransaction,
