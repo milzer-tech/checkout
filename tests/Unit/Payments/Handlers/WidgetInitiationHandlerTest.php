@@ -14,7 +14,6 @@ use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -30,29 +29,7 @@ it('validates the given gateway in the handler', function (): void {
 
     $handler = new WidgetInitiationHandler;
 
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, []);
-
-    $handler->run(new Checkout, $prepareData, PaymentGatewayEnum::Oppwa);
-})->throws(InvalidArgumentException::class, 'The payment gateway is not supported.');
-
-it('validates the given gateway that implements the correct interface', function (): void {
-    $prepareData = new PaymentPrepareData(
-        contact: new ContactInfoPayloadEntity,
-        price: new Price(amount: 100.00, currency: 'USD'),
-        checkoutId: 'chk_123456',
-        itineraryId: 'itn_123456',
-        origin: 'https://example.com',
-    );
-
-    $handler = new WidgetInitiationHandler;
-
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, [
-        PaymentGatewayEnum::Oppwa->value => stdClass::class,
-    ]);
-
-    $handler->run(new Checkout, $prepareData, PaymentGatewayEnum::Oppwa);
+    $handler->run(new Checkout, $prepareData, stdClass::class);
 })->throws(InvalidArgumentException::class, 'The gateway does not implement PaymentInitiation.');
 
 it('throws when service is not available', function (): void {
@@ -60,7 +37,7 @@ it('throws when service is not available', function (): void {
 
     $method = new ReflectionMethod($handler, 'checkIfServiceAvailable');
 
-    $init = new PaymentInit(PaymentGatewayEnum::Oppwa, false);
+    $init = new PaymentInit(false);
 
     $method->invoke($handler, $init);
 })->throws(RuntimeException::class, 'Payment gateway is not available.');
@@ -168,17 +145,17 @@ it('persists a transaction with correct payload', function (): void {
         });
     $model->shouldReceive('transactions')->andReturn($relation);
 
-    $init = new PaymentInit(PaymentGatewayEnum::Oppwa, true, ['persist' => 'yes']);
+    $init = new PaymentInit(true, ['persist' => 'yes']);
 
     $nezasa = ['transactionRefId' => 'nez-42', 'foo' => 'bar'];
     $price = new Price(amount: 55.5, currency: 'EUR');
 
     $method = new ReflectionMethod($handler, 'createTransaction');
 
-    $method->invoke($handler, $model, $init, $nezasa, $price);
+    $method->invoke($handler, $model, $init, $nezasa, $price, 'Fake Gateway');
 
     expect($created)->toMatchArray([
-        'gateway' => PaymentGatewayEnum::Oppwa,
+        'gateway' => 'Fake Gateway',
         'prepare_data' => ['persist' => 'yes'],
         'status' => \Nezasa\Checkout\Payments\Enums\PaymentStatusEnum::Pending,
         'nezasa_transaction' => $nezasa,
@@ -207,11 +184,6 @@ it('runs the handler end-to-end and returns assets with a signed return url', fu
 
     $handler = new WidgetInitiationHandler;
 
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, [
-        PaymentGatewayEnum::Oppwa->value => FakeGatewayWithParams::class,
-    ]);
-
     $prepareData = new PaymentPrepareData(
         contact: new ContactInfoPayloadEntity,
         price: new Price(amount: 100.00, currency: 'USD'),
@@ -231,7 +203,7 @@ it('runs the handler end-to-end and returns assets with a signed return url', fu
     });
     $model->shouldReceive('transactions')->andReturn($relation);
 
-    $asset = $handler->run($model, $prepareData, PaymentGatewayEnum::Oppwa);
+    $asset = $handler->run($model, $prepareData, FakeGatewayWithParams::class);
 
     expect($asset)
         ->toBeInstanceOf(PaymentAsset::class)
@@ -250,12 +222,12 @@ class FakeGateway implements WidgetPaymentInitiation
 
     public function prepare(PaymentPrepareData $data): PaymentInit
     {
-        return new PaymentInit(PaymentGatewayEnum::Oppwa, $this->available, $this->persistent);
+        return new PaymentInit($this->available, $this->persistent);
     }
 
     public function getAssets(PaymentInit $paymentInit, string $returnUrl): PaymentAsset
     {
-        return new PaymentAsset($paymentInit->gatewayName, true, html: $returnUrl);
+        return new PaymentAsset(true, html: $returnUrl);
     }
 
     public function getNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): CreatePaymentTransactionPayload
@@ -267,12 +239,12 @@ class FakeGateway implements WidgetPaymentInitiation
         );
     }
 
-    public function name(): string
+    public static function name(): string
     {
         return 'Fake Gateway';
     }
 
-    public function description(): ?string
+    public static function description(): ?string
     {
         return null;
     }

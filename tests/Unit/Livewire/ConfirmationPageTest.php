@@ -3,7 +3,6 @@
 use Nezasa\Checkout\Livewire\ConfirmationPage;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 
 beforeEach(function (): void {
     fakeInitialNezasaCalls();
@@ -28,7 +27,7 @@ it('mount builds travelers list from paxInfo and sets itinerary price from lates
 
     $tx = Transaction::create([
         'checkout_id' => $checkout->id,
-        'gateway' => PaymentGatewayEnum::Oppwa,
+        'gateway' => 'oppwa',
         'amount' => '1234.56',
         'currency' => 'EUR',
     ]);
@@ -63,7 +62,7 @@ it('render returns the confirmation page view', function (): void {
 
     Transaction::create([
         'checkout_id' => $checkout->id,
-        'gateway' => PaymentGatewayEnum::Oppwa,
+        'gateway' => 'oppwa',
         'amount' => '10.00',
         'currency' => 'USD',
     ]);

@@ -4,7 +4,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
 it('builds Price accessor from amount and currency', function (): void {
@@ -35,7 +34,7 @@ it('defines expected casts and respects enum/decimal casting', function (): void
     $t = new Transaction;
 
     $t->status = PaymentStatusEnum::Pending;
-    $t->gateway = PaymentGatewayEnum::Oppwa;
+    $t->gateway = 'oppwa';
     $t->amount = '100.2';
     $t->currency = 'USD';
 
@@ -44,7 +43,7 @@ it('defines expected casts and respects enum/decimal casting', function (): void
     $t->nezasa_transaction = ['c' => 3];
 
     expect($t->status)->toBe(PaymentStatusEnum::Pending)
-        ->and($t->gateway)->toBe(PaymentGatewayEnum::Oppwa)
+        ->and($t->gateway)->toBe('oppwa')
         ->and($t->amount)->toBe('100.20')
         ->and($t->currency)->toBe('USD')
         ->and($t->prepare_data)->toBe(['a' => 1])

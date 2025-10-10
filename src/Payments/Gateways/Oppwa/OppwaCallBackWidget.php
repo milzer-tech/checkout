@@ -23,18 +23,18 @@ final class OppwaCallBackWidget implements ReturnUrlHasInvalidQueryParamsForVali
      */
     public function check(Request $request, BaseDto|array $persistentData): PaymentResult
     {
-        try {
-            $response = OppwaConnector::make()->checkout()->status($request->query('resourcePath'));
+        //        try {
+        $response = OppwaConnector::make()->checkout()->status($request->query('resourcePath'));
 
-            return new PaymentResult(
-                status: $response->failed() ? PaymentStatusEnum::Failed : PaymentStatusEnum::Succeeded,
-                persistentData: (array) $response->array(),
-            );
-        } catch (Throwable $exception) {
-            report($exception);
-
-            return new PaymentResult(status: PaymentStatusEnum::Failed);
-        }
+        return new PaymentResult(
+            status: $response->failed() ? PaymentStatusEnum::Failed : PaymentStatusEnum::Succeeded,
+            persistentData: (array) $response->array(),
+        );
+        //        } catch (Throwable $exception) {
+        //            report($exception);
+        //
+        //            return new PaymentResult(status: PaymentStatusEnum::Failed);
+        //        }
     }
 
     /**

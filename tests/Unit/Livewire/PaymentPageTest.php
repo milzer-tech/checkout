@@ -3,12 +3,13 @@
 use Illuminate\Http\RedirectResponse;
 use Mockery as m;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
+use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Livewire\PaymentPage;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
+use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
 use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
 
 afterEach(function (): void {
@@ -17,7 +18,7 @@ afterEach(function (): void {
 
 it('mount() initializes itinerary via trip details and sets payment via widget handler', function (): void {
     // Arrange request query parameters
-    request()->query->set('payment_method', encrypt(PaymentGatewayEnum::Oppwa->value));
+    request()->query->set('payment_method', encrypt('oppwa'));
     request()->merge(['lang' => 'en']);
 
     // Seed a checkout model that FindCheckoutModelAction should return
@@ -48,9 +49,9 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
     $widget = m::mock(WidgetInitiationHandler::class);
     $widget->shouldReceive('run')
         ->once()
-        ->withArgs(function (Checkout $passedModel, PaymentPrepareData $data, PaymentGatewayEnum $gateway): bool {
+        ->withArgs(function (Checkout $passedModel, PaymentPrepareData $data, string $gateway): bool {
             expect($passedModel->checkout_id)->toBe('co-pay-1');
-            expect($gateway)->toBe(PaymentGatewayEnum::Oppwa);
+            expect($gateway)->toBe(OppwaInitiationWidget::class);
 
             // Validate PaymentPrepareData content
             expect($data->contact->email)->toBe('jane@example.com')
@@ -62,7 +63,7 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
 
             return true;
         })
-        ->andReturn(new PaymentAsset(PaymentGatewayEnum::Oppwa, true, html: '<div>widget</div>'));
+        ->andReturn(new PaymentAsset(true, html: '<div>widget</div>'));
     app()->instance(WidgetInitiationHandler::class, $widget);
 
     // Instantiate the component and set URL-bound properties
@@ -73,7 +74,7 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
     $component->lang = 'en';
 
     // Act
-    $component->mount();
+    $component->mount(new GetPaymentProviderAction);
 
     // Assert
     expect($component->itinerary)->not->toBeNull()
@@ -83,7 +84,7 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
 
 it('render() returns the payment page view and goBack() redirects to traveler-details with params', function (): void {
     // Arrange basic state
-    request()->query->set('payment_method', encrypt(PaymentGatewayEnum::Oppwa->value));
+    request()->query->set('payment_method', encrypt('oppwa'));
     request()->merge(['lang' => 'en']);
 
     $model = Checkout::create([
@@ -105,7 +106,7 @@ it('render() returns the payment page view and goBack() redirects to traveler-de
     fakeInitialNezasaCalls();
 
     $widget = m::mock(WidgetInitiationHandler::class);
-    $widget->shouldReceive('run')->andReturn(new PaymentAsset(PaymentGatewayEnum::Oppwa, true));
+    $widget->shouldReceive('run')->andReturn(new PaymentAsset(true));
     app()->instance(WidgetInitiationHandler::class, $widget);
 
     $component = new PaymentPage;
@@ -114,7 +115,7 @@ it('render() returns the payment page view and goBack() redirects to traveler-de
     $component->origin = 'ibe';
     $component->lang = 'de';
 
-    $component->mount();
+    $component->mount(new GetPaymentProviderAction);
 
     // render view
     $view = $component->render();

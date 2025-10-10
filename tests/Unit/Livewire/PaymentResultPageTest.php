@@ -6,7 +6,6 @@ use Nezasa\Checkout\Livewire\PaymentResultPage;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
 
 beforeEach(function (): void {
@@ -36,7 +35,7 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
 
     $tx = Transaction::create([
         'checkout_id' => $checkout->id,
-        'gateway' => PaymentGatewayEnum::Oppwa,
+        'gateway' => 'oppwa',
         'amount' => '987.65',
         'currency' => 'CHF',
     ]);
@@ -46,7 +45,7 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
         ->once()
         ->withArgs(fn ($transaction, $request): bool => $transaction instanceof Transaction && $request instanceof Request)
         ->andReturn(new PaymentOutput(
-            gatewayName: PaymentGatewayEnum::Oppwa,
+            gatewayName: 'oppwa',
             isNezasaBookingSuccessful: true,
             bookingReference: 'BR-123',
             orderDate: null,
@@ -97,14 +96,14 @@ it('render returns the confirmation page view', function (): void {
 
     Transaction::create([
         'checkout_id' => $checkout->id,
-        'gateway' => PaymentGatewayEnum::Oppwa,
+        'gateway' => 'oppwa',
         'amount' => '10.00',
         'currency' => 'USD',
     ]);
 
     $handler = m::mock(WidgetCallBackHandler::class);
     $handler->shouldReceive('run')->andReturn(new PaymentOutput(
-        gatewayName: PaymentGatewayEnum::Oppwa,
+        gatewayName: 'oppwa',
         isNezasaBookingSuccessful: true
     ));
     app()->instance(WidgetCallBackHandler::class, $handler);

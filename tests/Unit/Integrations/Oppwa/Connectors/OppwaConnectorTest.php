@@ -7,7 +7,7 @@ use Saloon\Http\Auth\TokenAuthenticator;
 it('returns the correct base url', function (): void {
     $newUrl = 'https://oppwa.example.test';
 
-    Config::set('checkout.payment.widget.oppwa.base_url', $newUrl);
+    Config::set('checkout.integrations.oppwa.base_url', $newUrl);
 
     $connector = new OppwaConnector;
 
@@ -37,7 +37,7 @@ it('checks the default headers', function (): void {
 });
 
 it('checks the default query parameters (entityId)', function (): void {
-    Config::set('checkout.payment.widget.oppwa.entity_id', 'entity-123');
+    Config::set('checkout.integrations.oppwa.entity_id', 'entity-123');
 
     $connector = new OppwaConnector;
 
@@ -51,7 +51,7 @@ it('checks the default query parameters (entityId)', function (): void {
 });
 
 it('checks the default auth', function (): void {
-    Config::set('checkout.payment.widget.oppwa.token', 'test-token-xyz');
+    Config::set('checkout.integrations.oppwa.token', 'test-token-xyz');
 
     $connector = new OppwaConnector;
     $authenticator = $connector->getAuthenticator();

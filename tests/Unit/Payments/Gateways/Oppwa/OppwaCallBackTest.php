@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Nezasa\Checkout\Integrations\Oppwa\Requests\OppwaStatusRequest;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBackWidget;
 use Saloon\Http\Faking\MockClient;
@@ -25,8 +24,6 @@ it('checks payment status and returns Succeeded with persistent data on successf
     $result = $callback->check($request, ['any' => 'data']);
 
     expect($result)
-        ->toBeInstanceOf(PaymentResult::class)
-        ->and($result->gatewayName)->toBe(PaymentGatewayEnum::Oppwa)
         ->and($result->status)->toBe(PaymentStatusEnum::Succeeded)
         ->and($result->persistentData)
         ->toBeArray()
@@ -68,9 +65,9 @@ it('returns Failed when an exception occurs while checking status', function ():
 it('show returns the provided PaymentOutput without modification', function (): void {
     $callback = new OppwaCallBackWidget;
 
-    $result = new PaymentResult(PaymentGatewayEnum::Oppwa, PaymentStatusEnum::Succeeded, ['foo' => 'bar']);
+    $result = new PaymentResult(PaymentStatusEnum::Succeeded, ['foo' => 'bar']);
     $output = new PaymentOutput(
-        gatewayName: $result->gatewayName,
+        gatewayName: 'oppwa',
         isNezasaBookingSuccessful: true,
         bookingReference: 'itn_123',
         orderDate: null,

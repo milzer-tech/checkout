@@ -14,8 +14,9 @@ use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidati
 use Nezasa\Checkout\Payments\Contracts\WidgetPaymentCallBack;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBackWidget;
+use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
 use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -25,23 +26,21 @@ it('validates the given gateway in the callback handler', function (): void {
     $handler = new WidgetCallBackHandler;
 
     $transaction = new Transaction;
-    $transaction->gateway = PaymentGatewayEnum::Oppwa;
+    $transaction->gateway = 'Fake Gateway';
 
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, []);
+    config()->set('checkout.payment.widget', []);
 
     $handler->run($transaction, m::mock(Request::class));
-})->throws(InvalidArgumentException::class, 'The payment gateway is not supported.');
+})->throws(Error::class, 'class_implements(): Argument #1 ($object_or_class) must be of type object|string, null given');
 
 it('validates the given gateway implements the correct interface', function (): void {
     $handler = new WidgetCallBackHandler;
 
     $transaction = new Transaction;
-    $transaction->gateway = PaymentGatewayEnum::Oppwa;
+    $transaction->gateway = 'Oppwa';
 
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, [
-        PaymentGatewayEnum::Oppwa->value => stdClass::class,
+    config()->set('checkout.payment.widget', [
+        OppwaInitiationWidget::class => OppwaCallBackWidget::class,
     ]);
 
     $handler->run($transaction, m::mock(Request::class));
@@ -51,12 +50,11 @@ it('aborts when the signature is invalid', function (): void {
     $handler = new WidgetCallBackHandler;
 
     $transaction = new Transaction;
-    $transaction->gateway = PaymentGatewayEnum::Oppwa;
+    $transaction->gateway = 'oppwa';
     $transaction->setRelation('checkout', new Checkout(['checkout_id' => 'chk_1', 'itinerary_id' => 'itn_1']));
 
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, [
-        PaymentGatewayEnum::Oppwa->value => FakeCallback::class,
+    config()->set('checkout.payment.widget', [
+        OppwaInitiationWidget::class => OppwaCallBackWidget::class,
     ]);
 
     $request = m::mock(Request::class);
@@ -87,14 +85,13 @@ it('ignores added query params when validating signature', function (): void {
     $handler = new WidgetCallBackHandler;
 
     $transaction = new Transaction;
-    $transaction->gateway = PaymentGatewayEnum::Oppwa;
+    $transaction->gateway = 'Fake Gateway';
     $transaction->prepare_data = ['foo' => 'bar'];
     $transaction->nezasa_transaction_ref_id = 'nez-1';
     $transaction->setRelation('checkout', new Checkout(['checkout_id' => 'chk_1', 'itinerary_id' => 'itn_1']));
 
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, [
-        PaymentGatewayEnum::Oppwa->value => FakeCallbackWithIgnoredParams::class,
+    config()->set('checkout.payment.widget', [
+        FakeInitiation::class => FakeCallbackWithIgnoredParams::class,
     ]);
 
     $request = m::mock(Request::class);
@@ -111,7 +108,7 @@ it('ignores added query params when validating signature', function (): void {
         ->toBeInstanceOf(PaymentOutput::class)
         ->and($output->isNezasaBookingSuccessful)->toBeTrue()
         ->and($output->bookingReference)->toBe('itn_1')
-        ->and($output->gatewayName)->toBe(PaymentGatewayEnum::Oppwa);
+        ->and($output->gatewayName)->toBe('Fake Gateway');
 });
 
 it('returns stored output immediately when result data already exists', function (): void {
@@ -129,14 +126,13 @@ it('returns stored output immediately when result data already exists', function
     $handler = new WidgetCallBackHandler;
 
     $transaction = new Transaction;
-    $transaction->gateway = PaymentGatewayEnum::Oppwa;
+    $transaction->gateway = 'Fake Gateway';
     $transaction->status = PaymentStatusEnum::Succeeded;
     $transaction->result_data = ['saved' => true];
     $transaction->setRelation('checkout', new Checkout(['checkout_id' => 'chk_1', 'itinerary_id' => 'itn_1']));
 
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, [
-        PaymentGatewayEnum::Oppwa->value => FakeCallback::class,
+    config()->set('checkout.payment.widget', [
+        FakeInitiation::class => FakeCallback::class,
     ]);
 
     $output = $handler->run($transaction, m::mock(Request::class));
@@ -169,7 +165,7 @@ it('updates nezasa transaction, stores result and tries to book itinerary', func
     $handler = new WidgetCallBackHandler;
 
     $transaction = m::mock(Transaction::class)->makePartial();
-    $transaction->gateway = PaymentGatewayEnum::Oppwa;
+    $transaction->gateway = 'Fake Gateway';
     $transaction->prepare_data = ['foo' => 'bar'];
     $transaction->nezasa_transaction_ref_id = 'nez-1';
     $transaction->setRelation('checkout', new Checkout(['checkout_id' => 'chk_1', 'itinerary_id' => 'itn_1']));
@@ -180,9 +176,8 @@ it('updates nezasa transaction, stores result and tries to book itinerary', func
         return true;
     });
 
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, [
-        PaymentGatewayEnum::Oppwa->value => FakeCallback::class,
+    config()->set('checkout.payment.widget', [
+        FakeInitiation::class => FakeCallback::class,
     ]);
 
     $request = m::mock(Request::class);
@@ -227,7 +222,7 @@ it('handles exceptions from nezasa update and booking gracefully', function (): 
     $handler = new WidgetCallBackHandler;
 
     $transaction = m::mock(Transaction::class)->makePartial();
-    $transaction->gateway = PaymentGatewayEnum::Oppwa;
+    $transaction->gateway = 'Fake Gateway';
     $transaction->prepare_data = ['foo' => 'bar'];
     $transaction->nezasa_transaction = ['existing' => true];
     $transaction->nezasa_transaction_ref_id = 'nez-1';
@@ -239,9 +234,8 @@ it('handles exceptions from nezasa update and booking gracefully', function (): 
         return true;
     });
 
-    $reflection = new ReflectionClass($handler);
-    $reflection->getProperty('implementations')->setValue($handler, [
-        PaymentGatewayEnum::Oppwa->value => FakeCallbackFailed::class,
+    config()->set('checkout.payment.widget', [
+        FakeInitiation::class => FakeCallbackFailed::class,
     ]);
 
     $request = m::mock(Request::class);
@@ -269,7 +263,6 @@ class FakeCallback implements WidgetPaymentCallBack
         return new PaymentResult(
             status: PaymentStatusEnum::Succeeded,
             persistentData: ['checked' => true],
-            gatewayName: PaymentGatewayEnum::Oppwa
         );
     }
 
@@ -287,7 +280,6 @@ final class FakeCallbackFailed implements WidgetPaymentCallBack
         return new PaymentResult(
             status: PaymentStatusEnum::Failed,
             persistentData: ['failed' => true],
-            gatewayName: PaymentGatewayEnum::Oppwa
         );
     }
 
@@ -304,7 +296,6 @@ class FakeCallbackWithIgnoredParams implements ReturnUrlHasInvalidQueryParamsFor
         return new PaymentResult(
             status: PaymentStatusEnum::Succeeded,
             persistentData: ['checked' => true],
-            gatewayName: PaymentGatewayEnum::Oppwa
         );
     }
 

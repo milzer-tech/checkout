@@ -7,10 +7,10 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
 it('sends OppwaStatusRequest with correct method, endpoint, headers and query; validates success detection', function (): void {
-    Config::set('checkout.payment.widget.oppwa.base_url', 'https://oppwa.example.test');
-    Config::set('checkout.payment.widget.oppwa.entity_id', 'entity-321');
-    Config::set('checkout.payment.widget.oppwa.token', 'secret-token-xyz');
-    Config::set('checkout.payment.widget.oppwa.successful_result_code', '000.100.110'); // matches fixture
+    Config::set('checkout.integrations.oppwa.base_url', 'https://oppwa.example.test');
+    Config::set('checkout.integrations.oppwa.entity_id', 'entity-321');
+    Config::set('checkout.integrations.oppwa.token', 'secret-token-xyz');
+    Config::set('checkout.integrations.oppwa.successful_result_code', '000.100.110'); // matches fixture
 
     $resourcePath = 'v1/checkouts/8ac7a4a198c97c2b0198cc4676cd7058/payment';
 
