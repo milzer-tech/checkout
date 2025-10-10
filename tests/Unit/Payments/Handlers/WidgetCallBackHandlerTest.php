@@ -10,8 +10,8 @@ use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\SynchronousBookingRequ
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Payment\UpdatePaymentTransactionRequest;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
-use Nezasa\Checkout\Payments\Contracts\PaymentCallBack;
 use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidation;
+use Nezasa\Checkout\Payments\Contracts\WidgetPaymentCallBack;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
@@ -262,7 +262,7 @@ it('handles exceptions from nezasa update and booking gracefully', function (): 
     expect($output->isNezasaBookingSuccessful)->toBeFalse();
 });
 
-class FakeCallback implements PaymentCallBack
+class FakeCallback implements WidgetPaymentCallBack
 {
     public function check(Request $request, $persistentData): PaymentResult
     {
@@ -280,7 +280,7 @@ class FakeCallback implements PaymentCallBack
     }
 }
 
-final class FakeCallbackFailed implements PaymentCallBack
+final class FakeCallbackFailed implements WidgetPaymentCallBack
 {
     public function check(Request $request, $persistentData): PaymentResult
     {
@@ -297,7 +297,7 @@ final class FakeCallbackFailed implements PaymentCallBack
     }
 }
 
-class FakeCallbackWithIgnoredParams implements PaymentCallBack, ReturnUrlHasInvalidQueryParamsForValidation
+class FakeCallbackWithIgnoredParams implements ReturnUrlHasInvalidQueryParamsForValidation, WidgetPaymentCallBack
 {
     public function check(Request $request, $persistentData): PaymentResult
     {

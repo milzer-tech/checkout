@@ -10,7 +10,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Payment\CreatePaymentTransactionRequest;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Contracts\AddQueryParamsToReturnUrl;
-use Nezasa\Checkout\Payments\Contracts\PaymentInitiation;
+use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
@@ -241,7 +241,7 @@ it('runs the handler end-to-end and returns assets with a signed return url', fu
     expect($created['nezasa_transaction_ref_id'] ?? null)->toBe('nez-tx-777');
 });
 
-class FakeGateway implements PaymentInitiation
+class FakeGateway implements WidgetPaymentInitiation
 {
     public function __construct(
         private readonly bool $available = true,

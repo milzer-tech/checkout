@@ -9,7 +9,7 @@ use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 
-interface PaymentCallBack
+interface WidgetPaymentCallBack
 {
     /**
      * Handles the callback from the payment gateway.

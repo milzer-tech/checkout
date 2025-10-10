@@ -6,7 +6,7 @@ use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBack;
+use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBackWidget;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -17,7 +17,7 @@ it('checks payment status and returns Succeeded with persistent data on successf
         OppwaStatusRequest::class => MockResponse::fixture('oppwa_status_response'),
     ]);
 
-    $callback = new OppwaCallBack;
+    $callback = new OppwaCallBackWidget;
 
     /** @var Request $request */
     $request = Request::create('/callback', 'GET', ['resourcePath' => '/v1/checkouts/abc123']);
@@ -40,7 +40,7 @@ it('returns Failed when Oppwa status indicates failure (non-matching result.code
         OppwaStatusRequest::class => MockResponse::fixture('oppwa_status_response'),
     ]);
 
-    $callback = new OppwaCallBack;
+    $callback = new OppwaCallBackWidget;
     $request = Request::create('/callback', 'GET', ['resourcePath' => '/v1/checkouts/abc123']);
 
     $result = $callback->check($request, []);
@@ -56,7 +56,7 @@ it('returns Failed when an exception occurs while checking status', function ():
         OppwaStatusRequest::class => MockResponse::make('not-json', 500),
     ]);
 
-    $callback = new OppwaCallBack;
+    $callback = new OppwaCallBackWidget;
     $request = Request::create('/callback', 'GET', ['resourcePath' => '/v1/checkouts/abc123']);
 
     $result = $callback->check($request, []);
@@ -66,7 +66,7 @@ it('returns Failed when an exception occurs while checking status', function ():
 });
 
 it('show returns the provided PaymentOutput without modification', function (): void {
-    $callback = new OppwaCallBack;
+    $callback = new OppwaCallBackWidget;
 
     $result = new PaymentResult(PaymentGatewayEnum::Oppwa, PaymentStatusEnum::Succeeded, ['foo' => 'bar']);
     $output = new PaymentOutput(
@@ -84,7 +84,7 @@ it('show returns the provided PaymentOutput without modification', function (): 
 });
 
 it('returns the list of added params to be ignored for signature validation', function (): void {
-    $callback = new OppwaCallBack;
+    $callback = new OppwaCallBackWidget;
 
     $request = Request::create('/callback', 'GET', [
         'resourcePath' => '/v1/checkouts/abc123',

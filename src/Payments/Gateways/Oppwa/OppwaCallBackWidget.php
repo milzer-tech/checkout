@@ -7,15 +7,15 @@ namespace Nezasa\Checkout\Payments\Gateways\Oppwa;
 use Illuminate\Http\Request;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Oppwa\Connectors\OppwaConnector;
-use Nezasa\Checkout\Payments\Contracts\PaymentCallBack;
 use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidation;
+use Nezasa\Checkout\Payments\Contracts\WidgetPaymentCallBack;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 use Throwable;
 
-final class OppwaCallBack implements PaymentCallBack, ReturnUrlHasInvalidQueryParamsForValidation
+final class OppwaCallBackWidget implements ReturnUrlHasInvalidQueryParamsForValidation, WidgetPaymentCallBack
 {
     /**
      * Check the payment status after returning from the payment gateway.

@@ -11,13 +11,13 @@ use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Oppwa\Connectors\OppwaConnector;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaPreparePayload;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Responses\OppwaPrepareResponse;
-use Nezasa\Checkout\Payments\Contracts\PaymentInitiation;
+use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 
-final class OppwaInitiation implements PaymentInitiation
+final class OppwaInitiationWidget implements WidgetPaymentInitiation
 {
     /**
      * Prepare the payment before redirecting to the payment gateway.

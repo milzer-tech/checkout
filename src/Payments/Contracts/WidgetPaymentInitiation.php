@@ -9,7 +9,7 @@ use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 
-interface PaymentInitiation
+interface WidgetPaymentInitiation
 {
     /**
      * Prepares the payment initiation process.

@@ -10,23 +10,23 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPa
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Contracts\AddQueryParamsToReturnUrl;
-use Nezasa\Checkout\Payments\Contracts\PaymentInitiation;
+use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiation;
+use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
 
 class WidgetInitiationHandler
 {
     /**
      * Implementations of payment gateways.
      *
-     * @var array<int, class-string<PaymentInitiation>>
+     * @var array<int, class-string<WidgetPaymentInitiation>>
      */
     private array $implementations = [
-        PaymentGatewayEnum::Oppwa->value => OppwaInitiation::class,
+        PaymentGatewayEnum::Oppwa->value => OppwaInitiationWidget::class,
     ];
 
     /**
@@ -36,7 +36,7 @@ class WidgetInitiationHandler
     {
         $this->validateGateway($gateway);
 
-        /** @var PaymentInitiation $payment */
+        /** @var WidgetPaymentInitiation $payment */
         $payment = new $this->implementations[$gateway->value];
 
         $init = $payment->prepare($data);
@@ -66,7 +66,7 @@ class WidgetInitiationHandler
             throw new \InvalidArgumentException('The payment gateway is not supported.');
         }
 
-        if (! in_array(PaymentInitiation::class, class_implements($this->implementations[$gateway->value]))) {
+        if (! in_array(WidgetPaymentInitiation::class, class_implements($this->implementations[$gateway->value]))) {
             throw new \InvalidArgumentException('The gateway does not implement PaymentInitiation.');
         }
     }
@@ -94,7 +94,7 @@ class WidgetInitiationHandler
      *
      * @return array<string, string> $params
      */
-    private function getReturnUrlParams(PaymentPrepareData $data, PaymentInitiation $payment, PaymentInit $init): array
+    private function getReturnUrlParams(PaymentPrepareData $data, WidgetPaymentInitiation $payment, PaymentInit $init): array
     {
         return array_merge(
             [

@@ -8,7 +8,7 @@ use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiation;
+use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -36,7 +36,7 @@ it('prepares payment successfully and returns PaymentInit with OppwaPrepareRespo
         lang: 'en'
     );
 
-    $gateway = new OppwaInitiation;
+    $gateway = new OppwaInitiationWidget;
     $init = $gateway->prepare($data);
 
     expect($init)
@@ -69,7 +69,7 @@ it('returns isAvailable=false when prepare call fails', function (): void {
         origin: 'https://example.org'
     );
 
-    $gateway = new OppwaInitiation;
+    $gateway = new OppwaInitiationWidget;
 
     $init = $gateway->prepare($data);
 
@@ -78,7 +78,7 @@ it('returns isAvailable=false when prepare call fails', function (): void {
 });
 
 it('getAssets throws when persistentData is not OppwaPrepareResponse', function (): void {
-    $gateway = new OppwaInitiation;
+    $gateway = new OppwaInitiationWidget;
 
     $init = new PaymentInit(
         gateway: PaymentGatewayEnum::Oppwa,
@@ -112,7 +112,7 @@ it('getAssets returns PaymentAsset with expected script and form', function (): 
         origin: 'https://example.com'
     );
 
-    $gateway = new OppwaInitiation;
+    $gateway = new OppwaInitiationWidget;
     $init = $gateway->prepare($data);
 
     $returnUrl = 'https://example.com/return?sig=abc';
@@ -135,7 +135,7 @@ it('getAssets returns PaymentAsset with expected script and form', function (): 
 });
 
 it('getNezasaTransactionPayload throws when persistentData is not OppwaPrepareResponse', function (): void {
-    $gateway = new OppwaInitiation;
+    $gateway = new OppwaInitiationWidget;
 
     $data = new PaymentPrepareData(
         contact: new ContactInfoPayloadEntity,
@@ -177,7 +177,7 @@ it('getNezasaTransactionPayload returns Nezasa payload with expected values', fu
         origin: 'https://example.com'
     );
 
-    $gateway = new OppwaInitiation;
+    $gateway = new OppwaInitiationWidget;
     $init = $gateway->prepare($data);
 
     $payload = $gateway->getNezasaTransactionPayload($data, $init);

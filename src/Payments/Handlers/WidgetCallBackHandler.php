@@ -12,13 +12,13 @@ use Nezasa\Checkout\Integrations\Nezasa\Enums\BookingStateEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
-use Nezasa\Checkout\Payments\Contracts\PaymentCallBack;
 use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidation;
+use Nezasa\Checkout\Payments\Contracts\WidgetPaymentCallBack;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBack;
+use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBackWidget;
 use Throwable;
 
 class WidgetCallBackHandler
@@ -26,10 +26,10 @@ class WidgetCallBackHandler
     /**
      * Implementations of payment gateways.
      *
-     * @var array<int, class-string<PaymentCallBack>>
+     * @var array<int, class-string<WidgetPaymentCallBack>>
      */
     private array $implementations = [
-        PaymentGatewayEnum::Oppwa->value => OppwaCallBack::class,
+        PaymentGatewayEnum::Oppwa->value => OppwaCallBackWidget::class,
     ];
 
     /**
@@ -39,7 +39,7 @@ class WidgetCallBackHandler
     {
         $this->validateGateway($transaction->gateway);
 
-        /** @var PaymentCallBack $callback */
+        /** @var WidgetPaymentCallBack $callback */
         $callback = new $this->implementations[$transaction->gateway->value];
 
         if ($transaction->result_data) {
@@ -68,7 +68,7 @@ class WidgetCallBackHandler
             throw new \InvalidArgumentException('The payment gateway is not supported.');
         }
 
-        if (! in_array(PaymentCallBack::class, class_implements($this->implementations[$gateway->value]))) {
+        if (! in_array(WidgetPaymentCallBack::class, class_implements($this->implementations[$gateway->value]))) {
             throw new \InvalidArgumentException('The payment callback is not implemented correctly.');
         }
     }
@@ -129,7 +129,7 @@ class WidgetCallBackHandler
     /**
      * Return the stored output if the transaction already has result data.
      */
-    private function getOutput(Transaction $transaction, PaymentCallBack $callback): PaymentOutput
+    private function getOutput(Transaction $transaction, WidgetPaymentCallBack $callback): PaymentOutput
     {
         $response = NezasaConnector::make()->checkout()->retrieve($transaction->checkout->checkout_id);
 
