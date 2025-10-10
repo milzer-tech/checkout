@@ -62,6 +62,95 @@ CHECKOUT_WIDGET_OPPWA_TOKEN="*******"
 CHECKOUT_WIDGET_OPPWA_ACTIVE=true
 ```
 
+## New payment method
+One of the main goal of this package is to make it easy to add new payment methods. You need to create two classes and implement the related interfaces for a new payment method. Payment is usually done in two steps:
+1. Initiate payment: you need define this interface:
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Nezasa\Checkout\Payments\Contracts;
+
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
+use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
+use Nezasa\Checkout\Payments\Dtos\PaymentInit;
+use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
+
+interface WidgetPaymentInitiation
+{
+    /**
+     * Returns whether the payment gateway is active.
+     */
+    public static function isActive(): bool;
+
+    /**
+     * Returns the name of the payment gateway.
+     */
+    public static function name(): string;
+
+    /**
+     * Returns the description of the payment gateway.
+     * if null, no description will be shown.
+     */
+    public static function description(): ?string;
+
+    /**
+     * Prepares the payment initiation process.
+     */
+    public function prepare(PaymentPrepareData $data): PaymentInit;
+
+    /**
+     * Returns the assets required for the payment initiation process.
+     */
+    public function getAssets(PaymentInit $paymentInit, string $returnUrl): PaymentAsset;
+
+    /**
+     * Returns the payload required for creating a transaction in Nezasa.
+     */
+    public function getNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload;
+}
+
+```
+The package uses these methods to initiate payment by calling the payment gateway, display the payment form, and create a transaction in Nezasa.
+2. Confirm payment: you need implement this interface:
+```php
+declare(strict_types=1);
+
+namespace Nezasa\Checkout\Payments\Contracts;
+
+use Illuminate\Http\Request;
+use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
+use Nezasa\Checkout\Payments\Dtos\PaymentResult;
+
+interface WidgetPaymentCallBack
+{
+    /**
+     * Handles the callback from the payment gateway.
+     *
+     * @param  array<string, mixed>|BaseDto  $persistentData
+     */
+    public function check(Request $request, array|BaseDto $persistentData): PaymentResult;
+
+    /**
+     * Shows the result of the payment process to the user.
+     */
+    public function show(PaymentResult $result, PaymentOutput $output): PaymentOutput;
+}
+```
+Then, the package will call the check method to confirm the payment, and save the result in Nezasa.
+
+After defining the classes, you need to add them to the `config/checkout.php` file:
+```bash
+   'payment' => [
+        'widget' => [
+            OppwaInitiationWidget::class => OppwaCallBackWidget::class,
+            'your custom initiation class' => 'your custom callback class'
+        ],
+    ],
+```
+
 ### Useful commands:
 
 ⚡️ Install the package using [Composer](https://getcomposer.org):
