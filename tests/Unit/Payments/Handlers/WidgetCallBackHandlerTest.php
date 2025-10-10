@@ -111,7 +111,7 @@ it('ignores added query params when validating signature', function (): void {
         ->toBeInstanceOf(PaymentOutput::class)
         ->and($output->isNezasaBookingSuccessful)->toBeTrue()
         ->and($output->bookingReference)->toBe('itn_1')
-        ->and($output->gateway)->toBe(PaymentGatewayEnum::Oppwa);
+        ->and($output->gatewayName)->toBe(PaymentGatewayEnum::Oppwa);
 });
 
 it('returns stored output immediately when result data already exists', function (): void {
@@ -267,7 +267,7 @@ class FakeCallback implements WidgetPaymentCallBack
     public function check(Request $request, $persistentData): PaymentResult
     {
         return new PaymentResult(
-            gateway: PaymentGatewayEnum::Oppwa,
+            gatewayName: PaymentGatewayEnum::Oppwa,
             status: PaymentStatusEnum::Succeeded,
             persistentData: ['checked' => true]
         );
@@ -285,7 +285,7 @@ final class FakeCallbackFailed implements WidgetPaymentCallBack
     public function check(Request $request, $persistentData): PaymentResult
     {
         return new PaymentResult(
-            gateway: PaymentGatewayEnum::Oppwa,
+            gatewayName: PaymentGatewayEnum::Oppwa,
             status: PaymentStatusEnum::Failed,
             persistentData: ['failed' => true]
         );
@@ -302,7 +302,7 @@ class FakeCallbackWithIgnoredParams implements ReturnUrlHasInvalidQueryParamsFor
     public function check(Request $request, $persistentData): PaymentResult
     {
         return new PaymentResult(
-            gateway: PaymentGatewayEnum::Oppwa,
+            gatewayName: PaymentGatewayEnum::Oppwa,
             status: PaymentStatusEnum::Succeeded,
             persistentData: ['checked' => true]
         );

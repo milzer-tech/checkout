@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Payments\Gateways\Oppwa;
 
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Oppwa\Connectors\OppwaConnector;
@@ -15,7 +16,6 @@ use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 
 final class OppwaInitiationWidget implements WidgetPaymentInitiation
 {
@@ -40,13 +40,13 @@ final class OppwaInitiationWidget implements WidgetPaymentInitiation
 
         if ($response->ok()) {
             return new PaymentInit(
-                gateway: PaymentGatewayEnum::Oppwa,
+                gatewayName: self::name(),
                 isAvailable: true,
                 persistentData: $response->dto(),
             );
         }
 
-        return new PaymentInit(gateway: PaymentGatewayEnum::Oppwa, isAvailable: false);
+        return new PaymentInit(gatewayName: self::name(), isAvailable: false);
     }
 
     /**
@@ -72,7 +72,7 @@ final class OppwaInitiationWidget implements WidgetPaymentInitiation
         $form = '<form action="'.$returnUrl.'" class="paymentWidgets" data-brands="VISA MASTER AMEX"> </form>';
 
         return new PaymentAsset(
-            gateway: PaymentGatewayEnum::Oppwa,
+            gatewayName: $paymentInit->gatewayName,
             isAvailable: true,
             scripts: $scripts->add($script),
             html: $form
@@ -93,5 +93,20 @@ final class OppwaInitiationWidget implements WidgetPaymentInitiation
             amount: $data->price,
             paymentMethod: NezasaPaymentMethodEnum::CreditCard
         );
+    }
+
+    public static function name(): string
+    {
+        return Config::string('checkout.integrations.oppwa.name');
+    }
+
+    public static function description(): ?string
+    {
+        return null;
+    }
+
+    public static function isActive(): bool
+    {
+        return Config::boolean('checkout.integrations.oppwa.active');
     }
 }

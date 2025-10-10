@@ -32,7 +32,7 @@ class OppwaStatusRequest extends Request
 
     public function hasRequestFailed(Response $response): ?bool
     {
-        $successfulResultCode = Config::string('checkout.payment.widget.oppwa.successful_result_code');
+        $successfulResultCode = Config::string('checkout.integrations.oppwa.successful_result_code');
 
         try {
             return $response->array('result.code') !== $successfulResultCode;

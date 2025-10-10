@@ -41,7 +41,7 @@ it('prepares payment successfully and returns PaymentInit with OppwaPrepareRespo
 
     expect($init)
         ->toBeInstanceOf(PaymentInit::class)
-        ->and($init->gateway)->toBe(PaymentGatewayEnum::Oppwa)
+        ->and($init->gatewayName)->toBe(PaymentGatewayEnum::Oppwa)
         ->and($init->isAvailable)->toBeTrue()
         ->and($init->persistentData)->not()->toBeEmpty();
 });
@@ -81,7 +81,7 @@ it('getAssets throws when persistentData is not OppwaPrepareResponse', function 
     $gateway = new OppwaInitiationWidget;
 
     $init = new PaymentInit(
-        gateway: PaymentGatewayEnum::Oppwa,
+        gatewayName: PaymentGatewayEnum::Oppwa,
         isAvailable: true,
         persistentData: []
     );
@@ -122,7 +122,7 @@ it('getAssets returns PaymentAsset with expected script and form', function (): 
     expect($asset)
         ->toBeInstanceOf(PaymentAsset::class)
         ->and($asset->isAvailable)->toBeTrue()
-        ->and($asset->gateway)->toBe(PaymentGatewayEnum::Oppwa)
+        ->and($asset->gatewayName)->toBe(PaymentGatewayEnum::Oppwa)
         ->and($asset->html)
         ->toContain('<form action="'.$returnUrl.'" class="paymentWidgets"')
         ->and($asset->scripts)->not()->toBeEmpty();
@@ -146,7 +146,7 @@ it('getNezasaTransactionPayload throws when persistentData is not OppwaPrepareRe
     );
 
     $init = new PaymentInit(
-        gateway: PaymentGatewayEnum::Oppwa,
+        gatewayName: PaymentGatewayEnum::Oppwa,
         isAvailable: true,
         persistentData: []
     );

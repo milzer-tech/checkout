@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Dtos;
 
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
 class PaymentResult extends BaseDto
@@ -16,7 +15,7 @@ class PaymentResult extends BaseDto
      * @param  array<string, mixed>  $persistentData
      */
     public function __construct(
-        public PaymentGatewayEnum $gateway,
+        public string $gatewayName,
         public PaymentStatusEnum $status,
         public array $persistentData = [],
     ) {}

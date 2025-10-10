@@ -4,14 +4,15 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
+use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
 
 class PaymentPage extends BaseCheckoutComponent
@@ -29,18 +30,19 @@ class PaymentPage extends BaseCheckoutComponent
     /**
      * Mount the component and initialize requirements.
      */
-    public function mount(): void
+    public function mount(GetPaymentProviderAction $getPaymentProviderAction): void
     {
         $this->initializeRequirements();
 
-        $this->handlePayment();
+        $this->handlePayment($getPaymentProviderAction);
     }
 
     /**
      * Render the component view.
      */
     public function render(): View
-    {/** @phpstan-ignore-next-line */
+    {
+        /** @phpstan-ignore-next-line */
         return view('checkout::blades.payment-page');
     }
 
@@ -69,11 +71,14 @@ class PaymentPage extends BaseCheckoutComponent
     /**
      * Handle the payment process by preparing the payment data and initializing the payment gateway.
      */
-    protected function handlePayment(): void
+    protected function handlePayment(GetPaymentProviderAction $getPaymentProviderAction): void
     {
-        $gateway = PaymentGatewayEnum::from(decrypt(request()->query('payment_method')));
+        $name = decrypt(request()->query('payment_method'));
 
-        abort_unless($gateway->isWidget(), 404, 'The payment gateway is not supported.');
+        $className = Config::collection('checkout.payment.widget', [])
+            ->filter(fn ($callback, $initiation) => $initiation::name() === $name)
+            ->keys()
+            ->first();
 
         $this->payment = resolve(WidgetInitiationHandler::class)->run(
             model: $this->model,
@@ -85,7 +90,7 @@ class PaymentPage extends BaseCheckoutComponent
                 origin: $this->origin,
                 lang: request()->input('lang', 'en'),
             ),
-            gateway: $gateway
+            gateway: $className
         );
     }
 }

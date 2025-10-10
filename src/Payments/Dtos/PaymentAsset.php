@@ -6,7 +6,6 @@ namespace Nezasa\Checkout\Payments\Dtos;
 
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 
 class PaymentAsset extends BaseDto
 {
@@ -16,7 +15,7 @@ class PaymentAsset extends BaseDto
      * @param  Collection<int, string>|array<int, string>  $scripts,  each string is a script tag.
      */
     public function __construct(
-        public PaymentGatewayEnum $gateway,
+        public string $gatewayName,
         public bool $isAvailable,
         public Collection|array $scripts = new Collection,
         public ?string $html = null,

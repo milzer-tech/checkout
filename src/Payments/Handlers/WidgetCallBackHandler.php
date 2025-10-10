@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Handlers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\UpdatePaymentTransactionPayload;
@@ -16,31 +17,20 @@ use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidati
 use Nezasa\Checkout\Payments\Contracts\WidgetPaymentCallBack;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBackWidget;
 use Throwable;
 
 class WidgetCallBackHandler
 {
     /**
-     * Implementations of payment gateways.
-     *
-     * @var array<int, class-string<WidgetPaymentCallBack>>
-     */
-    private array $implementations = [
-        PaymentGatewayEnum::Oppwa->value => OppwaCallBackWidget::class,
-    ];
-
-    /**
      * Handle the payment callback process.
      */
     public function run(Transaction $transaction, Request $request): PaymentOutput
     {
-        $this->validateGateway($transaction->gateway);
+        $gateway = $this->getCallBackClass($transaction->gateway);
 
         /** @var WidgetPaymentCallBack $callback */
-        $callback = new $this->implementations[$transaction->gateway->value];
+        $callback = new $gateway;
 
         if ($transaction->result_data) {
             return $this->getOutput($transaction, $callback);
@@ -62,15 +52,17 @@ class WidgetCallBackHandler
     /**
      * Validate if the payment gateway is supported and implemented correctly.
      */
-    private function validateGateway(PaymentGatewayEnum $gateway): void
+    private function getCallBackClass(string $gateway): string
     {
-        if (! array_key_exists($gateway->value, $this->implementations)) {
-            throw new \InvalidArgumentException('The payment gateway is not supported.');
-        }
+        $gateway = Config::collection('checkout.payment.widget')
+            ->filter(fn ($callback, $initiation) => $initiation::name() === $gateway)
+            ->first();
 
-        if (! in_array(WidgetPaymentCallBack::class, class_implements($this->implementations[$gateway->value]))) {
+        if (! in_array(WidgetPaymentCallBack::class, class_implements($gateway))) {
             throw new \InvalidArgumentException('The payment callback is not implemented correctly.');
         }
+
+        return $gateway;
     }
 
     /**
@@ -139,13 +131,13 @@ class WidgetCallBackHandler
         $state = $response->dto()->checkoutState;
 
         $result = new PaymentResult(
-            gateway: $transaction->gateway,
+            gatewayName: $transaction->gateway,
             status: $transaction->status ?? PaymentStatusEnum::Failed,
             persistentData: $transaction->result_data ?? [],
         );
 
         $output = new PaymentOutput(
-            gateway: $result->gateway,
+            gatewayName: $result->gatewayName,
             isNezasaBookingSuccessful: $state->isSuccessfulState(),
             bookingReference: $transaction->checkout->itinerary_id,
             orderDate: $transaction->updated_at?->toImmutable(),

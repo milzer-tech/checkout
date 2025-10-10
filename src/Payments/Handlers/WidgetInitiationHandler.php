@@ -14,9 +14,7 @@ use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
 
 class WidgetInitiationHandler
 {
@@ -25,19 +23,19 @@ class WidgetInitiationHandler
      *
      * @var array<int, class-string<WidgetPaymentInitiation>>
      */
-    private array $implementations = [
-        PaymentGatewayEnum::Oppwa->value => OppwaInitiationWidget::class,
-    ];
+    //    private array $implementations = [
+    //        PaymentGatewayEnum::Oppwa->value => OppwaInitiationWidget::class,
+    //    ];
 
     /**
      * Run the widget handler to prepare payment assets.
      */
-    public function run(Checkout $model, PaymentPrepareData $data, PaymentGatewayEnum $gateway): PaymentAsset
+    public function run(Checkout $model, PaymentPrepareData $data, string $gateway): PaymentAsset
     {
         $this->validateGateway($gateway);
 
         /** @var WidgetPaymentInitiation $payment */
-        $payment = new $this->implementations[$gateway->value];
+        $payment = new $gateway;
 
         $init = $payment->prepare($data);
 
@@ -60,13 +58,9 @@ class WidgetInitiationHandler
     /**
      * Get query parameters for the payment return URL.
      */
-    private function validateGateway(PaymentGatewayEnum $gateway): void
+    private function validateGateway(string $gateway): void
     {
-        if (! array_key_exists($gateway->value, $this->implementations)) {
-            throw new \InvalidArgumentException('The payment gateway is not supported.');
-        }
-
-        if (! in_array(WidgetPaymentInitiation::class, class_implements($this->implementations[$gateway->value]))) {
+        if (! in_array(WidgetPaymentInitiation::class, class_implements($gateway))) {
             throw new \InvalidArgumentException('The gateway does not implement PaymentInitiation.');
         }
     }
@@ -79,7 +73,7 @@ class WidgetInitiationHandler
     private function createTransaction(Checkout $model, PaymentInit $init, array $nezasaTransaction, Price $price): void
     {
         $model->transactions()->create([
-            'gateway' => $init->gateway,
+            'gateway' => $init->gatewayName,
             'prepare_data' => (array) $init->persistentData,
             'status' => PaymentStatusEnum::Pending,
             'nezasa_transaction' => $nezasaTransaction,

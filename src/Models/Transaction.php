@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
 /**
@@ -25,7 +24,7 @@ use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
  * @property array<string, mixed>|null $nezasa_transaction
  * @property string|null $nezasa_transaction_ref_id
  * @property PaymentStatusEnum|null $status
- * @property PaymentGatewayEnum|null $gateway
+ * @property string|null $gateway
  * @property string|null $currency
  * @property string|null $amount
  *
@@ -68,7 +67,6 @@ class Transaction extends Model
             'nezasa_transaction' => 'encrypted:json',
             'nezasa_transaction_ref_id' => 'string',
             'status' => PaymentStatusEnum::class,
-            'gateway' => PaymentGatewayEnum::class,
             'amount' => 'decimal:2',
         ];
     }

@@ -26,7 +26,7 @@ it('checks payment status and returns Succeeded with persistent data on successf
 
     expect($result)
         ->toBeInstanceOf(PaymentResult::class)
-        ->and($result->gateway)->toBe(PaymentGatewayEnum::Oppwa)
+        ->and($result->gatewayName)->toBe(PaymentGatewayEnum::Oppwa)
         ->and($result->status)->toBe(PaymentStatusEnum::Succeeded)
         ->and($result->persistentData)
         ->toBeArray()
@@ -70,7 +70,7 @@ it('show returns the provided PaymentOutput without modification', function (): 
 
     $result = new PaymentResult(PaymentGatewayEnum::Oppwa, PaymentStatusEnum::Succeeded, ['foo' => 'bar']);
     $output = new PaymentOutput(
-        gateway: $result->gateway,
+        gatewayName: $result->gatewayName,
         isNezasaBookingSuccessful: true,
         bookingReference: 'itn_123',
         orderDate: null,

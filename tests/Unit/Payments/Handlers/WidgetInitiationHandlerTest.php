@@ -255,7 +255,7 @@ class FakeGateway implements WidgetPaymentInitiation
 
     public function getAssets(PaymentInit $paymentInit, string $returnUrl): PaymentAsset
     {
-        return new PaymentAsset($paymentInit->gateway, true, html: $returnUrl);
+        return new PaymentAsset($paymentInit->gatewayName, true, html: $returnUrl);
     }
 
     public function getNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): CreatePaymentTransactionPayload
@@ -265,6 +265,21 @@ class FakeGateway implements WidgetPaymentInitiation
             amount: new Price(amount: 10.0, currency: 'USD'),
             paymentMethod: NezasaPaymentMethodEnum::CreditCard,
         );
+    }
+
+    public function name(): string
+    {
+        return 'Fake Gateway';
+    }
+
+    public function description(): ?string
+    {
+        return null;
+    }
+
+    public static function isActive(): bool
+    {
+        return true;
     }
 }
 
