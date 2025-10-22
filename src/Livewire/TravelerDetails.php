@@ -192,7 +192,7 @@ class TravelerDetails extends BaseCheckoutComponent
 
         $this->validate([$name => $this->rules()[$key->toString()]]);
 
-        SaveTraverDetailsJob::dispatch($this->checkoutId, $name, $value);
+        dispatch(new SaveTraverDetailsJob($this->checkoutId, $name, $value));
     }
 
     /**

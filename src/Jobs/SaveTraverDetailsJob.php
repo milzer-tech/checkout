@@ -35,7 +35,6 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
     {
         $model = $this->updateCheckoutModel();
 
-        // If the value is a contact info, update the contact info in the model
         $this->updateTravelerDetailsOnNezasa($model);
     }
 
@@ -44,7 +43,7 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return $this->checkoutId.'-'.$this->name;
+        return md5($this->checkoutId.'-'.$this->name);
     }
 
     /**

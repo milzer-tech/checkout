@@ -26,7 +26,7 @@ class PaxInfoPayloadEntity extends BaseDto
         public ?Carbon $birthDate = null,
         public ?string $nationality = null,
         public ?string $nationalityCountryCode = null,
-        public ?string $passportNumber = null,
+        public ?string $passportNr = null,
         #[WithTransformer(DateTimeInterfaceTransformer::class, format: 'Y-m-d')]
         public ?Carbon $passportExpirationDate = null,
         public ?string $secondOrAdditionalName = null,
