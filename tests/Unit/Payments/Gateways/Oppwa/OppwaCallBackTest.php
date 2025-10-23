@@ -10,7 +10,7 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
 it('checks payment status and returns Succeeded with persistent data on successful Oppwa status', function (): void {
-    config()->set('checkout.payment.widget.oppwa.successful_result_code', '000.100.110');
+    config()->set('checkout.integrations.oppwa.successful_result_code', '000.100.110');
 
     MockClient::global([
         OppwaStatusRequest::class => MockResponse::fixture('oppwa_status_response'),
