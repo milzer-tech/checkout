@@ -21,6 +21,7 @@ use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Tests\Unit\Payments\Handlers\FakeInitiation;
 
 it('validates the given gateway in the callback handler', function (): void {
     $handler = new WidgetCallBackHandler;
@@ -64,7 +65,7 @@ it('aborts when the signature is invalid', function (): void {
     ]);
 
     $request = m::mock(Request::class);
-    $request->shouldReceive('hasValidSignatureWhileIgnoring')->once()->with([])->andReturnFalse();
+    $request->shouldReceive('hasValidSignatureWhileIgnoring')->once()->with(['resourcePath', 'id'])->andReturnFalse();
     $request->shouldReceive('setUserResolver')->andReturnNull();
 
     app()->instance('request', $request);
