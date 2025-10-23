@@ -133,5 +133,5 @@ it('does not call saveTravelerDetails when pax count mismatches numberOfPax', fu
 
 it('uniqueId combines checkoutId and name', function (): void {
     $job = new SaveTraverDetailsJob('co-xyz', 'contact.email', 'x');
-    expect($job->uniqueId())->toBe('co-xyz-contact.email');
+    expect($job->uniqueId())->toBe(md5('co-xyz-contact.email'));
 });
