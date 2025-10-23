@@ -25,6 +25,18 @@ The repository also includes useful configurations and dependencies to help you 
 
 With these configurations in place, you can quickly get started with the Nezasa checkout.
 
+## Setup on Nezasa instance
+After deploying the laravel application, you need to chanege the following settings on your Nezasa instance:
+- Go to Nezasa cockpit
+- Then to Settings
+- Select your instance
+- Click on the checkout tab
+- Scroll down to custom checkout 
+- Change configuration to your laravel application url like 
+```
+http://your-domain.com/checkout/details?checkoutId=${CHECKOUT_ID}&itineraryId=${ITINERARY_ID}&origin=${ORIGIN}
+```
+
 ## Features of the Package
 Below is a list of the key features included in this package:
 
