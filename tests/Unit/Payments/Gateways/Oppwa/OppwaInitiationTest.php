@@ -7,7 +7,6 @@ use Nezasa\Checkout\Integrations\Oppwa\Requests\OppwaPrepareRequest;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Enums\PaymentGatewayEnum;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -41,7 +40,6 @@ it('prepares payment successfully and returns PaymentInit with OppwaPrepareRespo
 
     expect($init)
         ->toBeInstanceOf(PaymentInit::class)
-        ->and($init->gatewayName)->toBe(PaymentGatewayEnum::Oppwa)
         ->and($init->isAvailable)->toBeTrue()
         ->and($init->persistentData)->not()->toBeEmpty();
 });
@@ -82,8 +80,7 @@ it('getAssets throws when persistentData is not OppwaPrepareResponse', function 
 
     $init = new PaymentInit(
         isAvailable: true,
-        persistentData: [],
-        gatewayName: PaymentGatewayEnum::Oppwa
+        persistentData: []
     );
 
     $gateway->getAssets($init, 'https://return.url');
@@ -122,7 +119,6 @@ it('getAssets returns PaymentAsset with expected script and form', function (): 
     expect($asset)
         ->toBeInstanceOf(PaymentAsset::class)
         ->and($asset->isAvailable)->toBeTrue()
-        ->and($asset->gatewayName)->toBe(PaymentGatewayEnum::Oppwa)
         ->and($asset->html)
         ->toContain('<form action="'.$returnUrl.'" class="paymentWidgets"')
         ->and($asset->scripts)->not()->toBeEmpty();
@@ -147,8 +143,7 @@ it('getNezasaTransactionPayload throws when persistentData is not OppwaPrepareRe
 
     $init = new PaymentInit(
         isAvailable: true,
-        persistentData: [],
-        gatewayName: PaymentGatewayEnum::Oppwa
+        persistentData: []
     );
 
     $gateway->getNezasaTransactionPayload($data, $init);
