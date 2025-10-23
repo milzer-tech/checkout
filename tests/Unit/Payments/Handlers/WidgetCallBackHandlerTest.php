@@ -31,16 +31,22 @@ it('validates the given gateway in the callback handler', function (): void {
     config()->set('checkout.payment.widget', []);
 
     $handler->run($transaction, m::mock(Request::class));
-})->throws(Error::class, 'class_implements(): Argument #1 ($object_or_class) must be of type object|string, null given');
+})->throws(InvalidArgumentException::class, 'The payment gateway is not supported.');
 
 it('validates the given gateway implements the correct interface', function (): void {
     $handler = new WidgetCallBackHandler;
 
     $transaction = new Transaction;
-    $transaction->gateway = 'Oppwa';
+    $transaction->gateway = 'oppwa';
 
     config()->set('checkout.payment.widget', [
-        OppwaInitiationWidget::class => OppwaCallBackWidget::class,
+        OppwaInitiationWidget::class => new class
+        {
+            public static function name(): string
+            {
+                return 'oppwa';
+            }
+        },
     ]);
 
     $handler->run($transaction, m::mock(Request::class));

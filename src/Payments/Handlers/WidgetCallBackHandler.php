@@ -59,6 +59,10 @@ class WidgetCallBackHandler
             ->filter(fn ($callback, $initiation): bool => $initiation::name() === $gateway)
             ->first();
 
+        if (! $gateway) {
+            throw new \InvalidArgumentException('The payment gateway is not supported.');
+        }
+
         if (! in_array(WidgetPaymentCallBack::class, (array) class_implements($gateway))) {
             throw new \InvalidArgumentException('The payment callback is not implemented correctly.');
         }
