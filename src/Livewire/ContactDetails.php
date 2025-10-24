@@ -95,7 +95,9 @@ class ContactDetails extends BaseCheckoutComponent
             'companyName' => ['string', 'max:255'],
             'gender' => [new Enum(GenderEnum::class)],
             'email' => ['email', 'max:255'],
-            'mobilePhone' => ['string', 'max:20'],
+            'mobilePhone' => ['array'],
+            'mobilePhone.countryCode' => ['string'],
+            'mobilePhone.number' => ['numeric'],
             'postalCode' => ['string', 'max:20'],
             'city' => ['string', 'max:255'],
             'state' => ['string', 'max:255'],
@@ -105,7 +107,6 @@ class ContactDetails extends BaseCheckoutComponent
             'street1' => ['string', 'max:255'],
             'street2' => ['string', 'max:255'],
             'countryCode' => ['string', 'max:10'],
-
         ];
 
         foreach ($this->contactRequirements->all() as $name => $item) {

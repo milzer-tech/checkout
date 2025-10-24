@@ -10,7 +10,7 @@
             <!-- Country calling code select -->
             <div class="relative w-[90px] flex-shrink-0">
                 <select class="form-input custom-select w-full appearance-none px-2 pr-8"
-                        wire:model="travelers.0.dateOfBirthMonth">
+                       wire:model.change="{{$wireModel.'.countryCode'}}">
                     @foreach($codes->callingCodes->sortBy('callingCode')->unique('callingCode') as $code)
                         <option value="{{ $code->callingCode }}">+{{ $code->callingCode }}</option>
                     @endforeach
@@ -28,8 +28,9 @@
 
             <!-- Phone number input -->
             <div class="flex-1">
-                <input type="text" wire:model="{{ $wireModel }}" class="form-input w-full px-4">
-                @error($wireModel)
+
+                <input type="text" wire:model.blur="{{ $wireModel.'.number' }}" class="form-input w-full px-4">
+                @error($wireModel.'.number')
                 <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
