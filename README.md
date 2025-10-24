@@ -73,6 +73,11 @@ CHECKOUT_WIDGET_OPPWA_ENTITY_ID="*******"
 CHECKOUT_WIDGET_OPPWA_TOKEN="*******"
 CHECKOUT_WIDGET_OPPWA_ACTIVE=true
 ```
+If you set up Oppwa payment provider and need a credit card number for testing payment, you can use this:
+```php
+4200000000000091
+```
+Enter the remaining data as you wish.
 
 ## New payment method
 One of the main goal of this package is to make it easy to add new payment methods. You need to create two classes and implement the related interfaces for a new payment method. Payment is usually done in two steps:
