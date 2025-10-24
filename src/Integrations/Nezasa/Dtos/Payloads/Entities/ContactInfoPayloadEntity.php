@@ -32,8 +32,8 @@ class ContactInfoPayloadEntity extends BaseDto
     {
         $payloads[0]['address'] = AddressEntity::from($payloads[0]);
 
-        if (isset($payloads[0]['mobilePhone']['countryCode']) && isset($payloads[0]['mobilePhone']['number'])) {
-            $payloads[0]['mobilePhone'] = $payloads[0]['mobilePhone']['countryCode'].$payloads[0]['mobilePhone']['number'];
+        if (isset($payloads[0]['mobilePhone']['countryCode']) && isset($payloads[0]['mobilePhone']['phoneNumber'])) {
+            $payloads[0]['mobilePhone'] = $payloads[0]['mobilePhone']['countryCode'].$payloads[0]['mobilePhone']['phoneNumber'];
         } else {
             $payloads[0]['mobilePhone'] = null;
         }

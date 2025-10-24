@@ -27,6 +27,7 @@ return [
         'year' => 'Jahr',
         'month' => 'Monat',
         'day' => 'Tag',
+        'phoneNumber' => 'Telefonnummer',
     ],
     'placeholders' => [
         'firstName' => 'z. B. Max',

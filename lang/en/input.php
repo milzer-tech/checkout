@@ -27,6 +27,7 @@ return [
         'year' => 'Year',
         'month' => 'Month',
         'day' => 'Day',
+        'phoneNumber' => 'Phone number',
     ],
     'placeholders' => [
         'firstName' => 'e.g. John',

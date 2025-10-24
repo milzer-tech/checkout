@@ -96,7 +96,7 @@ class ContactDetails extends BaseCheckoutComponent
             'email' => ['email', 'max:255'],
             'mobilePhone' => ['array'],
             'mobilePhone.countryCode' => ['string'],
-            'mobilePhone.number' => ['numeric'],
+            'mobilePhone.phoneNumber' => ['numeric'],
             'postalCode' => ['string', 'max:20'],
             'city' => ['string', 'max:255'],
             'state' => ['string', 'max:255'],
@@ -128,8 +128,15 @@ class ContactDetails extends BaseCheckoutComponent
         return collect($this->rules())
             ->mapWithKeys(function ($item, $key): array {
                 $translatedKey = str_replace('contact.', '', $key);
+                $finalKey = "checkout::input.attributes.$translatedKey";
 
-                return [$key => strtolower(trans("checkout::input.attributes.$translatedKey"))];
+                if (in_array($translatedKey, ['mobilePhone.countryCode', 'mobilePhone.phoneNumber'])) {
+                    $finalKey = str($translatedKey)->afterLast('.')
+                        ->prepend('checkout::input.attributes.')
+                        ->toString();
+                }
+
+                return [$key => trans($finalKey)];
             })
             ->toArray();
     }

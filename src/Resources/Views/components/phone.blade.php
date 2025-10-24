@@ -29,8 +29,8 @@
             <!-- Phone number input -->
             <div class="flex-1">
 
-                <input type="text" wire:model.blur="{{ $wireModel.'.number' }}" class="form-input w-full px-4">
-                @error($wireModel.'.number')
+                <input type="text" wire:model.blur="{{ $wireModel.'.phoneNumber' }}" class="form-input w-full px-4">
+                @error($wireModel.'.phoneNumber')
                 <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
