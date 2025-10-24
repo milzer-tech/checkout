@@ -30,11 +30,13 @@
             <div class="flex-1">
 
                 <input type="text" wire:model.blur="{{ $wireModel.'.phoneNumber' }}" class="form-input w-full px-4">
-                @error($wireModel.'.phoneNumber')
-                <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
+
             </div>
 
         </div>
+
     </div>
+    @error($wireModel.'.phoneNumber')
+    <span class="text-red-500 text-sm">{{ $message }}</span>
+    @enderror
 </div>
