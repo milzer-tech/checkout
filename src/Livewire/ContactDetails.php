@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
@@ -95,7 +96,11 @@ class ContactDetails extends BaseCheckoutComponent
             'gender' => [new Enum(GenderEnum::class)],
             'email' => ['email', 'max:255'],
             'mobilePhone' => ['array'],
-            'mobilePhone.countryCode' => ['string'],
+            'mobilePhone.countryCode' => [
+                'numeric',
+                Rule::in($this->countryCodes->callingCodes->map(fn ($item): string => $item->callingCode)),
+
+            ],
             'mobilePhone.phoneNumber' => ['numeric'],
             'postalCode' => ['string', 'max:20'],
             'city' => ['string', 'max:255'],
