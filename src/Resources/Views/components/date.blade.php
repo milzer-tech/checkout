@@ -7,7 +7,7 @@
                    class="form-input w-[20%] px-4  min-w-[55px]">
             <div class="w-px bg-gray-200 dark:bg-gray-600 my-2"></div>
             <div class="relative w-[40%]">
-                <select wire:model.blur="{{$wireModel}}.month"
+                <select wire:model.change="{{$wireModel}}.month"
                         class="form-input custom-select w-full appearance-none px-2 pr-8">
                     <option value="" disabled="">Month</option>
                     <option value="1">January</option>

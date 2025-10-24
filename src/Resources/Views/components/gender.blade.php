@@ -4,7 +4,7 @@
         class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
         {{trans('checkout::input.attributes.gender')}}
     </label>
-    <select wire:model.blur="{{$wireModel}}" class="form-select pr-8 w-full">
+    <select wire:model.change="{{$wireModel}}" class="form-select pr-8 w-full">
         <option>Select</option>
         @foreach(GenderEnum::getLabels() as $value => $lable)
             <option value="{{$value}}">{{$lable}}</option>
