@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ExternallyPaidChargesResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PromoCodeResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 
@@ -16,6 +17,7 @@ class ApplyPromoCodeResponse extends BaseDto
     public function __construct(
         public Price $discountedPackagePrice,
         public Price $packagePrice,
+        public ExternallyPaidChargesResponseEntity $externallyPaidCharges,
         public ?PromoCodeResponseEntity $promoCode = null,
     ) {}
 
