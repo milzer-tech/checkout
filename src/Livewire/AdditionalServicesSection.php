@@ -128,7 +128,9 @@ class AdditionalServicesSection extends BaseCheckoutComponent
 
         SaveSectionStatusJob::make($this->checkoutId, Section::Summary, false)->handle();
 
-        AddOrUpdateUpsellItemJob::dispatch($this->checkoutId, $offerId, $serviceCategoryRefId, $quantity);
+        dispatch(
+            new AddOrUpdateUpsellItemJob($this->checkoutId, $offerId, $serviceCategoryRefId, $quantity)
+        );
 
         $this->dispatch('summary-updated');
     }

@@ -61,7 +61,7 @@ class PromoCodeSection extends BaseCheckoutComponent
     #[On('traveller-processed')]
     public function listen(): void
     {
-        VerifyAvailabilityJob::dispatch($this->checkoutId);
+        dispatch(new VerifyAvailabilityJob($this->checkoutId));
 
         $this->isCompleted
             ? $this->dispatch(Section::Promo->value)

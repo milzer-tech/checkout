@@ -104,7 +104,9 @@ class TravellerSupporter
         $paxInfo[$room][$traveler]['showTraveller']->isFilled = true;
         $paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
 
-        SaveTraverDetailsJob::dispatch($checkoutId, "paxInfo.$room.$traveler", $paxInfo[$room][$traveler]);
+        dispatch(
+            new SaveTraverDetailsJob($checkoutId, "paxInfo.$room.$traveler", $paxInfo[$room][$traveler])
+        );
 
         return $paxInfo;
     }
@@ -120,7 +122,9 @@ class TravellerSupporter
         $paxInfo[$room][$traveler]['showTraveller']->isFilled = false;
         $paxInfo[$room][$traveler]['showTraveller']->isShowing = true;
 
-        SaveTraverDetailsJob::dispatch($checkoutId, "paxInfo.$room.$traveler", $paxInfo[$room][$traveler]);
+        dispatch(
+            new SaveTraverDetailsJob($checkoutId, "paxInfo.$room.$traveler", $paxInfo[$room][$traveler])
+        );
 
         return $paxInfo;
     }

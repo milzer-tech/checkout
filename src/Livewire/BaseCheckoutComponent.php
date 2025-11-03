@@ -63,7 +63,9 @@ class BaseCheckoutComponent extends Component
 
         $this->isExpanded = true;
 
-        SaveSectionStatusJob::dispatch($this->checkoutId, $section, $this->isCompleted, $this->isExpanded);
+        dispatch(
+            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
+        );
     }
 
     /**
@@ -73,7 +75,9 @@ class BaseCheckoutComponent extends Component
     {
         $this->isExpanded = false;
 
-        SaveSectionStatusJob::dispatch($this->checkoutId, $section, $this->isCompleted, $this->isExpanded);
+        dispatch(
+            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
+        );
     }
 
     public function markAsCompletedAdnCollapse(Section $section): void
@@ -81,7 +85,9 @@ class BaseCheckoutComponent extends Component
         $this->isCompleted = true;
         $this->isExpanded = false;
 
-        SaveSectionStatusJob::dispatch($this->checkoutId, $section, $this->isCompleted, $this->isExpanded);
+        dispatch(
+            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
+        );
     }
 
     /**
@@ -91,7 +97,9 @@ class BaseCheckoutComponent extends Component
     {
         $this->isCompleted = true;
 
-        SaveSectionStatusJob::dispatch($this->checkoutId, $section, $this->isCompleted, $this->isExpanded);
+        dispatch(
+            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
+        );
     }
 
     /**
@@ -101,7 +109,9 @@ class BaseCheckoutComponent extends Component
     {
         $this->isCompleted = false;
 
-        SaveSectionStatusJob::dispatch($this->checkoutId, $section, $this->isCompleted, $this->isExpanded);
+        dispatch(
+            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
+        );
     }
 
     /**

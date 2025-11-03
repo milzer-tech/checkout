@@ -56,15 +56,16 @@
     </div>
     <!-- Footer with navigation buttons - takes 2 columns out of 3 on larger screens -->
     <div class="mt-10 mb-6 flex justify-between max-w-full md:max-w-[64.66%]">
-        <button wire:click="goBack"
-                class="flex items-center gap-2 px-6 py-3 rounded-md border border-gray-300 dark:border-gray-600">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-            {{trans('checkout::page.trip_details.back')}}
-        </button>
-
+        <a href="{{config('checkout.nezasa.base_url')}}/itineraries/{{$this->itineraryId}}">
+            <button wire:click="goBack"
+                    class="flex items-center gap-2 px-6 py-3 rounded-md border border-gray-300 dark:border-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                {{trans('checkout::page.trip_details.back')}}
+            </button>
+        </a>
         <button
 
 
