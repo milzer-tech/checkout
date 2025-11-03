@@ -1,6 +1,6 @@
 <div class="space-y-2 w-full min-w-0">
     <label
-        class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden"> {{trans("checkout::input.attributes.$name")}}</label>
+        class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden"> {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif</label>
     <div class="date-field form-input w-full flex-1 p-0">
         <div class="p-0 flex justify-evenly overflow-visible py-0">
             <input type="text" wire:model.blur="{{$wireModel}}.day" maxlength="2" placeholder="DD"

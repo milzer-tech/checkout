@@ -16,6 +16,7 @@
                     'label' => $name,
                     'wireModel' => "$saveTo.$name",
                     'placeholder' => $name,
+                    'isRequired' => $value->isRequired()
                 ])
                 @php($inputs++)
             @endif
@@ -23,12 +24,19 @@
 
             @switch($name)
                 @case('gender')
-                    @include('checkout::components.gender', ['wireModel' => "$saveTo.$name"])
+                    @include('checkout::components.gender', [
+                        'wireModel' => "$saveTo.$name",
+                        'isRequired' => $value->isRequired()
+                    ])
                     @php($inputs++)
                     @break
 
                 @case('mobilePhone')
-                    @include('checkout::components.phone', ['wireModel' => "$saveTo.$name", 'codes' => $countryCodes])
+                    @include('checkout::components.phone', [
+                       'wireModel' => "$saveTo.$name",
+                       'codes' => $countryCodes,
+                       'isRequired' => $value->isRequired()
+                    ])
                     @php($inputs++)
                     @break
 
@@ -36,7 +44,8 @@
                     @include('checkout::components.country', [
                             'name' => $name,
                             'wireModel' => "$saveTo.$name",
-                            'countriesResponse' => $countriesResponse
+                            'countriesResponse' => $countriesResponse,
+                            'isRequired' => $value->isRequired()
                     ])
                     @php($inputs++)
                     @break
@@ -45,7 +54,8 @@
                     @include('checkout::components.country', [
                             'name' => $name,
                             'wireModel' => "$saveTo.$name",
-                            'countriesResponse' => $countriesResponse
+                            'countriesResponse' => $countriesResponse,
+                            'isRequired' => $value->isRequired()
                     ])
                     @php($inputs++)
                     @break
@@ -54,7 +64,8 @@
                     @include('checkout::components.country', [
                             'label' => $name,
                             'wireModel' => "$saveTo.$name",
-                            'countriesResponse' => $countriesResponse
+                            'countriesResponse' => $countriesResponse,
+                            'isRequired' => $value->isRequired()
                     ])
                     @php($inputs++)
                     @break
@@ -63,6 +74,7 @@
                     @include('checkout::components.date', [
                             'label' => $name,
                             'wireModel' => "$saveTo.$name",
+                            'isRequired' => $value->isRequired()
                     ])
                     @php($inputs++)
                     @break
@@ -71,6 +83,7 @@
                     @include('checkout::components.date', [
                             'label' => $name,
                             'wireModel' => "$saveTo.$name",
+                            'isRequired' => $value->isRequired()
                     ])
                     @php($inputs++)
                     @break

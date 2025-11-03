@@ -1,6 +1,6 @@
 <div class="date-field form-input w-full flex-1 p-0">
     @if (!empty($title))
-        <label class="block text-gray-700 dark:text-gray-200 font-medium mb-1">{{ $title }}</label>
+        <label class="block text-gray-700 dark:text-gray-200 font-medium mb-1">{{ $title }}@if($isRequired)*@endif</label>
     @endif
     <div class="p-0 flex justify-evenly overflow-visible py-0">
         <input type="text" maxlength="2" placeholder="DD" class="form-input w-[20%] px-4  min-w-[55px]" wire:model="{{ $day }}">

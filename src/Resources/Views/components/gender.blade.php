@@ -2,7 +2,7 @@
 <div class="space-y-2 w-full min-w-0">
     <label
         class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
-        {{trans('checkout::input.attributes.gender')}}
+        {{trans('checkout::input.attributes.gender')}}@if($isRequired)*@endif
     </label>
     <select wire:model.change="{{$wireModel}}" class="form-select pr-8 w-full">
         <option>Select</option>
