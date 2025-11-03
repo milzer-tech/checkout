@@ -4,6 +4,7 @@
         {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif
     </label>
     <select wire:model.change="{{$wireModel}}" class="form-select pr-8 w-full">
+        <option value="" >Select</option>
         @foreach($countriesResponse->countries as $country)
             <option value="{{$country->iso_code}}-{{$country->name}}" @selected($country->name === 'Albania') wire:ignore>{{$country->name}}</option>
         @endforeach

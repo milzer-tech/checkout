@@ -9,8 +9,8 @@
             <div class="relative w-[40%]">
                 <select wire:model.change="{{$wireModel}}.month"
                         class="form-input custom-select w-full appearance-none px-2 pr-8">
-                    <option value="" disabled="">Month</option>
-                    <option value="1">January</option>
+                    <option value="" >Select</option>
+                    <option value="1" >January</option>
                     <option value="2">February</option>
                     <option value="3">March</option>
                     <option value="4">April</option>
