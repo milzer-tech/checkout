@@ -3,12 +3,14 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\CountryResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
@@ -96,12 +98,17 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     protected function rules(): array
     {
+        $countries = $this->countriesResponse
+            ->countries
+            ->map(fn (CountryResponseEntity $item): string => $item->iso_code.'-'.$item->name)
+            ->all();
+
         $rules = [
             'firstName' => ['string', 'max:255'],
             'lastName' => ['string', 'max:255'],
             'secondOrAdditionalName' => ['string', 'max:255'],
             'passportNr' => ['string', 'max:255'],
-            'nationality' => ['string'], // country response
+            'nationality' => ['string', Rule::in($countries)],
             'gender' => [new Enum(GenderEnum::class)],
             'birthDate' => ['array'],
             'birthDate.day' => ['integer', 'min:1', 'max:31'],
@@ -111,10 +118,10 @@ class TravelerDetails extends BaseCheckoutComponent
             'passportExpirationDate.day' => ['integer', 'min:1', 'max:31'],
             'passportExpirationDate.month' => ['integer', 'min:1', 'max:12'],
             'passportExpirationDate.year' => ['integer', 'min:'.date('Y'), 'max:'.date('Y') + 20],
-            'passportIssuingCountry' => ['string'], // country response
+            'passportIssuingCountry' => ['string', Rule::in($countries)],
             'postalCode' => ['string', 'max:20'],
             'city' => ['string', 'max:255'],
-            'country' => ['string', 'max:255'],
+            'country' => ['string', Rule::in($countries)],
             'countryCode' => ['string', 'max:10'],
             'street1' => ['string', 'max:255'],
             'street2' => ['string', 'max:255'],
