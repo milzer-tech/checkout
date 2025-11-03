@@ -17,6 +17,7 @@
                     :$countryCodes
                     :$countriesResponse
                     :$model
+                    :$itinerary
                     :is-completed="$model->data['status']['traveller']['isCompleted']"
                     :is-expanded="$model->data['status']['traveller']['isExpanded']"
                 />

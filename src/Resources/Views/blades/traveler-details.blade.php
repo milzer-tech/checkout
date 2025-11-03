@@ -53,6 +53,12 @@
           {{ trans('checkout::page.trip_details.traveller') }} {{ $i+1 }} –
           {{ $trav->isAdult ? trans('checkout::page.trip_details.adult') : trans('checkout::page.trip_details.child') }}
         </span>
+
+                                @if($itinerary->hasRentalCar() && $i === 0 )
+                                <span class="ml-2 px-2.5 py-0.5 text-xs font-semibold text-gray-800 bg-gray-200 rounded-md border border-gray-300">
+                                      {{ trans('checkout::page.trip_details.driver') }}
+                                </span>
+                                @endif
                             </button>
                         @endforeach
                     </div>

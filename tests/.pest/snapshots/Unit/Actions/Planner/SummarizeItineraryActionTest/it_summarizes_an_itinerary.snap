@@ -43,6 +43,54 @@
             "amount": 51,
             "currency": "EUR"
         },
+        "externallyPaidCharges": {
+            "totalPrice": {
+                "amount": 140.14,
+                "currency": "EUR"
+            },
+            "externallyPaidCharges": [
+                {
+                    "name": "Cleaning Fee",
+                    "productName": "Residenza Antica",
+                    "value": {
+                        "amount": 6000,
+                        "currency": "RUB"
+                    }
+                },
+                {
+                    "name": "Luxury Tax",
+                    "productName": "Residenza Antica",
+                    "value": {
+                        "amount": 5000,
+                        "currency": "RUB"
+                    }
+                },
+                {
+                    "name": "Resort Fee",
+                    "productName": "Residenza Antica",
+                    "value": {
+                        "amount": 120,
+                        "currency": "RUB"
+                    }
+                },
+                {
+                    "name": "Service Fee",
+                    "productName": "Residenza Antica",
+                    "value": {
+                        "amount": 936,
+                        "currency": "RUB"
+                    }
+                },
+                {
+                    "name": "Vat",
+                    "productName": "Residenza Antica",
+                    "value": {
+                        "amount": 468,
+                        "currency": "RUB"
+                    }
+                }
+            ]
+        },
         "promoCode": null
     }
 }

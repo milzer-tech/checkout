@@ -84,6 +84,10 @@ it('ignores added query params when validating signature', function (): void {
                 'discountedPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'packagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'promoCode' => null,
+                'externallyPaidCharges' => [
+                    'externallyPaidCharges' => [],
+                    'totalPrice' => ['amount' => 0, 'currency' => 'USD'],
+                ],
             ],
         ]),
         SynchronousBookingRequest::class => MockResponse::make(['ok' => true]),
@@ -126,6 +130,10 @@ it('returns stored output immediately when result data already exists', function
                 'discountedPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'packagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'promoCode' => null,
+                'externallyPaidCharges' => [
+                    'externallyPaidCharges' => [],
+                    'totalPrice' => ['amount' => 0, 'currency' => 'USD'],
+                ],
             ],
         ]),
     ]);
@@ -164,6 +172,10 @@ it('updates nezasa transaction, stores result and tries to book itinerary', func
                 'discountedPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'packagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'promoCode' => null,
+                'externallyPaidCharges' => [
+                    'externallyPaidCharges' => [],
+                    'totalPrice' => ['amount' => 0, 'currency' => 'USD'],
+                ],
             ],
         ]),
         SynchronousBookingRequest::class => MockResponse::make(['ok' => true], 200),
@@ -221,6 +233,10 @@ it('handles exceptions from nezasa update and booking gracefully', function (): 
                 'discountedPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'packagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'promoCode' => null,
+                'externallyPaidCharges' => [
+                    'externallyPaidCharges' => [],
+                    'totalPrice' => ['amount' => 0, 'currency' => 'USD'],
+                ],
             ],
         ]),
         SynchronousBookingRequest::class => MockResponse::make([], 500),

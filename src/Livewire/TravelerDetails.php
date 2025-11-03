@@ -5,6 +5,7 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rules\Enum;
 use Livewire\Attributes\On;
+use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
@@ -16,6 +17,11 @@ use Nezasa\Checkout\Supporters\TravellerSupporter;
 
 class TravelerDetails extends BaseCheckoutComponent
 {
+    /**
+     * The summary of the itinerary.
+     */
+    public ItinerarySummary $itinerary;
+
     /**
      * The PaxAllocationResponseEntity that holds the allocation of travelers.
      */

@@ -135,6 +135,10 @@ it('priceChanged() updates itinerary price and promo response', function (): voi
         'discountedPackagePrice' => ['amount' => 999.99, 'currency' => 'CHF'],
         'packagePrice' => ['amount' => 1200.00, 'currency' => 'CHF'],
         'promoCode' => null,
+        'externallyPaidCharges' => [
+            'externallyPaidCharges' => [],
+            'totalPrice' => ['amount' => 0, 'currency' => 'CHF'],
+        ],
     ]);
 
     expect($component->itinerary->price->amount)->toBe(999.99)
