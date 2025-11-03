@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Nezasa\Checkout\Livewire\AdditionalServicesSection;
-use Nezasa\Checkout\Livewire\Banner;
 use Nezasa\Checkout\Livewire\ConfirmationPage;
 use Nezasa\Checkout\Livewire\ContactDetails;
 use Nezasa\Checkout\Livewire\PaymentOptionsSection;
@@ -50,7 +49,6 @@ class CheckoutServiceProvider extends ServiceProvider
     private function registerLivewireComponents(): void
     {
         Livewire::component(name: 'stepper', class: Stepper::class);
-        Livewire::component(name: 'banner', class: Banner::class);
         Livewire::component(name: 'contact-details', class: ContactDetails::class);
         Livewire::component(name: 'traveler-details', class: TravelerDetails::class);
         Livewire::component(name: 'promo-code-section', class: PromoCodeSection::class);

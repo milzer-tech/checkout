@@ -3,9 +3,6 @@
     <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-8">
         <div class="space-y-6">
             <section class="space-y-6">
-                <livewire:banner
-                    :$itinerary
-                />
                 <livewire:contact-details
                     :$contactRequirements
                     :$countryCodes
