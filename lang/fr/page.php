@@ -46,6 +46,7 @@ return [
         'need_help_with_your_booking' => 'Besoin d’aide pour votre réservation ?',
         'our_travel_experts_are_available' => 'Nos experts voyage sont disponibles 24h/24 et 7j/7',
         'contact_support' => 'Contacter le support',
+        'driver' => 'Conducteur',
     ],
     'payment' => [
         'payment' => 'Paiement',

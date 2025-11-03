@@ -46,6 +46,7 @@ return [
         'need_help_with_your_booking' => 'Brauchen Sie Hilfe bei Ihrer Buchung?',
         'our_travel_experts_are_available' => 'Unsere Reiseexperten sind rund um die Uhr verfügbar',
         'contact_support' => 'Support kontaktieren',
+        'driver' => 'Fahrer',
     ],
     'payment' => [
         'payment' => 'Zahlung',

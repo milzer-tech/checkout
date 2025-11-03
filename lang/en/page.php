@@ -47,6 +47,7 @@ return [
         'need_help_with_your_booking' => 'Need help with your booking?',
         'our_travel_experts_are_available' => 'Our travel experts are available 24/7',
         'contact_support' => 'Contact support',
+        'driver' => 'Driver',
     ],
     'payment' => [
         'payment' => 'Payment',
