@@ -15,6 +15,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequire
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
+use Nezasa\Checkout\Rules\PassportExpirationDateRule;
 use Nezasa\Checkout\Supporters\TravellerSupporter;
 
 class TravelerDetails extends BaseCheckoutComponent
@@ -117,7 +118,12 @@ class TravelerDetails extends BaseCheckoutComponent
             'passportExpirationDate' => ['array'],
             'passportExpirationDate.day' => ['integer', 'min:1', 'max:31'],
             'passportExpirationDate.month' => ['integer', 'min:1', 'max:12'],
-            'passportExpirationDate.year' => ['integer', 'min:'.date('Y'), 'max:'.date('Y') + 20],
+            'passportExpirationDate.year' => [
+                'integer',
+                'min:'.date('Y'),
+                'max:'.intval(date('Y')) + 30,
+                new PassportExpirationDateRule($this->itinerary->endDate),
+            ],
             'passportIssuingCountry' => ['string', Rule::in($countries)],
             'postalCode' => ['string', 'max:20'],
             'city' => ['string', 'max:255'],
