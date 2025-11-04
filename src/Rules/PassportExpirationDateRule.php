@@ -37,7 +37,7 @@ final class PassportExpirationDateRule implements DataAwareRule, ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $date = data_get($this->data, str($attribute)->beforeLast('.'));
+        $date = data_get($this->data, str($attribute)->beforeLast('.')->toString());
 
         $carbon = CarbonImmutable::create($date['year'], $date['month'], $date['day']);
 
