@@ -29,7 +29,7 @@
             <!-- Phone number input -->
             <div class="flex-1">
 
-                <input type="text" wire:model.blur="{{ $wireModel.'.phoneNumber' }}" class="form-input w-full px-4">
+                <input type="number" wire:model.blur="{{ $wireModel.'.phoneNumber' }}" class="form-input w-full px-4">
 
             </div>
 

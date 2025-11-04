@@ -1,16 +1,29 @@
+@use(Nezasa\Checkout\Supporters\AutocompleteSupporter)
 <div class="space-y-2 w-full min-w-0">
     <label
-        class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden"> {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif</label>
+        class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden"> {{trans("checkout::input.attributes.$name")}}@if($isRequired)
+            *
+        @endif</label>
     <div class="date-field form-input w-full flex-1 p-0">
         <div class="p-0 flex justify-evenly overflow-visible py-0">
-            <input type="text" wire:model.blur="{{$wireModel}}.day" maxlength="2" placeholder="DD"
+            <input type="number" min="1" max="31" step="1" wire:model.blur="{{$wireModel}}.day" placeholder="DD"
+                   @if($name === 'birthDate')
+                       {{AutocompleteSupporter::get('day')}}
+                   @else
+                       autocomplete="off"
+                   @endif
                    class="form-input w-[20%] px-4  min-w-[55px]">
             <div class="w-px bg-gray-200 dark:bg-gray-600 my-2"></div>
             <div class="relative w-[40%]">
                 <select wire:model.change="{{$wireModel}}.month"
+                        @if($name === 'birthDate')
+                            {{AutocompleteSupporter::get('month')}}
+                        @else
+                            autocomplete="off"
+                        @endif
                         class="form-input custom-select w-full appearance-none px-2 pr-8">
-                    <option value="" >Select</option>
-                    <option value="1" >January</option>
+                    <option value="">Select</option>
+                    <option value="1">January</option>
                     <option value="2">February</option>
                     <option value="3">March</option>
                     <option value="4">April</option>
@@ -30,22 +43,28 @@
             </span>
             </div>
             <div class="w-px bg-gray-200 dark:bg-gray-600 my-2"></div>
-            <input type="text" wire:model.blur="{{$wireModel}}.year" maxlength="4" placeholder="YYYY"
+            <input type="number" min="1900" max="2099" step="1"
+                   @if($name === 'birthDate')
+                       {{AutocompleteSupporter::get('year')}}
+                   @else
+                       autocomplete="off"
+                   @endif
+                   wire:model.blur="{{$wireModel}}.year" placeholder="YYYY"
                    class="form-input w-[80px] px-4 ">
         </div>
     </div>
 
 
     @error($wireModel . '.day')
-        <span class="text-red-500 text-sm">{{ $message }}</span>
+    <span class="text-red-500 text-sm">{{ $message }}</span>
     @else
         @error($wireModel . '.month')
-            <span class="text-red-500 text-sm">{{ $message }}</span>
+        <span class="text-red-500 text-sm">{{ $message }}</span>
         @else
             @error($wireModel . '.year')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
-        @enderror
+            @enderror
 
-    @enderror
+            @enderror
 
 
 </div>
