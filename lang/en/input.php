@@ -48,5 +48,8 @@ return [
         'passportIssuingCountry' => 'e.g. United Kingdom',
         'secondOrAdditionalName' => 'e.g. Smith',
     ],
+    'validations' => [
+        'passportExpirationDate' => 'This date must be after the trip\'s end date.',
+    ],
 
 ];

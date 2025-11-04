@@ -48,5 +48,8 @@ return [
         'passportIssuingCountry' => 'z. B. Deutschland',
         'secondOrAdditionalName' => 'z. B. Karl',
     ],
+    'validations' => [
+        'passportExpirationDate' => 'Dieses Datum muss nach dem Enddatum des Reisepasses liegen.',
+    ],
 
 ];

@@ -48,5 +48,8 @@ return [
         'passportIssuingCountry' => 'ex. France',
         'secondOrAdditionalName' => 'ex. Martin',
     ],
+    'validations' => [
+        'passportExpirationDate' => 'Cette date doit être postérieure à la date de fin du voyage.',
+    ],
 
 ];

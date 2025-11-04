@@ -48,5 +48,8 @@ return [
         'passportIssuingCountry' => 'p. ej., España',
         'secondOrAdditionalName' => 'p. ej., García',
     ],
+    'validations' => [
+        'passportExpirationDate' => 'Esta fecha debe ser posterior a la fecha de vencimiento del pasaporte.',
+    ],
 
 ];
