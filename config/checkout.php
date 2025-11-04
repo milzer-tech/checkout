@@ -1,5 +1,7 @@
 <?php
 
+use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceCallBackWidget;
+use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceInitiationWidget;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBackWidget;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
 
@@ -23,11 +25,16 @@ return [
             'token' => env('CHECKOUT_WIDGET_OPPWA_TOKEN', 'must_be_set_in_env'),
             'successful_result_code' => env('CHECKOUT_WIDGET_OPPWA_SUCCESSFUL_RESULT_CODE', '000.000.000'),
         ],
+        'invoice' => [
+            'active' => (bool) env('CHECKOUT_WIDGET_INVOICE_ACTIVE', false),
+            'name' => env('CHECKOUT_WIDGET_INVOICE_NAME', 'Invoice'),
+        ],
     ],
 
     'payment' => [
         'widget' => [
             OppwaInitiationWidget::class => OppwaCallBackWidget::class,
+            InvoiceInitiationWidget::class => InvoiceCallBackWidget::class,
         ],
     ],
 ];
