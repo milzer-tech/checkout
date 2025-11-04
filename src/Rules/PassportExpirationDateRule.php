@@ -41,7 +41,7 @@ final class PassportExpirationDateRule implements DataAwareRule, ValidationRule
 
         $carbon = CarbonImmutable::create($date['year'], $date['month'], $date['day']);
 
-        if ($carbon->isBefore($this->endDate->endOfDay())) {
+        if ($carbon->startOfDay()->isBefore($this->endDate->endOfDay())) {
             $fail('checkout::input.validations.passportExpirationDate')->translate();
         }
     }
