@@ -18,7 +18,7 @@ final class PassportExpirationDateRule implements DataAwareRule, ValidationRule
      *
      * @var array<string, mixed>
      */
-    protected $data = [];
+    private array $data = [];
 
     /**
      * Set the data under validation.

@@ -95,7 +95,7 @@ class TravelerDetails extends BaseCheckoutComponent
     /**
      * Get the validation rules for the traveler details.
      *
-     * @return array<string, array<Enum|string>>
+     * @return array<string, array<Enum|string|Rule|PassportExpirationDateRule>>
      */
     protected function rules(): array
     {
