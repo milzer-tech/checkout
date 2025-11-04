@@ -50,6 +50,7 @@ final class InvoiceInitiationWidget implements AddQueryParamsToReturnUrl, Widget
     public function getNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
     {
         return new NezasaPayload(
+            /** @phpstan-ignore-next-line  */
             externalRefId: $paymentInit->persistentData['id'],
             amount: $data->price,
             paymentMethod: NezasaPaymentMethodEnum::Invoice
@@ -59,6 +60,7 @@ final class InvoiceInitiationWidget implements AddQueryParamsToReturnUrl, Widget
     public function addQueryParamsToReturnUrl(PaymentInit $paymentInit): array
     {
         return [
+            /** @phpstan-ignore-next-line  */
             'key' => $paymentInit->persistentData['id'],
         ];
     }

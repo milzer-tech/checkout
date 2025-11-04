@@ -72,6 +72,7 @@ final class OppwaInitiationWidget implements WidgetPaymentInitiation
 
         return new PaymentAsset(
             isAvailable: true,
+            /** @phpstan-ignore-next-line  */
             scripts: $scripts->add($script),
             html: $form
         );

@@ -15,11 +15,13 @@ final class InvoiceCallBackWidget implements WidgetPaymentCallBack
 {
     public function check(Request $request, BaseDto|array $persistentData): PaymentResult
     {
+        $id = is_array($persistentData) ? $persistentData['id'] : false;
+
         return new PaymentResult(
-            status: $request->input('key') === $persistentData['id']
+            status: $request->input('key') === $id
                 ? PaymentStatusEnum::Succeeded
                 : PaymentStatusEnum::Failed,
-            persistentData: $persistentData
+            persistentData: (array) $persistentData
         );
     }
 
