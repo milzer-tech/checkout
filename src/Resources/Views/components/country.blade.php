@@ -1,10 +1,10 @@
-@use(Nezasa\Checkout\Supporters\AutocompleteSupporter)
+@php use Nezasa\Checkout\Supporters\AutoCompleteSupporter; @endphp
 <div class="space-y-2 w-full min-w-0">
     <label
         class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
         {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif
     </label>
-    <select wire:model.change="{{$wireModel}}" {{AutocompleteSupporter::get('gender')}} class="form-select pr-8 w-full">
+    <select wire:model.change="{{$wireModel}}" {{AutoCompleteSupporter::get('gender')}} class="form-select pr-8 w-full">
         <option value="" >Select</option>
         @foreach($countriesResponse->countries as $country)
             <option value="{{$country->iso_code}}-{{$country->name}}" @selected($country->name === 'Albania') wire:ignore>{{$country->name}}</option>

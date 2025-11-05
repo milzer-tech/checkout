@@ -1,4 +1,4 @@
-@use(Nezasa\Checkout\Supporters\AutocompleteSupporter)
+@php use Nezasa\Checkout\Supporters\AutoCompleteSupporter; @endphp
 <div class="space-y-2 w-full min-w-0">
     <label class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
         {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif
