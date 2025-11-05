@@ -77,7 +77,7 @@ If you set up Oppwa payment provider and need a credit card number for testing p
 ```php
 4200000000000091
 ```
-Enter the remaining data as you wish.
+Enter the remaining data as you wish. You will find the other card number for different situations in this link: https://axcessms.docs.oppwa.com/tutorials/threeDSecure/TestingGuide
 
 ## New payment method
 One of the main goal of this package is to make it easy to add new payment methods. You need to create two classes and implement the related interfaces for a new payment method. Payment is usually done in two steps:
