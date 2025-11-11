@@ -50,6 +50,7 @@ return [
     ],
     'validations' => [
         'passportExpirationDate' => 'Dieses Datum muss nach dem Enddatum des Reisepasses liegen.',
+        'child_age' => 'Das Kind muss :age Jahre alt sein.',
     ],
 
 ];

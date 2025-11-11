@@ -50,6 +50,7 @@ return [
     ],
     'validations' => [
         'passportExpirationDate' => 'Cette date doit être postérieure à la date de fin du voyage.',
+        'child_age' => 'L’enfant doit avoir moins de :age ans au début du voyage.',
     ],
 
 ];
