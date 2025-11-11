@@ -51,6 +51,7 @@ return [
     'validations' => [
         'passportExpirationDate' => 'Esta fecha debe ser posterior a la fecha de vencimiento del pasaporte.',
         'child_age' => 'El niño debe tener menos de :age años al inicio del viaje.',
+        'adult_age' => 'El adulto debe tener más de :age años al inicio del viaje.',
     ],
 
 ];

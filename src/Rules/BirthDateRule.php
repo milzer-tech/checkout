@@ -43,18 +43,19 @@ final class BirthDateRule implements DataAwareRule, ValidationRule
     {
         $maxAge = Config::integer('checkout.distribution.max_child_age');
 
-        try {
-            if ($this->isAdult($attribute)) {
-                return;
+        $birthData = $this->getBirthDate($attribute);
+
+        if ($this->isAdult($attribute)) {
+            if ((int) $birthData->diffInYears($this->startDate) <= $maxAge) {
+                $fail('checkout::input.validations.adult_age')->translate(['age' => $maxAge]);
             }
 
-            if ((int) $this->getBirthDate($attribute)->diffInYears($this->startDate) >= $maxAge) {
+        } else {
+            if ((int) $birthData->diffInYears($this->startDate) >= $maxAge) {
                 $fail('checkout::input.validations.child_age')->translate(['age' => $maxAge]);
             }
-
-        } catch (Throwable $exception) {
-            $fail('checkout::checkout::input.validations.child_age', ['age' => $maxAge])->translate();
         }
+
     }
 
     /**
