@@ -167,6 +167,12 @@ After defining the classes, you need to add them to the `config/checkout.php` fi
         ],
     ],
 ```
+### Other configuration options
+You can also configure other options like max child age:
+```dotenv
+# the default value is 17
+MAC_CHILD_CHECKOUT_AGE=16
+```
 
 ### Useful commands:
 
