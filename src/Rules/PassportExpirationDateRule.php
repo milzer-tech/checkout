@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Throwable;
 
 final class PassportExpirationDateRule implements DataAwareRule, ValidationRule
 {
@@ -40,11 +41,15 @@ final class PassportExpirationDateRule implements DataAwareRule, ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $date = data_get($this->data, str($attribute)->beforeLast('.')->toString());
+        try {
+            $date = data_get($this->data, str($attribute)->beforeLast('.')->toString());
 
-        $carbon = CarbonImmutable::create($date['year'], $date['month'], $date['day']);
+            $carbon = CarbonImmutable::create($date['year'], $date['month'], $date['day']);
 
-        if ($carbon->startOfDay()->isBefore($this->endDate->endOfDay())) {
+            if ($carbon->startOfDay()->isBefore($this->endDate->endOfDay())) {
+                $fail('checkout::input.validations.passportExpirationDate')->translate();
+            }
+        } catch (Throwable $exception) {
             $fail('checkout::input.validations.passportExpirationDate')->translate();
         }
     }
