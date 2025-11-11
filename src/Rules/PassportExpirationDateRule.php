@@ -11,14 +11,17 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 final class PassportExpirationDateRule implements DataAwareRule, ValidationRule
 {
-    public function __construct(public CarbonImmutable $endDate) {}
-
     /**
      * All of the data under validation.
      *
      * @var array<string, mixed>
      */
     private array $data = [];
+
+    /**
+     * Create a new rule instance.
+     */
+    public function __construct(public CarbonImmutable $endDate) {}
 
     /**
      * Set the data under validation.
