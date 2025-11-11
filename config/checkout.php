@@ -7,6 +7,10 @@ use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
 
 return [
 
+    'distribution' => [
+        'max_child_age' => env('CHECKOUT_DC_MAX_CHILD_AGE', 17),
+    ],
+
     /**
      * All the configuration options for the Nezasa API is defined here.
      */
