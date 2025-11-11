@@ -15,6 +15,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequire
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
+use Nezasa\Checkout\Rules\BirthDateRule;
 use Nezasa\Checkout\Rules\PassportExpirationDateRule;
 use Nezasa\Checkout\Supporters\TravellerSupporter;
 
@@ -114,7 +115,12 @@ class TravelerDetails extends BaseCheckoutComponent
             'birthDate' => ['array'],
             'birthDate.day' => ['integer', 'min:1', 'max:31'],
             'birthDate.month' => ['integer', 'min:1', 'max:12'],
-            'birthDate.year' => ['integer', 'min:1900', 'max:'.date('Y')],
+            'birthDate.year' => [
+                'integer',
+                'min:1900',
+                'max:'.date('Y'),
+                new BirthDateRule($this->itinerary->startDate),
+            ],
             'passportExpirationDate' => ['array'],
             'passportExpirationDate.day' => ['integer', 'min:1', 'max:31'],
             'passportExpirationDate.month' => ['integer', 'min:1', 'max:12'],
