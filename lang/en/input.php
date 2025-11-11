@@ -47,6 +47,8 @@ return [
         'nationality' => 'e.g. British',
         'passportIssuingCountry' => 'e.g. United Kingdom',
         'secondOrAdditionalName' => 'e.g. Smith',
+        'taxNumber' => 'your tax number',
+        'localIdNumber' => 'local Id number',
     ],
     'validations' => [
         'passportExpirationDate' => 'This date must be after the trip\'s end date.',
