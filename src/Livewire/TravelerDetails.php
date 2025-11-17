@@ -119,8 +119,8 @@ class TravelerDetails extends BaseCheckoutComponent
             'birthDate.year' => [
                 'integer',
                 'min:1900',
-                'max:'.date('Y'),
-                new BirthDateRule($this->itinerary->startDate),
+                'max:'.date('Y'), /** @phpstan-ignore-next-line  */
+                new BirthDateRule($this->itinerary->startDate, $this->model->data->get('allocatedPax', [])),
             ],
             'passportExpirationDate' => ['array'],
             'passportExpirationDate.day' => ['integer', 'min:1', 'max:31'],

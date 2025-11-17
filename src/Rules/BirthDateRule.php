@@ -21,8 +21,10 @@ final class BirthDateRule implements DataAwareRule, ValidationRule
 
     /**
      * Create a new rule instance.
+     *
+     * @param  array<string, mixed>  $allocatedPax
      */
-    public function __construct(public CarbonImmutable $startDate) {}
+    public function __construct(public CarbonImmutable $startDate, public array $allocatedPax) {}
 
     /**
      * Set the data under validation.
@@ -45,12 +47,26 @@ final class BirthDateRule implements DataAwareRule, ValidationRule
 
         $birthData = $this->getBirthDate($attribute);
 
+        $age = (int) $birthData->diffInYears($this->startDate);
+
         if ($this->isAdult($attribute)) {
-            if ((int) $birthData->diffInYears($this->startDate) <= $maxAge) {
+            if ($age <= $maxAge) {
                 $fail('checkout::input.validations.adult_age')->translate(['age' => $maxAge]);
             }
-        } elseif ((int) $birthData->diffInYears($this->startDate) >= $maxAge) {
-            $fail('checkout::input.validations.child_age')->translate(['age' => $maxAge]);
+        } else {
+            if ($age >= $maxAge) {
+                $fail('checkout::input.validations.child_age')->translate(['age' => $maxAge]);
+            }
+
+            $room = (int) str($attribute)->after('paxInfo.')->beforeLast('.')->toString();
+            $traveler = (int) str($attribute)->before('.birthDate')->afterLast('.')->toString();
+
+            if ($this->allocatedPax['rooms'][$room]['childAges'][$traveler - 1] !== $age) {
+                $fail('checkout::input.validations.child_age_diff')->translate([
+                    'age' => $age,
+                    'search' => $this->allocatedPax['rooms'][$room]['childAges'][$traveler - 1],
+                ]);
+            }
         }
 
     }
