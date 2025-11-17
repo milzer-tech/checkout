@@ -49,11 +49,8 @@ final class BirthDateRule implements DataAwareRule, ValidationRule
             if ((int) $birthData->diffInYears($this->startDate) <= $maxAge) {
                 $fail('checkout::input.validations.adult_age')->translate(['age' => $maxAge]);
             }
-
-        } else {
-            if ((int) $birthData->diffInYears($this->startDate) >= $maxAge) {
-                $fail('checkout::input.validations.child_age')->translate(['age' => $maxAge]);
-            }
+        } elseif ((int) $birthData->diffInYears($this->startDate) >= $maxAge) {
+            $fail('checkout::input.validations.child_age')->translate(['age' => $maxAge]);
         }
 
     }
@@ -61,7 +58,7 @@ final class BirthDateRule implements DataAwareRule, ValidationRule
     /**
      * Determine if the traveller is an adult
      */
-    private function isAdult(string $attribute)
+    private function isAdult(string $attribute): ?bool
     {
         return data_get(
             $this->data,

@@ -5,6 +5,7 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rules\In;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
@@ -96,7 +97,7 @@ class TravelerDetails extends BaseCheckoutComponent
     /**
      * Get the validation rules for the traveler details.
      *
-     * @return array<string, array<Enum|string|Rule|PassportExpirationDateRule>>
+     * @return array<string, array<Enum|string|Rule|PassportExpirationDateRule|BirthDateRule|In>>
      */
     protected function rules(): array
     {

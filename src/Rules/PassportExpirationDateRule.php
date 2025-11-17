@@ -49,7 +49,7 @@ final class PassportExpirationDateRule implements DataAwareRule, ValidationRule
             if ($carbon->startOfDay()->isBefore($this->endDate->endOfDay())) {
                 $fail('checkout::input.validations.passportExpirationDate')->translate();
             }
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             $fail('checkout::input.validations.passportExpirationDate')->translate();
         }
     }

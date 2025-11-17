@@ -41,7 +41,8 @@ class ContactDetails extends BaseCheckoutComponent
      * Initialize the component with the contact details.
      */
     public function mount(): void
-    {   /** @phpstan-ignore-next-line  */
+    {
+        /** @phpstan-ignore-next-line */
         $this->contact = $this->model->data->get('contact');
     }
 
@@ -49,7 +50,8 @@ class ContactDetails extends BaseCheckoutComponent
      * Render the component view.
      */
     public function render(): View
-    { /** @phpstan-ignore-next-line */
+    {
+        /** @phpstan-ignore-next-line */
         return view('checkout::blades.contact-details');
     }
 
@@ -114,7 +116,15 @@ class ContactDetails extends BaseCheckoutComponent
         ];
 
         foreach ($this->contactRequirements->all() as $name => $item) {
-            $rules[$name] = array_merge($item->isRequired() ? ['required'] : ['nullable'], $rules[$name]);
+            if ($item->isRequired()) {
+                if ($name === 'mobilePhone') {
+                    $rules["$name.phoneNumber"] = array_merge(['required'], $rules["$name.phoneNumber"]);
+
+                    continue;
+                }
+
+                $rules[$name] = array_merge(['required'], $rules[$name]);
+            }
         }
 
         return array_combine(
