@@ -36,6 +36,7 @@ class InitializeCheckoutDataAction
             'paxInfo' => [],
             'contact' => [],
             'numberOfPax' => $this->countPaxes($allocatedPax),
+            'allocatedPax' => $allocatedPax,
             'status' => [
                 Section::Contact->value => [
                     'isExpanded' => true,
