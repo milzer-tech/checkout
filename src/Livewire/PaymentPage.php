@@ -3,8 +3,8 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
+use Livewire\Features\SupportRedirects\Redirector;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
@@ -50,7 +50,7 @@ class PaymentPage extends BaseCheckoutComponent
         return view('checkout::blades.payment-page');
     }
 
-    public function goBack(): RedirectResponse
+    public function goBack(): Redirector
     {
         return to_route('traveler-details', $this->getQueryParams());
     }
