@@ -34,6 +34,13 @@
                     :is-completed="$model->data['status']['additional_service']['isCompleted']"
                     :is-expanded="$model->data['status']['additional_service']['isExpanded']"
                 />
+                <livewire:insurance-section
+                    :$prices
+                    :$model
+                    :is-completed="$model->data['status']['insurance']['isCompleted']"
+                    :is-expanded="$model->data['status']['insurance']['isExpanded']"
+                />
+
                 <livewire:payment-options-section
                     :$model
                     :is-completed="$model->data['status']['payment-options']['isCompleted']"
