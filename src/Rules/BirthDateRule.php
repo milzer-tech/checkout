@@ -60,11 +60,12 @@ final class BirthDateRule implements DataAwareRule, ValidationRule
 
             $room = (int) str($attribute)->after('paxInfo.')->beforeLast('.')->toString();
             $traveler = (int) str($attribute)->before('.birthDate')->afterLast('.')->toString();
+            $key = (int) $this->allocatedPax['rooms'][$room]['adults'] - $traveler;
 
-            if ($this->allocatedPax['rooms'][$room]['childAges'][$traveler - 1] !== $age) {
+            if ($this->allocatedPax['rooms'][$room]['childAges'][$key] !== $age) {
                 $fail('checkout::input.validations.child_age_diff')->translate([
                     'age' => $age,
-                    'search' => $this->allocatedPax['rooms'][$room]['childAges'][$traveler - 1],
+                    'search' => $this->allocatedPax['rooms'][$room]['childAges'][$key],
                 ]);
             }
         }
