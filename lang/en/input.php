@@ -54,7 +54,7 @@ return [
         'passportExpirationDate' => 'This date must be after the trip\'s end date.',
         'child_age' => 'The child\'s must be less than :age at the beginning of the trip.',
         'adult_age' => 'The adult\'s must be more than :age at the beginning of the trip.',
-        'child_age_diff' => 'The child age (:age) is different to your search criteria (:search). ',
+        'child_age_diff' => 'This traveller must be a :age year old child.',
 
     ],
 
