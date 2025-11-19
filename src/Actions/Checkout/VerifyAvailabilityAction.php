@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\VerifyAvailabilityResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\ComponentEnum;
 
 class VerifyAvailabilityAction
@@ -39,6 +40,10 @@ class VerifyAvailabilityAction
 
             if ($item) {
                 $item->availability = $component->status;
+
+                if (! $component->status->isBookable() && ! $component->nonBookable) {
+                    $item->availability = AvailabilityEnum::Open;
+                }
             }
         }
 
