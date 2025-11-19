@@ -10,6 +10,7 @@ use Livewire\Livewire;
 use Nezasa\Checkout\Livewire\AdditionalServicesSection;
 use Nezasa\Checkout\Livewire\ConfirmationPage;
 use Nezasa\Checkout\Livewire\ContactDetails;
+use Nezasa\Checkout\Livewire\InsuranceSection;
 use Nezasa\Checkout\Livewire\PaymentOptionsSection;
 use Nezasa\Checkout\Livewire\PaymentPage;
 use Nezasa\Checkout\Livewire\PaymentResultPage;
@@ -54,6 +55,7 @@ class CheckoutServiceProvider extends ServiceProvider
         Livewire::component(name: 'promo-code-section', class: PromoCodeSection::class);
         Livewire::component(name: 'additional-services-section', class: AdditionalServicesSection::class);
         Livewire::component(name: 'payment-options-section', class: PaymentOptionsSection::class);
+        Livewire::component(name: 'insurance-section', class: InsuranceSection::class);
         Livewire::component(name: 'trip-summary', class: TripSummary::class);
         Livewire::component(name: 'trip-details-page', class: TripDetailsPage::class);
         Livewire::component(name: 'payment-page', class: PaymentPage::class);
