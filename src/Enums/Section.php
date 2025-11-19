@@ -25,4 +25,5 @@ enum Section: string
     case AdditionalService = 'additional_service';
     case Summary = 'summary';
     case PaymentOptions = 'payment-options';
+    case Insurance = 'insurance';
 }
