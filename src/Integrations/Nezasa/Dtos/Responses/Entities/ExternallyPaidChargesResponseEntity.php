@@ -20,9 +20,5 @@ class ExternallyPaidChargesResponseEntity extends BaseDto
         public Price $totalPrice,
         #[DataCollectionOf(ExternallyPaidChargeResponseEntity::class)]
         public Collection $externallyPaidCharges = new Collection,
-    ) {
-        //        if (is_array($this->externallyPaidCharges)) {
-        //            $this->externallyPaidCharges = new Collection($this->externallyPaidCharges);
-        //        }
-    }
+    ) {}
 }
