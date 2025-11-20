@@ -133,6 +133,8 @@ it('priceChanged() updates itinerary price and promo response', function (): voi
 
     $component->priceChanged([
         'discountedPackagePrice' => ['amount' => 999.99, 'currency' => 'CHF'],
+        'totalPackagePrice' => ['amount' => 999.99, 'currency' => 'CHF'],
+        'downPayment' => ['amount' => 999.99, 'currency' => 'CHF'],
         'packagePrice' => ['amount' => 1200.00, 'currency' => 'CHF'],
         'promoCode' => null,
         'externallyPaidCharges' => [

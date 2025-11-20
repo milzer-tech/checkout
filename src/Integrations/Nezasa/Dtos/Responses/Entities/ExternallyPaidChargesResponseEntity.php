@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
+use Spatie\LaravelData\Attributes\DataCollectionOf;
 
 class ExternallyPaidChargesResponseEntity extends BaseDto
 {
@@ -17,6 +18,7 @@ class ExternallyPaidChargesResponseEntity extends BaseDto
      */
     public function __construct(
         public Price $totalPrice,
+        #[DataCollectionOf(ExternallyPaidChargeResponseEntity::class)]
         public Collection|array $externallyPaidCharges = new Collection,
     ) {
         if (is_array($this->externallyPaidCharges)) {

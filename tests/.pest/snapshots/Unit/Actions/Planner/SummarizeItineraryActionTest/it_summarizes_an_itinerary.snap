@@ -4,42 +4,20 @@
         "amount": 51,
         "currency": "EUR"
     },
-    "title": "Individual trip from Rome to Rome",
-    "startDate": "2025-12-18T11:20:19+00:00",
-    "endDate": "2025-12-21T11:20:19+00:00",
-    "adults": 2,
-    "children": 0,
-    "childrenAges": [],
-    "stays": [
-        {
-            "checkOut": "2025-12-21T11:20:19+00:00",
-            "id": "68ad5b3c590000525ed60ed9",
-            "name": "Roma",
-            "checkIn": "2025-12-18T11:20:19+00:00",
-            "nights": 3,
-            "availability": null
-        }
-    ],
-    "flights": [],
-    "transfers": [],
-    "activities": [],
-    "rentalCars": [
-        {
-            "id": "68ad5b0d590000525ed5cb46",
-            "name": "Rental Car",
-            "startDateTime": "2025-12-18T12:00:00+01:00",
-            "endDateTime": "2025-12-21T06:39:56+01:00",
-            "isPlaceholder": true,
-            "availability": null
-        }
-    ],
-    "upsellItems": [],
     "promoCodeResponse": {
         "discountedPackagePrice": {
             "amount": 51,
             "currency": "EUR"
         },
         "packagePrice": {
+            "amount": 51,
+            "currency": "EUR"
+        },
+        "totalPackagePrice": {
+            "amount": 191.14,
+            "currency": "EUR"
+        },
+        "downPayment": {
             "amount": 51,
             "currency": "EUR"
         },
@@ -92,5 +70,35 @@
             ]
         },
         "promoCode": null
-    }
+    },
+    "title": "Individual trip from Rome to Rome",
+    "startDate": "2025-12-18T11:20:19+00:00",
+    "endDate": "2025-12-21T11:20:19+00:00",
+    "adults": 2,
+    "children": 0,
+    "childrenAges": [],
+    "stays": [
+        {
+            "checkOut": "2025-12-21T11:20:19+00:00",
+            "id": "68ad5b3c590000525ed60ed9",
+            "name": "Roma",
+            "checkIn": "2025-12-18T11:20:19+00:00",
+            "nights": 3,
+            "availability": null
+        }
+    ],
+    "flights": [],
+    "transfers": [],
+    "activities": [],
+    "rentalCars": [
+        {
+            "id": "68ad5b0d590000525ed5cb46",
+            "name": "Rental Car",
+            "startDateTime": "2025-12-18T12:00:00+01:00",
+            "endDateTime": "2025-12-21T06:39:56+01:00",
+            "isPlaceholder": true,
+            "availability": null
+        }
+    ],
+    "upsellItems": []
 }

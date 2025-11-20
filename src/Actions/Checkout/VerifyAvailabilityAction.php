@@ -40,9 +40,14 @@ class VerifyAvailabilityAction
 
             if ($item) {
                 $item->availability = $component->status;
-
-                if (! $component->status->isBookable() && ! $component->nonBookable) {
+                // if $component->nonBookable is false, the item is bookable.
+                // It does not matter if what the status is.
+                if (! $component->nonBookable) {
                     $item->availability = AvailabilityEnum::Open;
+                }
+
+                if ($component->status->isBookable() && $component->nonBookable) {
+                    $item->availability = AvailabilityEnum::None;
                 }
             }
         }

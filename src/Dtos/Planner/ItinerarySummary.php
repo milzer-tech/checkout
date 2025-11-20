@@ -37,6 +37,7 @@ class ItinerarySummary extends BaseDto
      */
     public function __construct(
         public Price $price,
+        public ApplyPromoCodeResponse $promoCodeResponse,
         public string $title,
         public CarbonImmutable $startDate,
         public CarbonImmutable $endDate,
@@ -49,7 +50,6 @@ class ItinerarySummary extends BaseDto
         public Collection $activities = new Collection,
         public Collection $rentalCars = new Collection,
         public Collection $upsellItems = new Collection,
-        public ?ApplyPromoCodeResponse $promoCodeResponse = null,
     ) {
         $this->nights = (int) $this->startDate->diffInDays($this->endDate);
 
