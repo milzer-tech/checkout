@@ -18,6 +18,13 @@ class TripSummary extends BaseCheckoutComponent
      */
     public ItinerarySummary $itinerary;
 
+    public bool $showPriceBreakdown = false;
+
+    public function mount(): void
+    {
+        $this->showPriceBreakdown = $this->itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty();
+    }
+
     /**
      * Render the component view.
      */
@@ -25,6 +32,14 @@ class TripSummary extends BaseCheckoutComponent
     {
         /** @phpstan-ignore-next-line */
         return view('checkout::blades.trip-summary');
+    }
+
+    /**
+     * Collapse or expand the price breakdown.
+     */
+    public function togglePriceBreakdown(): void
+    {
+        $this->showPriceBreakdown = ! $this->showPriceBreakdown;
     }
 
     /**

@@ -282,19 +282,35 @@
         </div>
     @endif
 
-    {{-- Total price section --}}
-    <div>
-        {{-- Top row: label + total price --}}
-        <div class="flex justify-between items-center">
-            <h3 class="font-semibold text-xl text-blue-600">
-                {{ trans('checkout::page.trip_details.total') }}
-                ({{ strtoupper($itinerary->price->totalPackagePrice->currency) }})
-            </h3>
 
-            <span
-                wire:loading.remove
-                class="text-2xl font-bold dark:text-white"
+
+    <div>
+        {{-- Header --}}
+        <div class="flex justify-between items-center">
+            {{-- CLICKABLE: Total (EUR) + chevron --}}
+            <button
+                type="button"
+                class="flex items-center gap-1 cursor-pointer"
+                wire:click="togglePriceBreakdown" {{-- you handle this in Livewire --}}
             >
+                <h3 class="font-semibold text-xl text-blue-600">
+                    {{ trans('checkout::page.trip_details.total') }}
+                    ({{ strtoupper($itinerary->price->totalPackagePrice->currency) }})
+                </h3>
+
+                <svg
+                    class="w-4 h-3 text-blue-600 transition-transform duration-200 transform origin-center @if($showPriceBreakdown) rotate-180 @endif"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 9l-7 7-7-7"></path>
+                </svg>
+
+            </button>
+
+            <span wire:loading.remove class="text-2xl font-bold dark:text-white">
             {{ Number::currency($itinerary->price->discountedPackagePrice->amount, $itinerary->price->discountedPackagePrice->currency) }}
         </span>
 
@@ -308,44 +324,45 @@
             </svg>
         </div>
 
-        {{-- Price breakdown --}}
-        <div class="mt-4 space-y-2 text-sm">
-            <p class="font-semibold text-gray-900 dark:text-white">
-                {{ trans('checkout::page.trip_details.price_breakdown') }}
-            </p>
-
-            <div class="flex justify-between">
-            <span class="text-gray-800 dark:text-gray-200">
-                {{ trans('checkout::page.trip_details.paid_before_departure') }}
-            </span>
-                <span class="text-gray-800 dark:text-gray-200">
-                {{ Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}
-            </span>
-            </div>
-
-            @if($itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty())
-                <p class="mt-2 text-gray-900 dark:text-white">
-                    {{ trans('checkout::page.trip_details.paid_in_destination') }}:
+        {{-- Price breakdown (collapsible) --}}
+        @if($showPriceBreakdown)
+            <div class="mt-4 space-y-2 text-sm">
+                <p class="font-semibold text-gray-900 dark:text-white">
+                    {{ trans('checkout::page.trip_details.price_breakdown') }}
                 </p>
 
-                @foreach($itinerary->price->externallyPaidCharges->externallyPaidCharges as $charge)
-                    <div class="flex justify-between pl-4">
+                <div class="flex justify-between">
+                <span class="text-gray-800 dark:text-gray-200">
+                    {{ trans('checkout::page.trip_details.paid_before_departure') }}
+                </span>
+                    <span class="text-gray-800 dark:text-gray-200">
+                    {{ Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}
+                </span>
+                </div>
+
+                @if($itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty())
+                    <p class="mt-2 text-gray-900 dark:text-white">
+                        {{ trans('checkout::page.trip_details.paid_in_destination') }}:
+                    </p>
+
+                    @foreach($itinerary->price->externallyPaidCharges->externallyPaidCharges as $charge)
+                        <div class="flex justify-between pl-4">
                         <span class="text-gray-800 dark:text-gray-200">
                             {{ $charge->name }}
                         </span>
-                        <span class="text-gray-800 dark:text-gray-200">
+                            <span class="text-gray-800 dark:text-gray-200">
                             {{ Number::currency($charge->value->amount, $charge->value->currency) }}
                         </span>
-                    </div>
-                @endforeach
-            @endif
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+        @endif
+            {{-- Explanatory text (also collapsible) --}}
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                {{ trans('checkout::page.trip_details.total_below_message') }}
+            </p>
 
-        </div>
-
-        {{-- Existing explanatory text --}}
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
-            {{ trans('checkout::page.trip_details.total_below_message') }}
-        </p>
     </div>
 
 

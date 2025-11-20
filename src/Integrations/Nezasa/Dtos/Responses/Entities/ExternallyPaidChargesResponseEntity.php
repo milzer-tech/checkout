@@ -14,15 +14,15 @@ class ExternallyPaidChargesResponseEntity extends BaseDto
     /**
      * Create a new instance of ExternallyPaidChargeResponseEntity.
      *
-     * @param  Collection<int, ExternallyPaidChargeResponseEntity>|array<int, ExternallyPaidChargeResponseEntity>  $externallyPaidCharges
+     * @param  Collection<int, ExternallyPaidChargeResponseEntity>  $externallyPaidCharges
      */
     public function __construct(
         public Price $totalPrice,
         #[DataCollectionOf(ExternallyPaidChargeResponseEntity::class)]
-        public Collection|array $externallyPaidCharges = new Collection,
+        public Collection $externallyPaidCharges = new Collection,
     ) {
-        if (is_array($this->externallyPaidCharges)) {
-            $this->externallyPaidCharges = new Collection($this->externallyPaidCharges);
-        }
+        //        if (is_array($this->externallyPaidCharges)) {
+        //            $this->externallyPaidCharges = new Collection($this->externallyPaidCharges);
+        //        }
     }
 }
