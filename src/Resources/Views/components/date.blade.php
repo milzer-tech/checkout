@@ -6,7 +6,10 @@
         @endif</label>
     <div class="date-field form-input w-full flex-1 p-0">
         <div class="p-0 flex justify-evenly overflow-visible py-0">
-            <input type="number" min="1" max="31" step="1" wire:model.blur="{{$wireModel}}.day" placeholder="DD"
+            <input  type="text"
+                    inputmode="numeric"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                    wire:model.blur="{{$wireModel}}.day" placeholder="DD"
                    @if($name === 'birthDate')
                        {{AutocompleteSupporter::get('day')}}
                    @else
@@ -43,7 +46,9 @@
             </span>
             </div>
             <div class="w-px bg-gray-200 dark:bg-gray-600 my-2"></div>
-            <input type="number" min="1900" max="2099" step="1"
+            <input  type="text"
+                    inputmode="numeric"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                    @if($name === 'birthDate')
                        {{AutocompleteSupporter::get('year')}}
                    @else

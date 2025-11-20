@@ -29,7 +29,10 @@
             <!-- Phone number input -->
             <div class="flex-1">
 
-                <input type="number" wire:model.blur="{{ $wireModel.'.phoneNumber' }}" class="form-input w-full px-4">
+                <input  type="text"
+                        inputmode="numeric"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                        wire:model.blur="{{ $wireModel.'.phoneNumber' }}" class="form-input w-full px-4">
 
             </div>
 

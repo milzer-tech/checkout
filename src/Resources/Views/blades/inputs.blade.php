@@ -11,13 +11,23 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0 mb-4">
             @endif
 
-            @if(! in_array($name, ['passportExpirationDate','birthDate', 'gender', 'mobilePhone', 'country', 'nationality', 'passportIssuingCountry']))
+            @if(! in_array($name, ['passportExpirationDate','birthDate', 'gender', 'mobilePhone', 'country', 'nationality', 'passportIssuingCountry', 'localIdNumber']))
                 @include('checkout::components.input', [
                     'label' => $name,
                     'wireModel' => "$saveTo.$name",
                     'placeholder' => $name,
                     'isRequired' => $value->isRequired()
                 ])
+                @php($inputs++)
+            @endif
+
+            @if(in_array($name, ['localIdNumber']))
+                @include('checkout::components.numeric_input', [
+                   'label' => $name,
+                   'wireModel' => "$saveTo.$name",
+                   'placeholder' => $name,
+                   'isRequired' => $value->isRequired()
+               ])
                 @php($inputs++)
             @endif
 
