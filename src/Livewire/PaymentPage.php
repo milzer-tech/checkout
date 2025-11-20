@@ -4,7 +4,6 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Config;
-use Livewire\Features\SupportRedirects\Redirector;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
@@ -14,6 +13,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloa
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class PaymentPage extends BaseCheckoutComponent
 {
@@ -50,7 +50,7 @@ class PaymentPage extends BaseCheckoutComponent
         return view('checkout::blades.payment-page');
     }
 
-    public function goBack(): Redirector
+    public function goBack(): RedirectResponse
     {
         return to_route('traveler-details', $this->getQueryParams());
     }
@@ -89,7 +89,7 @@ class PaymentPage extends BaseCheckoutComponent
             model: $this->model,
             data: new PaymentPrepareData(
                 contact: ContactInfoPayloadEntity::from($this->model->data['contact']),
-                price: $this->itinerary->price,
+                price: $this->itinerary->price->downPayment,
                 checkoutId: $this->checkoutId,
                 itineraryId: $this->itineraryId,
                 origin: $this->origin,

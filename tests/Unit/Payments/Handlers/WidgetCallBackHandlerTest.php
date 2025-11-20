@@ -81,6 +81,8 @@ it('ignores added query params when validating signature', function (): void {
         RetrieveCheckoutRequest::class => MockResponse::make([
             'checkoutState' => BookingStateEnum::BookingCompleted->value,
             'prices' => [
+                'downPayment' => ['amount' => 0, 'currency' => 'USD'],
+                'totalPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'discountedPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'packagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'promoCode' => null,
@@ -127,6 +129,8 @@ it('returns stored output immediately when result data already exists', function
         RetrieveCheckoutRequest::class => MockResponse::make([
             'checkoutState' => BookingStateEnum::BookingRequested->value,
             'prices' => [
+                'downPayment' => ['amount' => 0, 'currency' => 'USD'],
+                'totalPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'discountedPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'packagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'promoCode' => null,
@@ -169,6 +173,8 @@ it('updates nezasa transaction, stores result and tries to book itinerary', func
         RetrieveCheckoutRequest::class => MockResponse::make([
             'checkoutState' => BookingStateEnum::BookingCompleted->value,
             'prices' => [
+                'totalPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
+                'downPayment' => ['amount' => 0, 'currency' => 'USD'],
                 'discountedPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'packagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'promoCode' => null,
@@ -230,6 +236,8 @@ it('handles exceptions from nezasa update and booking gracefully', function (): 
         RetrieveCheckoutRequest::class => MockResponse::make([
             'checkoutState' => BookingStateEnum::BookingInProgress->value, // not successful
             'prices' => [
+                'downPayment' => ['amount' => 0, 'currency' => 'USD'],
+                'totalPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'discountedPackagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'packagePrice' => ['amount' => 0, 'currency' => 'USD'],
                 'promoCode' => null,

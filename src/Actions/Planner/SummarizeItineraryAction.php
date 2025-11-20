@@ -67,14 +67,13 @@ class SummarizeItineraryAction
     private function initializeResult(ItineraryResponse $itineraryResponse, CheckoutResponse $checkoutResponse): void
     {
         $this->result = new ItinerarySummary(
-            price: $checkoutResponse->prices->discountedPackagePrice ?? $checkoutResponse->prices->packagePrice,
+            price: $checkoutResponse->prices,
             title: $itineraryResponse->title,
             startDate: $itineraryResponse->startDate,
             endDate: $itineraryResponse->endDate,
             adults: $itineraryResponse->countAdults(),
             children: $itineraryResponse->countChildren(),
             childrenAges: $itineraryResponse->getChildrenAges(),
-            promoCodeResponse: $checkoutResponse->prices
         );
     }
 

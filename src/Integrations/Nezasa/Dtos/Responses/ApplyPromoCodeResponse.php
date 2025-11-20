@@ -17,6 +17,8 @@ class ApplyPromoCodeResponse extends BaseDto
     public function __construct(
         public Price $discountedPackagePrice,
         public Price $packagePrice,
+        public Price $totalPackagePrice,
+        public Price $downPayment,
         public ExternallyPaidChargesResponseEntity $externallyPaidCharges,
         public ?PromoCodeResponseEntity $promoCode = null,
     ) {}

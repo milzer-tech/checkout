@@ -18,10 +18,12 @@ class TripSummary extends BaseCheckoutComponent
      */
     public ItinerarySummary $itinerary;
 
-    /**
-     * The unique identifier for the itinerary.
-     */
-    public function mount(bool $travellerProcessed = false): void {}
+    public bool $showPriceBreakdown = false;
+
+    public function mount(): void
+    {
+        $this->showPriceBreakdown = $this->itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty();
+    }
 
     /**
      * Render the component view.
@@ -33,6 +35,14 @@ class TripSummary extends BaseCheckoutComponent
     }
 
     /**
+     * Collapse or expand the price breakdown.
+     */
+    public function togglePriceBreakdown(): void
+    {
+        $this->showPriceBreakdown = ! $this->showPriceBreakdown;
+    }
+
+    /**
      * Handle the promo code applied event.
      *
      * @param  array<string, array<string, float>>  $prices
@@ -40,11 +50,7 @@ class TripSummary extends BaseCheckoutComponent
     #[On('price-changed')]
     public function priceChanged(array $prices): void
     {
-        $prices = ApplyPromoCodeResponse::from($prices);
-
-        $this->itinerary->price = $prices->discountedPackagePrice ?? $prices->packagePrice;
-
-        $this->itinerary->promoCodeResponse = $prices;
+        $this->itinerary->price = ApplyPromoCodeResponse::from($prices);
     }
 
     /**

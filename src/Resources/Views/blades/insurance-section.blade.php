@@ -22,22 +22,19 @@
                 product_config: {
                     "travel": [{
                         "customer": {
-                            "email_address": "test01@verticalinsure.com",
                             "first_name": "James",
                             "last_name": "Doe",
-                            "state": "MN",
-                            "postal_code": "55432"
                         },
                         "attributes": {
-                            "trip_end_date": "2026-12-24",
-                            "trip_start_date": "2026-12-19",
-                            "initial_deposit_date": "2025-11-19",
-                            "trip_cost": 50000,
-                            "trip_amount_currency" : "EUR",
+                            "trip_start_date": "2026-01-28",
+                            "trip_end_date": "2026-02-01",
                             "destination_countries": [
-                                "US"
-                            ]
-                        }
+                                "FR"
+                            ],
+                            "trip_cost": 903000,
+                            "trip_cost_currency": "EUR"
+                        },
+                        "currency": "EUR"
                     }],
                 },
                 "payments": {
@@ -49,6 +46,9 @@
                 console.log(offerState)
             });
 
+            window.addEventListener("offer-state-change", (e) => {
+                console.log("Offers:", JSON.stringify(e.detail.quotes));
+            });
         </script>
 
 

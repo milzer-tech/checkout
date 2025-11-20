@@ -133,6 +133,8 @@ it('priceChanged() updates itinerary price and promo response', function (): voi
 
     $component->priceChanged([
         'discountedPackagePrice' => ['amount' => 999.99, 'currency' => 'CHF'],
+        'totalPackagePrice' => ['amount' => 999.99, 'currency' => 'CHF'],
+        'downPayment' => ['amount' => 999.99, 'currency' => 'CHF'],
         'packagePrice' => ['amount' => 1200.00, 'currency' => 'CHF'],
         'promoCode' => null,
         'externallyPaidCharges' => [
@@ -141,9 +143,9 @@ it('priceChanged() updates itinerary price and promo response', function (): voi
         ],
     ]);
 
-    expect($component->itinerary->price->amount)->toBe(999.99)
-        ->and($component->itinerary->price->currency)->toBe('CHF')
-        ->and($component->itinerary->promoCodeResponse)->not->toBeNull();
+    expect($component->itinerary->price->discountedPackagePrice->amount)->toBe(999.99)
+        ->and($component->itinerary->price->discountedPackagePrice->currency)->toBe('CHF')
+        ->and($component->itinerary->price)->not->toBeNull();
 });
 
 it('createPaymentPageUrl() sets gateway, marks checkingAvailability and emits event', function (): void {

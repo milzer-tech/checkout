@@ -75,8 +75,8 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
             'Cara Stone',
         ]);
 
-    expect($component->itinerary->price->amount)->toBe(987.65)
-        ->and($component->itinerary->price->currency)->toBe('CHF');
+    expect($component->itinerary->price->downPayment->amount)->toBe(51.0)
+        ->and($component->itinerary->price->downPayment->currency)->toBe('EUR');
 
     expect($component->model->lastestTransaction->id)->toBe($tx->id);
 });
