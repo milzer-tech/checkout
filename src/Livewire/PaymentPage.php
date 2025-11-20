@@ -89,7 +89,7 @@ class PaymentPage extends BaseCheckoutComponent
             model: $this->model,
             data: new PaymentPrepareData(
                 contact: ContactInfoPayloadEntity::from($this->model->data['contact']),
-                price: $this->itinerary->price,
+                price: $this->itinerary->price->downPayment,
                 checkoutId: $this->checkoutId,
                 itineraryId: $this->itineraryId,
                 origin: $this->origin,

@@ -14,7 +14,6 @@ use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryTransfer;
 use Nezasa\Checkout\Dtos\Planner\Entities\UpsellItem;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 
 class ItinerarySummary extends BaseDto
@@ -36,8 +35,7 @@ class ItinerarySummary extends BaseDto
      * @param  Collection<int, UpsellItem>  $upsellItems
      */
     public function __construct(
-        public Price $price,
-        public ApplyPromoCodeResponse $promoCodeResponse,
+        public ApplyPromoCodeResponse $price,
         public string $title,
         public CarbonImmutable $startDate,
         public CarbonImmutable $endDate,

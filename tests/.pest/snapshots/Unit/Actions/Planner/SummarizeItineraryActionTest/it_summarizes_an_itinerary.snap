@@ -1,10 +1,6 @@
 {
     "nights": 3,
     "price": {
-        "amount": 51,
-        "currency": "EUR"
-    },
-    "promoCodeResponse": {
         "discountedPackagePrice": {
             "amount": 51,
             "currency": "EUR"

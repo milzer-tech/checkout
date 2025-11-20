@@ -47,8 +47,8 @@ it('mount builds travelers list from paxInfo and sets itinerary price from lates
             'Charlie Brown',
         ]);
 
-    expect($component->itinerary->price->amount)->toBe(1234.56)
-        ->and($component->itinerary->price->currency)->toBe('EUR');
+    expect($component->itinerary->price->downPayment->amount)->toBe(51.0)
+        ->and($component->itinerary->price->downPayment->currency)->toBe('EUR');
 
     expect($component->model->lastestTransaction->id)->toBe($tx->id);
 });

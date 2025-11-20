@@ -85,11 +85,7 @@ class TripDetailsPage extends BaseCheckoutComponent
     #[On('price-changed')]
     public function priceChanged(array $prices): void
     {
-        $prices = ApplyPromoCodeResponse::from($prices);
-
-        $this->itinerary->price = $prices->discountedPackagePrice ?? $prices->packagePrice;
-
-        $this->itinerary->promoCodeResponse = $prices;
+        $this->itinerary->price = ApplyPromoCodeResponse::from($prices);
     }
 
     public function createPaymentPageUrl(string $gateway): void

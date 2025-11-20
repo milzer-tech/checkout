@@ -61,7 +61,5 @@ class ConfirmationPage extends BaseCheckoutComponent
             $result->addedRentalCars,
             collect($result->addedUpsellItems),
         );
-
-        $this->itinerary->price = $this->model->lastestTransaction->price;
     }
 }

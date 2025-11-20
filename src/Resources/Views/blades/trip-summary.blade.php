@@ -262,7 +262,7 @@
     <hr class="border-gray-200 dark:border-gray-600 my-4"/>
 
 
-    @if($itinerary->promoCodeResponse?->promoCode)
+    @if($itinerary->price?->promoCode)
         {{-- Discount row --}}
         <div class="flex justify-between items-center text-sm text-gray-700 dark:text-gray-300 mb-2">
             <div class="flex items-center gap-1">
@@ -273,11 +273,11 @@
                           d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
 
-                <span class="font-semibold">{{$itinerary->promoCodeResponse->promoCode->code}}</span>
-                <span class="font-semibold">(-{{$itinerary->promoCodeResponse->decreasePercent()}}%)</span>
+                <span class="font-semibold">{{$itinerary->price->promoCode->code}}</span>
+                <span class="font-semibold">(-{{$itinerary->price->decreasePercent()}}%)</span>
             </div>
             <span class="font-semibold dark:text-white">
-        -{{Number::currency($itinerary->promoCodeResponse->decreaseAmount(), $itinerary->price->currency)}}
+        -{{Number::currency($itinerary->price->decreaseAmount(), $itinerary->price->packagePrice->currency)}}
     </span>
         </div>
     @endif
@@ -288,14 +288,14 @@
         <div class="flex justify-between items-center">
             <h3 class="font-semibold text-xl text-blue-600">
                 {{ trans('checkout::page.trip_details.total') }}
-                ({{ strtoupper($itinerary->promoCodeResponse->totalPackagePrice->currency) }})
+                ({{ strtoupper($itinerary->price->totalPackagePrice->currency) }})
             </h3>
 
             <span
                 wire:loading.remove
                 class="text-2xl font-bold dark:text-white"
             >
-            {{ Number::currency($itinerary->promoCodeResponse->totalPackagePrice->amount, $itinerary->promoCodeResponse->totalPackagePrice->currency) }}
+            {{ Number::currency($itinerary->price->discountedPackagePrice->amount, $itinerary->price->discountedPackagePrice->currency) }}
         </span>
 
             {{-- loader --}}
@@ -319,21 +319,21 @@
                 {{ trans('checkout::page.trip_details.paid_before_departure') }}
             </span>
                 <span class="text-gray-800 dark:text-gray-200">
-                {{ Number::currency($itinerary->promoCodeResponse->downPayment->amount, $itinerary->promoCodeResponse->downPayment->currency) }}
+                {{ Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}
             </span>
             </div>
 
-            @if($itinerary->promoCodeResponse->externallyPaidCharges->externallyPaidCharges->isNotEmpty())
+            @if($itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty())
                 <p class="mt-2 text-gray-900 dark:text-white">
                     {{ trans('checkout::page.trip_details.paid_in_destination') }}:
                 </p>
 
-                @foreach($itinerary->promoCodeResponse->externallyPaidCharges->externallyPaidCharges as $charge)
+                @foreach($itinerary->price->externallyPaidCharges->externallyPaidCharges as $charge)
                     <div class="flex justify-between pl-4">
                         <span class="text-gray-800 dark:text-gray-200">
                             {{ $charge->name }}
                         </span>
-                            <span class="text-gray-800 dark:text-gray-200">
+                        <span class="text-gray-800 dark:text-gray-200">
                             {{ Number::currency($charge->value->amount, $charge->value->currency) }}
                         </span>
                     </div>

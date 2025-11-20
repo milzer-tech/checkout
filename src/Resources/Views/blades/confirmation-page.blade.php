@@ -31,14 +31,6 @@
 
         <!-- ONE card for image + content (matches Figma) -->
         <div class="border rounded-lg overflow-hidden border-gray-200 bg-white dark:bg-gray-800 shadow-sm">
-            <!-- Image with clipped corners -->
-            <div class="relative w-full h-[220px]">
-                <img
-                    src="https://thumbs.dreamstime.com/b/luxury-hotel-bellagio-las-vegas-nv-june-june-usa-casino-located-36820850.jpg"
-                    alt="Palma de Mallorca"
-                    class="w-full h-full object-cover"
-                />
-            </div>
 
             <!-- Content -->
             <div class="p-6 border-t border-gray-100 flex justify-between items-center">
@@ -435,7 +427,7 @@
                     <div class="flex justify-between items-center mb-2">
                         <span class="font-bold text-lg">Total paid (EUR)</span>
                         <span
-                            class="font-bold text-lg">{{ Number::currency($itinerary->price->amount, $itinerary->price->currency) }}</span>
+                            class="font-bold text-lg">{{ Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}</span>
                     </div>
 
                     <button

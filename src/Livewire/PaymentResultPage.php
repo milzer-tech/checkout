@@ -67,7 +67,5 @@ class PaymentResultPage extends BaseCheckoutComponent
             addedRentalCarResponse: $result->addedRentalCars,
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
         );
-
-        $this->itinerary->price = $this->model->lastestTransaction->price;
     }
 }
