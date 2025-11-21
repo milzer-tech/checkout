@@ -4,14 +4,10 @@
         {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif
     </label>
      <input
-     name="{{$wireModel}}"
-     type=@switch($label)
-     @case('email')
-      "email"
-      @break
-      @default
-      "text"
-      @endswitch
+         name="{{$wireModel}}"
+         type="text"
+         inputmode="numeric"
+         oninput="this.value = this.value.replace(/[^0-9]/g, '');"
        wire:model.blur="{{$wireModel}}"
        {{AutocompleteSupporter::get($name)}}
         class="form-input w-full" placeholder="{{trans("checkout::input.placeholders.$name")}}"/>

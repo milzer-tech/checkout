@@ -6,7 +6,7 @@
             *
         @endif
     </label>
-    <select wire:model.change="{{$wireModel}}" {{AutocompleteSupporter::get('')}} class="form-select pr-8 w-full">
+    <select name="{{$wireModel}}" wire:model.change="{{$wireModel}}" {{AutocompleteSupporter::get('')}} class="form-select pr-8 w-full">
         <option>Select</option>
         @foreach(GenderEnum::getLabels() as $value => $lable)
             <option value="{{$value}}">{{$lable}}</option>
