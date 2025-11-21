@@ -62,6 +62,10 @@ class InitializeCheckoutDataAction
                     'isExpanded' => false,
                     'isCompleted' => false,
                 ],
+                Section::Activity->value => [
+                    'isExpanded' => false,
+                    'isCompleted' => false,
+                ],
                 Section::PaymentOptions->value => [
                     'isExpanded' => false,
                     'isCompleted' => false,
