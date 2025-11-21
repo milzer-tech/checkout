@@ -47,7 +47,7 @@ final class BirthDateRule implements DataAwareRule, ValidationRule
 
         $birthData = $this->getBirthDate($attribute);
 
-        if (! $birthData) {
+        if (! $birthData instanceof CarbonImmutable) {
             return;
         }
 
@@ -94,9 +94,9 @@ final class BirthDateRule implements DataAwareRule, ValidationRule
         try {
             $birthDate = data_get($this->data, str($attribute)->beforeLast('.')->toString());
 
-            return CarbonImmutable::create($birthDate['year'], $birthDate['month'], $birthDate['day']);
+            $result = CarbonImmutable::create($birthDate['year'], $birthDate['month'], $birthDate['day']);
         } finally {
-            return null;
+            return $result ?? null;
         }
     }
 }

@@ -3,7 +3,9 @@
     <label class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
         {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif
     </label>
-     <input type=@switch($label)
+     <input
+     name="{{$wireModel}}"
+     type=@switch($label)
      @case('email')
       "email"
       @break

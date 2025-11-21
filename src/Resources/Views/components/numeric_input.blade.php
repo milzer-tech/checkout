@@ -4,6 +4,7 @@
         {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif
     </label>
      <input
+         name="{{$wireModel}}"
          type="text"
          inputmode="numeric"
          oninput="this.value = this.value.replace(/[^0-9]/g, '');"

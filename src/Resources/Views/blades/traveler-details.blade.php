@@ -36,7 +36,6 @@
                                 role="tab"
                                 id="tab-{{ $roomNumber }}-{{ $i }}"
                                 aria-selected="{{ $trav->isShowing ? 'true' : 'false' }}"
-                                aria-controls="panel-{{ $roomNumber }}-{{ $i }}"
                                 @class([
                                   'group relative flex items-center gap-2 px-4 py-2 text-base leading-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500',
                                   'z-10 font-semibold text-gray-900 bg-white border border-gray-200 border-b-0 rounded-t-[10px] -mb-px

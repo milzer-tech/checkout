@@ -9,7 +9,7 @@
 
             <!-- Country calling code select -->
             <div class="relative w-[90px] flex-shrink-0">
-                <select class="form-input custom-select w-full appearance-none px-2 pr-8"
+                <select  name="{{$wireModel.'.countryCode'}}" class="form-input custom-select w-full appearance-none px-2 pr-8"
                        wire:model.change="{{$wireModel.'.countryCode'}}">
                     @foreach($codes->callingCodes->sortBy('callingCode')->unique('callingCode') as $code)
                         <option value="{{ $code->callingCode }}">+{{ $code->callingCode }}</option>
@@ -29,7 +29,8 @@
             <!-- Phone number input -->
             <div class="flex-1">
 
-                <input  type="text"
+                <input name="{{$wireModel.'.phoneNumber'}}"
+                       type="text"
                         inputmode="numeric"
                         oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                         wire:model.blur="{{ $wireModel.'.phoneNumber' }}" class="form-input w-full px-4">

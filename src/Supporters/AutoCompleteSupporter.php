@@ -38,7 +38,7 @@ final class AutoCompleteSupporter
     public static function get(string $field): string
     {
         return isset(self::$tokens[$field])
-            ? 'autocomplete="'.self::$tokens[$field].'"'
+            ? 'autocomplete='.self::$tokens[$field]
             : '';
     }
 }
