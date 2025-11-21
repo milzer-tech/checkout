@@ -1,3 +1,4 @@
+@php use Nezasa\Checkout\Enums\Section; @endphp
 <div class="flex flex-col min-h-screen">
     <h1 class="text-2xl font-bold mb-6">{{trans('checkout::page.trip_details.trip_details')}}</h1>
     <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-8">
@@ -8,8 +9,8 @@
                     :$countryCodes
                     :$countriesResponse
                     :$model
-                    :is-completed="$model->data['status']['contact']['isCompleted']"
-                    :is-expanded="$model->data['status']['contact']['isExpanded']"
+                    :is-completed="$model->isCompleted(Section::Contact)"
+                    :is-expanded="$model->isExpanded(Section::Contact)"
                 />
                 <livewire:traveler-details
                     :$allocatedPax
@@ -18,29 +19,29 @@
                     :$countriesResponse
                     :$model
                     :$itinerary
-                    :is-completed="$model->data['status']['traveller']['isCompleted']"
-                    :is-expanded="$model->data['status']['traveller']['isExpanded']"
+                    :is-completed="$model->isCompleted(Section::Traveller)"
+                    :is-expanded="$model->isExpanded(Section::Traveller)"
                 />
 
                 <livewire:activity-section
                     :shouldRender="$itinerary->activities->isNotEmpty()"
                     :$model
-                    :is-completed="$model->data['status']['activity']['isCompleted']"
-                    :is-expanded="$model->data['status']['activity']['isExpanded']"
+                    :is-completed="$model->isCompleted(Section::Activity)"
+                    :is-expanded="$model->isExpanded(Section::Activity)"
                 />
 
                 <livewire:promo-code-section
                     :$prices
                     :$model
-                    :is-completed="$model->data['status']['promo']['isCompleted']"
-                    :is-expanded="$model->data['status']['promo']['isExpanded']"
+                    :is-completed="$model->isCompleted(Section::Promo)"
+                    :is-expanded="$model->isExpanded(Section::Promo)"
                 />
                 <livewire:additional-services-section
                     :$upsellItemsResponse
                     :$addedUpsellItems
                     :$model
-                    :is-completed="$model->data['status']['additional_service']['isCompleted']"
-                    :is-expanded="$model->data['status']['additional_service']['isExpanded']"
+                    :is-completed="$model->isCompleted(Section::AdditionalService)"
+                    :is-expanded="$model->isExpanded(Section::AdditionalService)"
                 />
                 {{--                <livewire:insurance-section--}}
                 {{--                    :$prices--}}
@@ -51,8 +52,8 @@
 
                 <livewire:payment-options-section
                     :$model
-                    :is-completed="$model->data['status']['payment-options']['isCompleted']"
-                    :is-expanded="$model->data['status']['payment-options']['isExpanded']"
+                    :is-completed="$model->isCompleted(Section::PaymentOptions)"
+                    :is-expanded="$model->isExpanded(Section::PaymentOptions)"
                 />
                 <div class="mt-6"></div>
             </section>
@@ -61,9 +62,9 @@
             <livewire:trip-summary
                 :$itinerary
                 :$model
-                :is-completed="$model->data['status']['summary']['isCompleted']"
-                :is-expanded="$model->data['status']['summary']['isExpanded']"
-                :traveller-processed="$model->data['status']['traveller']['isCompleted']"
+                :is-completed="$model->isCompleted(Section::Summary)"
+                :is-expanded="$model->isExpanded(Section::Summary)"
+                :traveller-processed="$model->isCompleted(Section::Traveller)"
             />
         </div>
     </div>
