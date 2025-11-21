@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Providers;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Nezasa\Checkout\Livewire\ActivitySection;
 use Nezasa\Checkout\Livewire\AdditionalServicesSection;
 use Nezasa\Checkout\Livewire\ConfirmationPage;
 use Nezasa\Checkout\Livewire\ContactDetails;
@@ -55,6 +56,7 @@ class CheckoutServiceProvider extends ServiceProvider
         Livewire::component(name: 'promo-code-section', class: PromoCodeSection::class);
         Livewire::component(name: 'additional-services-section', class: AdditionalServicesSection::class);
         Livewire::component(name: 'payment-options-section', class: PaymentOptionsSection::class);
+        Livewire::component(name: 'activity-section', class: ActivitySection::class);
         Livewire::component(name: 'insurance-section', class: InsuranceSection::class);
         Livewire::component(name: 'trip-summary', class: TripSummary::class);
         Livewire::component(name: 'trip-details-page', class: TripDetailsPage::class);
