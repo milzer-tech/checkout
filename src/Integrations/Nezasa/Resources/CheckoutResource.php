@@ -9,6 +9,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPaylo
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\AddOrRemoveUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\ApplyPromoCodeRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\DeletePromoCodeRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetActivityQuestionsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
@@ -151,6 +152,19 @@ class CheckoutResource extends BaseResource
     {
         return $this->connector->send(
             new SynchronousBookingRequest($checkoutId)
+        );
+    }
+
+    /**
+     * Get activity questions for a checkout.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function getActivityQuestions(string $checkoutId): Response
+    {
+        return $this->connector->send(
+            new GetActivityQuestionsRequest($checkoutId)
         );
     }
 }
