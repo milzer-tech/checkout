@@ -3,15 +3,22 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
 
 class ActivitySection extends BaseCheckoutComponent
 {
-    //    /**
-    //     * The summary of the itinerary.
-    //     */
-    //    public ItinerarySummary $itinerary;
+    /**
+     * Indicates whether the component should be rendered.
+     */
+    public bool $shouldRender = false;
+
+    /**
+     * Mount the component/
+     */
+    public function mount(bool $shouldRender = false): void
+    {
+        $this->shouldRender = false;
+    }
 
     /**
      * Render the component view.

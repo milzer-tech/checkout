@@ -22,13 +22,12 @@
                     :is-expanded="$model->data['status']['traveller']['isExpanded']"
                 />
 
-                @if($itinerary->activities->isNotEmpty())
-                    <livewire:activity-section
-                        :$model
-                        :is-completed="$model->data['status']['activity']['isCompleted']"
-                        :is-expanded="$model->data['status']['activity']['isExpanded']"
-                    />
-                @endif
+                <livewire:activity-section
+                    :shouldRender="$itinerary->activities->isNotEmpty()"
+                    :$model
+                    :is-completed="$model->data['status']['activity']['isCompleted']"
+                    :is-expanded="$model->data['status']['activity']['isExpanded']"
+                />
 
                 <livewire:promo-code-section
                     :$prices
