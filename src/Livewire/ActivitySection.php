@@ -50,7 +50,7 @@ class ActivitySection extends BaseCheckoutComponent
      */
     public function render(): View
     {
-        return view('checkout::blades.activity-section');
+        return view($this->shouldRender ? 'checkout::blades.activity-section' : 'checkout::blades.empty');
     }
 
     /**
