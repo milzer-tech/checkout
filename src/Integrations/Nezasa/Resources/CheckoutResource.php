@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Resources;
 
+use Illuminate\Support\Collection;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddOrRemoveUpsellItemsPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\AnswerActivityQuestionPayloadDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\AddOrRemoveUpsellItemsRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\AnswerActivityQuestionsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\ApplyPromoCodeRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\DeletePromoCodeRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetActivityQuestionsRequest;
@@ -161,10 +164,25 @@ class CheckoutResource extends BaseResource
      * @throws FatalRequestException
      * @throws RequestException
      */
-    public function getActivityQuestions(string $checkoutId): Response
+    public function activityQuestions(string $checkoutId): Response
     {
         return $this->connector->send(
             new GetActivityQuestionsRequest($checkoutId)
+        );
+    }
+
+    /**
+     * Answer activity questions for a checkout.
+     *
+     * @param  Collection<int, AnswerActivityQuestionPayloadDto>  $payload
+     *                                                                      *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function answerActivityQuestions(string $checkoutId, Collection $payload): Response
+    {
+        return $this->connector->send(
+            new AnswerActivityQuestionsRequest($checkoutId, $payload)
         );
     }
 }
