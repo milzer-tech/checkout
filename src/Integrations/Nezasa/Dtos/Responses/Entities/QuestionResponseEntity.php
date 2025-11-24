@@ -6,9 +6,10 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\AnswerInputEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AnswerValidationEnum;
 
-final class QuestionResponseEntity extends BaseDto
+class QuestionResponseEntity extends BaseDto
 {
     /**
      * Create a new instance of QuestionResponseEntity.
@@ -27,4 +28,19 @@ final class QuestionResponseEntity extends BaseDto
         public ?AnswerValidationEnum $answerValidation = null,
     ) {}
 
+    /**
+     * Get the input type for the question.
+     */
+    public function getInputType(): AnswerInputEnum
+    {
+        if ($this->answerOptions->isNotEmpty()) {
+            return AnswerInputEnum::Select;
+        }
+
+        if ($this->answerValidation?->isBoolean()) {
+            return AnswerInputEnum::Radio;
+        }
+
+        return AnswerInputEnum::Unknown;
+    }
 }
