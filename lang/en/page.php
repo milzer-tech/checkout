@@ -53,6 +53,7 @@ return [
         'price_breakdown' => 'Price breakdown',
         'paid_before_departure' => 'Paid before departure',
         'paid_in_destination' => 'Paid in destination',
+        'required' => 'Required',
     ],
     'payment' => [
         'payment' => 'Payment',
