@@ -81,7 +81,7 @@ class TravelerDetails extends BaseCheckoutComponent
     #[On('contact-processed')]
     public function listen(): void
     {
-        $this->isCompleted ? $this->dispatch('traveller-processed') : $this->expand(Section::Traveller);
+        $this->isCompleted ? $this->dispatch(Section::Activity->value) : $this->expand(Section::Traveller);
     }
 
     /**
@@ -91,7 +91,7 @@ class TravelerDetails extends BaseCheckoutComponent
     {
         $this->markAsCompletedAdnCollapse(Section::Traveller);
 
-        $this->dispatch('traveller-processed');
+        $this->dispatch(Section::Activity->value);
     }
 
     /**
@@ -187,7 +187,7 @@ class TravelerDetails extends BaseCheckoutComponent
 
             $this->updateFormStatus();
             $this->markAsCompletedAdnCollapse(Section::Traveller);
-            $this->dispatch('traveller-processed');
+            $this->dispatch(Section::Activity->value);
         }
     }
 
