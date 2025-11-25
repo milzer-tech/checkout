@@ -14,7 +14,8 @@
 >
 
     @foreach($activityQuestions as $componentIndex =>  $component)
-        <div class="py-2 bg-white dark:bg-gray-800">
+        <div class="py-2 bg-white dark:bg-gray-800 @if($componentIndex > 0) hidden @endif"
+             id="activity-{{$component->componentId}}">
             <h2 class="text-xl font-semibold mb-8">{{$component->productName}}</h2>
 
             <div id="{{$component->componentId}}">
@@ -57,23 +58,25 @@
                 @endforeach
             </div>
             <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8 mb-8"></div>
-            @endforeach
-
-            <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
-
-            <div class="flex justify-between items-center mt-8">
-                <button type="button"
-                        wire:click="next"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                    {{trans('checkout::page.trip_details.back')}}
-                </button>
-
-                <button type="button"
-                        wire:click="next"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                    {{trans('checkout::page.trip_details.next')}}
-                </button>
-            </div>
         </div>
+
+    @endforeach
+
+    <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
+
+    <div class="flex justify-between items-center mt-8">
+        <button type="button"
+                wire:click="next"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
+            {{trans('checkout::page.trip_details.back')}}
+        </button>
+
+        <button type="button"
+                wire:click="next"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
+            {{trans('checkout::page.trip_details.next')}}
+        </button>
+    </div>
+
 </x-checkout::editable-box>
 

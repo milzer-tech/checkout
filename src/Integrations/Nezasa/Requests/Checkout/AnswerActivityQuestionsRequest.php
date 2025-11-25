@@ -7,26 +7,36 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Exceptions\NotFoundException;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\AnswerActivityQuestionPayloadDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ActivityQuestionResponse;
+use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Helpers\MiddlewarePipeline;
 use Saloon\Http\Faking\FakeResponse;
 use Saloon\Http\PendingRequest;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
+use Saloon\Traits\Body\HasJsonBody;
 use Throwable;
 
-class GetActivityQuestionsRequest extends Request
+class AnswerActivityQuestionsRequest extends Request implements HasBody
 {
+    use HasJsonBody;
+
     /**
      * Define the HTTP method.
      */
-    protected Method $method = Method::GET;
+    protected Method $method = Method::POST;
 
     /**
-     * Create a new instance of RetrieveCheckoutRequest
+     * Create a new instance of AnswerActivityQuestionsRequest
+     *
+     * @param  Collection<int, AnswerActivityQuestionPayloadDto>  $payload
      */
-    public function __construct(protected readonly string $checkoutId) {}
+    public function __construct(
+        public readonly string $checkoutId,
+        public Collection $payload,
+    ) {}
 
     /**
      * Define the endpoint for the request.
@@ -34,6 +44,16 @@ class GetActivityQuestionsRequest extends Request
     public function resolveEndpoint(): string
     {
         return "/checkout/v1/checkouts/$this->checkoutId/activity-questions";
+    }
+
+    /**
+     * Define the body of the request.
+     *
+     * @return array<int, array<string, string>>
+     */
+    protected function defaultBody(): array
+    {
+        return $this->payload->toArray();
     }
 
     /**
@@ -55,9 +75,9 @@ class GetActivityQuestionsRequest extends Request
 
     public function middleware(): MiddlewarePipeline
     {
-        //        if (! Config::boolean('checkout.fake_calls')) {
-        //            return parent::middleware();
-        //        }
+        if (! Config::boolean('checkout.fake_calls')) {
+            return parent::middleware();
+        }
 
         return parent::middleware()
             ->onRequest(function (PendingRequest $pendingRequest) {
