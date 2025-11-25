@@ -55,9 +55,9 @@ class GetActivityQuestionsRequest extends Request
 
     public function middleware(): MiddlewarePipeline
     {
-        //        if (! Config::boolean('checkout.fake_calls')) {
-        //            return parent::middleware();
-        //        }
+        if (! Config::boolean('checkout.fake_calls')) {
+            return parent::middleware();
+        }
 
         return parent::middleware()
             ->onRequest(function (PendingRequest $pendingRequest) {
