@@ -72,6 +72,9 @@ class ActivitySection extends BaseCheckoutComponent
         $this->dispatch(Section::Activity->value);
     }
 
+    /**
+     * Listen for finishing the traveler section.
+     */
     #[On(Section::Traveller->value)]
     public function listen(): void
     {
@@ -95,8 +98,6 @@ class ActivitySection extends BaseCheckoutComponent
         }
 
         $this->fillResult();
-
-        dispatch(new UpdateAnswerActivityQuestionJob($this->checkoutId, $this->activityQuestions));
     }
 
     /**
@@ -117,6 +118,8 @@ class ActivitySection extends BaseCheckoutComponent
     }
 
     /**
+     *  The data validation rules for the component.
+     *
      * @return array<string, array<string, string|Rule>>
      */
     protected function rules(): array
@@ -178,20 +181,17 @@ class ActivitySection extends BaseCheckoutComponent
         $required = $question->required ? 'required' : 'nullable';
 
         if ($question->getInputType()->isSelect()) {
-            return [
-                $required,
-                Rule::in($question->answerOptions->pluck('refId')->flatten()),
-            ];
+            $rules = [Rule::in($question->answerOptions->pluck('refId')->flatten())];
+        } else {
+            $rules = match ($question->answerValidation) {
+                AnswerValidationEnum::Int => ['integer'],
+                AnswerValidationEnum::Double => ['float'],
+                AnswerValidationEnum::Boolean => ['boolean'],
+                default => ['sometimes'],
+            };
         }
 
-        $value = match ($question->answerValidation) {
-            AnswerValidationEnum::Int => ['integer'],
-            AnswerValidationEnum::Double => ['float'],
-            AnswerValidationEnum::Boolean => ['boolean'],
-            default => ['sometimes'],
-        };
-
-        return [$required, ...$value];
+        return [$required, ...$rules];
     }
 
     /**
@@ -210,5 +210,7 @@ class ActivitySection extends BaseCheckoutComponent
                 $this->result[$component->componentId][$question->refId] = $answer;
             }
         }
+
+        dispatch(new UpdateAnswerActivityQuestionJob($this->checkoutId, $this->activityQuestions));
     }
 }
