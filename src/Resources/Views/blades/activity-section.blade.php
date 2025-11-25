@@ -10,6 +10,7 @@
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
+    class="{{$shouldRender ? '' : 'hidden'}}"
     onEdit="expand('{{Section::Activity->value}}')"
 >
     <form wire:submit="save">

@@ -57,7 +57,7 @@ class PromoCodeSection extends BaseCheckoutComponent
     /**
      * Listen for the 'traveller-processed' event to determine if the promo code section should be expanded or completed.
      */
-    #[On(Section::Promo->value)]
+    #[On(Section::Activity->value)]
     public function listen(): void
     {
         $this->isCompleted

@@ -50,7 +50,7 @@ class ActivitySection extends BaseCheckoutComponent
     {
         $this->activityQuestions = new Collection;
 
-        if ($this->shouldRender) {
+        if ($this->shouldRender && $this->model->isCompleted(Section::Traveller)) {
             $this->listen();
         }
     }
@@ -61,7 +61,7 @@ class ActivitySection extends BaseCheckoutComponent
     public function render(): View
     {
         /** @phpstan-ignore-next-line */
-        return view($this->shouldRender ? 'checkout::blades.activity-section' : 'checkout::blades.empty');
+        return view('checkout::blades.activity-section');
     }
 
     /**

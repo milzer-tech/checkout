@@ -78,10 +78,10 @@ class TravelerDetails extends BaseCheckoutComponent
     /**
      * Listen for the 'contact-stored' event to determine if the traveler section should be expanded or completed.
      */
-    #[On('contact-processed')]
+    #[On(Section::Contact->value)]
     public function listen(): void
     {
-        $this->isCompleted ? $this->dispatch(Section::Activity->value) : $this->expand(Section::Traveller);
+        $this->isCompleted ? $this->dispatch(Section::Traveller->value) : $this->expand(Section::Traveller);
     }
 
     /**
@@ -91,7 +91,7 @@ class TravelerDetails extends BaseCheckoutComponent
     {
         $this->markAsCompletedAdnCollapse(Section::Traveller);
 
-        $this->dispatch(Section::Activity->value);
+        $this->dispatch(Section::Traveller->value);
     }
 
     /**
@@ -187,7 +187,7 @@ class TravelerDetails extends BaseCheckoutComponent
 
             $this->updateFormStatus();
             $this->markAsCompletedAdnCollapse(Section::Traveller);
-            $this->dispatch(Section::Activity->value);
+            $this->dispatch(Section::Traveller->value);
         }
     }
 
