@@ -41,4 +41,6 @@ return [
             InvoiceInitiationWidget::class => InvoiceCallBackWidget::class,
         ],
     ],
+
+    'fake_calls' => env('CHECKOUT_FAKE_NEZASA_CALLS', false),
 ];

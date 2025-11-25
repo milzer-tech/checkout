@@ -31,7 +31,10 @@
     "autoload": {
         "psr-4": {
             "Nezasa\\Checkout\\": "src/"
-        }
+        },
+        "files": [
+            "src/Helpers/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

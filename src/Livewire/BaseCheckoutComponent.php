@@ -115,6 +115,19 @@ class BaseCheckoutComponent extends Component
     }
 
     /**
+     * Mark the section as not completed and expand.
+     */
+    protected function markAsNotCompletedAndExpand(Section $section): void
+    {
+        $this->isCompleted = false;
+        $this->isExpanded = true;
+
+        dispatch(
+            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
+        );
+    }
+
+    /**
      * Get the query parameters for the component.
      *
      * @return array<string, string>

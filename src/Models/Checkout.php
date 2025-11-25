@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Enums\Section;
 
 /**
  * Eloquent model for checkout state.
@@ -64,7 +65,8 @@ class Checkout extends Model
      * @param  array<string, mixed>  $data
      */
     public function updateData(array $data): bool
-    {   /** @phpstan-ignore-next-line  */
+    {
+        /** @phpstan-ignore-next-line */
         $array = $this->data?->toArray() ?? [];
 
         foreach ($data as $key => $value) {
@@ -94,5 +96,29 @@ class Checkout extends Model
     public function lastestTransaction(): HasOne
     {
         return $this->hasOne(Transaction::class)->latestOfMany();
+    }
+
+    /**
+     * Check if the checkout is completed for a specific section.
+     */
+    public function isCompleted(Section $section): bool
+    {
+        return $this->data['status'][$section->value]['isCompleted'];
+    }
+
+    /**
+     * Check if the checkout is expanded for a specific section.
+     */
+    public function isExpanded(Section $section): bool
+    {
+        return $this->data['status'][$section->value]['isExpanded'];
+    }
+
+    public function getAnswer(string $componentId, string $questionRefId): mixed
+    {
+        return data_get(
+            target: $this->data,
+            key: "activityAnswers.$componentId.$questionRefId"
+        );
     }
 }

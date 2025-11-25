@@ -81,7 +81,7 @@ class ContactDetails extends BaseCheckoutComponent
 
         $this->markAsCompletedAdnCollapse(Section::Contact);
 
-        $this->dispatch('contact-processed');
+        $this->dispatch(Section::Contact->value);
     }
 
     /**

@@ -144,5 +144,9 @@ class AdditionalServicesSection extends BaseCheckoutComponent
         $this->isCompleted
             ? $this->next()
             : $this->expand(Section::AdditionalService);
+
+        if ($this->upsellItemsResponse->offers->isEmpty()) {
+            $this->next();
+        }
     }
 }
