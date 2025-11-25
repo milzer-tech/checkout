@@ -60,6 +60,7 @@ class ActivitySection extends BaseCheckoutComponent
      */
     public function render(): View
     {
+        /** @phpstan-ignore-next-line */
         return view($this->shouldRender ? 'checkout::blades.activity-section' : 'checkout::blades.empty');
     }
 
@@ -123,7 +124,7 @@ class ActivitySection extends BaseCheckoutComponent
     /**
      *  The data validation rules for the component.
      *
-     * @return array<string, array<string, string|Rule>>
+     * @return array<string, array<string, array<string, array<int, Rule|string>>>>
      */
     protected function rules(): array
     {
@@ -177,24 +178,24 @@ class ActivitySection extends BaseCheckoutComponent
      * Get the answer validation rules for a given question.
      *
      *
-     * @return array<string, string|Rule>
+     * @return array<int, string|Rule>
      */
     protected function answerValidationRules(QuestionResponseEntity $question): array
     {
-        $required = $question->required ? 'required' : 'nullable';
+        $rules = $question->required ? ['required'] : ['nullable'];
 
         if ($question->getInputType()->isSelect()) {
-            $rules = [Rule::in($question->answerOptions->pluck('refId')->flatten())];
+            $rules[] = Rule::in($question->answerOptions->pluck('refId')->flatten());
         } else {
-            $rules = match ($question->answerValidation) {
-                AnswerValidationEnum::Int => ['integer'],
-                AnswerValidationEnum::Double => ['float'],
-                AnswerValidationEnum::Boolean => ['boolean'],
-                default => ['sometimes'],
+            $rules[] = match ($question->answerValidation) {
+                AnswerValidationEnum::Int => 'integer',
+                AnswerValidationEnum::Double => 'float',
+                AnswerValidationEnum::Boolean => 'boolean',
+                default => 'sometimes',
             };
         }
 
-        return [$required, ...$rules];
+        return $rules;
     }
 
     /**

@@ -37,8 +37,7 @@ final class SendActivityAnswersToNezasaJob implements ShouldQueue
                 );
             }
         }
-
-        if (! empty($answers)) {
+        if ($answers->isNotEmpty()) {
             NezasaConnector::make()->checkout()->answerActivityQuestions($this->checkoutId, $answers);
         }
     }
