@@ -38,7 +38,7 @@ class UpdateAnswerActivityQuestionJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
-        $model = Checkout::query()->firstOrFail(['checkout_id' => $this->checkoutId]);
+        $model = Checkout::query()->where('checkout_id', $this->checkoutId)->firstOrFail();
 
         $new = [];
 
