@@ -13,6 +13,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ActivityQuestionResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\QuestionResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AnswerValidationEnum;
 use Nezasa\Checkout\Jobs\SaveAnswerActivityQuestionJob;
+use Nezasa\Checkout\Jobs\SendActivityAnswersToNezasaJob;
 use Nezasa\Checkout\Jobs\UpdateAnswerActivityQuestionJob;
 use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
 
@@ -68,6 +69,8 @@ class ActivitySection extends BaseCheckoutComponent
     public function next(): void
     {
         $this->markAsCompletedAdnCollapse(Section::Activity);
+
+        dispatch(new SendActivityAnswersToNezasaJob($this->checkoutId));
 
         $this->dispatch(Section::Activity->value);
     }
