@@ -10,7 +10,8 @@ use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\AnswerActivityQuestionPayloadDto as AnswerActivity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ActivityQuestionResponse;
-use Nezasa\Checkout\Integrations\Nezasa\Enums\AnswerInputEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\QuestionResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\AnswerValidationEnum;
 use Nezasa\Checkout\Jobs\SaveAnswerActivityQuestionJob;
 use Nezasa\Checkout\Jobs\UpdateAnswerActivityQuestionJob;
 use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
@@ -23,9 +24,14 @@ class ActivitySection extends BaseCheckoutComponent
     public bool $shouldRender = false;
 
     /**
+     * The current activity being processed.
+     */
+    public int $currentActivity = 0;
+
+    /**
      * The list of activity questions.
      *
-     * //     * @var Collection<int, ActivityQuestionResponse>
+     * @var Collection<int, ActivityQuestionResponse>
      */
     public Collection $activityQuestions;
 
@@ -39,16 +45,11 @@ class ActivitySection extends BaseCheckoutComponent
     /**
      * Mount the component/
      */
-    public function mount(bool $shouldRender = false): void
+    public function mount(): void
     {
-        $this->shouldRender = $shouldRender;
-
         $this->activityQuestions = new Collection;
 
-        if (
-            $this->model->data['status']['traveller']['isCompleted']
-            && ! $this->model->data['status']['activity']['isCompleted']
-        ) {
+        if ($this->shouldRender) {
             $this->listen();
         }
     }
@@ -67,9 +68,11 @@ class ActivitySection extends BaseCheckoutComponent
     public function next(): void
     {
         $this->markAsCompletedAdnCollapse(Section::Activity);
+
+        $this->dispatch(Section::Activity->value);
     }
 
-    #[On(Section::Activity->value)]
+    #[On(Section::Traveller->value)]
     public function listen(): void
     {
         $verifyAvailability = new VerifyAvailabilityJob($this->checkoutId);
@@ -77,24 +80,21 @@ class ActivitySection extends BaseCheckoutComponent
         if (! $this->shouldRender) {
             dispatch($verifyAvailability);
 
-            $this->dispatch(Section::Promo->value);
+            $this->dispatch(Section::Activity->value);
 
             return;
         }
 
         $verifyAvailability->handle();
-
         $this->activityQuestions = NezasaConnector::make()->checkout()->activityQuestions($this->checkoutId)->dto();
 
-        foreach ($this->activityQuestions as $component) {
-            foreach ($component->questions as $question) {
+        if ($this->activityQuestions->isEmpty()) {
+            $this->shouldRender = false;
 
-                $this->result[$component->componentId][$question->refId] = data_get(
-                    $this->model->data,
-                    ".$component->componentId.$question->refId"
-                );
-            }
+            $this->next();
         }
+
+        $this->fillResult();
 
         dispatch(new UpdateAnswerActivityQuestionJob($this->checkoutId, $this->activityQuestions));
     }
@@ -102,7 +102,7 @@ class ActivitySection extends BaseCheckoutComponent
     /**
      * Update the answer to an activity question.
      */
-    public function updating(string $property, mixed $value): void
+    public function updated(string $property, mixed $value): void
     {
         [$componentId, $questionId] = str($property)->after('.')->explode('.');
 
@@ -125,24 +125,90 @@ class ActivitySection extends BaseCheckoutComponent
 
         foreach ($this->activityQuestions as $component) {
             foreach ($component->questions as $question) {
-                $propertyRules = $question->required ? ['required'] : ['nullable'];
-
-                switch ($question->getInputType()) {
-                    case AnswerInputEnum::Select:
-                        $propertyRules[] = Rule::in($question->answerOptions->pluck('refId')->flatten());
-                        break;
-
-                    case AnswerInputEnum::Radio:
-                        $propertyRules[] = 'boolean';
-                        break;
-                    default:
-                        $propertyRules[] = 'sometimes';
-                }
-
-                $rules['result'][$component->componentId][$question->refId] = $propertyRules;
+                $rules['result'][$component->componentId][$question->refId] = $this->answerValidationRules($question);
             }
         }
 
         return $rules;
+    }
+
+    /**
+     * Go to the next activity.
+     */
+    public function nextActivity(int $index): void
+    {
+        $componentId = $this->activityQuestions->get($index)->componentId;
+        $componentRules = $this->rules()['result'][$componentId];
+
+        $activityRules = [];
+        $attributes = [];
+
+        foreach ($componentRules as $key => $rule) {
+            $activityRules["result.$componentId.$key"] = $rule;
+            $attributes["result.$componentId.$key"] = $key;
+        }
+
+        $this->validate(rules: $activityRules, attributes: $attributes);
+
+        if ($this->activityQuestions->has($index + 1)) {
+            $this->currentActivity = $index + 1;
+        } else {
+            $this->next();
+        }
+    }
+
+    /**
+     * Go back to the previous activity.
+     */
+    public function previousActivity(int $index): void
+    {
+        if ($this->activityQuestions->has($index - 1)) {
+            $this->currentActivity = $index - 1;
+        }
+    }
+
+    /**
+     * Get the answer validation rules for a given question.
+     *
+     *
+     * @return array<string, string|Rule>
+     */
+    protected function answerValidationRules(QuestionResponseEntity $question): array
+    {
+        $required = $question->required ? 'required' : 'nullable';
+
+        if ($question->getInputType()->isSelect()) {
+            return [
+                $required,
+                Rule::in($question->answerOptions->pluck('refId')->flatten()),
+            ];
+        }
+
+        $value = match ($question->answerValidation) {
+            AnswerValidationEnum::Int => ['integer'],
+            AnswerValidationEnum::Double => ['float'],
+            AnswerValidationEnum::Boolean => ['boolean'],
+            default => ['sometimes'],
+        };
+
+        return [$required, ...$value];
+    }
+
+    /**
+     * Compile the result of the activity questions.
+     */
+    public function fillResult(): void
+    {
+        foreach ($this->activityQuestions as $component) {
+            foreach ($component->questions as $question) {
+                $answer = $this->model->getAnswer($component->componentId, $question->refId);
+
+                if (is_null($answer) && $question->required) {
+                    $this->markAsNotCompletedAndExpand(Section::Activity);
+                }
+
+                $this->result[$component->componentId][$question->refId] = $answer;
+            }
+        }
     }
 }

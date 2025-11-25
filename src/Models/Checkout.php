@@ -113,4 +113,12 @@ class Checkout extends Model
     {
         return $this->data['status'][$section->value]['isExpanded'];
     }
+
+    public function getAnswer(string $componentId, string $questionRefId): mixed
+    {
+        return data_get(
+            target: $this->data,
+            key: "activityAnswers.$componentId.$questionRefId"
+        );
+    }
 }

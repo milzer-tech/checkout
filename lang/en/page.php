@@ -12,6 +12,8 @@ return [
         'traveller_details' => 'Traveller details',
         'previous_traveller' => 'Previous traveller',
         'previous_room' => 'Previous room',
+        'previous_activity' => 'Previous activity',
+        'next_activity' => 'Next activity',
         'next_traveller' => 'Next traveller',
         'next_room' => 'Next room',
         'next_step' => 'Next step',
