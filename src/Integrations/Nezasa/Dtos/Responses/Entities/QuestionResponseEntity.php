@@ -38,7 +38,7 @@ class QuestionResponseEntity extends BaseDto
         }
 
         if ($this->answerValidation?->isBoolean()) {
-            return AnswerInputEnum::Radio;
+            return AnswerInputEnum::Checkbox;
         }
 
         return AnswerInputEnum::Unknown;

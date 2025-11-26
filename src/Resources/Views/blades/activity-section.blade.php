@@ -22,12 +22,15 @@
                     @foreach($component->questions as $questionIndex => $question)
                         <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 min-w-0 mb-5">
                             <div class="space-y-2 w-full min-w-0">
-                                <label
-                                    class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
-                                    {{$question->question}} @if($question->required)
-                                        ({{trans('checkout::page.trip_details.required')}})
-                                    @endif
-                                </label>
+
+                                @if(! $question->getInputType()->isCheckbox())
+                                    <label
+                                        class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
+                                        {{$question->question}} @if($question->required)
+                                            ({{trans('checkout::page.trip_details.required')}})
+                                        @endif
+                                    </label>
+                                @endif
 
                                 @switch($question->getInputType())
                                     @case(AnswerInputEnum::Select)
@@ -41,6 +44,18 @@
                                         </select>
                                         @break
                                     @case(AnswerInputEnum::Radio)
+                                        @break
+                                    @case(AnswerInputEnum::Checkbox)
+                                        <label
+                                            class="flex items-center space-x-2 text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
+                                            <input
+                                                name="result.{{$component->componentId}}.{{$question->refId}}"
+                                                wire:model.blur="result.{{$component->componentId}}.{{$question->refId}}"
+                                                type="checkbox" value="1" class="form-checkbox ml-1">
+                                            <span> {{$question->question}} @if($question->required)
+                                                    ({{trans('checkout::page.trip_details.required')}})
+                                                @endif</span>
+                                        </label>
                                         @break
                                     @default
                                         <input

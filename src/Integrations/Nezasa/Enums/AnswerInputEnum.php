@@ -11,6 +11,7 @@ use AzimKordpour\PowerEnum\Traits\PowerEnum;
  * @method bool isText()
  * @method bool isRadio()
  * @method bool isUnknown()
+ * @method bool isCheckbox()
  */
 enum AnswerInputEnum: string
 {
@@ -19,5 +20,6 @@ enum AnswerInputEnum: string
     case Select = 'select';
     case Text = 'text';
     case Radio = 'radio';
+    case Checkbox = 'checkbox';
     case Unknown = 'unknown';
 }
