@@ -44,6 +44,8 @@ class ContactDetails extends BaseCheckoutComponent
     {
         /** @phpstan-ignore-next-line */
         $this->contact = $this->model->data->get('contact');
+
+        $this->defineDefaultValues();
     }
 
     /**
@@ -115,7 +117,7 @@ class ContactDetails extends BaseCheckoutComponent
             'countryCode' => ['string', 'max:10'],
         ];
 
-        foreach ($this->contactRequirements->all() as $name => $item) {
+        foreach ($this->contactRequirements->getVisibleFields() as $name => $item) {
             if ($item->isRequired()) {
                 if ($name === 'mobilePhone') {
                     $rules["$name.phoneNumber"] = array_merge(['required'], $rules["$name.phoneNumber"]);
@@ -131,6 +133,28 @@ class ContactDetails extends BaseCheckoutComponent
             array_map(fn (string $key): string => "contact.$key", array_keys($rules)),
             array_values($rules)
         );
+    }
+
+    /**
+     * Defines default values for the contact data.
+     */
+    public function defineDefaultValues(): void
+    {
+        // if the country code is not set, set the default country code.
+        if ($this->contactRequirements->mobilePhoneDefaultCountryCode
+            && ! data_get($this->contact, 'mobilePhone.countryCode')) {
+            data_set(
+                $this->contact,
+                'mobilePhone.countryCode',
+                $this->contactRequirements->mobilePhoneDefaultCountryCode->callingCode
+            );
+        }
+
+        $defaultCountry = $this->countriesResponse->countries->firstWhere('preferred', true);
+
+        if ($defaultCountry && ! isset($this->contact['country'])) {
+            $this->contact['country'] = "$defaultCountry->iso_code-$defaultCountry->name";
+        }
     }
 
     /**

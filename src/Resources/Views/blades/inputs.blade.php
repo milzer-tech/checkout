@@ -1,10 +1,7 @@
 @php($inputs = 0)
 @php($openTag = false)
-
-@foreach($requirements as $name => $value)
-    @if($value->isHidden())
-        @continue
-    @endif
+@use(Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum)
+@foreach($requirements->getVisibleFields() as $name => $value)
 
     @if($inputs === 0 && !$openTag)
         @php($openTag = true)

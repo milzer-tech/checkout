@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Supporters;
 
 use Nezasa\Checkout\Dtos\View\ShowTraveller;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 
@@ -49,12 +50,26 @@ class TravellerSupporter
     }
 
     /**
+     * Defines default values for the traveller data.
+     *
+     * @param  array<string, mixed>  $pax
+     */
+    protected static function defineDefaultValues(array &$pax, CountriesResponse $countriesResponse): void
+    {
+        $defaultCountry = $countriesResponse->countries->firstWhere('preferred', true);
+
+        if ($defaultCountry && ! isset($pax['country'])) {
+            $pax['country'] = "$defaultCountry->iso_code-$defaultCountry->name";
+        }
+    }
+
+    /**
      * Sets up the traveller data for the checkout.
      *
      * @param  array<int, array<int, array<string, mixed>>>  $paxInfo
      * @return array<int, array<int, array<string, mixed>>>
      */
-    public static function setUpPaxData(PaxAllocationResponseEntity $allocatedPax, array $paxInfo): array
+    public static function setUpPaxData(PaxAllocationResponseEntity $allocatedPax, array $paxInfo, CountriesResponse $countriesResponse): array
     {
         $paxNumber = 0;
         $result = [];
@@ -63,6 +78,8 @@ class TravellerSupporter
             for ($i = 0; $i < $room->adults; $i++) {
 
                 $result[$number][$i] = $paxInfo[$number][$i] ?? [];
+                self::defineDefaultValues($result[$number][$i], $countriesResponse);
+
                 if (! isset($result[$number][$i]['showTraveller'])) {
                     $result[$number][$i]['showTraveller'] = new ShowTraveller(isAdult: true);
                 } else {
@@ -76,6 +93,7 @@ class TravellerSupporter
 
             foreach ($room->childAges as $index => $age) {
                 $result[$number][$index + $i] = $paxInfo[$number][$index + $i] ?? [];
+                self::defineDefaultValues($result[$number][$i], $countriesResponse);
 
                 if (! isset($result[$number][$index + $i]['showTraveller'])) {
                     $result[$number][$index + $i]['showTraveller'] = new ShowTraveller(isAdult: false, age: $age);

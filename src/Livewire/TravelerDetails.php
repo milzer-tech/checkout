@@ -61,7 +61,7 @@ class TravelerDetails extends BaseCheckoutComponent
     {
         /** @phpstan-ignore-next-line */
         $paxInfo = $this->model->data->get('paxInfo');
-        $this->paxInfo = TravellerSupporter::setUpPaxData($this->allocatedPax, $paxInfo);
+        $this->paxInfo = TravellerSupporter::setUpPaxData($this->allocatedPax, $paxInfo, $this->countriesResponse);
         $this->paxInfo = TravellerSupporter::setShowingTravellers($this->paxInfo);
         $this->updateFormStatus();
     }

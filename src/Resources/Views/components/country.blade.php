@@ -7,7 +7,7 @@
     <select  name="{{$wireModel}}" wire:model.change="{{$wireModel}}" {{AutoCompleteSupporter::get('gender')}} class="form-select pr-8 w-full">
         <option value="" >Select</option>
         @foreach($countriesResponse->countries as $country)
-            <option value="{{$country->iso_code}}-{{$country->name}}" @selected($country->name === 'Albania') wire:ignore>{{$country->name}}</option>
+            <option value="{{$country->iso_code}}-{{$country->name}}"  wire:ignore>{{$country->name}}</option>
         @endforeach
     </select>
     @error($wireModel)<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
