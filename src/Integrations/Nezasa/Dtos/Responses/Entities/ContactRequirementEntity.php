@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 
+use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
+use Nezasa\Checkout\Integrations\Nezasa\HasVisibleFieldsContract;
 use Spatie\LaravelData\Attributes\MapInputName;
 
-class ContactRequirementEntity extends BaseDto
+class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContract
 {
     /**
      * Create a new instance of the ContactRequirementEntity
@@ -31,6 +33,18 @@ class ContactRequirementEntity extends BaseDto
         public TravelerRequirementFieldEnum $state,
         public TravelerRequirementFieldEnum $gender,
         public TravelerRequirementFieldEnum $taxNumber,
-        public TravelerRequirementFieldEnum $localIdNumber
+        public TravelerRequirementFieldEnum $localIdNumber,
+        public ?CountryCallingCodeResponseEntity $mobilePhoneDefaultCountryCode = null
     ) {}
+
+    /**
+     * Get the visible fields for the contact information.
+     *
+     * @return Collection<string, TravelerRequirementFieldEnum>
+     */
+    public function getVisibleFields(): Collection
+    {
+        return collect($this->except('mobilePhoneDefaultCountryCode')->all())
+            ->reject(fn (TravelerRequirementFieldEnum $value) => $value->isHidden());
+    }
 }
