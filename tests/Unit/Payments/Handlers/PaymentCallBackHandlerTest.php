@@ -29,7 +29,7 @@ afterEach(function (): void {
 
 class DummyCallbackGateway implements PaymentContract
 {
-    public function __construct(private ?PaymentResult $result = null) {}
+    public function __construct(private readonly ?PaymentResult $result = null) {}
 
     public static function isActive(): bool
     {
@@ -54,7 +54,7 @@ class DummyCallbackGateway implements PaymentContract
     public function verify(Request $request, array|\Nezasa\Checkout\Dtos\BaseDto $persistentData): PaymentResult
     {
         // If a specific result is injected, return it; otherwise derive from request
-        if ($this->result !== null) {
+        if ($this->result instanceof \Nezasa\Checkout\Payments\Dtos\PaymentResult) {
             return $this->result;
         }
 

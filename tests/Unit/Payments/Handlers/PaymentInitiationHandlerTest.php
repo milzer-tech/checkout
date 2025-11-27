@@ -32,8 +32,8 @@ afterEach(function (): void {
 class DummyWidgetGateway implements WidgetPaymentContract
 {
     public function __construct(
-        private PaymentInit $init,
-        private ?PaymentAsset $asset = null,
+        private readonly PaymentInit $init,
+        private readonly ?PaymentAsset $asset = null,
     ) {}
 
     public static function isActive(): bool
@@ -78,7 +78,7 @@ class DummyWidgetGateway implements WidgetPaymentContract
 
 class DummyRedirectGateway implements RedirectPaymentContract
 {
-    public function __construct(private PaymentInit $init, private Uri $uri) {}
+    public function __construct(private readonly PaymentInit $init, private readonly Uri $uri) {}
 
     public static function isActive(): bool
     {
