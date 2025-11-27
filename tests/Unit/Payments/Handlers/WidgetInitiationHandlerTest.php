@@ -14,7 +14,7 @@ use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
+use Nezasa\Checkout\Payments\Handlers\PaymentInitiationHandler;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -27,13 +27,13 @@ it('validates the given gateway in the handler', function (): void {
         origin: 'https://example.com',
     );
 
-    $handler = new WidgetInitiationHandler;
+    $handler = new PaymentInitiationHandler;
 
     $handler->run(new Checkout, $prepareData, stdClass::class);
 })->throws(InvalidArgumentException::class, 'The gateway does not implement PaymentInitiation.');
 
 it('throws when service is not available', function (): void {
-    $handler = new WidgetInitiationHandler;
+    $handler = new PaymentInitiationHandler;
 
     $method = new ReflectionMethod($handler, 'checkIfServiceAvailable');
 
@@ -43,7 +43,7 @@ it('throws when service is not available', function (): void {
 })->throws(RuntimeException::class, 'Payment gateway is not available.');
 
 it('creates base return url params without extra additions', function (): void {
-    $handler = new WidgetInitiationHandler;
+    $handler = new PaymentInitiationHandler;
 
     $payment = new FakeGateway;
 
@@ -71,7 +71,7 @@ it('creates base return url params without extra additions', function (): void {
 });
 
 it('merges extra query params when gateway implements AddQueryParamsToReturnUrl', function (): void {
-    $handler = new WidgetInitiationHandler;
+    $handler = new PaymentInitiationHandler;
 
     $payment = new FakeGatewayWithParams;
 
@@ -111,7 +111,7 @@ it('creates Nezasa transaction and returns the transaction array', function (): 
         ]),
     ]);
 
-    $handler = new WidgetInitiationHandler;
+    $handler = new PaymentInitiationHandler;
 
     $method = new ReflectionMethod($handler, 'createNezasaTransaction');
 
@@ -130,7 +130,7 @@ it('creates Nezasa transaction and returns the transaction array', function (): 
 });
 
 it('persists a transaction with correct payload', function (): void {
-    $handler = new WidgetInitiationHandler;
+    $handler = new PaymentInitiationHandler;
 
     $created = [];
     $model = m::mock(Checkout::class)->makePartial();
@@ -182,7 +182,7 @@ it('runs the handler end-to-end and returns assets with a signed return url', fu
         ]),
     ]);
 
-    $handler = new WidgetInitiationHandler;
+    $handler = new PaymentInitiationHandler;
 
     $prepareData = new PaymentPrepareData(
         contact: new ContactInfoPayloadEntity,

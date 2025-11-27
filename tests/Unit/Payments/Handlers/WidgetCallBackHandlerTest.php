@@ -17,14 +17,14 @@ use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBackWidget;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
-use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
+use Nezasa\Checkout\Payments\Handlers\PaymentCallBackHandler;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\Unit\Payments\Handlers\FakeInitiation;
 
 it('validates the given gateway in the callback handler', function (): void {
-    $handler = new WidgetCallBackHandler;
+    $handler = new PaymentCallBackHandler;
 
     $transaction = new Transaction;
     $transaction->gateway = 'Fake Gateway';
@@ -35,7 +35,7 @@ it('validates the given gateway in the callback handler', function (): void {
 })->throws(InvalidArgumentException::class, 'The payment gateway is not supported.');
 
 it('validates the given gateway implements the correct interface', function (): void {
-    $handler = new WidgetCallBackHandler;
+    $handler = new PaymentCallBackHandler;
 
     $transaction = new Transaction;
     $transaction->gateway = 'oppwa';
@@ -54,7 +54,7 @@ it('validates the given gateway implements the correct interface', function (): 
 })->throws(InvalidArgumentException::class, 'The payment callback is not implemented correctly.');
 
 it('aborts when the signature is invalid', function (): void {
-    $handler = new WidgetCallBackHandler;
+    $handler = new PaymentCallBackHandler;
 
     $transaction = new Transaction;
     $transaction->gateway = 'oppwa';
@@ -95,7 +95,7 @@ it('ignores added query params when validating signature', function (): void {
         SynchronousBookingRequest::class => MockResponse::make(['ok' => true]),
     ]);
 
-    $handler = new WidgetCallBackHandler;
+    $handler = new PaymentCallBackHandler;
 
     $transaction = new Transaction;
     $transaction->gateway = 'Fake Gateway';
@@ -142,7 +142,7 @@ it('returns stored output immediately when result data already exists', function
         ]),
     ]);
 
-    $handler = new WidgetCallBackHandler;
+    $handler = new PaymentCallBackHandler;
 
     $transaction = new Transaction;
     $transaction->gateway = 'Fake Gateway';
@@ -187,7 +187,7 @@ it('updates nezasa transaction, stores result and tries to book itinerary', func
         SynchronousBookingRequest::class => MockResponse::make(['ok' => true], 200),
     ]);
 
-    $handler = new WidgetCallBackHandler;
+    $handler = new PaymentCallBackHandler;
 
     $transaction = m::mock(Transaction::class)->makePartial();
     $transaction->gateway = 'Fake Gateway';
@@ -250,7 +250,7 @@ it('handles exceptions from nezasa update and booking gracefully', function (): 
         SynchronousBookingRequest::class => MockResponse::make([], 500),
     ]);
 
-    $handler = new WidgetCallBackHandler;
+    $handler = new PaymentCallBackHandler;
 
     $transaction = m::mock(Transaction::class)->makePartial();
     $transaction->gateway = 'Fake Gateway';

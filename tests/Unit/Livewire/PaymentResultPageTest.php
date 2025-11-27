@@ -6,7 +6,7 @@ use Nezasa\Checkout\Livewire\PaymentResultPage;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
-use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
+use Nezasa\Checkout\Payments\Handlers\PaymentCallBackHandler;
 
 beforeEach(function (): void {
     fakeInitialNezasaCalls();
@@ -40,7 +40,7 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
         'currency' => 'CHF',
     ]);
 
-    $handler = m::mock(WidgetCallBackHandler::class);
+    $handler = m::mock(PaymentCallBackHandler::class);
     $handler->shouldReceive('run')
         ->once()
         ->withArgs(fn ($transaction, $request): bool => $transaction instanceof Transaction && $request instanceof Request)
@@ -52,7 +52,7 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
             data: ['foo' => 'bar']
         ));
 
-    app()->instance(WidgetCallBackHandler::class, $handler);
+    app()->instance(PaymentCallBackHandler::class, $handler);
 
     $component = new PaymentResultPage;
     $component->checkoutId = 'co-res-1';
@@ -101,12 +101,12 @@ it('render returns the confirmation page view', function (): void {
         'currency' => 'USD',
     ]);
 
-    $handler = m::mock(WidgetCallBackHandler::class);
+    $handler = m::mock(PaymentCallBackHandler::class);
     $handler->shouldReceive('run')->andReturn(new PaymentOutput(
         gatewayName: 'oppwa',
         isNezasaBookingSuccessful: true
     ));
-    app()->instance(WidgetCallBackHandler::class, $handler);
+    app()->instance(PaymentCallBackHandler::class, $handler);
 
     $component = new PaymentResultPage;
     $component->checkoutId = 'co-res-2';
