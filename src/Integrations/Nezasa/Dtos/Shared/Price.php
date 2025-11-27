@@ -27,4 +27,9 @@ class Price extends BaseDto
             default => number_format(num: $this->amount, decimals: 2, decimal_separator: '.', thousands_separator: '')
         };
     }
+
+    public function toCent(): int
+    {
+        return (int) ($this->amount * 100);
+    }
 }

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Actions\Checkout;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Crypt;
 use InvalidArgumentException;
 use Nezasa\Checkout\Dtos\View\PaymentOption;
-use Nezasa\Checkout\Payments\Contracts\WidgetPaymentCallBack;
-use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
+use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 
 class GetPaymentProviderAction
 {
@@ -21,21 +21,20 @@ class GetPaymentProviderAction
     {
         $result = [];
 
-        /** @var class-string<WidgetPaymentInitiation> $initiation */
-        /** @var class-string<WidgetPaymentCallBack> $callback */
-        foreach (Config::array('checkout.payment.widget', []) as $initiation => $callback) {
-            if (! in_array(WidgetPaymentInitiation::class, class_implements($initiation))) {
-                throw new InvalidArgumentException("the payment initiation $initiation is not an instance of WidgetPaymentInitiation");
+        /** @var class-string<PaymentContract> $gateway */
+        foreach (Config::array('checkout.payment', []) as $gateway) {
+
+            if (! in_array(PaymentContract::class, class_implements($gateway))) {
+                throw new InvalidArgumentException(
+                    "the payment initiation $gateway is not an instance of WidgetPaymentInitiation"
+                );
             }
 
-            if (! in_array(WidgetPaymentCallBack::class, class_implements($callback))) {
-                throw new InvalidArgumentException("the payment callback $callback is not an instance of WidgetPaymentCallBack");
-            }
-
-            if ($initiation::isActive()) {
+            if ($gateway::isActive()) {
                 $result[] = new PaymentOption(
-                    name: $initiation::name(),
-                    encryptedGateway: encrypt($initiation::name())
+                    name: $gateway::name(),
+                    encryptedGateway: Crypt::encrypt($gateway::name()),
+                    encryptedClassName: Crypt::encrypt($gateway)
                 );
             }
         }

@@ -11,12 +11,9 @@ Route::get('checkout/details', TripDetailsPage::class)
     ->name('traveler-details');
 
 Route::get('checkout/payment', PaymentPage::class)
-    ->middleware([
-        'web',
-        ValidateSignature::class,
-    ])
+    ->middleware(['web', ValidateSignature::class])
     ->name('payment');
 
-Route::get('checkout/result', PaymentResultPage::class)
+Route::get('checkout/result/{transaction}', PaymentResultPage::class)
     ->middleware('web')
     ->name('payment-result');

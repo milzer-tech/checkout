@@ -3,20 +3,22 @@
 use Illuminate\Http\RedirectResponse;
 use Mockery as m;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
-use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Livewire\PaymentPage;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
-use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
-use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
+use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaWidgetGateway;
+use Nezasa\Checkout\Payments\Handlers\PaymentInitiationHandler;
 
 afterEach(function (): void {
     m::close();
 });
 
 it('mount() initializes itinerary via trip details and sets payment via widget handler', function (): void {
+    // Ensure Oppwa gateway is active for provider discovery
+    config()->set('checkout.integrations.oppwa.active', true);
+
     // Arrange request query parameters
     request()->query->set('payment_method', encrypt('oppwa'));
     request()->merge(['lang' => 'en']);
@@ -46,25 +48,25 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
     fakeInitialNezasaCalls();
 
     // Bind WidgetInitiationHandler to validate input and return a PaymentAsset
-    $widget = m::mock(WidgetInitiationHandler::class);
+    $widget = m::mock(PaymentInitiationHandler::class);
     $widget->shouldReceive('run')
         ->once()
-        ->withArgs(function (Checkout $passedModel, PaymentPrepareData $data, string $gateway): bool {
-            expect($passedModel->checkout_id)->toBe('co-pay-1');
-            expect($gateway)->toBe(OppwaInitiationWidget::class);
+        ->withArgs(function ($passedModel, $price, $gateway): bool {
+            // Validate passed model
+            expect($passedModel)->toBeInstanceOf(Checkout::class)
+                ->and($passedModel->checkout_id)->toBe('co-pay-1');
 
-            // Validate PaymentPrepareData content
-            expect($data->contact->email)->toBe('jane@example.com')
-                ->and($data->checkoutId)->toBe('co-pay-1')
-                ->and($data->itineraryId)->toBe('it-1')
-                ->and($data->origin)->toBe('app')
-                ->and($data->lang)->toBe('en')
-                ->and($data->price->amount)->toBeFloat(); // amount comes from fixtures
+            // Validate gateway instance
+            expect($gateway)->toBeInstanceOf(OppwaWidgetGateway::class);
+
+            // Validate price object (down payment) — amount comes from fixtures
+            expect($price)->toBeInstanceOf(Price::class)
+                ->and($price->amount)->toBeFloat();
 
             return true;
         })
         ->andReturn(new PaymentAsset(true, html: '<div>widget</div>'));
-    app()->instance(WidgetInitiationHandler::class, $widget);
+    app()->instance(PaymentInitiationHandler::class, $widget);
 
     // Instantiate the component and set URL-bound properties
     $component = new PaymentPage;
@@ -74,7 +76,7 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
     $component->lang = 'en';
 
     // Act
-    $component->mount(new GetPaymentProviderAction);
+    $component->mount();
 
     // Assert
     expect($component->itinerary)->not->toBeNull()
@@ -83,6 +85,9 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
 });
 
 it('render() returns the payment page view and goBack() redirects to traveler-details with params', function (): void {
+    // Ensure Oppwa gateway is active for provider discovery
+    config()->set('checkout.integrations.oppwa.active', true);
+
     // Arrange basic state
     request()->query->set('payment_method', encrypt('oppwa'));
     request()->merge(['lang' => 'en']);
@@ -105,9 +110,9 @@ it('render() returns the payment page view and goBack() redirects to traveler-de
 
     fakeInitialNezasaCalls();
 
-    $widget = m::mock(WidgetInitiationHandler::class);
+    $widget = m::mock(PaymentInitiationHandler::class);
     $widget->shouldReceive('run')->andReturn(new PaymentAsset(true));
-    app()->instance(WidgetInitiationHandler::class, $widget);
+    app()->instance(PaymentInitiationHandler::class, $widget);
 
     $component = new PaymentPage;
     $component->checkoutId = 'co-pay-2';
@@ -115,7 +120,7 @@ it('render() returns the payment page view and goBack() redirects to traveler-de
     $component->origin = 'ibe';
     $component->lang = 'de';
 
-    $component->mount(new GetPaymentProviderAction);
+    $component->mount();
 
     // render view
     $view = $component->render();

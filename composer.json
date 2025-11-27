@@ -14,7 +14,8 @@
         "azimkordpour/power-enum": "^1.2",
         "livewire/livewire": "^3.6",
         "saloonphp/saloon": "^3.0",
-        "spatie/laravel-data": "^4.15"
+        "spatie/laravel-data": "^4.15",
+        "stripe/stripe-php": "^19.0"
     },
     "require-dev": {
         "laravel/pint": "^1.18.1",

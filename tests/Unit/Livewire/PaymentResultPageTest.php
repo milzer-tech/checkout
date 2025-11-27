@@ -6,7 +6,7 @@ use Nezasa\Checkout\Livewire\PaymentResultPage;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
-use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
+use Nezasa\Checkout\Payments\Handlers\PaymentCallBackHandler;
 
 beforeEach(function (): void {
     fakeInitialNezasaCalls();
@@ -40,7 +40,7 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
         'currency' => 'CHF',
     ]);
 
-    $handler = m::mock(WidgetCallBackHandler::class);
+    $handler = m::mock(PaymentCallBackHandler::class);
     $handler->shouldReceive('run')
         ->once()
         ->withArgs(fn ($transaction, $request): bool => $transaction instanceof Transaction && $request instanceof Request)
@@ -52,13 +52,15 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
             data: ['foo' => 'bar']
         ));
 
-    app()->instance(WidgetCallBackHandler::class, $handler);
+    app()->instance(PaymentCallBackHandler::class, $handler);
 
     $component = new PaymentResultPage;
     $component->checkoutId = 'co-res-1';
     $component->itineraryId = 'it-res-1';
     $component->origin = 'app';
     $component->lang = 'en';
+    // The component expects transaction to be set before mount()
+    $component->transaction = $tx;
 
     $request = Request::create('/payment/result', 'GET', ['x' => 'y']);
 
@@ -94,25 +96,27 @@ it('render returns the confirmation page view', function (): void {
         ],
     ]);
 
-    Transaction::create([
+    $tx = Transaction::create([
         'checkout_id' => $checkout->id,
         'gateway' => 'oppwa',
         'amount' => '10.00',
         'currency' => 'USD',
     ]);
 
-    $handler = m::mock(WidgetCallBackHandler::class);
+    $handler = m::mock(PaymentCallBackHandler::class);
     $handler->shouldReceive('run')->andReturn(new PaymentOutput(
         gatewayName: 'oppwa',
         isNezasaBookingSuccessful: true
     ));
-    app()->instance(WidgetCallBackHandler::class, $handler);
+    app()->instance(PaymentCallBackHandler::class, $handler);
 
     $component = new PaymentResultPage;
     $component->checkoutId = 'co-res-2';
     $component->itineraryId = 'it-res-2';
     $component->origin = 'app';
     $component->lang = 'en';
+    // The component expects transaction to be set before mount()
+    $component->transaction = $tx;
 
     $component->mount(Request::create('/payment/result', 'GET'));
 

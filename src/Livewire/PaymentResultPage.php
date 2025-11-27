@@ -9,12 +9,14 @@ use Illuminate\Http\Request;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
-use Nezasa\Checkout\Models\Checkout;
+use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
-use Nezasa\Checkout\Payments\Handlers\WidgetCallBackHandler;
+use Nezasa\Checkout\Payments\Handlers\PaymentCallBackHandler;
 
 class PaymentResultPage extends BaseCheckoutComponent
 {
+    public Transaction $transaction;
+
     /**
      * Holds the names of the travelers.
      *
@@ -34,11 +36,9 @@ class PaymentResultPage extends BaseCheckoutComponent
 
     public function mount(Request $request): void
     {
-        $this->model = Checkout::with('lastestTransaction')
-            ->whereCheckoutId($this->checkoutId)
-            ->firstOrFail();
+        $this->model = $this->transaction->checkout;
 
-        $this->output = resolve(WidgetCallBackHandler::class)->run($this->model->lastestTransaction, $request);
+        $this->output = resolve(PaymentCallBackHandler::class)->run($this->transaction, $request);
 
         $this->initializeRequirements();
 

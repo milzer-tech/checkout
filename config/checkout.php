@@ -1,9 +1,8 @@
 <?php
 
-use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceCallBackWidget;
-use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceInitiationWidget;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaCallBackWidget;
-use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
+use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceGateway;
+use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaWidgetGateway;
+use Nezasa\Checkout\Payments\Gateways\Stripe\StripeGateway;
 
 return [
 
@@ -33,13 +32,17 @@ return [
             'active' => (bool) env('CHECKOUT_WIDGET_INVOICE_ACTIVE', false),
             'name' => env('CHECKOUT_WIDGET_INVOICE_NAME', 'Invoice'),
         ],
+        'stripe' => [
+            'active' => (bool) env('CHECKOUT_STRIPE_ACTIVE', false),
+            'name' => env('CHECKOUT_STRIPE_NAME', 'Stripe'),
+            'secret_key' => env('CHECKOUT_STRIPE_SECRET_KEY', 'test'),
+        ],
     ],
 
     'payment' => [
-        'widget' => [
-            OppwaInitiationWidget::class => OppwaCallBackWidget::class,
-            InvoiceInitiationWidget::class => InvoiceCallBackWidget::class,
-        ],
+        OppwaWidgetGateway::class,
+        InvoiceGateway::class,
+        StripeGateway::class,
     ],
 
     'fake_calls' => env('CHECKOUT_FAKE_NEZASA_CALLS', false),

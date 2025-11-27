@@ -5,22 +5,21 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Handlers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\UpdatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\BookingStateEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
-use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidation;
-use Nezasa\Checkout\Payments\Contracts\WidgetPaymentCallBack;
+use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 use Throwable;
 
-class WidgetCallBackHandler
+class PaymentCallBackHandler
 {
     /**
      * Handle the payment callback process.
@@ -29,16 +28,12 @@ class WidgetCallBackHandler
     {
         $gateway = $this->getCallBackClass($transaction->gateway);
 
-        /** @var WidgetPaymentCallBack $callback */
-        $callback = new $gateway;
-
+        // Means the payment was already completed.
         if ($transaction->result_data) {
-            return $this->getOutput($transaction, $callback);
+            return $this->getOutput($transaction, $gateway);
         }
 
-        $this->validateReturnUrl($callback, $request);
-
-        $result = $callback->check(request(), (array) $transaction->prepare_data);
+        $result = $gateway->verify(request(), (array) $transaction->prepare_data);
 
         $nezasaTransaction = $this->updateNezasaTransaction($result->status, $transaction);
 
@@ -46,42 +41,20 @@ class WidgetCallBackHandler
 
         $this->bookItinerary($transaction->checkout);
 
-        return $this->getOutput($transaction, $callback);
+        return $this->getOutput($transaction, $gateway);
     }
 
     /**
      * Validate if the payment gateway is supported and implemented correctly.
      */
-    private function getCallBackClass(string $gateway): string
-    {
-        $gateway = Config::collection('checkout.payment.widget')
-            /** @phpstan-ignore-next-line */
-            ->filter(fn ($callback, $initiation): bool => $initiation::name() === $gateway)
-            ->first();
+    private function getCallBackClass(string $gateway): PaymentContract
+    {   /** @var class-string<PaymentContract> */
+        $result = collect(resolve(GetPaymentProviderAction::class)->run())
+            ->where('name', $gateway)
+            ->firstOrFail()
+            ->decryptClassName();
 
-        if (! $gateway) {
-            throw new \InvalidArgumentException('The payment gateway is not supported.');
-        }
-
-        if (! in_array(WidgetPaymentCallBack::class, (array) class_implements($gateway))) {
-            throw new \InvalidArgumentException('The payment callback is not implemented correctly.');
-        }
-
-        return $gateway;
-    }
-
-    /**
-     * Validate the return URL signature.
-     */
-    private function validateReturnUrl(mixed $callback, Request $request): void
-    {
-        $ignoreQuery = $callback instanceof ReturnUrlHasInvalidQueryParamsForValidation
-            ? $callback->addedParamsToReturnedUrl($request)
-            : [];
-
-        if (! $request->hasValidSignatureWhileIgnoring($ignoreQuery)) {
-            abort(403, 'Invalid signature');
-        }
+        return new $result;
     }
 
     /**
@@ -126,7 +99,7 @@ class WidgetCallBackHandler
     /**
      * Return the stored output if the transaction already has result data.
      */
-    private function getOutput(Transaction $transaction, WidgetPaymentCallBack $callback): PaymentOutput
+    private function getOutput(Transaction $transaction, PaymentContract $callback): PaymentOutput
     {
         $response = NezasaConnector::make()->checkout()->retrieve($transaction->checkout->checkout_id);
 
@@ -148,7 +121,7 @@ class WidgetCallBackHandler
             data: $result->persistentData
         );
 
-        return $callback->show($result, $output);
+        return $callback->output($result, $output);
     }
 
     /**
