@@ -47,7 +47,7 @@ class StripeGateway implements RedirectPaymentContract
     public function prepare(PaymentPrepareData $data): PaymentInit
     {
         try {
-            Stripe::setApiKey(Config::string('checkout.integrations.stripe.stripeSecretKey'));
+            Stripe::setApiKey(Config::string('checkout.integrations.stripe.secret_key'));
 
             $session = Session::create([
                 'payment_method_types' => ['card'],
@@ -116,7 +116,7 @@ class StripeGateway implements RedirectPaymentContract
     public function verify(Request $request, BaseDto|array $persistentData): PaymentResult
     {
         try {
-            Stripe::setApiKey(Config::string('checkout.integrations.stripe.stripeSecretKey'));
+            Stripe::setApiKey(Config::string('checkout.integrations.stripe.secret_key'));
 
             $session = Session::retrieve($request->input('session_id'));
 
