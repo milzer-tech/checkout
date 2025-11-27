@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Payments\Gateways\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
+use Illuminate\Support\Uri;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
@@ -38,6 +39,11 @@ class InvoiceGateway implements RedirectPaymentContract
                 'id' => Str::ulid()->toString(),
             ]
         );
+    }
+
+    public function getRedirectUrl(PaymentInit $init): Uri
+    {
+        return $init->returnUrl;
     }
 
     public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
