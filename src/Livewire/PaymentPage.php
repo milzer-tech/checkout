@@ -11,7 +11,7 @@ use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
-use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
+use Nezasa\Checkout\Payments\Handlers\PaymentInitiationHandler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class PaymentPage extends BaseCheckoutComponent
@@ -79,7 +79,7 @@ class PaymentPage extends BaseCheckoutComponent
             ->firstOrFail()
             ->decryptClassName();
 
-        $result = resolve(WidgetInitiationHandler::class)->run(
+        $result = resolve(PaymentInitiationHandler::class)->run(
             model: $this->model,
             price: $this->itinerary->price->downPayment,
             gateway: new $className
