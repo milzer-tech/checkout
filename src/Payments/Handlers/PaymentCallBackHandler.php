@@ -14,7 +14,6 @@ use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
-use Nezasa\Checkout\Payments\Contracts\ReturnUrlHasInvalidQueryParamsForValidation;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
@@ -56,20 +55,6 @@ class PaymentCallBackHandler
             ->decryptClassName();
 
         return new $result;
-    }
-
-    /**
-     * Validate the return URL signature.
-     */
-    private function validateReturnUrl(mixed $callback, Request $request): void
-    {
-        $ignoreQuery = $callback instanceof ReturnUrlHasInvalidQueryParamsForValidation
-            ? $callback->addedParamsToReturnedUrl($request)
-            : [];
-
-        if (! $request->hasValidSignatureWhileIgnoring($ignoreQuery)) {
-            abort(403, 'Invalid signature');
-        }
     }
 
     /**
