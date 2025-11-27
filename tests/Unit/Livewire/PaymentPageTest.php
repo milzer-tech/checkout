@@ -10,7 +10,7 @@ use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaInitiationWidget;
-use Nezasa\Checkout\Payments\Handlers\WidgetInitiationHandler;
+use Nezasa\Checkout\Payments\Handlers\PaymentInitiationHandler;
 
 afterEach(function (): void {
     m::close();
@@ -46,7 +46,7 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
     fakeInitialNezasaCalls();
 
     // Bind WidgetInitiationHandler to validate input and return a PaymentAsset
-    $widget = m::mock(WidgetInitiationHandler::class);
+    $widget = m::mock(PaymentInitiationHandler::class);
     $widget->shouldReceive('run')
         ->once()
         ->withArgs(function (Checkout $passedModel, PaymentPrepareData $data, string $gateway): bool {
@@ -64,7 +64,7 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
             return true;
         })
         ->andReturn(new PaymentAsset(true, html: '<div>widget</div>'));
-    app()->instance(WidgetInitiationHandler::class, $widget);
+    app()->instance(PaymentInitiationHandler::class, $widget);
 
     // Instantiate the component and set URL-bound properties
     $component = new PaymentPage;
@@ -105,9 +105,9 @@ it('render() returns the payment page view and goBack() redirects to traveler-de
 
     fakeInitialNezasaCalls();
 
-    $widget = m::mock(WidgetInitiationHandler::class);
+    $widget = m::mock(PaymentInitiationHandler::class);
     $widget->shouldReceive('run')->andReturn(new PaymentAsset(true));
-    app()->instance(WidgetInitiationHandler::class, $widget);
+    app()->instance(PaymentInitiationHandler::class, $widget);
 
     $component = new PaymentPage;
     $component->checkoutId = 'co-pay-2';
