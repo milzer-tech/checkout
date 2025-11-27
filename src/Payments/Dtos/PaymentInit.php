@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Payments\Dtos;
 
+use Illuminate\Support\Uri;
 use Nezasa\Checkout\Dtos\BaseDto;
 
 class PaymentInit extends BaseDto
@@ -15,6 +16,7 @@ class PaymentInit extends BaseDto
      */
     public function __construct(
         public bool $isAvailable,
+        public Uri $returnUrl,
         // This property's content is stored in the database.
         public array|BaseDto $persistentData = [],
     ) {}
