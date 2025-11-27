@@ -59,6 +59,8 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
     $component->itineraryId = 'it-res-1';
     $component->origin = 'app';
     $component->lang = 'en';
+    // The component expects transaction to be set before mount()
+    $component->transaction = $tx;
 
     $request = Request::create('/payment/result', 'GET', ['x' => 'y']);
 
@@ -94,7 +96,7 @@ it('render returns the confirmation page view', function (): void {
         ],
     ]);
 
-    Transaction::create([
+    $tx = Transaction::create([
         'checkout_id' => $checkout->id,
         'gateway' => 'oppwa',
         'amount' => '10.00',
@@ -113,6 +115,8 @@ it('render returns the confirmation page view', function (): void {
     $component->itineraryId = 'it-res-2';
     $component->origin = 'app';
     $component->lang = 'en';
+    // The component expects transaction to be set before mount()
+    $component->transaction = $tx;
 
     $component->mount(Request::create('/payment/result', 'GET'));
 
