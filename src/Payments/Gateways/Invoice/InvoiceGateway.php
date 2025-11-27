@@ -20,16 +20,28 @@ use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
 class InvoiceGateway implements RedirectPaymentContract
 {
+    /**
+     * Returns whether the payment gateway is active.
+     */
     public static function isActive(): bool
     {
         return Config::boolean('checkout.integrations.invoice.active');
     }
 
+    /**
+     * Returns the name of the payment gateway.
+     *
+     * Important: This name will be used to identify the payment gateway in the checkout process
+     * and it has to be unique, please check the previous gateways' names,
+     */
     public static function name(): string
     {
         return Config::string('checkout.integrations.invoice.name');
     }
 
+    /**
+     * Prepares the payment initiation process.
+     */
     public function prepare(PaymentPrepareData $data): PaymentInit
     {
         return new PaymentInit(
@@ -41,11 +53,17 @@ class InvoiceGateway implements RedirectPaymentContract
         );
     }
 
+    /**
+     * The url to the payment gateway.
+     */
     public function getRedirectUrl(PaymentInit $init): Uri
     {
         return $init->returnUrl;
     }
 
+    /**
+     * Returns the payload required for creating a transaction in Nezasa.
+     */
     public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
     {
         return new NezasaPayload(
@@ -56,6 +74,11 @@ class InvoiceGateway implements RedirectPaymentContract
         );
     }
 
+    /**
+     * Handles the callback from the payment gateway.
+     *
+     * @param  array<string, mixed>|BaseDto  $persistentData
+     */
     public function verify(Request $request, BaseDto|array $persistentData): PaymentResult
     {
         $id = is_array($persistentData) ? $persistentData['id'] : false;
@@ -68,6 +91,9 @@ class InvoiceGateway implements RedirectPaymentContract
         );
     }
 
+    /**
+     * Shows the result of the payment process to the user.
+     */
     public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput
     {
         return $output;
