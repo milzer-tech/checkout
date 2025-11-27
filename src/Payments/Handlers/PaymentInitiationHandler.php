@@ -68,6 +68,8 @@ class PaymentInitiationHandler
 
     /**
      * Update the transaction record for the payment.
+     *
+     * @param  array<string, mixed>  $nezasaTransaction
      */
     private function updateTransaction(Transaction $transaction, PaymentInit $init, array $nezasaTransaction): void
     {

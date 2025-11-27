@@ -92,7 +92,7 @@ class StripeGateway implements RedirectPaymentContract
      * The url to the payment gateway.
      */
     public function getRedirectUrl(PaymentInit $init): Uri
-    {
+    {   /** @phpstan-ignore-next-line */
         return Uri::of($init->persistentData['session']['url']);
     }
 

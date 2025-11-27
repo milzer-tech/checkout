@@ -48,7 +48,7 @@ class PaymentCallBackHandler
      * Validate if the payment gateway is supported and implemented correctly.
      */
     private function getCallBackClass(string $gateway): PaymentContract
-    {
+    {   /** @var class-string<PaymentContract> */
         $result = collect(resolve(GetPaymentProviderAction::class)->run())
             ->where('name', $gateway)
             ->firstOrFail()
