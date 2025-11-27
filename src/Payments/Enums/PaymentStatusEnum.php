@@ -9,7 +9,7 @@ use AzimKordpour\PowerEnum\Traits\PowerEnum;
 /**
  * Enum representing different payment statuses.
  *
- * @method bool isNotInitiated()
+ * @method bool isStarted()
  * @method bool isPending()
  * @method bool isSucceeded()
  * @method bool isFailed()
@@ -19,7 +19,7 @@ enum PaymentStatusEnum: int
 {
     use PowerEnum;
 
-    case NotInitiated = 1;
+    case Started = 1;
     case Pending = 2;
     case Succeeded = 3;
     case Failed = 4;
