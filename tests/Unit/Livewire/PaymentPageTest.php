@@ -3,7 +3,6 @@
 use Illuminate\Http\RedirectResponse;
 use Mockery as m;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
-use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Livewire\PaymentPage;
 use Nezasa\Checkout\Models\Checkout;
@@ -74,7 +73,7 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
     $component->lang = 'en';
 
     // Act
-    $component->mount(new GetPaymentProviderAction);
+    $component->mount();
 
     // Assert
     expect($component->itinerary)->not->toBeNull()
@@ -115,7 +114,7 @@ it('render() returns the payment page view and goBack() redirects to traveler-de
     $component->origin = 'ibe';
     $component->lang = 'de';
 
-    $component->mount(new GetPaymentProviderAction);
+    $component->mount();
 
     // render view
     $view = $component->render();

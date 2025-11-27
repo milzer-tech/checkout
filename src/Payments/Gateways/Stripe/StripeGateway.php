@@ -126,7 +126,7 @@ class StripeGateway implements RedirectPaymentContract
                     persistentData: ['session' => $session->toArray()]
                 );
             }
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             // nothing to do
         }
 

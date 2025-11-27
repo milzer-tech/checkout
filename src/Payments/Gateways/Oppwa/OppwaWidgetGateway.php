@@ -55,7 +55,7 @@ class OppwaWidgetGateway implements WidgetPaymentContract
             if ($response->ok()) {
                 return new PaymentInit(isAvailable: true, returnUrl: $data->returnUrl, persistentData: $response->dto());
             }
-        } catch (\Throwable $exception) {
+        } catch (Throwable) {
             // nothing to do
         }
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Handlers;
 
 use Exception;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Uri;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
@@ -13,11 +12,9 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloa
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
-use Nezasa\Checkout\Payments\Contracts\AddQueryParamsToReturnUrl;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
 use Nezasa\Checkout\Payments\Contracts\WidgetPaymentContract;
-use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
@@ -80,24 +77,6 @@ class PaymentInitiationHandler
             'nezasa_transaction' => $nezasaTransaction,
             'nezasa_transaction_ref_id' => $nezasaTransaction['transactionRefId'] ?? null,
         ]);
-    }
-
-    /**
-     * Create the return URL parameters for the payment
-     *
-     * @return array<string, string> $params
-     */
-    private function getReturnUrlParams(PaymentPrepareData $data, WidgetPaymentInitiation $payment, PaymentInit $init): array
-    {
-        return array_merge(
-            [
-                'checkoutId' => $data->checkoutId,
-                'itineraryId' => $data->itineraryId,
-                'origin' => $data->origin,
-                'lang' => $data->lang,
-            ],
-            $payment instanceof AddQueryParamsToReturnUrl ? $payment->addQueryParamsToReturnUrl($init) : []
-        );
     }
 
     /**
