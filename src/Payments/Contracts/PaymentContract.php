@@ -21,6 +21,9 @@ interface PaymentContract
 
     /**
      * Returns the name of the payment gateway.
+     *
+     * Important: This name will be used to identify the payment gateway in the checkout process
+     * and it has to be unique, please check the previous gateways' names,
      */
     public static function name(): string;
 

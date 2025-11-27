@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Payments\Handlers;
 
+use Exception;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Uri;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
@@ -17,6 +18,7 @@ use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
 use Nezasa\Checkout\Payments\Contracts\WidgetPaymentContract;
 use Nezasa\Checkout\Payments\Contracts\WidgetPaymentInitiation;
+use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
@@ -26,7 +28,7 @@ class PaymentInitiationHandler
     /**
      * Run the widget handler to prepare payment assets.
      */
-    public function run(Checkout $model, Price $price, PaymentContract $gateway)
+    public function run(Checkout $model, Price $price, PaymentContract $gateway): Uri|PaymentAsset
     {
         $transaction = $this->createTransaction($model, $price, $gateway);
 
@@ -48,8 +50,10 @@ class PaymentInitiationHandler
         }
 
         if ($gateway instanceof RedirectPaymentContract) {
-            return $init->returnUrl;
+            return $gateway->getRedirectUrl($init);
         }
+
+        throw new Exception('Payment gateway is not supported.');
     }
 
     /**
