@@ -20,5 +20,6 @@ class PaymentOutput extends BaseDto
         public readonly ?string $bookingReference = null,
         public readonly ?CarbonImmutable $orderDate = null,
         public array $data = [],
+        public bool $isPaymentSuccessful = false
     ) {}
 }

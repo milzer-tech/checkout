@@ -39,7 +39,9 @@ class PaymentCallBackHandler
 
         $this->storeResult($result, $transaction, $nezasaTransaction);
 
-        $this->bookItinerary($transaction->checkout);
+        if ($result->status->isSucceeded()) {
+            $this->bookItinerary($transaction->checkout);
+        }
 
         return $this->getOutput($transaction, $gateway);
     }
@@ -118,7 +120,8 @@ class PaymentCallBackHandler
             isNezasaBookingSuccessful: $state->isSuccessfulState(),
             bookingReference: $transaction->checkout->itinerary_id,
             orderDate: $transaction->updated_at?->toImmutable(),
-            data: $result->persistentData
+            data: $result->persistentData,
+            isPaymentSuccessful: $result->status->isSucceeded(),
         );
 
         return $callback->output($result, $output);
