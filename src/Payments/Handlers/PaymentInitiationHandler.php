@@ -110,6 +110,7 @@ class PaymentInitiationHandler
     public function makePaymentPrepareData(Transaction $transaction): PaymentPrepareData
     {
         return new PaymentPrepareData(
+            transaction: $transaction,
             returnUrl: Uri::route('payment-result', [
                 'transaction' => $transaction,
                 'checkoutId' => $transaction->checkout->checkout_id,
