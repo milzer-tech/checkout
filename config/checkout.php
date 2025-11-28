@@ -1,5 +1,6 @@
 <?php
 
+use Nezasa\Checkout\Payments\Gateways\Computop\ComputopGateway;
 use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceGateway;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaWidgetGateway;
 use Nezasa\Checkout\Payments\Gateways\Stripe\StripeGateway;
@@ -37,12 +38,20 @@ return [
             'name' => env('CHECKOUT_STRIPE_NAME', 'Stripe'),
             'secret_key' => env('CHECKOUT_STRIPE_SECRET_KEY', 'test'),
         ],
+        'computop' => [
+            'active' => (bool) env('CHECKOUT_COMPUTOP_ACTIVE', true),
+            'name' => env('CHECKOUT_COMPUTOP_NAME', 'Computop'),
+            'base_url' => env('CHECKOUT_COMPUTOP_BASE_URL', 'https://www.computop-paygate.com/api/v1'),
+            'username' => env('CHECKOUT_COMPUTOP_USERNAME', 'must_be_set_in_env'),
+            'password' => env('CHECKOUT_COMPUTOP_PASSWORD', 'must_be_set_in_env'),
+        ],
     ],
 
     'payment' => [
         OppwaWidgetGateway::class,
         InvoiceGateway::class,
         StripeGateway::class,
+        ComputopGateway::class,
     ],
 
     'fake_calls' => env('CHECKOUT_FAKE_NEZASA_CALLS', false),
