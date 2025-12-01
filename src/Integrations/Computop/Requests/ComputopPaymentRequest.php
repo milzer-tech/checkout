@@ -47,7 +47,7 @@ final class ComputopPaymentRequest extends Request implements HasBody
     /**
      * Determine if the request has failed based on the response.
      */
-    public function hasRequestFailed(Response $response): ?bool
+    public function hasRequestFailed(Response $response): bool
     {
         return $response->status() !== 201;
     }

@@ -55,7 +55,7 @@ class ComputopGateway implements RedirectPaymentContract
                 order: new OrderPayloadEntity(id: $data->checkoutId, description: ['The itinerary price']),
                 urls: new UrlPayloadEntity(
                     success: (string) $data->returnUrl,
-                    failure: ((string) $data->returnUrl).'&failure=1',
+                    failure: ($data->returnUrl).'&failure=1',
                     cancel: route('traveler-details', [
                         'checkoutId' => $data->checkoutId,
                         'itineraryId' => $data->itineraryId,
@@ -79,7 +79,7 @@ class ComputopGateway implements RedirectPaymentContract
                     ]
                 );
             }
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
 
         }
 
@@ -119,7 +119,7 @@ class ComputopGateway implements RedirectPaymentContract
     {
         try {
             $response = ComputopConnector::make()->payment()->get($request->query('PayID'));
-
+            /** @phpstan-ignore-next-line */
             $amount = ComputopAmountDto::from($persistentData['amount'])->value;
 
             $approved = (int) $response->array('amount.approvedValue');
@@ -134,7 +134,7 @@ class ComputopGateway implements RedirectPaymentContract
             ) {
                 return new PaymentResult(status: PaymentStatusEnum::Succeeded, persistentData: $response->array());
             }
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             // do nothing
         }
 

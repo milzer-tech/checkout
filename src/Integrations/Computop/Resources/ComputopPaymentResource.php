@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Computop\Resources;
 
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopPaymentPayload;
 use Nezasa\Checkout\Integrations\Computop\Requests\ComputopPaymentRequest;
 use Nezasa\Checkout\Integrations\Computop\Requests\GetComputopPaymentRequest;
 use Saloon\Http\BaseResource;
@@ -16,7 +17,7 @@ class ComputopPaymentResource extends BaseResource
      *
      * @throws \Throwable
      */
-    public function init($payload): Response
+    public function init(ComputopPaymentPayload $payload): Response
     {
         return $this->connector->send(
             new ComputopPaymentRequest($payload)
