@@ -56,6 +56,13 @@ return [
         'paid_before_departure' => 'Paid before departure',
         'paid_in_destination' => 'Paid in destination',
         'required' => 'Required',
+        'change_hotel' => 'Change hotel',
+        'change_activity' => 'Change activity',
+        'change_flight' => 'Change flight',
+        'change_transfer' => 'Change transfer',
+        'change_rental_car' => 'Change rental car',
+        'change_upsell_item' => 'Change item',
+        'change',
     ],
     'payment' => [
         'payment' => 'Payment',
