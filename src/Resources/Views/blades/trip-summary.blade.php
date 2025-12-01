@@ -394,9 +394,9 @@
                     </p>
 
                     @foreach($itinerary->price->externallyPaidCharges->externallyPaidCharges as $charge)
-                        <div class="flex justify-between pl-4">
+                        <div class="flex justify-between pl-2">
                         <span class="text-gray-800 dark:text-gray-200">
-                            {{ $charge->name }}
+                            {{str($charge->productName)->append(': ')->append($charge->name)->limit(60)}}
                         </span>
                             <span class="text-gray-800 dark:text-gray-200">
                             {{ Number::currency($charge->value->amount, $charge->value->currency) }}
