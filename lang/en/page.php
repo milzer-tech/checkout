@@ -71,6 +71,7 @@ return [
         'order_date' => 'Order date',
         'booking_status' => 'Booking status',
         'print_booking_confirmation' => 'Print booking confirmation',
+        'print_booking_proposal' => 'Print booking proposal',
         'traveller_information' => 'Traveller information',
     ],
     'footer' => [
