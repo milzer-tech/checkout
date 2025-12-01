@@ -39,7 +39,7 @@ return [
             'secret_key' => env('CHECKOUT_STRIPE_SECRET_KEY', 'test'),
         ],
         'computop' => [
-            'active' => (bool) env('CHECKOUT_COMPUTOP_ACTIVE', true),
+            'active' => (bool) env('CHECKOUT_COMPUTOP_ACTIVE', false),
             'name' => env('CHECKOUT_COMPUTOP_NAME', 'Computop'),
             'base_url' => env('CHECKOUT_COMPUTOP_BASE_URL', 'https://www.computop-paygate.com/api/v1'),
             'username' => env('CHECKOUT_COMPUTOP_USERNAME', 'must_be_set_in_env'),
