@@ -3,20 +3,22 @@
         <!-- Page header - removed the image from here -->
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold flex items-center gap-2">
-                {{trans('checkout::page.booking_confirmation.booking_confirmation')}} <span class="text-2xl">@if($output->isNezasaBookingSuccessful)🎉@endif</span>
+                {{trans('checkout::page.booking_confirmation.booking_confirmation')}} <span class="text-2xl">@if($output->isNezasaBookingSuccessful)
+                        🎉
+                    @endif</span>
             </h1>
 
             @if($output->isNezasaBookingSuccessful)
-            <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full flex items-center gap-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                {{trans('checkout::page.booking_confirmation.confirmed')}}
-            </div>
+                <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {{trans('checkout::page.booking_confirmation.confirmed')}}
+                </div>
             @else
-            <span
-                class="inline-flex items-center px-3 py-1 bg-[#FEE2E2] dark:bg-red-900/30 text-black text-sm rounded-full">
+                <span
+                    class="inline-flex items-center px-3 py-1 bg-[#FEE2E2] dark:bg-red-900/30 text-black text-sm rounded-full">
     <svg class="w-4 h-4 mr-2 text-red-500 dark:text-red-400" viewBox="0 0 24 24" fill="none"
          xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,9 +107,9 @@
                     <!-- Title -->
                     <h2 class="text-2xl font-semibold tracking-tight flex items-center gap-2 mb-4">
                         @if($output->isNezasaBookingSuccessful)
-                        {{trans('checkout::page.booking_confirmation.your_trip_has_been_booked')}} <span>🎉</span>
+                            {{trans('checkout::page.booking_confirmation.your_trip_has_been_booked')}} <span>🎉</span>
                         @else
-                        {{trans('checkout::page.booking_confirmation.your_trip_could_not_be_booked')}}
+                            {{trans('checkout::page.booking_confirmation.your_trip_could_not_be_booked')}}
                         @endif
                     </h2>
 
@@ -125,10 +127,12 @@
                                 <path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                       stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.booking_reference')}}</b></span>
+                            <span
+                                class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.booking_reference')}}</b></span>
                         </div>
                         <span class="text-gray-900">{{$output?->bookingReference}}</span>
                     </div>
+
 
                     <!-- Order date -->
                     <div class="py-4 flex items-center justify-between">
@@ -141,10 +145,37 @@
                                 <path d="M16 3v4M8 3v4M3 11h18" stroke="currentColor" stroke-width="2"
                                       stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.order_date')}}</b></span>
+                            <span
+                                class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.order_date')}}</b></span>
                         </div>
                         <span class="text-gray-900">{{$output->orderDate?->format('D, j M Y')}}</span>
                     </div>
+
+                    @if(! $output->isPaymentSuccessful)
+                        <div class="py-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2"
+                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2"
+                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                <span class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.payment_result')}}</b></span>
+                            </div>
+
+                            <!--[if BLOCK]><![endif]--> <span
+                                class="inline-flex items-center px-3 py-1 bg-[#FEE2E2] dark:bg-red-900/30 text-black text-sm rounded-full">
+    <svg class="w-4 h-4 mr-2 text-red-500 dark:text-red-400" viewBox="0 0 24 24" fill="none"
+         xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"
+              stroke="currentColor"></path>
+    </svg>
+    Failed
+</span>
+                            <!--[if ENDBLOCK]><![endif]-->
+                        </div>
+
+                    @endif
 
                     <!-- Booking status -->
                     <div class="py-4 flex items-center justify-between">
@@ -155,7 +186,8 @@
                                 <path d="M22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2"
                                       stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.booking_status')}}</b></span>
+                            <span
+                                class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.booking_status')}}</b></span>
                         </div>
 
                         @if($output->isNezasaBookingSuccessful)
@@ -188,7 +220,6 @@
                         type="button"
                         class="py-4 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline w-full text-left"
                     >
-
 
 
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,7 +255,8 @@
                             <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2"
                                   stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span class="font-medium text-gray-700 dark:text-gray-200"><b>{{trans('checkout::page.trip_details.travel_date')}}</b></span>
+                        <span
+                            class="font-medium text-gray-700 dark:text-gray-200"><b>{{trans('checkout::page.trip_details.travel_date')}}</b></span>
                     </div>
                     <div class="pl-7 space-y-1">
                         <p class="text-gray-700 dark:text-gray-200">{{$itinerary->startDate->format('D, j M Y')}}
@@ -243,7 +275,8 @@
                             <path d="M2 21a6 6 0 0 1 12 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                   stroke-linejoin="round"/>
                         </svg>
-                        <span class="font-medium text-gray-700 dark:text-gray-200"><b>{{trans('checkout::page.trip_details.travellers')}}</b></span>
+                        <span
+                            class="font-medium text-gray-700 dark:text-gray-200"><b>{{trans('checkout::page.trip_details.travellers')}}</b></span>
                     </div>
                     <div class="pl-7">
                         @foreach($travelers as $traveler)
@@ -435,7 +468,7 @@
                     </div>
 
                     <button
-                            class="invisible w-full flex items-center gap-2 pt-4 text-blue-500 hover:bg-blue-50 hover:text-blue-600">
+                        class="invisible w-full flex items-center gap-2 pt-4 text-blue-500 hover:bg-blue-50 hover:text-blue-600">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>

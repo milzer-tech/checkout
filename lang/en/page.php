@@ -73,6 +73,7 @@ return [
         'print_booking_confirmation' => 'Print booking confirmation',
         'print_booking_proposal' => 'Print booking proposal',
         'traveller_information' => 'Traveller information',
+        'payment_result' => 'Payment result',
     ],
     'footer' => [
         'copyright' => 'Copyright 2025 :name. All rights reserved',

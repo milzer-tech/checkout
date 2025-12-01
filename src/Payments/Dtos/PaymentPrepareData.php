@@ -8,6 +8,7 @@ use Illuminate\Support\Uri;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
+use Nezasa\Checkout\Models\Transaction;
 
 class PaymentPrepareData extends BaseDto
 {
@@ -15,6 +16,7 @@ class PaymentPrepareData extends BaseDto
      * Create a new instance of PaymentPrepareData.
      */
     public function __construct(
+        public Transaction $transaction,
         public Uri $returnUrl,
         public ContactInfoPayloadEntity $contact,
         public Price $price,
