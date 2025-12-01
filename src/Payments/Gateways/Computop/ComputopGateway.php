@@ -72,7 +72,11 @@ class ComputopGateway implements RedirectPaymentContract
                 return new PaymentInit(
                     isAvailable: true,
                     returnUrl: $data->returnUrl,
-                    persistentData: ['response' => $response->array(), 'amount' => $payload->amount->toArray()]
+                    persistentData: [
+                        'response' => $response->array(),
+                        'amount' => $payload->amount->toArray(),
+                        'paylaod' => $payload->toArray(),
+                    ]
                 );
             }
         } catch (\Throwable $e) {
