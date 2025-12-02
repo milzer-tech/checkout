@@ -37,7 +37,7 @@ class PaymentOptionsSection extends BaseCheckoutComponent
     /**
      * Listen for the 'traveller-processed' event to determine if the promo code section should be expanded or completed.
      */
-    #[On(Section::AdditionalService->value)]
+    #[On(Section::TermsAndConditions->value)]
     public function listen(): void
     {
         $this->expand(Section::PaymentOptions);
