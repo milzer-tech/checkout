@@ -40,6 +40,7 @@ return [
         ],
         'computop' => [
             'active' => (bool) env('CHECKOUT_COMPUTOP_ACTIVE', false),
+            'test_mode' => (bool) env('CHECKOUT_COMPUTOP_TEST_MODE', false),
             'name' => env('CHECKOUT_COMPUTOP_NAME', 'Computop'),
             'base_url' => env('CHECKOUT_COMPUTOP_BASE_URL', 'https://www.computop-paygate.com/api/v1'),
             'username' => env('CHECKOUT_COMPUTOP_USERNAME', 'must_be_set_in_env'),
