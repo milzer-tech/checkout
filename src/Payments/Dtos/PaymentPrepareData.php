@@ -25,4 +25,17 @@ class PaymentPrepareData extends BaseDto
         public ?string $origin = null,
         public ?string $lang = null,
     ) {}
+
+    /**
+     * Get the cancellation URL for the payment.
+     */
+    public function getCancellationUrl(): string
+    {
+        return route('traveler-details', [
+            'checkoutId' => $this->checkoutId,
+            'itineraryId' => $this->itineraryId,
+            'origin' => $this->origin,
+            'lang' => $this->lang,
+        ]);
+    }
 }
