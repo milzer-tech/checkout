@@ -38,41 +38,20 @@ class InitializeCheckoutDataAction
             'activityAnswers' => [],
             'numberOfPax' => $this->countPaxes($allocatedPax),
             'allocatedPax' => $allocatedPax,
-            'status' => [
-                Section::Contact->value => [
-                    'isExpanded' => true,
-                    'isCompleted' => false,
-                ],
-                Section::Traveller->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::Promo->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::AdditionalService->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::Summary->value => [
-                    'isExpanded' => true,
-                    'isCompleted' => true,
-                ],
-                Section::Insurance->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::Activity->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::PaymentOptions->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-            ],
+            'status' => [],
         ];
+
+        foreach (Section::cases() as $section) {
+            $checkout->data['status'][$section->value] = ['isExpanded' => false, 'isCompleted' => false];
+
+            if ($section->isContact()) {
+                $checkout->data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => false];
+            }
+
+            if ($section->isSummary()) {
+                $checkout->data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => true];
+            }
+        }
 
         $checkout->save();
     }
