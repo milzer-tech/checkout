@@ -80,8 +80,8 @@ If you set up Oppwa payment provider and need a credit card number for testing p
 Enter the remaining data as you wish. You will find the other card number for different situations in this link: https://axcessms.docs.oppwa.com/tutorials/threeDSecure/TestingGuide
 
 ## New payment method
-One of the main goal of this package is to make it easy to add new payment methods. You need to create two classes and implement the related interfaces for a new payment method. Payment is usually done in two steps:
-1. Initiate payment: you need define this interface:
+One of the main goal of this package is to make it easy to add new payment methods. You need to create a class that implements the related interfaces for a new payment method. All payment classes must implement the `PaymentContract` interface. 
+
 ```php
 <?php
 
@@ -89,12 +89,15 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Payments\Contracts;
 
+use Illuminate\Http\Request;
+use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
-use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
+use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
+use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 
-interface WidgetPaymentInitiation
+interface PaymentContract
 {
     /**
      * Returns whether the payment gateway is active.
@@ -103,14 +106,11 @@ interface WidgetPaymentInitiation
 
     /**
      * Returns the name of the payment gateway.
+     *
+     * Important: This name will be used to identify the payment gateway in the checkout process
+     * and it has to be unique, please check the previous gateways' names,
      */
     public static function name(): string;
-
-    /**
-     * Returns the description of the payment gateway.
-     * if null, no description will be shown.
-     */
-    public static function description(): ?string;
 
     /**
      * Prepares the payment initiation process.
@@ -118,53 +118,68 @@ interface WidgetPaymentInitiation
     public function prepare(PaymentPrepareData $data): PaymentInit;
 
     /**
-     * Returns the assets required for the payment initiation process.
-     */
-    public function getAssets(PaymentInit $paymentInit, string $returnUrl): PaymentAsset;
-
-    /**
      * Returns the payload required for creating a transaction in Nezasa.
      */
-    public function getNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload;
-}
+    public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload;
 
-```
-The package uses these methods to initiate payment by calling the payment gateway, display the payment form, and create a transaction in Nezasa.
-2. Confirm payment: you need implement this interface:
-```php
-declare(strict_types=1);
-
-namespace Nezasa\Checkout\Payments\Contracts;
-
-use Illuminate\Http\Request;
-use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
-use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-
-interface WidgetPaymentCallBack
-{
     /**
      * Handles the callback from the payment gateway.
      *
      * @param  array<string, mixed>|BaseDto  $persistentData
      */
-    public function check(Request $request, array|BaseDto $persistentData): PaymentResult;
+    public function verify(Request $request, array|BaseDto $persistentData): PaymentResult;
 
     /**
      * Shows the result of the payment process to the user.
      */
-    public function show(PaymentResult $result, PaymentOutput $output): PaymentOutput;
+    public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput;
 }
 ```
-Then, the package will call the check method to confirm the payment, and save the result in Nezasa.
+If your payment is a redirect payment, you have to implement the `RedirectPaymentContract` interface. RedirectPaymentContract inherits from PaymentContract.So you have to implement all methods of PaymentContract and RedirectPaymentContract.
+```php
+<?php
 
-After defining the classes, you need to add them to the `config/checkout.php` file:
+declare(strict_types=1);
+
+namespace Nezasa\Checkout\Payments\Contracts;
+
+use Illuminate\Support\Uri;
+use Nezasa\Checkout\Payments\Dtos\PaymentInit;
+
+interface RedirectPaymentContract extends PaymentContract
+{
+    /**
+     * The url to the payment gateway.
+     */
+    public function getRedirectUrl(PaymentInit $init): Uri;
+}
+
+```
+if your payment is an iframe or widget,... etc that loads inside the application, you have to implement the `WidgetPaymentContract` interface. WidgetPaymentContract inherits from PaymentContract.So you have to implement all methods of PaymentContract and WidgetPaymentContract.
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Nezasa\Checkout\Payments\Contracts;
+
+use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
+use Nezasa\Checkout\Payments\Dtos\PaymentInit;
+
+interface WidgetPaymentContract extends PaymentContract
+{
+    /**
+     * Returns the assets required for the payment initiation process.
+     */
+    public function getAssets(PaymentInit $paymentInit): PaymentAsset;
+}
+
+```
+
+After defining the class, you need to add them to the `config/checkout.php` file:
 ```bash
    'payment' => [
-        'widget' => [
-            OppwaInitiationWidget::class => OppwaCallBackWidget::class,
-            'your custom initiation class' => 'your custom callback class'
-        ],
+        StripeGateway::class,
     ],
 ```
 ### Other configuration options
