@@ -119,12 +119,7 @@ class ComputopGateway implements RedirectPaymentContract
         try {
             $response = ComputopConnector::make()->payment()->get($request->query('PayID'));
 
-            /** @phpstan-ignore-next-line */
-            $amount = ComputopAmountDto::from($persistentData['amount'])->value;
-            $approved = (int) $response->array('amount.approvedValue');
-            $success = $response->array('code')[0] === '0';
-
-            return $response->ok() && $success && $approved === $amount
+            return $response->ok() && $response->array('status') === 'CAPTURE_REQUEST'
                 ? new PaymentResult(status: PaymentStatusEnum::Succeeded, persistentData: $response->array())
                 : new PaymentResult(status: PaymentStatusEnum::Failed, persistentData: $response->array());
         } catch (\Throwable) {
