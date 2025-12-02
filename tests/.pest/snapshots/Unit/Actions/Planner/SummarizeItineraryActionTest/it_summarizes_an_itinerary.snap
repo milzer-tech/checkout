@@ -96,5 +96,8 @@
             "availability": null
         }
     ],
-    "upsellItems": []
+    "upsellItems": [],
+    "termsAndConditions": {
+        "sections": []
+    }
 }
