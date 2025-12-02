@@ -54,7 +54,7 @@ class ComputopGateway implements RedirectPaymentContract
                 amount: new ComputopAmountDto($data->price->toCent(), $data->price->currency),
                 order: new OrderPayloadEntity(id: $data->checkoutId, description: [
                     'Test:0000',
-                    'The itinerary price',
+                    //                    'The itinerary price',
                 ]),
                 urls: new UrlPayloadEntity(
                     success: (string) $data->returnUrl,
