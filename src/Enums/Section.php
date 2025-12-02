@@ -14,6 +14,10 @@ use AzimKordpour\PowerEnum\Traits\PowerEnum;
  * @method bool isTraveller()
  * @method bool isAdditionalService()
  * @method bool isSummary()
+ * @method bool isPaymentOptions()
+ * @method bool isInsurance()
+ * @method bool isActivity()
+ * @method bool isTermsAndConditions()
  */
 enum Section: string
 {

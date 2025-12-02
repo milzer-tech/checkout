@@ -32,7 +32,7 @@ class InitializeCheckoutDataAction
      */
     private function firstConfiguration(PaxAllocationResponseEntity $allocatedPax, Checkout $checkout): void
     {
-        $checkout->data = [
+        $data = [
             'paxInfo' => [],
             'contact' => [],
             'activityAnswers' => [],
@@ -42,18 +42,18 @@ class InitializeCheckoutDataAction
         ];
 
         foreach (Section::cases() as $section) {
-            $checkout->data['status'][$section->value] = ['isExpanded' => false, 'isCompleted' => false];
+            $data['status'][$section->value] = ['isExpanded' => false, 'isCompleted' => false];
 
             if ($section->isContact()) {
-                $checkout->data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => false];
+                $data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => false];
             }
 
             if ($section->isSummary()) {
-                $checkout->data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => true];
+                $data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => true];
             }
         }
 
-        $checkout->save();
+        $checkout->fill(['data' => $data])->save();
     }
 
     /**
