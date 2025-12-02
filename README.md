@@ -67,17 +67,57 @@ Add the following variables to the `.env` file of your Laravel application:
 CHECKOUT_NEZASA_BASE_URL="nezasa trip builder api url"
 CHECKOUT_NEZASA_USERNAME="username"
 CHECKOUT_NEZASA_PASSWORD="password"
-
+```
+### Oppwaa payment provide
+You need set up theses variables in the `.env` file of your Laravel application:
+```dotenv
 # Oppwa Payment Provider
+CHECKOUT_WIDGET_OPPWA_ACTIVE=true
+CHECKOUT_WIDGET_OPPWA_NAME='Oppwa'
 CHECKOUT_WIDGET_OPPWA_ENTITY_ID="*******"
 CHECKOUT_WIDGET_OPPWA_TOKEN="*******"
-CHECKOUT_WIDGET_OPPWA_ACTIVE=true
 ```
-If you set up Oppwa payment provider and need a credit card number for testing payment, you can use this:
+This a test card number:
 ```php
 4200000000000091
 ```
 Enter the remaining data as you wish. You will find the other card number for different situations in this link: https://axcessms.docs.oppwa.com/tutorials/threeDSecure/TestingGuide
+
+### Stripe payment provide
+You need set up theses variables in the `.env` file of your Laravel application:
+```dotenv
+# Strip Payment Provider
+CHECKOUT_STRIPE_ACTIVE=true
+CHECKOUT_STRIPE_NAME='Stripe'
+CHECKOUT_STRIPE_SECRET_KEY="your stripe secret key"
+```
+This a test card number:
+```php
+4242424242424242
+```
+Enter the remaining data as you wish. You will find the other card number for different situations in this link: https://docs.stripe.com/testing#cards
+
+
+### Computop payment provide
+You need set up theses variables in the `.env` file of your Laravel application:
+```dotenv
+# Strip Payment Provider
+CHECKOUT_COMPUTOP_ACTIVE=true
+
+# false for production
+CHECKOUT_COMPUTOP_TEST_MODE=true
+
+CHECKOUT_COMPUTOP_NAME='Computop'
+CHECKOUT_COMPUTOP_USERNAME='your username'
+CHECKOUT_COMPUTOP_PASSWORD='your password'
+```
+This a test card number:
+```php
+//Mastercard
+5555555555554444
+```
+Enter the remaining data as you wish. You will find the other card number for different situations in this link: https://developer.computop.com/display/EN/Test+credit+card
+
 
 ## New payment method
 One of the main goal of this package is to make it easy to add new payment methods. You need to create a class that implements the related interfaces for a new payment method. All payment classes must implement the `PaymentContract` interface. 
