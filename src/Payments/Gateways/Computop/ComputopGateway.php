@@ -49,22 +49,18 @@ class ComputopGateway implements RedirectPaymentContract
     public function prepare(PaymentPrepareData $data): PaymentInit
     {
         try {
+            $orderDescription = Config::boolean('checkout.integrations.computop.test_mode')
+                ? ['Test:0000']
+                : ['The itinerary price'];
+
             $payload = new ComputopPaymentPayload(
                 transactionId: (string) $data->transaction->id,
                 amount: new ComputopAmountDto($data->price->toCent(), $data->price->currency),
-                order: new OrderPayloadEntity(id: $data->checkoutId, description: [
-                    'Test:0000',
-                    //                    'The itinerary price',
-                ]),
+                order: new OrderPayloadEntity(id: $data->checkoutId, description: $orderDescription),
                 urls: new UrlPayloadEntity(
                     success: (string) $data->returnUrl,
                     failure: ($data->returnUrl).'&failure=1',
-                    cancel: route('traveler-details', [
-                        'checkoutId' => $data->checkoutId,
-                        'itineraryId' => $data->itineraryId,
-                        'origin' => $data->origin,
-                        'lang' => $data->lang,
-                    ]),
+                    cancel: $data->getCancellationUrl(),
                 ),
                 language: $data->lang,
             );
@@ -122,21 +118,15 @@ class ComputopGateway implements RedirectPaymentContract
     {
         try {
             $response = ComputopConnector::make()->payment()->get($request->query('PayID'));
+
             /** @phpstan-ignore-next-line */
             $amount = ComputopAmountDto::from($persistentData['amount'])->value;
-
             $approved = (int) $response->array('amount.approvedValue');
-            $captured = (int) $response->array('amount.capturedValue');
-            $credited = (int) $response->array('amount.creditedValue');
+            $success = $response->array('code')[0] === '0';
 
-            if ($response->ok()
-                && $response->array('status') === 'OK'
-                && $approved === $amount
-                && $captured === $amount
-                && $credited === $amount
-            ) {
-                return new PaymentResult(status: PaymentStatusEnum::Succeeded, persistentData: $response->array());
-            }
+            return $response->ok() && $success && $approved === $amount
+                ? new PaymentResult(status: PaymentStatusEnum::Succeeded, persistentData: $response->array())
+                : new PaymentResult(status: PaymentStatusEnum::Failed, persistentData: $response->array());
         } catch (\Throwable) {
             // do nothing
         }
