@@ -6,6 +6,8 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TermsAndConditionsResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TextSectionResponseEntity;
+use Nezasa\Checkout\Jobs\SaveTermAgreementJob;
 
 class TermsSection extends BaseCheckoutComponent
 {
@@ -15,15 +17,55 @@ class TermsSection extends BaseCheckoutComponent
     public TermsAndConditionsResponseEntity $termsAndConditions;
 
     /**
+     * The accepted terms and conditions.
+     *
+     * @var array<string, bool>
+     */
+    public array $acceptedTerms = [];
+
+    /**
      * Initialize the component with the promo code from the prices DTO.
      */
-    public function mount(): void {}
+    public function mount(): void
+    {
+        foreach ($this->model->data['acceptedTerms'] as $key => $value) {
+            if ($value) {
+                $this->acceptedTerms[$key] = $value;
+            }
+        }
+    }
+
+    /**
+     * Get the validation rules that apply to the component's inputs.'
+     *
+     * @return array<string, array<string, string>>
+     */
+    protected function rules(): array
+    {
+        return $this->termsAndConditions->sections
+            ->filter(fn (TextSectionResponseEntity $section): bool => $section->checkboxText !== null)
+            ->mapWithKeys(fn (TextSectionResponseEntity $value, $key): array => [
+                'acceptedTerms.'.$value->getKey() => ['required', 'accepted'],
+            ])
+            ->toArray();
+    }
+
+    /**
+     * Listen for the input changes and save the promo code in the checkout DTO.
+     */
+    public function toggleBox(string $name, bool $value): void
+    {
+        dispatch(new SaveTermAgreementJob($this->checkoutId, $name, $value));
+
+        $this->validate([$name => $this->rules()[$name]]);
+    }
 
     /**
      * Render the component view.
      */
     public function render(): View
-    {      /** @phpstan-ignore-next-line */
+    {
+        /** @phpstan-ignore-next-line */
         return view('checkout::blades.terms-section');
     }
 
@@ -32,7 +74,11 @@ class TermsSection extends BaseCheckoutComponent
      */
     public function next(): void
     {
-        $this->markAsCompletedAdnCollapse(Section::Insurance);
+        $this->validate($this->rules());
+
+        $this->markAsCompletedAdnCollapse(Section::TermsAndConditions);
+
+        $this->dispatch(Section::TermsAndConditions->value);
     }
 
     /**
@@ -41,6 +87,8 @@ class TermsSection extends BaseCheckoutComponent
     #[On(Section::AdditionalService->value)]
     public function listen(): void
     {
-        $this->expand(Section::TermsAndConditions);
+        $this->termsAndConditions->sections->isEmpty()
+            ? $this->next()
+            : $this->expand(Section::TermsAndConditions);
     }
 }

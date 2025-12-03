@@ -36,6 +36,7 @@ class InitializeCheckoutDataAction
             'paxInfo' => [],
             'contact' => [],
             'activityAnswers' => [],
+            'acceptedTerms' => [],
             'numberOfPax' => $this->countPaxes($allocatedPax),
             'allocatedPax' => $allocatedPax,
             'status' => [],

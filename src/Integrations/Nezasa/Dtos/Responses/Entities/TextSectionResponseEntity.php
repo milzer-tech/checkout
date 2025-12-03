@@ -14,9 +14,13 @@ final class TextSectionResponseEntity extends BaseDto
     public function __construct(
         public string $header,
         public string $text,
-        public ?string $checkBoxText = null,
+        public ?string $checkboxText = null,
         public ?string $supplierId = null
 
     ) {}
 
+    public function getKey(): string
+    {
+        return md5($this->toJson());
+    }
 }
