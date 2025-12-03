@@ -64,6 +64,7 @@ return [
         'change_upsell_item' => 'Change item',
         'change',
         'important_information' => 'Important information',
+        'learn_more' => 'Learn more',
     ],
 
     'payment' => [

@@ -24,6 +24,16 @@ class TermsSection extends BaseCheckoutComponent
     public array $acceptedTerms = [];
 
     /**
+     * Whether to show the terms modal.
+     */
+    public bool $showTermsModal = false;
+
+    /**
+     * The index of the currently displayed modal term.
+     */
+    public ?int $modalTermIndex = null;
+
+    /**
      * Initialize the component with the promo code from the prices DTO.
      */
     public function mount(): void
@@ -90,5 +100,25 @@ class TermsSection extends BaseCheckoutComponent
         $this->termsAndConditions->sections->isEmpty()
             ? $this->next()
             : $this->expand(Section::TermsAndConditions);
+    }
+
+    /**
+     * Show the terms modal.
+     */
+    public function openTermsModal(int $index): void
+    {
+        $this->modalTermIndex = $index;
+
+        $this->showTermsModal = true;
+    }
+
+    /**
+     * Hide the terms modal.
+     */
+    public function closeTermsModal(): void
+    {
+        $this->showTermsModal = false;
+
+        $this->modalTermIndex = null;
     }
 }

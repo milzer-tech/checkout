@@ -18,7 +18,18 @@
 
             <!-- Text -->
             <div class="text-sm text-gray-600 leading-relaxed">
-                {!! $term->text !!}
+                {!! str(strip_tags($term->text))->limit(300) !!}
+
+                @if(strlen(strip_tags($term->text) > 300))
+                    <button
+                        type="button"
+                        wire:click="openTermsModal({{ $index }})"
+                        class="text-blue-600 font-medium hover:underline inline"
+                    >
+                        {{@trans('checkout::page.trip_details.learn_more')}}
+                    </button>
+
+                @endif
             </div>
 
             @if($term->checkboxText)
@@ -45,6 +56,7 @@
                 </div>
             @endif
         </div>
+
     @endforeach
 
     <div class="space-y-4 mt-8">
@@ -59,5 +71,47 @@
             </button>
         </div>
     </div>
+
+        @if($showTermsModal && $modalTermIndex !== null)
+            @php($modalTerm = $termsAndConditions->sections[$modalTermIndex] ?? null)
+
+            @if($modalTerm)
+                <div
+                    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    role="dialog"
+                    aria-modal="true"
+                >
+                    {{-- Backdrop --}}
+                    <div
+                        class="fixed inset-0 bg-gray-900/50"
+                        wire:click="closeTermsModal"
+                    ></div>
+
+                    {{-- Modal panel --}}
+                    <div class="relative bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[85vh] overflow-hidden">
+                        <!-- Header (no border) -->
+                        <div class="flex items-center justify-between px-6 py-4">
+                            <h2 class="text-lg font-semibold text-gray-900">
+                                {{ $modalTerm->header }}
+                            </h2>
+
+                            <button
+                                type="button"
+                                wire:click="closeTermsModal"
+                                class="text-gray-400 hover:text-gray-600 text-xl"
+                                aria-label="Close"
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        <!-- Body (scrollable) -->
+                        <div class="px-6 pb-6 overflow-y-auto text-sm text-gray-700 leading-relaxed space-y-4 max-h-[70vh]">
+                            {!! $modalTerm->text !!}
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endif
 
 </x-checkout::editable-box>

@@ -23,4 +23,11 @@ final class TextSectionResponseEntity extends BaseDto
     {
         return md5($this->toJson());
     }
+
+    public function shouldBeDisplayedInModal(): bool
+    {
+        $text = html_entity_decode(strip_tags($this->text));
+
+        return strlen($text) > 10;
+    }
 }
