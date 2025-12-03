@@ -32,49 +32,29 @@ class InitializeCheckoutDataAction
      */
     private function firstConfiguration(PaxAllocationResponseEntity $allocatedPax, Checkout $checkout): void
     {
-        $checkout->data = [
+        $data = [
             'paxInfo' => [],
             'contact' => [],
             'activityAnswers' => [],
+            'acceptedTerms' => [],
             'numberOfPax' => $this->countPaxes($allocatedPax),
             'allocatedPax' => $allocatedPax,
-            'status' => [
-                Section::Contact->value => [
-                    'isExpanded' => true,
-                    'isCompleted' => false,
-                ],
-                Section::Traveller->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::Promo->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::AdditionalService->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::Summary->value => [
-                    'isExpanded' => true,
-                    'isCompleted' => true,
-                ],
-                Section::Insurance->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::Activity->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-                Section::PaymentOptions->value => [
-                    'isExpanded' => false,
-                    'isCompleted' => false,
-                ],
-            ],
+            'status' => [],
         ];
 
-        $checkout->save();
+        foreach (Section::cases() as $section) {
+            $data['status'][$section->value] = ['isExpanded' => false, 'isCompleted' => false];
+
+            if ($section->isContact()) {
+                $data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => false];
+            }
+
+            if ($section->isSummary()) {
+                $data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => true];
+            }
+        }
+
+        $checkout->fill(['data' => $data])->save();
     }
 
     /**

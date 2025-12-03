@@ -74,6 +74,7 @@ class SummarizeItineraryAction
             adults: $itineraryResponse->countAdults(),
             children: $itineraryResponse->countChildren(),
             childrenAges: $itineraryResponse->getChildrenAges(),
+            termsAndConditions: $checkoutResponse->termsAndConditions
         );
     }
 

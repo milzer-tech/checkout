@@ -55,6 +55,7 @@ return [
         'child_age' => 'The child\'s must be less than :age at the beginning of the trip.',
         'adult_age' => 'The adult\'s must be more than :age at the beginning of the trip.',
         'child_age_diff' => 'This traveller must be a :age year old child.',
+        'agree_to_continue' => 'You must agree to continue.',
 
     ],
 

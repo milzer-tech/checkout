@@ -50,6 +50,12 @@
                 {{--                    :is-expanded="$model->data['status']['insurance']['isExpanded']"--}}
                 {{--                />--}}
 
+                <livewire:terms-section
+                    :termsAndConditions="$itinerary->termsAndConditions"
+                    :$model
+                    :is-completed="$model->isCompleted(Section::TermsAndConditions)"
+                    :is-expanded="$model->isExpanded(Section::TermsAndConditions)"
+                />
                 <livewire:payment-options-section
                     :$model
                     :is-completed="$model->isCompleted(Section::PaymentOptions)"

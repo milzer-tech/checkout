@@ -63,7 +63,10 @@ return [
         'change_rental_car' => 'Change rental car',
         'change_upsell_item' => 'Change item',
         'change',
+        'important_information' => 'Important information',
+        'learn_more' => 'Learn more',
     ],
+
     'payment' => [
         'payment' => 'Payment',
         'not_available_service' => 'The selected payment method is not available.',
