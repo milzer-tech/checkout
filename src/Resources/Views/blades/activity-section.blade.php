@@ -25,7 +25,7 @@
 
                                 @if(! $question->getInputType()->isCheckbox())
                                     <label
-                                        class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
+                                        class="block text-gray-700 dark:text-gray-200 font-medium">
                                         {{$question->question}} @if($question->required)
                                             ({{trans('checkout::page.trip_details.required')}})
                                         @endif
