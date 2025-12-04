@@ -30,7 +30,7 @@ final class CubaTravelMail extends Mailable
      */
     public function __construct(public Checkout $checkout)
     {
-        foreach (collect($checkout->data['paxInfo'])->flatten(1) as $index => $traveller) {
+        foreach (collect($checkout->data['paxInfo'])->flatten(1) as $traveller) {
             $data = collect(PaxInfoPayloadEntity::from($traveller)->all())->except('showTraveller', 'refId');
 
             $data['travel_reason'] = config()->array('checkout::cuba-travel.reasons')[$traveller['travel_reason']];
@@ -43,9 +43,8 @@ final class CubaTravelMail extends Mailable
                 }
             }
 
-            $this->travelers[$index] = $data->filter()->toArray();
+            $this->travelers[] = $data->filter()->toArray();
         }
-
     }
 
     /**
