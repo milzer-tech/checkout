@@ -66,7 +66,7 @@
                                 <span class="font-semibold text-gray-900">
                                     {{ Number::currency($category->salesPrice->amount, $category->salesPrice->currency) }}
                                 </span>
-                                <span class="text-xs text-gray-500">for all travellers</span>
+                                <span class="text-xs text-gray-500">{{str($category->priceType)->headline()}}</span>
                             </div>
                             @endif
                         </label>
