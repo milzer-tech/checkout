@@ -27,14 +27,14 @@ class AdditionalServicesSection extends BaseCheckoutComponent
     /**
      * The items that have been added to the checkout.
      *
-     * @var array<int, AddedUpsellItemResponseEntity>|Collection<int, AddedUpsellItemResponseEntity>
+     * @var Collection<int, AddedUpsellItemResponseEntity>
      */
-    public array|Collection $addedUpsellItems;
+    public Collection $addedUpsellItems;
 
     /**
      * The items that are displayed in the additional services section.
      *
-     * @var array<string, array<string, int>>
+     * @var array<string, array<string, int>|string>
      */
     public array $items;
 
@@ -119,6 +119,7 @@ class AdditionalServicesSection extends BaseCheckoutComponent
             );
         } finally {
             $this->dispatch('summary-updated');
+            $this->validate(['items.'.$offerId => $this->rules()['items.'.$offerId]]);
         }
 
     }
@@ -130,9 +131,9 @@ class AdditionalServicesSection extends BaseCheckoutComponent
     {
         return $this->upsellItemsResponse
             ->offers
-            ->mapWithKeys(function (UpsellItemOfferResponseEntity $offer, int $key) {
+            ->mapWithKeys(function (UpsellItemOfferResponseEntity $offer, int $key): array {
                 $ids = $offer->serviceCategories
-                    ->map(fn (UpsellServiceCategoryResponseDto $category) => $category->serviceCategoryRefId)
+                    ->map(fn (UpsellServiceCategoryResponseDto $category): string => $category->serviceCategoryRefId)
                     ->toArray();
 
                 if ($offer->optOutPossible) {
