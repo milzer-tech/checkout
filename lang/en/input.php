@@ -29,6 +29,7 @@ return [
         'day' => 'Day',
         'phoneNumber' => 'Phone number',
         'travel_reason' => 'Travel reason',
+        'address' => 'Address',
     ],
     'placeholders' => [
         'firstName' => 'e.g. John',
