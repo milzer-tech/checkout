@@ -6,10 +6,10 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Nezasa\Checkout\Actions\Checkout\VerifyAvailabilityAction;
+use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
+use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
-use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
-use Nezasa\Checkout\Models\Checkout;
 
 class TripSummary extends BaseCheckoutComponent
 {
@@ -66,19 +66,14 @@ class TripSummary extends BaseCheckoutComponent
     #[On('summary-updated')]
     public function summaryUpdated(): void
     {
-        for ($i = 0; $i < 15; $i++) {
-            $summary = Checkout::whereCheckoutId($this->itineraryId)->value('data')->get('status')['summary'];
+        $result = resolve(CallTripDetailsAction::class)->run($this->itineraryId, $this->checkoutId);
 
-            if ($summary['isCompleted']) {
-                break;
-            }
-
-            sleep(1);
-        }
-
-        $prices = NezasaConnector::make()->checkout()->retrieve($this->itineraryId)->dto()->prices;
-
-        $this->itinerary->price = $prices->discountedPackagePrice ?? $prices->packagePrice;
+        $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
+            itineraryResponse: $result->itinerary,
+            checkoutResponse: $result->checkout,
+            addedRentalCarResponse: $result->addedRentalCars,
+            addedUpsellItemsResponse: collect($result->addedUpsellItems),
+        );
     }
 
     /**

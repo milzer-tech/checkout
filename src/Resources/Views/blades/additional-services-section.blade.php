@@ -11,159 +11,86 @@
     onEdit="expand('{{Section::AdditionalService->value}}')"
 >
 
-    <div class="space-y-8">
 
+    <div class="space-y-10">
+    <form>
         @foreach($upsellItemsResponse->offers as $offer)
-            <!-- Welcome Drink Section -->
-            <div class="space-y-4">
-                <h2 class="text-base font-semibold text-gray-900">{{ucfirst($offer->name)}}</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @foreach($offer->serviceCategories as $service)
-                        <label
-                            class="border border-gray-200 rounded-xl p-4 flex flex-col justify-between cursor-pointer hover:shadow-sm">
-                            <div class="flex items-center gap-2 mb-2">
-                                <input  type="radio" name="{{$offer->offerId}}"
-                                       @if(intval($items[$offer->offerId][$service->serviceCategoryRefId]) > 0)
-                                           checked
-                                       @elseif($service->serviceCategoryRefId === $offer->description)
-                                           checked
-                                       @endif
-                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500">
-                                <span class="text-gray-800">{{ucfirst($service->name)}}</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span
-                                    class="font-semibold">{{Number::currency($service->salesPrice->amount, $service->salesPrice->currency)}}</span>
-                                <div class="flex items-center gap-2 text-gray-500">
-                                    <button wire:loading.attr="disabled"
-                                            wire:click="removeItem(false, '{{$offer->offerId}}', '{{$service->serviceCategoryRefId}}')"
-                                            class="text-xl leading-none opacity-50">−
-                                    </button>
 
-                                    <span class="text-black cursor-default">{{$items[$offer->offerId][$service->serviceCategoryRefId]}}</span>
-                                    <button wire:loading.attr="disabled" wire:click="addItem(false, '{{$offer->offerId}}', '{{$service->serviceCategoryRefId}}')" class="text-blue-600 text-xl leading-none">+
-                                    </button>
-                                </div>
+            <div class="space-y-4 mb-14">
+
+                <h3 class="text-l font-semibold">{{$offer->name}}</h3>
+                <!-- TOP: TEXT + IMAGE (50/50) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <!-- Left text -->
+                    <div class="text-gray-700 leading-relaxed">
+                        {!! $offer->description !!}
+                    </div>
+
+                    <!-- Right image -->
+                    <div>
+                        @if($offer->pictures->isNotEmpty())
+                            <img src="{{$offer->pictures->first()->url}}"
+                                 class="w-full h-28 md:h-32 lg:h-36 object-cover rounded-xl">
+                        @endif
+                    </div>
+
+                </div>
+
+
+                <!-- OPTIONS GRID -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach($offer->serviceCategories as $index => $category)
+
+                        <label class="
+                        @if(isset($items[$offer->offerId]) && $items[$offer->offerId] === $category->serviceCategoryRefId)
+                        border border-blue-500
+                        @else
+                        border border-gray-200
+                        @endif
+                        rounded-xl p-4 cursor-pointer hover:shadow-sm flex flex-col justify-between min-h-[120px]">
+
+                            <div class="flex items-start gap-3">
+                                <input type="radio"
+                                       class="h-4 w-4 mt-1 text-blue-600"
+                                       wire:key="offer-{{ $offer->offerId }}-{{ $category->serviceCategoryRefId }}"
+                                       name="items.{{ $offer->offerId }}"
+                                       wire:model="items.{{ $offer->offerId }}"
+                                       wire:click="changeBox('{{$offer->offerId}}', '{{$category->serviceCategoryRefId}}')"
+                                       value="{{ $category->serviceCategoryRefId }}"
+                                >
+                                <span class="text-gray-900 font-medium">{{$category->name}}</span>
                             </div>
+
+                            @if($category->serviceCategoryRefId !== $this->getNoSelectionValue())
+                             <div class="flex flex-col items-end mt-4">
+                                <span class="font-semibold text-gray-900">
+                                    {{ Number::currency($category->salesPrice->amount, $category->salesPrice->currency) }}
+                                </span>
+                                <span class="text-xs text-gray-500">for all travellers</span>
+                            </div>
+                            @endif
                         </label>
                     @endforeach
 
-                    @if($offer->optOutPossible)
-                        <label
-                            class="border border-blue-700 rounded-xl px-4 py-2 flex items-center gap-2 cursor-pointer hover:shadow-sm w-full h-[48px]">
-                            <input type="radio"
-                                   name="{{$offer->offerId}}"
-                                   wire:click="noNeed(false, '{{$offer->offerId}}', '{{$service->serviceCategoryRefId}}')"
-                                   @checked(collect($items[$offer->offerId])->filter()->isEmpty())
-                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                            >
-                            <span class="text-gray-900 font-medium text-sm">{{trans('checkout::page.trip_details.no_need')}}</span>
-                        </label>
-                    @endif
                 </div>
+
+                @error('items.' .$offer->offerId)
+                <p class="text-red-600 text-sm">{{trans('checkout::input.validations.must_be_selected')}}</p>
+                @enderror
+
             </div>
+
         @endforeach
+    </form>
 
-            <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
-            <div class="flex justify-between items-center">
-                <div></div>
-                <button type="button" wire:click="next" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                    {{trans('checkout::page.trip_details.next')}}
-                </button>
-            </div>
+
+        <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
+        <div class="flex justify-between items-center">
+            <div></div>
+            <button type="button" wire:click="next"
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
+                {{trans('checkout::page.trip_details.next')}}
+            </button>
+        </div>
     </div>
-
-
-    {{--    <div class="space-y-4">--}}
-    {{--        <p class="text-sm text-gray-600">--}}
-    {{--            Here are some products you might find useful during your trip.--}}
-    {{--        </p>--}}
-
-    {{--        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">--}}
-    {{--            <label class="border border-gray-200 rounded-2xl p-4 w-full cursor-pointer">--}}
-    {{--                <!-- Top row: radio + title -->--}}
-    {{--                <div class="flex items-start space-x-2">--}}
-    {{--                    <input type="radio" name="insurance" class="mt-1 h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500" checked>--}}
-    {{--                    <span class="text-gray-900 font-semibold text-base">Travel Basic</span>--}}
-    {{--                </div>--}}
-
-    {{--                <!-- Price -->--}}
-    {{--                <div class="text-emerald-500 font-semibold text-sm mt-1 mb-2 pl-7">--}}
-    {{--                    + 2.31 € per day--}}
-    {{--                </div>--}}
-
-    {{--                <!-- Text/content (aligned with radio) -->--}}
-    {{--                <div class="text-sm text-gray-800 leading-relaxed pl-7">--}}
-    {{--                    <p>--}}
-    {{--                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.--}}
-    {{--                    </p>--}}
-    {{--                </div>--}}
-    {{--            </label>--}}
-    {{--            <label class="border border-gray-200 rounded-2xl p-4 w-full cursor-pointer">--}}
-    {{--                <!-- Top row: radio + title -->--}}
-    {{--                <div class="flex items-start space-x-2">--}}
-    {{--                    <input type="radio" name="insurance" class="mt-1 h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500" checked>--}}
-    {{--                    <span class="text-gray-900 font-semibold text-base">Travel Basic</span>--}}
-    {{--                </div>--}}
-
-    {{--                <!-- Price -->--}}
-    {{--                <div class="text-emerald-500 font-semibold text-sm mt-1 mb-2 pl-7">--}}
-    {{--                    + 2.31 € per day--}}
-    {{--                </div>--}}
-
-    {{--                <!-- Text/content (aligned with radio) -->--}}
-    {{--                <div class="text-sm text-gray-800 leading-relaxed pl-7">--}}
-    {{--                    <p>--}}
-    {{--                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.--}}
-    {{--                    </p>--}}
-    {{--                </div>--}}
-    {{--            </label>--}}
-    {{--            <label class="border border-gray-200 rounded-2xl p-4 w-full cursor-pointer">--}}
-    {{--                <!-- Top row: radio + title -->--}}
-    {{--                <div class="flex items-start space-x-2">--}}
-    {{--                    <input type="radio" name="insurance" class="mt-1 h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500" checked>--}}
-    {{--                    <span class="text-gray-900 font-semibold text-base">Travel Basic</span>--}}
-    {{--                </div>--}}
-
-    {{--                <!-- Price -->--}}
-    {{--                <div class="text-emerald-500 font-semibold text-sm mt-1 mb-2 pl-7">--}}
-    {{--                    + 2.31 € per day--}}
-    {{--                </div>--}}
-
-    {{--                <!-- Text/content (aligned with radio) -->--}}
-    {{--                <div class="text-sm text-gray-800 leading-relaxed pl-7">--}}
-    {{--                    <p>--}}
-    {{--                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.--}}
-    {{--                    </p>--}}
-    {{--                </div>--}}
-    {{--            </label>--}}
-    {{--            <label class="border border-gray-200 rounded-2xl p-4 w-full cursor-pointer">--}}
-    {{--                <!-- Top row: radio + title -->--}}
-    {{--                <div class="flex items-start space-x-2">--}}
-    {{--                    <input type="radio" name="insurance" class="mt-1 h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500" checked>--}}
-    {{--                    <span class="text-gray-900 font-semibold text-base">Travel Basic</span>--}}
-    {{--                </div>--}}
-
-    {{--                <!-- Price -->--}}
-    {{--                <div class="text-emerald-500 font-semibold text-sm mt-1 mb-2 pl-7">--}}
-    {{--                    + 2.31 € per day--}}
-    {{--                </div>--}}
-
-    {{--                <!-- Text/content (aligned with radio) -->--}}
-    {{--                <div class="text-sm text-gray-800 leading-relaxed pl-7">--}}
-    {{--                    <p>--}}
-    {{--                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.--}}
-    {{--                    </p>--}}
-    {{--                </div>--}}
-    {{--            </label>--}}
-
-    {{--        </div>--}}
-
-    {{--        <div class="flex justify-end pt-4">--}}
-    {{--            <button class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition">--}}
-    {{--                Next--}}
-    {{--            </button>--}}
-    {{--        </div>--}}
-    {{--    </div>--}}
-
 </x-checkout::editable-box>
