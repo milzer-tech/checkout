@@ -4,12 +4,17 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddOrRemoveUpsellItemsPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\UpsellItemOfferPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\AddedUpsellItemResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\UpsellItemOfferResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\UpsellServiceCategoryResponseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\UpsellItemsResponse;
-use Nezasa\Checkout\Jobs\AddOrUpdateUpsellItemJob;
-use Nezasa\Checkout\Jobs\SaveSectionStatusJob;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Models\Checkout;
 
 class AdditionalServicesSection extends BaseCheckoutComponent
@@ -31,14 +36,7 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      *
      * @var array<string, array<string, int>>
      */
-    public array $items = [];
-
-    /**
-     * The ad-hoc items that are displayed in the additional services section.
-     *
-     * @var array<int, AddedUpsellItemResponseEntity>
-     */
-    public array $adHocItems = [];
+    public array $items;
 
     /**
      * Create a new instance of the component.
@@ -46,11 +44,22 @@ class AdditionalServicesSection extends BaseCheckoutComponent
     public function mount(): void
     {
         foreach ($this->upsellItemsResponse->offers as $offer) {
-            foreach ($offer->serviceCategories as $service) {
-                $this->items[$offer->offerId][$service->serviceCategoryRefId] = collect($this->addedUpsellItems)
-                    ->where('productRefId', $offer->offerId)
-                    ->where('serviceCategoryRefId', $service->serviceCategoryRefId)
-                    ->count();
+            if ($offer->optOutPossible) {
+                $this->items[$offer->offerId] = $this->getNoSelectionValue();
+
+                $offer->serviceCategories->push(
+                    new UpsellServiceCategoryResponseDto(
+                        serviceCategoryRefId: $this->getNoSelectionValue(),
+                        name: trans('checkout::page.trip_details.no_need'),
+                        priceType: 'FREE',
+                        salesPrice: new Price(0, 'euro')
+                    )
+                );
+            }
+
+            // Check if the item has already been added to the checkout
+            if ($select = $this->addedUpsellItems->where('productRefId', $offer->offerId)->first()) {
+                $this->items[$offer->offerId] = $select->serviceCategoryRefId;
             }
         }
     }
@@ -59,7 +68,8 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      * Render the view for the additional services section.
      */
     public function render(): View
-    {   /** @phpstan-ignore-next-line  */
+    {
+        /** @phpstan-ignore-next-line */
         return view('checkout::blades.additional-services-section');
     }
 
@@ -68,71 +78,11 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      */
     public function next(): void
     {
+        $this->validate();
+
         $this->markAsCompletedAdnCollapse(Section::AdditionalService);
 
         $this->dispatch(Section::AdditionalService->value);
-    }
-
-    /**
-     * Add an item to the checkout.
-     */
-    public function addItem(bool $isAdHoc, string $offerId, string $serviceCategoryRefId): void
-    {
-        if (! $isAdHoc) {
-            $this->items[$offerId][$serviceCategoryRefId]++;
-            $this->updateUpsellItems($offerId, $serviceCategoryRefId);
-        }
-    }
-
-    /**
-     * Remove an item from the checkout.
-     */
-    public function removeItem(bool $isAdHoc, string $offerId, string $serviceCategoryRefId): void
-    {
-        if (! $isAdHoc) {
-            $this->items[$offerId][$serviceCategoryRefId] == 0 ?: $this->items[$offerId][$serviceCategoryRefId]--;
-            $this->updateUpsellItems($offerId, $serviceCategoryRefId);
-        }
-    }
-
-    /**
-     * Make all ids of an offer zero.
-     */
-    public function noNeed(bool $isAdHoc, string $offerId): void
-    {
-        if (! $isAdHoc) {
-            foreach ($this->items[$offerId] as $serviceId => $quantity) {
-                if ($quantity !== 0) {
-                    $this->items[$offerId][$serviceId] = 0;
-
-                    $this->updateUpsellItems($offerId, $serviceId);
-                }
-            }
-        }
-    }
-
-    /**
-     * Update the upsell items in the checkout.
-     */
-    protected function updateUpsellItems(string $offerId, string $serviceCategoryRefId): void
-    {
-        $quantity = $this->items[$offerId][$serviceCategoryRefId];
-
-        foreach ($this->items[$offerId] as $serId => $service) {
-            if ($serId === $serviceCategoryRefId) {
-                continue;
-            }
-
-            $this->items[$offerId][$serId] = 0;
-        }
-
-        SaveSectionStatusJob::make($this->checkoutId, Section::Summary, false)->handle();
-
-        dispatch(
-            new AddOrUpdateUpsellItemJob($this->checkoutId, $offerId, $serviceCategoryRefId, $quantity)
-        );
-
-        $this->dispatch('summary-updated');
     }
 
     /**
@@ -148,5 +98,59 @@ class AdditionalServicesSection extends BaseCheckoutComponent
         if ($this->upsellItemsResponse->offers->isEmpty()) {
             $this->next();
         }
+    }
+
+    /**
+     * Change the selected box for an upsell item.
+     */
+    public function changeBox(string $offerId, string $categoryId): void
+    {
+        try {
+            NezasaConnector::make()->checkout()->addOrUpdateUpsellItem(
+                checkoutId: $this->checkoutId,
+                payload: new AddOrRemoveUpsellItemsPayload(
+                    selection: new Collection([
+                        new UpsellItemOfferPayloadEntity(
+                            offerId: $offerId,
+                            serviceCategoryRefId: $categoryId === $this->getNoSelectionValue() ? null : $categoryId,
+                        ),
+                    ])
+                )
+            );
+        } finally {
+            $this->dispatch('summary-updated');
+        }
+
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    protected function rules(): array
+    {
+        return $this->upsellItemsResponse
+            ->offers
+            ->mapWithKeys(function (UpsellItemOfferResponseEntity $offer, int $key) {
+                $ids = $offer->serviceCategories
+                    ->map(fn (UpsellServiceCategoryResponseDto $category) => $category->serviceCategoryRefId)
+                    ->toArray();
+
+                if ($offer->optOutPossible) {
+                    $ids[] = $this->getNoSelectionValue();
+                }
+
+                return [
+                    'items.'.$offer->offerId => ['required', Rule::in($ids)],
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get the value used to indicate that the user does not want to select a category for an upsell item.
+     */
+    public function getNoSelectionValue(): string
+    {
+        return 'no_selection';
     }
 }
