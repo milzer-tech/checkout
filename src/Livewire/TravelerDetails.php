@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\In;
@@ -119,7 +120,7 @@ class TravelerDetails extends BaseCheckoutComponent
             'birthDate.year' => [
                 'integer',
                 'min:1900',
-                'max:'.date('Y'), /** @phpstan-ignore-next-line  */
+                'max:'.date('Y'), /** @phpstan-ignore-next-line */
                 new BirthDateRule($this->itinerary->startDate, $this->model->data->get('allocatedPax', [])),
             ],
             'passportExpirationDate' => ['array'],
@@ -139,6 +140,15 @@ class TravelerDetails extends BaseCheckoutComponent
             'street1' => ['string', 'max:255'],
             'street2' => ['string', 'max:255'],
         ];
+
+        if (Config::boolean('checkout::cuba-travel.active')) {
+            $keys = Config::collection('checkout::cuba-travel.reasons')->keys()->map(fn ($key): string => strval($key));
+
+            $rules['travel_reason'] = [
+                'required',
+                Rule::in($keys->toArray()),
+            ];
+        }
 
         foreach ($this->passengerRequirements->all() as $name => $item) {
             if ($item->isRequired()) {

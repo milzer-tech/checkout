@@ -65,6 +65,7 @@ return [
         'change',
         'important_information' => 'Important information',
         'learn_more' => 'Learn more',
+        'travel_reason' => 'Travel reason',
     ],
 
     'payment' => [

@@ -28,6 +28,7 @@ return [
         'month' => 'Month',
         'day' => 'Day',
         'phoneNumber' => 'Phone number',
+        'travel_reason' => 'Travel reason',
     ],
     'placeholders' => [
         'firstName' => 'e.g. John',
