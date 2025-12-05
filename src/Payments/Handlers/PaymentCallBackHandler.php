@@ -7,6 +7,8 @@ namespace Nezasa\Checkout\Payments\Handlers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
+use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
+use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\UpdatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\BookingStateEnum;
@@ -40,7 +42,11 @@ class PaymentCallBackHandler
         $this->storeResult($result, $transaction, $nezasaTransaction);
 
         if ($result->status->isSucceeded()) {
-            $this->bookItinerary($transaction->checkout);
+            $bookingResult = $this->bookItinerary($transaction->checkout);
+
+            $event = $bookingResult ? ItineraryBookingSucceededEvent::class : ItineraryBookingFailedEvent::class;
+
+            event(new $event($transaction->checkout->checkout_id, $transaction->checkout->itinerary_id));
         }
 
         return $this->getOutput($transaction, $gateway);
@@ -50,7 +56,8 @@ class PaymentCallBackHandler
      * Validate if the payment gateway is supported and implemented correctly.
      */
     private function getCallBackClass(string $gateway): PaymentContract
-    {   /** @var class-string<PaymentContract> */
+    {
+        /** @var class-string<PaymentContract> */
         $result = collect(resolve(GetPaymentProviderAction::class)->run())
             ->where('name', $gateway)
             ->firstOrFail()

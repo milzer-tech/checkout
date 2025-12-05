@@ -29,7 +29,10 @@ class CheckoutServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->register(CheckoutEventServiceProvider::class);
+
         $this->mergeConfigFrom(path: __DIR__.'/../../config/checkout.php', key: 'checkout');
+        $this->mergeConfigFrom(path: __DIR__.'/../../config/cuba-travel.php', key: 'checkout::cuba-travel');
     }
 
     /**

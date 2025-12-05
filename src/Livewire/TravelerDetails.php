@@ -11,14 +11,13 @@ use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\CountryResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PassengerRequirementEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 use Nezasa\Checkout\Rules\BirthDateRule;
 use Nezasa\Checkout\Rules\PassportExpirationDateRule;
 use Nezasa\Checkout\Supporters\TravellerSupporter;
+use Nezasa\Checkout\Supporters\TravelValidationsRulesSupporter;
 
 class TravelerDetails extends BaseCheckoutComponent
 {
@@ -101,61 +100,7 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     protected function rules(): array
     {
-        $countries = $this->countriesResponse
-            ->countries
-            ->map(fn (CountryResponseEntity $item): string => $item->iso_code.'-'.$item->name)
-            ->all();
-
-        $rules = [
-            'firstName' => ['string', 'max:255'],
-            'lastName' => ['string', 'max:255'],
-            'secondOrAdditionalName' => ['string', 'max:255'],
-            'passportNr' => ['string', 'max:255'],
-            'nationality' => ['string', Rule::in($countries)],
-            'gender' => [new Enum(GenderEnum::class)],
-            'birthDate' => ['array'],
-            'birthDate.day' => ['integer', 'min:1', 'max:31'],
-            'birthDate.month' => ['integer', 'min:1', 'max:12'],
-            'birthDate.year' => [
-                'integer',
-                'min:1900',
-                'max:'.date('Y'), /** @phpstan-ignore-next-line  */
-                new BirthDateRule($this->itinerary->startDate, $this->model->data->get('allocatedPax', [])),
-            ],
-            'passportExpirationDate' => ['array'],
-            'passportExpirationDate.day' => ['integer', 'min:1', 'max:31'],
-            'passportExpirationDate.month' => ['integer', 'min:1', 'max:12'],
-            'passportExpirationDate.year' => [
-                'integer',
-                'min:'.date('Y'),
-                'max:'.intval(date('Y')) + 30,
-                new PassportExpirationDateRule($this->itinerary->endDate),
-            ],
-            'passportIssuingCountry' => ['string', Rule::in($countries)],
-            'postalCode' => ['string', 'max:20'],
-            'city' => ['string', 'max:255'],
-            'country' => ['string', Rule::in($countries)],
-            'countryCode' => ['string', 'max:10'],
-            'street1' => ['string', 'max:255'],
-            'street2' => ['string', 'max:255'],
-        ];
-
-        foreach ($this->passengerRequirements->all() as $name => $item) {
-            if ($item->isRequired()) {
-                $rules[$name] = array_merge(['required'], $rules[$name]);
-
-                if ($name === 'birthDate' || $name === 'passportExpirationDate') {
-                    $rules["$name.day"] = array_merge(['required'], $rules["$name.day"]);
-                    $rules["$name.month"] = array_merge(['required'], $rules["$name.month"]);
-                    $rules["$name.year"] = array_merge(['required'], $rules["$name.year"]);
-                }
-            }
-        }
-
-        return array_combine(
-            array_map(fn (string $key): string => 'paxInfo.*.*.'.$key, array_keys($rules)),
-            array_values($rules)
-        );
+        return (new TravelValidationsRulesSupporter($this))->rules();
     }
 
     /**
