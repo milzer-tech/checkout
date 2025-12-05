@@ -101,11 +101,9 @@ final readonly class TravelValidationsRulesSupporter
     public function addCustomizeRules(array $rules): array
     {
         if (Config::boolean('checkout::cuba-travel.active')) {
-            $keys = Config::collection('checkout::cuba-travel.reasons')->keys()->map(fn ($key): string => strval($key));
-
             $rules['travel_reason'] = [
                 'required',
-                Rule::in($keys->toArray()),
+                Rule::in(Config::array('checkout::cuba-travel.reasons')),
             ];
         }
 
