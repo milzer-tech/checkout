@@ -41,7 +41,7 @@ return [
         'rental_cars' => 'Voitures de location',
         'upsell_items' => 'Articles supplémentaires',
         'total' => 'Total',
-        'total_below_message' => 'Comprend toutes les taxes, frais, surtaxes et frais de service Tripbuilder. Les frais de service Tripbuilder sont calculés par passager et ne sont pas remboursables.',
+        'destination_cost_text' => 'Du prix total de :total, :paid_in_destination sont à payer sur place, basé sur la taux de change actuel (coût indicatif), et sont payables en monnaie locale.',
         'available' => 'Disponible',
         'on_request' => 'Sur demande',
         'unavailable' => 'Indisponible',

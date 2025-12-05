@@ -41,7 +41,7 @@ return [
         'rental_cars' => 'Mietwagen',
         'upsell_items' => 'Zusatzangebote',
         'total' => 'Gesamt',
-        'total_below_message' => 'Enthält alle Steuern, Gebühren, Zuschläge und Tripbuilder-Servicegebühren. Die Tripbuilder-Servicegebühren werden pro Passagier berechnet und sind nicht erstattungsfähig.',
+        'destination_cost_text' => 'Aus dem Gesamtpreis von :total werden :paid_in_destination im Reiseziel bezahlt, basierend auf der aktuellen Wechselkurs (indikative Kosten), und sind in der lokalen Währung bezahlt.',
         'available' => 'Verfügbar',
         'on_request' => 'Auf Anfrage',
         'unavailable' => 'Nicht verfügbar',

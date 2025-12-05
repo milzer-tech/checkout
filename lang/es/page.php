@@ -41,7 +41,7 @@ return [
         'rental_cars' => 'Coches de alquiler',
         'upsell_items' => 'Artículos adicionales',
         'total' => 'Total',
-        'total_below_message' => 'Incluye todos los impuestos, tasas, recargos y las tarifas de servicio de Tripbuilder. Las tarifas de servicio de Tripbuilder se calculan por pasajero y no son reembolsables.',
+        'destination_cost_text' => 'Del precio total de :total, :paid_in_destination se pagan en destino, basado en la tasa de cambio actual (costo indicativo), y se pagan en moneda local.',
         'available' => 'Disponible',
         'on_request' => 'Bajo petición',
         'unavailable' => 'No disponible',

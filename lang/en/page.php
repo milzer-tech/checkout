@@ -41,8 +41,7 @@ return [
         'rental_cars' => 'Rental cars',
         'upsell_items' => 'Upsell items',
         'total' => 'Total',
-        'total_below_message' => 'Includes all taxes, fees, surcharges, and Tripbuilder service fees. Tripbuilder service
-            fees are calculated per passenger and are not refundable.',
+        'destination_cost_text' => 'From the :total total price, :paid_in_destination to be paid in destination are displayed based on the current exchange rate (indicative cost), and are payable in local currency.',
         'available' => 'Available',
         'on_request' => 'On request',
         'unavailable' => 'Unavailable',
