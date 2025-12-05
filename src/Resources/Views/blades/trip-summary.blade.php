@@ -1,4 +1,4 @@
-@use(Illuminate\Support\Number)
+@use(Illuminate\Support\Collection;use Illuminate\Support\Number)
 
 <div class="border border-[color:var(--border)] dark:border-gray-600 bg-transparent rounded-[12px] p-4 sm:p-6 mb-6">
     {{-- Header with image and title --}}
@@ -346,15 +346,17 @@
                     ({{ strtoupper($itinerary->price->totalPackagePrice->currency) }})
                 </h3>
 
-                <svg
-                    class="w-4 h-3 text-blue-600 transition-transform duration-200 transform origin-center @if($showPriceBreakdown) rotate-180 @endif"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 9l-7 7-7-7"></path>
-                </svg>
+                @if($itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty())
+                    <svg
+                        class="w-4 h-3 text-blue-600 transition-transform duration-200 transform origin-center @if($showPriceBreakdown) rotate-180 @endif"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        @endif
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 9l-7 7-7-7"></path>
+                    </svg>
 
             </button>
 
@@ -388,7 +390,7 @@
                 </span>
                 </div>
 
-                @if($itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty())
+                @if($showPriceBreakdown)
                     <p class="mt-2 text-gray-900 dark:text-white">
                         {{ trans('checkout::page.trip_details.paid_in_destination') }}:
                     </p>
@@ -406,11 +408,15 @@
                 @endif
             </div>
         @endif
-        {{-- Explanatory text (also collapsible) --}}
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
-            {{ trans('checkout::page.trip_details.total_below_message') }}
-        </p>
 
+        @if($showPriceBreakdown)
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                {{ trans('checkout::page.trip_details.destination_cost_text',[
+        'total' => Number::currency($itinerary->price->discountedPackagePrice->amount, $itinerary->price->discountedPackagePrice->currency),
+        'paid_in_destination' =>  Number::currency($itinerary->price->externallyPaidCharges->totalPrice->amount, $itinerary->price->externallyPaidCharges->totalPrice->currency),
+    ]) }}
+            </p>
+        @endif
     </div>
 
 
