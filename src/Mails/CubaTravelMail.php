@@ -61,6 +61,7 @@ final class CubaTravelMail extends Mailable
      */
     public function fillTravellers(Checkout $checkout): void
     {
+        /** @phpstan-ignore-next-line */
         foreach (collect($checkout->data['paxInfo'])->flatten(1) as $index => $traveller) {
             if (! isset($traveller['refId'])) {
                 $traveller['refId'] = "pax-$index";

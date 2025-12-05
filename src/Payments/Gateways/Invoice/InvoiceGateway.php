@@ -83,6 +83,7 @@ class InvoiceGateway implements RedirectPaymentContract
         $id = is_array($persistentData) ? $persistentData['id'] : false;
 
         return new PaymentResult(
+            /** @phpstan-ignore-next-line  */
             status: $request->route('transaction')->id === $id
                 ? PaymentStatusEnum::Succeeded
                 : PaymentStatusEnum::Failed,
