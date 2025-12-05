@@ -25,6 +25,10 @@ afterEach(function (): void {
     m::close();
 });
 
+beforeEach(function (): void {
+    \Illuminate\Support\Facades\Event::fake();
+});
+
 // ---- Dummy callback gateway used for tests ----
 
 class DummyCallbackGateway implements PaymentContract
