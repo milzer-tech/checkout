@@ -8,7 +8,7 @@
                 class="form-select pr-8 w-full">
             <option value="">Select</option>
             @foreach(config()->array('checkout::cuba-travel.reasons') as $index => $option)
-                <option value="{{$index}}">{{$option}}</option>
+                <option value="{{$option}}">{{$option}}</option>
             @endforeach
         </select>
         @error("paxInfo.$roomNumber.$i.travel_reason")<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
