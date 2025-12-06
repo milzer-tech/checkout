@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Mail;
 use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Mails\CubaTravelMail;
-use Nezasa\Checkout\Models\Checkout;
 
 final class SendEmailToCubaTravelListener implements ShouldQueue
 {
@@ -25,8 +24,8 @@ final class SendEmailToCubaTravelListener implements ShouldQueue
             return;
         }
 
-        $checkout = Checkout::whereCheckoutId($event->checkoutId)->whereItineraryId($event->itineraryId)->firstOrFail();
-
-        Mail::to($receivers)->send(mailable: new CubaTravelMail($checkout));
+        Mail::to($receivers)->send(
+            mailable: new CubaTravelMail($event->transaction->checkout)
+        );
     }
 }
