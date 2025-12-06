@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nezasa\Checkout\Listeners;
+namespace Nezasa\Checkout\Listeners\CubaTravel;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Config;
