@@ -18,6 +18,10 @@ final class SendEmailToCubaTravelListener implements ShouldQueue
      */
     public function handle(ItineraryBookingFailedEvent|ItineraryBookingSucceededEvent $event): void
     {
+        if (! Config::boolean('checkout::cuba-travel.active')) {
+            return;
+        }
+
         $receivers = Config::array('checkout::cuba-travel.email.to');
 
         if ($receivers === []) {
