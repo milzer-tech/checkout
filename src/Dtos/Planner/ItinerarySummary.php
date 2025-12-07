@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Dtos\Planner;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryActivity;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryFlight;
 use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryRentalCar;
@@ -34,6 +35,8 @@ class ItinerarySummary extends BaseDto
      * @param  Collection<int, ItineraryActivity>  $activities
      * @param  Collection<int, ItineraryRentalCar>  $rentalCars
      * @param  Collection<int, UpsellItem>  $upsellItems
+     * @param  Collection<int, InsuranceItem>  $insurances
+     * @param  Collection<int, string>|array<int, string>  $destinationCountries
      */
     public function __construct(
         public ApplyPromoCodeResponse $price,
@@ -50,11 +53,17 @@ class ItinerarySummary extends BaseDto
         public Collection $rentalCars = new Collection,
         public Collection $upsellItems = new Collection,
         public TermsAndConditionsResponseEntity $termsAndConditions = new TermsAndConditionsResponseEntity,
+        public Collection $insurances = new Collection,
+        public Collection|array $destinationCountries = new Collection
     ) {
         $this->nights = (int) $this->startDate->diffInDays($this->endDate);
 
         if (is_array($this->childrenAges)) {
             $this->childrenAges = new Collection($this->childrenAges);
+        }
+
+        if (is_array($this->destinationCountries)) {
+            $this->destinationCountries = new Collection($this->destinationCountries);
         }
     }
 
@@ -94,6 +103,14 @@ class ItinerarySummary extends BaseDto
     public function hasUpsellItem(): bool
     {
         return $this->upsellItems->isNotEmpty();
+    }
+
+    /**
+     * Check if the itinerary has insurance items.
+     */
+    public function hasInsurance(): bool
+    {
+        return $this->insurances->isNotEmpty();
     }
 
     public function getHotelsGroupStatus(): ?AvailabilityEnum
