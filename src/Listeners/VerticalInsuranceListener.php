@@ -25,12 +25,12 @@ final class VerticalInsuranceListener implements ShouldQueue
     /**
      * The stripe client.
      */
-    protected StripeClient $stripe;
+    private StripeClient $stripe;
 
     /**
      * The transaction being processed.
      */
-    protected Transaction $transaction;
+    private Transaction $transaction;
 
     /**
      * Handle the event.
@@ -59,7 +59,7 @@ final class VerticalInsuranceListener implements ShouldQueue
     /**
      * Determine if the event should be processed.
      */
-    protected function shouldBeProcessed(): bool
+    private function shouldBeProcessed(): bool
     {
         return $this->transaction->gateway === 'Stripe'
             && Config::boolean('checkout.insurance.vertical.active') === true
@@ -72,7 +72,7 @@ final class VerticalInsuranceListener implements ShouldQueue
      *
      * @throws ApiErrorException
      */
-    protected function getPaymentMethodId(): string
+    private function getPaymentMethodId(): string
     {
         $paymentIntentId = $this->transaction->result_data['session']['payment_intent'];
 
@@ -90,7 +90,7 @@ final class VerticalInsuranceListener implements ShouldQueue
      *
      * @throws ApiErrorException
      */
-    protected function clonePayment(string $paymentMethodId): string
+    private function clonePayment(string $paymentMethodId): string
     {
         $paymentMethod = $this->stripe->paymentMethods->create(
             params: [
@@ -109,7 +109,7 @@ final class VerticalInsuranceListener implements ShouldQueue
         return $paymentMethod->toArray()['id'];
     }
 
-    protected function createVerticalPaymentIntent(string $paymentMethodId): string
+    private function createVerticalPaymentIntent(string $paymentMethodId): string
     {
         $newPaymentIntent = $this->stripe->paymentIntents->create(
             params: [
@@ -134,7 +134,7 @@ final class VerticalInsuranceListener implements ShouldQueue
         return $newPaymentIntent->toArray()['id'];
     }
 
-    protected function purchaseInsurance(string $paymentIntentId)
+    private function purchaseInsurance(string $paymentIntentId): void
     {
         $response = VerticalInsuranceConnector::make()->purchase()->eventHostCancellation(
             new PurchaseEventPayload(
@@ -153,7 +153,7 @@ final class VerticalInsuranceListener implements ShouldQueue
         ]);
     }
 
-    protected function saveInsuranceOnNezasa(): void
+    private function saveInsuranceOnNezasa(): void
     {
         $insurance = data_get($this->transaction->result_data, 'insurance_purchase');
 

@@ -104,6 +104,12 @@ class TripSummary extends BaseCheckoutComponent
         );
     }
 
+    /**
+     * Add insurance to the itinerary.
+     *
+     * @param  array<string, mixed>  $item
+     * @param  array<string, float|string>  $price
+     */
     #[On('insurance-selected')]
     public function addInsurance(array $item, array $price): void
     {
@@ -113,6 +119,9 @@ class TripSummary extends BaseCheckoutComponent
         $this->downPayment->amount = $this->itinerary->price->downPayment->amount + intval($price['amount']);
     }
 
+    /**
+     * Remove insurance from the itinerary.
+     */
     #[On('insurance-declined')]
     public function removeInsurance(): void
     {

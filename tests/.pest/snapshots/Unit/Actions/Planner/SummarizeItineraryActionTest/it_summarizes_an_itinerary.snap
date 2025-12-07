@@ -99,5 +99,9 @@
     "upsellItems": [],
     "termsAndConditions": {
         "sections": []
-    }
+    },
+    "insurances": [],
+    "destinationCountries": [
+        "IT"
+    ]
 }

@@ -44,8 +44,10 @@ class InsuranceSection extends BaseCheckoutComponent
 
     /**
      * Handle the insurance quote.
+     *
+     * @param  array<string, mixed>|null  $quote
      */
-    public function handleInsuranceQuote(?array $quote)
+    public function handleInsuranceQuote(?array $quote): void
     {
         $this->model->updateData(['insurance' => $quote]);
 

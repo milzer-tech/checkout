@@ -60,19 +60,20 @@ class SummarizeItineraryAction
             }
         }
 
+        /** @phpstan-ignore-next-line  destinationCountries */
         $this->result->destinationCountries = $this->result->destinationCountries->unique();
 
         return $this->result;
     }
 
-    private function pushCountry(ModulesResponseEntity $module)
+    private function pushCountry(ModulesResponseEntity $module): void
     {
         if ($module->startLocation->countryCode) {
-            $this->result->destinationCountries->push($module->startLocation->countryCode);
+            $this->result->destinationCountries[] = $module->startLocation->countryCode;
         }
 
         if ($module->endLocation->countryCode) {
-            $this->result->destinationCountries->push($module->endLocation->countryCode);
+            $this->result->destinationCountries[] = $module->endLocation->countryCode;
         }
     }
 
@@ -89,7 +90,8 @@ class SummarizeItineraryAction
             adults: $itineraryResponse->countAdults(),
             children: $itineraryResponse->countChildren(),
             childrenAges: $itineraryResponse->getChildrenAges(),
-            termsAndConditions: $checkoutResponse->termsAndConditions
+            termsAndConditions: $checkoutResponse->termsAndConditions,
+            destinationCountries: new Collection
         );
     }
 
