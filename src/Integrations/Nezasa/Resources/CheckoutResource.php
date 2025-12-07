@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Resources;
 
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddOrRemoveUpsellItemsPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\AnswerActivityQuestionPayloadDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
@@ -183,6 +184,19 @@ class CheckoutResource extends BaseResource
     {
         return $this->connector->send(
             new AnswerActivityQuestionsRequest($checkoutId, $payload)
+        );
+    }
+
+    /**
+     * Add custom insurance for a checkout.
+     *                                                                      *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function addCustomInsurance(string $checkoutId, AddCustomInsurancePayload $payload): Response
+    {
+        return $this->connector->send(
+            new AddOrRemoveUpsellItemsRequest($checkoutId, $payload)
         );
     }
 }
