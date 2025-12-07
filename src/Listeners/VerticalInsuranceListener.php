@@ -1,0 +1,149 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Nezasa\Checkout\Listeners;
+
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Config;
+use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
+use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
+use Nezasa\Checkout\Integrations\Vertical\Connectors\VerticalInsuranceConnector;
+use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\PurchasePaymentMethodPayloadEntity;
+use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\VerticalCustomerPayloadEntity;
+use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\PurchaseEventPayload;
+use Nezasa\Checkout\Models\Transaction;
+use Stripe\Exception\ApiErrorException;
+use Stripe\StripeClient;
+
+final class VerticalInsuranceListener implements ShouldQueue
+{
+    /**
+     * The stripe client.
+     */
+    protected StripeClient $stripe;
+
+    /**
+     * The transaction being processed.
+     */
+    protected Transaction $transaction;
+
+    /**
+     * Handle the event.
+     */
+    public function handle(ItineraryBookingFailedEvent|ItineraryBookingSucceededEvent $event): void
+    {
+        $this->transaction = $event->transaction;
+
+        if (! $this->shouldBeProcessed()) {
+            return;
+        }
+
+        $this->stripe = new StripeClient(Config::string('checkout.integrations.stripe.secret_key'));
+
+        $paymentMethodId = $this->getPaymentMethodId();
+
+        $clonePaymentMethodId = $this->clonePayment($paymentMethodId);
+
+        $verticalPaymentIntentId = $this->createVerticalPaymentIntent($clonePaymentMethodId);
+
+        $this->purchaseInsurance($verticalPaymentIntentId);
+    }
+
+    /**
+     * Determine if the event should be processed.
+     */
+    protected function shouldBeProcessed(): bool
+    {
+        return $this->transaction->gateway === 'Stripe'
+            && Config::boolean('checkout.insurance.vertical.active') === true
+            && isset($this->transaction->checkout->data['insurance'])
+            && $this->transaction->checkout->data['insurance']['quote_id'];
+    }
+
+    /**
+     * Get the payment method id from the payment intent stored in the session of Stripe.
+     *
+     * @throws ApiErrorException
+     */
+    protected function getPaymentMethodId(): string
+    {
+        $paymentIntentId = $this->transaction->result_data['session']['payment_intent'];
+
+        $paymentIntent = $this->stripe->paymentIntents->retrieve($paymentIntentId);
+
+        $this->transaction->update([
+            'result_data' => $this->transaction->result_data + ['payment_intent' => $paymentIntent->toArray()],
+        ]);
+
+        return $paymentIntent->toArray()['payment_method'];
+    }
+
+    /**
+     * Clone the payment method to the connected account.
+     *
+     * @throws ApiErrorException
+     */
+    protected function clonePayment(string $paymentMethodId): string
+    {
+        $paymentMethod = $this->stripe->paymentMethods->create(
+            params: [
+                'customer' => (string) $this->transaction->result_data['session']['customer'],
+                'payment_method' => $paymentMethodId,
+            ],
+            opts: [
+                'stripe_account' => Config::string('checkout.insurance.vertical.connected_account_id'),
+            ]
+        );
+
+        $this->transaction->update([
+            'result_data' => $this->transaction->result_data + ['clone_method' => $paymentMethod->toArray()],
+        ]);
+
+        return $paymentMethod->toArray()['id'];
+    }
+
+    protected function createVerticalPaymentIntent(string $paymentMethodId): string
+    {
+        $newPaymentIntent = $this->stripe->paymentIntents->create(
+            params: [
+                'payment_method' => $paymentMethodId,
+                'currency' => (string) $this->transaction->checkout->data['insurance']['currency'],
+                'amount' => (int) $this->transaction->checkout->data['insurance']['total'],
+                'off_session' => true,
+                'confirm' => true,
+                'metadata' => [
+                    'quote_id' => (string) $this->transaction->checkout->data['insurance']['quote_id'],
+                ],
+            ],
+            opts: [
+                'stripe_account' => Config::string('checkout.insurance.vertical.connected_account_id'),
+            ]
+        );
+
+        $this->transaction->update([
+            'result_data' => $this->transaction->result_data + ['new_payment_intend' => $newPaymentIntent->toArray()],
+        ]);
+
+        return $newPaymentIntent->toArray()['id'];
+    }
+
+    protected function purchaseInsurance(string $paymentIntentId)
+    {
+        $response = VerticalInsuranceConnector::make()->purchase()->eventHostCancellation(
+            new PurchaseEventPayload(
+                quote_id: $this->transaction->checkout->data['insurance']['quote_id'],
+                payment_method: new PurchasePaymentMethodPayloadEntity(token: $paymentIntentId),
+                customer: new VerticalCustomerPayloadEntity(
+                    first_name: $this->transaction->checkout->data['contact']['firstName'],
+                    last_name: $this->transaction->checkout->data['contact']['lastName'],
+                    email_address: $this->transaction->checkout->data['contact']['email']
+                )
+            )
+        );
+
+        $this->transaction->update([
+            'result_data' => $this->transaction->result_data + ['insurance_purchase' => $response->array()],
+        ]);
+    }
+}
