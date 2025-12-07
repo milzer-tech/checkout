@@ -48,6 +48,16 @@ return [
         ],
     ],
 
+    'insurance' => [
+        'vertical' => [
+            'active' => (bool) env('CHECKOUT_VERTICAL_INSURACNE_ACTIVE', false),
+            'name' => env('CHECKOUT_VERTICAL_INSURACNE_NAME', 'Vertical Insurance'),
+            'connected_account_id' => env('CHECKOUT_VERTICAL_INSURANCE_CONNECTED_ACCOUNT_ID', 'must_be_set_in_env'),
+            'username' => env('CHECKOUT_VERTICAL_INSURANCE_USERNAME', 'must_be_set_in_env'),
+            'password' => env('CHECKOUT_VERTICAL_INSURANCE_PASSWORD', 'must_be_set_in_env'),
+        ],
+    ],
+
     'payment' => [
         OppwaWidgetGateway::class,
         InvoiceGateway::class,

@@ -17,6 +17,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\AddedRentalCarResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\AddedUpsellItemResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\LegResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ModulesResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RentalCarResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse as ItineraryResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RetrieveCheckoutResponse as CheckoutResponse;
@@ -49,6 +50,7 @@ class SummarizeItineraryAction
         $this->pushUpsellItems($addedUpsellItemsResponse);
 
         foreach ($itineraryResponse->modules as $module) {
+            $this->pushCountry($module);
             $this->pushTransport($module->returnConnections);
 
             foreach ($module->legs as $leg) {
@@ -58,7 +60,21 @@ class SummarizeItineraryAction
             }
         }
 
+        /** @phpstan-ignore-next-line  destinationCountries */
+        $this->result->destinationCountries = $this->result->destinationCountries->unique();
+
         return $this->result;
+    }
+
+    private function pushCountry(ModulesResponseEntity $module): void
+    {
+        if ($module->startLocation->countryCode) {
+            $this->result->destinationCountries[] = $module->startLocation->countryCode;
+        }
+
+        if ($module->endLocation->countryCode) {
+            $this->result->destinationCountries[] = $module->endLocation->countryCode;
+        }
     }
 
     /**
@@ -74,7 +90,8 @@ class SummarizeItineraryAction
             adults: $itineraryResponse->countAdults(),
             children: $itineraryResponse->countChildren(),
             childrenAges: $itineraryResponse->getChildrenAges(),
-            termsAndConditions: $checkoutResponse->termsAndConditions
+            termsAndConditions: $checkoutResponse->termsAndConditions,
+            destinationCountries: new Collection
         );
     }
 

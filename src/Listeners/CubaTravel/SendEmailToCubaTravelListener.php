@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nezasa\Checkout\Listeners;
+namespace Nezasa\Checkout\Listeners\CubaTravel;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Config;
@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Mail;
 use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Mails\CubaTravelMail;
-use Nezasa\Checkout\Models\Checkout;
 
 final class SendEmailToCubaTravelListener implements ShouldQueue
 {
@@ -19,14 +18,18 @@ final class SendEmailToCubaTravelListener implements ShouldQueue
      */
     public function handle(ItineraryBookingFailedEvent|ItineraryBookingSucceededEvent $event): void
     {
+        if (! Config::boolean('checkout::cuba-travel.active')) {
+            return;
+        }
+
         $receivers = Config::array('checkout::cuba-travel.email.to');
 
         if ($receivers === []) {
             return;
         }
 
-        $checkout = Checkout::whereCheckoutId($event->checkoutId)->whereItineraryId($event->itineraryId)->firstOrFail();
-
-        Mail::to($receivers)->send(mailable: new CubaTravelMail($checkout));
+        Mail::to($receivers)->send(
+            mailable: new CubaTravelMail($event->transaction->checkout)
+        );
     }
 }

@@ -40,6 +40,7 @@ return [
         'transfers' => 'Transfers',
         'rental_cars' => 'Rental cars',
         'upsell_items' => 'Upsell items',
+        'Insurance' => 'Insurance',
         'total' => 'Total',
         'destination_cost_text' => 'From the :total total price, :paid_in_destination to be paid in destination are displayed based on the current exchange rate (indicative cost), and are payable in local currency.',
         'available' => 'Available',
@@ -70,6 +71,7 @@ return [
     'payment' => [
         'payment' => 'Payment',
         'not_available_service' => 'The selected payment method is not available.',
+        'additional_insurance_cost' => 'An additional %s will be charged later for travel insurance using the same card.',
     ],
     'booking_confirmation' => [
         'booking_confirmation' => 'Booking confirmation',

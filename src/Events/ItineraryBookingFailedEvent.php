@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Events;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Nezasa\Checkout\Models\Transaction;
 
 final class ItineraryBookingFailedEvent
 {
@@ -15,5 +16,5 @@ final class ItineraryBookingFailedEvent
     /**
      * Create a new instance of the event.
      */
-    public function __construct(public string $checkoutId, public string $itineraryId) {}
+    public function __construct(public Transaction $transaction) {}
 }

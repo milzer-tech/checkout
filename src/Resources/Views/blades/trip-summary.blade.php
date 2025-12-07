@@ -1,4 +1,4 @@
-@use(Illuminate\Support\Collection;use Illuminate\Support\Number)
+@use(Illuminate\Support\Collection;use Illuminate\Support\Number;use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum)
 
 <div class="border border-[color:var(--border)] dark:border-gray-600 bg-transparent rounded-[12px] p-4 sm:p-6 mb-6">
     {{-- Header with image and title --}}
@@ -302,6 +302,30 @@
                         </div>
                     </div>
                 @endif
+
+
+                @if($itinerary->hasInsurance())
+                    {{-- renal car section --}}
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.Insurance')}}</h3>
+                            @include('checkout::components.available',['availability' => $itinerary->getHotelsGroupStatus()])
+                        </div>
+                        <div class="space-y-2">
+                            @foreach($itinerary->insurances as $item)
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        @include('checkout::components.availability-status', ['availability' => $stay->availability])
+                                        <span
+                                            class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
+                                    </div>
+                                    <div
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200"></div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
 
         @endif
@@ -361,7 +385,7 @@
             </button>
 
             <span wire:loading.remove class="text-2xl font-bold dark:text-white">
-            {{ Number::currency($itinerary->price->discountedPackagePrice->amount, $itinerary->price->discountedPackagePrice->currency) }}
+            {{ Number::currency($total->amount, $total->currency) }}
         </span>
 
             {{-- loader --}}
@@ -386,7 +410,7 @@
                     {{ trans('checkout::page.trip_details.paid_before_departure') }}
                 </span>
                     <span class="text-gray-800 dark:text-gray-200">
-                    {{ Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}
+                    {{ Number::currency($downPayment->amount, $downPayment->currency) }}
                 </span>
                 </div>
 

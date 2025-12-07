@@ -21,6 +21,8 @@ class ModulesResponseEntity extends Data
      */
     public function __construct(
         public Collection $legs,
+        public LocationResponseEntity $startLocation,
+        public LocationResponseEntity $endLocation,
         public Collection $returnConnections = new Collection,
     ) {}
 }

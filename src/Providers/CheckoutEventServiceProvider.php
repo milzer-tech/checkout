@@ -8,7 +8,8 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider;
 use Illuminate\Support\Facades\Event;
 use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
-use Nezasa\Checkout\Listeners\SendEmailToCubaTravelListener;
+use Nezasa\Checkout\Listeners\CubaTravel\SendEmailToCubaTravelListener;
+use Nezasa\Checkout\Listeners\VerticalInsuranceListener;
 
 class CheckoutEventServiceProvider extends EventServiceProvider
 {
@@ -18,6 +19,7 @@ class CheckoutEventServiceProvider extends EventServiceProvider
     public function boot(): void
     {
         Event::listen(ItineraryBookingSucceededEvent::class, SendEmailToCubaTravelListener::class);
+        Event::listen(ItineraryBookingSucceededEvent::class, VerticalInsuranceListener::class);
 
         Event::listen(ItineraryBookingFailedEvent::class, SendEmailToCubaTravelListener::class);
     }

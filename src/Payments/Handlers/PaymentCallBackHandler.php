@@ -46,7 +46,7 @@ class PaymentCallBackHandler
 
             $event = $bookingResult ? ItineraryBookingSucceededEvent::class : ItineraryBookingFailedEvent::class;
 
-            event(new $event($transaction->checkout->checkout_id, $transaction->checkout->itinerary_id));
+            event(new $event($transaction));
         }
 
         return $this->getOutput($transaction, $gateway);
