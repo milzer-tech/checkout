@@ -71,6 +71,7 @@ return [
     'payment' => [
         'payment' => 'Payment',
         'not_available_service' => 'The selected payment method is not available.',
+        'additional_insurance_cost' => 'An additional %s will be charged later for travel insurance using the same card.',
     ],
     'booking_confirmation' => [
         'booking_confirmation' => 'Booking confirmation',

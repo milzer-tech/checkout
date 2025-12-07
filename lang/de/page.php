@@ -59,6 +59,7 @@ return [
     'payment' => [
         'payment' => 'Zahlung',
         'not_available_service' => 'Die ausgewählte Zahlungsmethode ist nicht verfügbar.',
+        'additional_insurance_cost' => 'Eine zusätzliche Gebühr von %s wird später für die Reiseversicherung mit dem gleichen Kreditkartennummer erhoben.',
     ],
     'booking_confirmation' => [
         'booking_confirmation' => 'Buchungsbestätigung',

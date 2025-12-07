@@ -59,6 +59,7 @@ return [
     'payment' => [
         'payment' => 'Paiement',
         'not_available_service' => 'Le mode de paiement sélectionné n’est pas disponible.',
+        'additional_insurance_cost' => 'Une adicional %s sera cobrada más tarde para la aseguradora de viaje usando la misma tarjeta de crédito.',
     ],
     'booking_confirmation' => [
         'booking_confirmation' => 'Confirmation de réservation',
