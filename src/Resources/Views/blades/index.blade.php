@@ -43,12 +43,12 @@
                     :is-completed="$model->isCompleted(Section::AdditionalService)"
                     :is-expanded="$model->isExpanded(Section::AdditionalService)"
                 />
-                {{--                <livewire:insurance-section--}}
-                {{--                    :$prices--}}
-                {{--                    :$model--}}
-                {{--                    :is-completed="$model->data['status']['insurance']['isCompleted']"--}}
-                {{--                    :is-expanded="$model->data['status']['insurance']['isExpanded']"--}}
-                {{--                />--}}
+                <livewire:insurance-section
+                    :$itinerary
+                    :$model
+                    :is-completed="$model->data['status']['insurance']['isCompleted']"
+                    :is-expanded="$model->data['status']['insurance']['isExpanded']"
+                />
 
                 <livewire:terms-section
                     :termsAndConditions="$itinerary->termsAndConditions"
