@@ -58,7 +58,7 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->dispatch(
             'insurance-selected',
             new InsuranceItem(id: $quote['quote_id'], name: $quote['product']['promotional_header']),
-            new Price(amount: intval($quote['total'] / 100), currency: $quote['currency'])
+            new Price(amount: $quote['total'] / 100, currency: $quote['currency'])
         );
     }
 

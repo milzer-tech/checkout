@@ -171,7 +171,7 @@ class StripeGateway implements RedirectPaymentContract
                         'message' => sprintf(
                             @trans('checkout::page.payment.additional_insurance_cost'),
                             Number::currency(
-                                number: (int) (intval($transaction->checkout->data['insurance']['total']) / 100),
+                                number: $transaction->checkout->data['insurance']['total'] / 100,
                                 in: $transaction->checkout->data['insurance']['currency']
                             )
                         ),
