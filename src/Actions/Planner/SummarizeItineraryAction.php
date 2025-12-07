@@ -17,6 +17,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\AddedRentalCarResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\AddedUpsellItemResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\LegConnectionEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\LegResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ModulesResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RentalCarResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse as ItineraryResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RetrieveCheckoutResponse as CheckoutResponse;
@@ -49,6 +50,7 @@ class SummarizeItineraryAction
         $this->pushUpsellItems($addedUpsellItemsResponse);
 
         foreach ($itineraryResponse->modules as $module) {
+            $this->pushCountry($module);
             $this->pushTransport($module->returnConnections);
 
             foreach ($module->legs as $leg) {
@@ -58,7 +60,20 @@ class SummarizeItineraryAction
             }
         }
 
+        $this->result->destinationCountries = $this->result->destinationCountries->unique();
+
         return $this->result;
+    }
+
+    private function pushCountry(ModulesResponseEntity $module)
+    {
+        if ($module->startLocation->countryCode) {
+            $this->result->destinationCountries->push($module->startLocation->countryCode);
+        }
+
+        if ($module->endLocation->countryCode) {
+            $this->result->destinationCountries->push($module->endLocation->countryCode);
+        }
     }
 
     /**
