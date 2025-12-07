@@ -94,7 +94,7 @@ class TermsSection extends BaseCheckoutComponent
     /**
      * Listen for the additional service section, expanding the terms and conditions section.
      */
-    #[On(Section::AdditionalService->value)]
+    #[On(Section::Insurance->value)]
     public function listen(): void
     {
         $this->termsAndConditions->sections->isEmpty()
