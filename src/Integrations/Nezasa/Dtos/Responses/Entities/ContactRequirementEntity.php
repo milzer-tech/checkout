@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Nezasa\Checkout\Integrations\Nezasa\HasVisibleFieldsContract;
@@ -35,7 +36,14 @@ class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContra
         public TravelerRequirementFieldEnum $taxNumber,
         public TravelerRequirementFieldEnum $localIdNumber,
         public ?CountryCallingCodeResponseEntity $mobilePhoneDefaultCountryCode = null
-    ) {}
+    ) {
+        // If the customizations increase, we need to refactor this.
+        if (Config::boolean('checkout.insurance.vertical.active')) {
+            $this->firstName = TravelerRequirementFieldEnum::Required;
+            $this->lastName = TravelerRequirementFieldEnum::Required;
+            $this->email = TravelerRequirementFieldEnum::Required;
+        }
+    }
 
     /**
      * Get the visible fields for the contact information.
