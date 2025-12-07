@@ -8,6 +8,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
+use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Integrations\Vertical\Connectors\VerticalInsuranceConnector;
 use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\PurchasePaymentMethodPayloadEntity;
 use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\VerticalCustomerPayloadEntity;
@@ -48,6 +52,8 @@ final class VerticalInsuranceListener implements ShouldQueue
         $verticalPaymentIntentId = $this->createVerticalPaymentIntent($clonePaymentMethodId);
 
         $this->purchaseInsurance($verticalPaymentIntentId);
+
+        $this->saveInsuranceOnNezasa();
     }
 
     /**
@@ -145,5 +151,28 @@ final class VerticalInsuranceListener implements ShouldQueue
         $this->transaction->update([
             'result_data' => $this->transaction->result_data + ['insurance_purchase' => $response->array()],
         ]);
+    }
+
+    protected function saveInsuranceOnNezasa(): void
+    {
+        $insurance = data_get($this->transaction->result_data, 'insurance_purchase');
+
+        if (isset($insurance['id'])) {
+            $response = NezasaConnector::make()->checkout()->addCustomInsurance(
+                checkoutId: $this->transaction->checkout->checkout_id,
+                payload: new AddCustomInsurancePayload(
+                    name: $insurance['product']['promotional_header'],
+                    netPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
+                    salesPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
+                    bookingStatus: AvailabilityEnum::Booked,
+                    description: data_get($insurance, 'product.description'),
+                )
+            );
+
+            $this->transaction->update([
+                'result_data' => $this->transaction->result_data + ['nezasa_insurance_response' => $response->array()],
+            ]);
+        }
+
     }
 }

@@ -9,6 +9,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddOrRemoveUpsellItemsPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\AnswerActivityQuestionPayloadDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\AddCustomInsuranceRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\AddOrRemoveUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\AnswerActivityQuestionsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\ApplyPromoCodeRequest;
@@ -196,7 +197,7 @@ class CheckoutResource extends BaseResource
     public function addCustomInsurance(string $checkoutId, AddCustomInsurancePayload $payload): Response
     {
         return $this->connector->send(
-            new AddOrRemoveUpsellItemsRequest($checkoutId, $payload)
+            new AddCustomInsuranceRequest($checkoutId, $payload)
         );
     }
 }
