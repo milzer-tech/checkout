@@ -110,9 +110,7 @@ class StripeGateway implements RedirectPaymentContract
         return new NezasaPayload(
             externalRefId: 'test',
             amount: $data->price,
-            //            paymentMethod: NezasaPaymentMethodEnum::Stripe
-            // TODO: add stripe payment method
-            paymentMethod: NezasaPaymentMethodEnum::CreditCard
+            paymentMethod: NezasaPaymentMethodEnum::Stripe
         );
     }
 
