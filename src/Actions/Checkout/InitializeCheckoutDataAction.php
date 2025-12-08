@@ -23,6 +23,8 @@ class InitializeCheckoutDataAction
             $model = Checkout::create(['checkout_id' => $checkoutId, 'itinerary_id' => $itineraryId]);
 
             $this->firstConfiguration($allocatedPax, $model);
+        } else {
+            $model->updateData(['insurance' => null]);
         }
 
         AvailabilityFacade::clearCache($checkoutId);
