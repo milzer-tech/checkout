@@ -86,37 +86,83 @@
                 {{trans('checkout::page.trip_details.back')}}
             </button>
         </a>
-        <button
+        <div x-data="{ clicked: false }">
 
+            <a
+                href="{{ $paymentPageUrl }}"
+                x-on:click="
+            if (clicked || {{ $checkingAvailability ? 'true' : 'false' }}) {
+                $event.preventDefault()
+            } else {
+                clicked = true
+            }
+        "
+                x-bind:class="{
+            'pointer-events-none cursor-not-allowed opacity-80':
+                clicked || {{ $checkingAvailability ? 'true' : 'false' }}
+        }"
 
-        @class([
-'inline-flex items-center gap-2 px-8 py-3 rounded-md text-white',
-'bg-blue-500 hover:bg-blue-600' => ! $checkingAvailability,
-'bg-gray-300 hover:bg-gray-500' => $checkingAvailability,
-])
-        @if($paymentPageUrl)
-            <a href="{{ $paymentPageUrl }}" class="w-full h-full">
-                @endif
+                class="block w-max"
+                style="text-decoration: none;"
+            >
 
-                <span class="whitespace-nowrap">
+                <div
+                    x-bind:disabled="clicked || {{ $checkingAvailability ? 'true' : 'false' }}"
+                    @class([
+                        'inline-flex items-center gap-2 px-8 py-3 rounded-md text-white',
+                        'bg-blue-500 hover:bg-blue-600' => ! $checkingAvailability,
+                        'bg-gray-300 hover:bg-gray-500 pointer-events-none' => $checkingAvailability,
+                    ])
+                >
+
+                    {{-- Text always visible --}}
+                    <span class="whitespace-nowrap">
                 {{ trans('checkout::page.trip_details.pay') }}
-                    {{ \Illuminate\Support\Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}
-              </span>
+                        {{ \Illuminate\Support\Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}
+            </span>
 
-                @if($checkingAvailability)
-                    <span class="inline-flex w-4 h-4 items-center justify-center">
-                <svg class="h-4 w-4 animate-spin /* toggle visibility yourself */"
-                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
-                </svg>
-              </span>
-                @endif
+                    {{-- CASE 1: availability loading --}}
+                    @if($checkingAvailability)
+                        <span class="inline-flex w-4 h-4 items-center justify-center">
+                    <svg class="h-4 w-4 animate-spin"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24">
+                        <circle class="opacity-25"
+                                cx="12" cy="12" r="10"
+                                stroke="currentColor"
+                                stroke-width="4"/>
+                        <path class="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                    </svg>
+                </span>
+                    @else
+                        {{-- CASE 2: after click --}}
+                        <span class="inline-flex w-4 h-4 items-center justify-center"
+                              x-show="clicked"
+                              x-cloak>
+                    <svg class="h-4 w-4 animate-spin"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24">
+                        <circle class="opacity-25"
+                                cx="12" cy="12" r="10"
+                                stroke="currentColor"
+                                stroke-width="4"/>
+                        <path class="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                    </svg>
+                </span>
+                    @endif
 
-                @if($paymentPageUrl)
+                </div>
+
             </a>
-            @endif
-            </button>
+
+        </div>
+
 
     </div>
     <div class="text-center mb-10 text-gray-500 dark:text-gray-400 max-w-full md:max-w-[66.66%]">
