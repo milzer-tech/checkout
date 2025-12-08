@@ -12,7 +12,6 @@ use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Handlers\PaymentInitiationHandler;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class PaymentPage extends BaseCheckoutComponent
 {
@@ -45,9 +44,14 @@ class PaymentPage extends BaseCheckoutComponent
         return view('checkout::blades.payment-page');
     }
 
-    public function goBack(): RedirectResponse
+    /**
+     * Go back to the traveller details page.
+     */
+    public function goBack(): void
     {
-        return to_route('traveler-details', $this->getQueryParams());
+        $this->redirect(
+            route('traveler-details', $this->getQueryParams())
+        );
     }
 
     /**
