@@ -150,9 +150,28 @@ it('priceChanged() updates itinerary price and promo response', function (): voi
 
 it('createPaymentPageUrl() sets gateway, marks checkingAvailability and emits event', function (): void {
     $responses = (new CallTripDetailsAction)->run('it-td-4', 'co-td-4');
-    $model = Checkout::create(['checkout_id' => 'co-td-4', 'itinerary_id' => 'it-td-4', 'data' => []]);
 
-    $component = new TripDetailsPage;
+    // Seed a checkout model with an explicit, completed status structure
+    $model = Checkout::create([
+        'checkout_id' => 'co-td-4',
+        'itinerary_id' => 'it-td-4',
+        // Ensure "status" key exists so the component's loop doesn't error/early return
+        'data' => [
+            'status' => [],
+        ],
+    ]);
+
+    // Use a stub to capture dispatched events without relying on Livewire test helpers
+    $component = new class extends TripDetailsPage
+    {
+        public array $dispatched = [];
+
+        public function dispatch($event, ...$params): void
+        {
+            $this->dispatched[] = ['event' => $event, 'params' => $params];
+        }
+    };
+
     $component->checkoutId = 'co-td-4';
     $component->itineraryId = 'it-td-4';
     $component->origin = 'app';
@@ -174,8 +193,13 @@ it('createPaymentPageUrl() sets gateway, marks checkingAvailability and emits ev
 
     $component->createPaymentPageUrl('encrypted-gateway');
 
+    // Assert state
     expect($component->gateway)->toBe('encrypted-gateway')
         ->and($component->checkingAvailability)->toBeTrue();
+
+    // Assert the component emitted the expected event
+    $events = collect($component->dispatched)->pluck('event');
+    expect($events->contains('payment-selected'))->toBeTrue();
 });
 
 it('generatePaymentPageUrl() builds signed URL on success and resets checkingAvailability', function (): void {
