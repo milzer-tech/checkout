@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Actions\Checkout;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\VerifyAvailabilityResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
@@ -53,8 +54,8 @@ class VerifyAvailabilityAction
      */
     protected function getVerifyAvailabilityResponse(string $checkoutId): VerifyAvailabilityResponse
     {
-        if ((int) Cache::get('varifyAvailability-status-'.$checkoutId, 500) === 200) {
-            $dto = VerifyAvailabilityResponse::from(Cache::get('varifyAvailability-'.$checkoutId));
+        if (AvailabilityFacade::getCachedStatus($checkoutId) === 200) {
+            $dto = VerifyAvailabilityResponse::from(AvailabilityFacade::getCachedResult($checkoutId));
         } else {
             /** @var VerifyAvailabilityResponse $dto */
             $dto = NezasaConnector::make()->checkout()->varifyAvailability($checkoutId)->dto();

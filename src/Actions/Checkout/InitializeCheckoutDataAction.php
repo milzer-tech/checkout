@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Actions\Checkout;
 
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
 use Nezasa\Checkout\Models\Checkout;
-use Nezasa\Checkout\Supporters\AvailabilitySupporter;
 
 class InitializeCheckoutDataAction
 {
@@ -25,7 +25,7 @@ class InitializeCheckoutDataAction
             $this->firstConfiguration($allocatedPax, $model);
         }
 
-        AvailabilitySupporter::clearCache($checkoutId);
+        AvailabilityFacade::clearCache($checkoutId);
 
         return $model;
     }
