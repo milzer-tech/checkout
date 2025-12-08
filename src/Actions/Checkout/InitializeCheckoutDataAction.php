@@ -45,6 +45,7 @@ class InitializeCheckoutDataAction
             'numberOfPax' => $this->countPaxes($allocatedPax),
             'allocatedPax' => $allocatedPax,
             'status' => [],
+            'insurance' => null,
         ];
 
         foreach (Section::cases() as $section) {
