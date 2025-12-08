@@ -8,6 +8,7 @@ use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
 use Nezasa\Checkout\Models\Checkout;
+use Nezasa\Checkout\Supporters\AvailabilitySupporter;
 
 class InitializeCheckoutDataAction
 {
@@ -23,6 +24,8 @@ class InitializeCheckoutDataAction
 
             $this->firstConfiguration($allocatedPax, $model);
         }
+
+        AvailabilitySupporter::clearCache($checkoutId);
 
         return $model;
     }
