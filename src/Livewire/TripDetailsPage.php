@@ -12,6 +12,7 @@ use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
+use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 use Throwable;
 use URL;
@@ -64,7 +65,8 @@ class TripDetailsPage extends BaseCheckoutComponent
      * @throws Throwable
      */
     public function render(): View
-    { /** @phpstan-ignore-next-line */
+    {
+        /** @phpstan-ignore-next-line */
         return view('checkout::blades.index', [
             'contactRequirements' => $this->result->travelerRequirements->contact,
             'countryCodes' => $this->result->countryCodes,
@@ -91,6 +93,18 @@ class TripDetailsPage extends BaseCheckoutComponent
     public function createPaymentPageUrl(string $gateway): void
     {
         $this->gateway = $gateway;
+
+        foreach ($this->model->data['status'] as $name => $section) {
+            if ($section['isCompleted'] === false) {
+                $this->dispatch('toast', [
+                    'type' => 'error',
+                    'title' => trans('checkout::page.trip_details.error'),
+                    'message' => trans('checkout::exceptions.please_complete_this_section').': '.Section::from($name)->label(),
+                ]);
+
+                return;
+            }
+        }
 
         $this->checkingAvailability = true;
 

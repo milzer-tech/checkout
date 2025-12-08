@@ -32,4 +32,24 @@ enum Section: string
     case Insurance = 'insurance';
     case Activity = 'activity';
     case TermsAndConditions = 'terms-and-conditions';
+
+    /**
+     * Customize the labels of the enum values.
+     *
+     * @return array<string, string>
+     */
+    protected static function setLabels(): array
+    {
+        return [
+            self::Promo->value => trans('checkout::page.trip_details.add_promo_code'),
+            self::Contact->value => trans('checkout::page.trip_details.contact_details'),
+            self::Traveller->value => trans('checkout::page.trip_details.traveller_details'),
+            self::AdditionalService->value => trans('checkout::page.trip_details.additional_services'),
+            self::Summary->value => trans('checkout::page.trip_details.trip_summary'),
+            self::PaymentOptions->value => trans('checkout::page.trip_details.payment_options'),
+            self::Insurance->value => trans('checkout::page.trip_details.Insurance'),
+            self::Activity->value => trans('checkout::page.trip_details.activities'),
+            self::TermsAndConditions->value => trans('checkout::page.trip_details.important_information'),
+        ];
+    }
 }

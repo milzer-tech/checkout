@@ -168,4 +168,64 @@
     <div class="text-center mb-10 text-gray-500 dark:text-gray-400 max-w-full md:max-w-[66.66%]">
         {{trans('checkout::page.footer.copyright', ['name' => 'Squad Ruby Tours'])}}
     </div>
+
+    {{-- Global toast (top-right) --}}
+    <div
+        x-data="{
+        show: false,
+        message: '',
+        title: '',
+        type: 'info',
+        hideTimeout: null,
+        open(detail) {
+            this.message = detail.message ?? '';
+            this.title = detail.title ?? '';
+            this.type = detail.type ?? 'info';
+            this.show = true;
+
+            if (this.hideTimeout) clearTimeout(this.hideTimeout);
+            this.hideTimeout = setTimeout(() => this.show = false, 5000);
+        }
+    }"
+        x-on:toast.window="open($event.detail[0])"
+        class="fixed top-10 right-10 z-[999]"
+    >
+        <div
+            x-show="show"
+            x-transition.opacity.duration.300ms
+            x-transition.scale.origin.top.right.duration.200ms
+            x-cloak
+            class="w-[420px] bg-white rounded-2xl border border-slate-200 shadow-[0_20px_55px_rgba(20,30,70,0.12)] p-5 flex gap-4 items-start"
+        >
+            {{-- Icon --}}
+            <div
+                class="h-4 w-4 rounded-full mt-1.5"
+                :class="{
+                'bg-red-600': type === 'error',
+                'bg-green-600': type === 'success',
+                'bg-blue-600': type === 'info'
+            }"
+            ></div>
+
+            {{-- Content --}}
+            <div class="flex-1">
+                <div class="text-base font-semibold text-slate-900 mb-1"
+                     x-text="title">
+                </div>
+
+                <div class="text-sm text-slate-600 leading-relaxed"
+                     x-text="message">
+                </div>
+            </div>
+
+            {{-- Close --}}
+            <button
+                @click="show = false"
+                class="text-slate-400 hover:text-slate-600 transition"
+            >
+                ✕
+            </button>
+        </div>
+    </div>
+
 </div>

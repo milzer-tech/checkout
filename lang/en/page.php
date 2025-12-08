@@ -66,6 +66,10 @@ return [
         'important_information' => 'Important information',
         'learn_more' => 'Learn more',
         'travel_reason' => 'Travel reason',
+        'error' => 'Error',
+        'info' => 'Info',
+        'success' => 'Success',
+        'trip_summary' => 'Trip summary',
     ],
 
     'payment' => [
