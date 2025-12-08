@@ -64,6 +64,7 @@ final class VerticalInsuranceListener implements ShouldQueue
         return $this->transaction->gateway === 'Stripe'
             && Config::boolean('checkout.insurance.vertical.active') === true
             && isset($this->transaction->checkout->data['insurance'])
+            && $this->transaction->checkout->data['insurance'] !== null
             && $this->transaction->checkout->data['insurance']['quote_id'];
     }
 
