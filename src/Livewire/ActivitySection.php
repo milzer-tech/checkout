@@ -86,7 +86,7 @@ class ActivitySection extends BaseCheckoutComponent
 
         if (! $this->shouldRender) {
             dispatch($verifyAvailability);
-
+            $this->markAsCompletedAdnCollapse(Section::Activity);
             $this->dispatch(Section::Activity->value);
 
             return;

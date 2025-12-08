@@ -95,6 +95,10 @@ class TripDetailsPage extends BaseCheckoutComponent
         $this->gateway = $gateway;
 
         foreach ($this->model->data['status'] as $name => $section) {
+            if (Section::from($name)->isPaymentOptions()) {
+                continue;
+            }
+
             if ($section['isCompleted'] === false) {
                 $this->dispatch('toast', [
                     'type' => 'error',
