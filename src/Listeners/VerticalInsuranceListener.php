@@ -51,9 +51,9 @@ final class VerticalInsuranceListener implements ShouldQueue
 
         $verticalPaymentIntentId = $this->createVerticalPaymentIntent($clonePaymentMethodId);
 
-        $this->purchaseInsurance($verticalPaymentIntentId);
-
-        $this->saveInsuranceOnNezasa();
+        if ($this->purchaseInsurance($verticalPaymentIntentId)) {
+            $this->saveInsuranceOnNezasa();
+        }
     }
 
     /**
@@ -135,7 +135,7 @@ final class VerticalInsuranceListener implements ShouldQueue
         return $newPaymentIntent->toArray()['id'];
     }
 
-    private function purchaseInsurance(string $paymentIntentId): void
+    private function purchaseInsurance(string $paymentIntentId): bool
     {
         $response = VerticalInsuranceConnector::make()->purchase()->eventHostCancellation(
             new PurchaseEventPayload(
@@ -152,6 +152,8 @@ final class VerticalInsuranceListener implements ShouldQueue
         $this->transaction->update([
             'result_data' => $this->transaction->result_data + ['insurance_purchase' => $response->array()],
         ]);
+
+        return $response->status() === 200 || $response->status() === 201;
     }
 
     private function saveInsuranceOnNezasa(): void
@@ -166,7 +168,8 @@ final class VerticalInsuranceListener implements ShouldQueue
                     netPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
                     salesPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
                     bookingStatus: AvailabilityEnum::Booked,
-                    description: data_get($insurance, 'product.description'),
+                    supplierConfirmationNumber: $insurance['policy_number'],
+                    description: data_get($insurance, 'product.description')
                 )
             );
 
@@ -174,6 +177,5 @@ final class VerticalInsuranceListener implements ShouldQueue
                 'result_data' => $this->transaction->result_data + ['nezasa_insurance_response' => $response->array()],
             ]);
         }
-
     }
 }
