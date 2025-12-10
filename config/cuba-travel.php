@@ -9,5 +9,5 @@ return [
 
     'active' => (bool) env('CUBA_TRAVEL_ACTIVE', false),
 
-    'reasons' => json_decode(env('CUBA_TRAVEL_REASONS', '["holiday trip","beach vacation","sightseeing","visiting friends","attending a wedding","work conference","studying abroad","medical treatment"]')),
+    'reasons' => json_decode(env('CUBA_TRAVEL_REASONS', '["Family Visits","Official Business of the U.S. Government, Foreign Governments, or Certain Intergovernmental Organizations","Journalistic Activity","Professional Research or Professional Meetings","Educational Activities (including study abroad programs)","Religious Activities","public Performances, Clinics, Workshops, Athletic or Other Competitions, and Exhibitions","Support for the Cuban People","Humanitarian Projects","Activities of private Foundations or Research or Educational Institutes","Exportation, Importation, or Transmission of Information or Informational Materials","Certain Authorized Export Transactions(relating to authorized exports under U . S . law)"')),
 ];
