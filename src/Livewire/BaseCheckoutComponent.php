@@ -7,8 +7,8 @@ namespace Nezasa\Checkout\Livewire;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Nezasa\Checkout\Actions\Operation\SaveSectionStatusAction;
 use Nezasa\Checkout\Enums\Section;
-use Nezasa\Checkout\Jobs\SaveSectionStatusJob;
 use Nezasa\Checkout\Models\Checkout;
 
 #[Layout('checkout::layouts.layout')]
@@ -63,9 +63,8 @@ class BaseCheckoutComponent extends Component
 
         $this->isExpanded = true;
 
-        dispatch(
-            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
-        );
+        resolve(SaveSectionStatusAction::class)
+            ->run($this->model, $section, $this->isCompleted, $this->isExpanded);
     }
 
     /**
@@ -75,9 +74,8 @@ class BaseCheckoutComponent extends Component
     {
         $this->isExpanded = false;
 
-        dispatch(
-            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
-        );
+        resolve(SaveSectionStatusAction::class)
+            ->run($this->model, $section, $this->isCompleted, $this->isExpanded);
     }
 
     public function markAsCompletedAdnCollapse(Section $section): void
@@ -85,9 +83,8 @@ class BaseCheckoutComponent extends Component
         $this->isCompleted = true;
         $this->isExpanded = false;
 
-        dispatch(
-            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
-        );
+        resolve(SaveSectionStatusAction::class)
+            ->run($this->model, $section, $this->isCompleted, $this->isExpanded);
     }
 
     /**
@@ -97,9 +94,8 @@ class BaseCheckoutComponent extends Component
     {
         $this->isCompleted = true;
 
-        dispatch(
-            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
-        );
+        resolve(SaveSectionStatusAction::class)
+            ->run($this->model, $section, $this->isCompleted, $this->isExpanded);
     }
 
     /**
@@ -109,9 +105,8 @@ class BaseCheckoutComponent extends Component
     {
         $this->isCompleted = false;
 
-        dispatch(
-            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
-        );
+        resolve(SaveSectionStatusAction::class)
+            ->run($this->model, $section, $this->isCompleted, $this->isExpanded);
     }
 
     /**
@@ -122,9 +117,8 @@ class BaseCheckoutComponent extends Component
         $this->isCompleted = false;
         $this->isExpanded = true;
 
-        dispatch(
-            new SaveSectionStatusJob($this->checkoutId, $section, $this->isCompleted, $this->isExpanded)
-        );
+        resolve(SaveSectionStatusAction::class)
+            ->run($this->model, $section, $this->isCompleted, $this->isExpanded);
     }
 
     /**

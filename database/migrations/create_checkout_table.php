@@ -14,10 +14,12 @@ return new class extends Migration
     {
         Schema::create('checkouts', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('checkout_id')->unique();
+            $table->string('checkout_id');
             $table->string('itinerary_id');
             $table->json('data')->nullable();
             $table->timestamps();
+
+            $table->unique(['checkout_id', 'itinerary_id']);
         });
 
         Schema::create('checkout_transactions', function (Blueprint $table) {
