@@ -4,6 +4,7 @@ return [
     'gender' => [
         'male' => 'Männlich',
         'female' => 'Weiblich',
+
     ],
     'availability' => [
         'NoAvailability' => 'Die Komponente ist nicht mehr verfügbar.',
