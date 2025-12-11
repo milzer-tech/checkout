@@ -30,7 +30,7 @@ final class PurchaseEventRequest extends Request implements HasBody
      */
     public function resolveEndpoint(): string
     {
-        return 'v1/purchase/travel';
+        return 'purchase/travel';
     }
 
     /**

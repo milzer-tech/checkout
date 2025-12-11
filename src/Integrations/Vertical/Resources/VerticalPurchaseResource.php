@@ -14,7 +14,7 @@ class VerticalPurchaseResource extends BaseResource
     /**
      * Send a request to register the quote.
      */
-    public function eventHostCancellation(PurchaseEventPayload $payload): Response
+    public function travel(PurchaseEventPayload $payload): Response
     {
         return $this->connector->send(
             new PurchaseEventRequest($payload)

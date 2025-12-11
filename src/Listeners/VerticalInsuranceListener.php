@@ -137,10 +137,10 @@ final class VerticalInsuranceListener implements ShouldQueue
 
     private function purchaseInsurance(string $paymentIntentId): bool
     {
-        $response = VerticalInsuranceConnector::make()->purchase()->eventHostCancellation(
+        $response = VerticalInsuranceConnector::make()->purchase()->travel(
             new PurchaseEventPayload(
                 quote_id: $this->transaction->checkout->data['insurance']['quote_id'],
-                payment_method: new PurchasePaymentMethodPayloadEntity(token: $paymentIntentId),
+                payment_method: new PurchasePaymentMethodPayloadEntity(token: "stripe:$paymentIntentId"),
                 customer: new VerticalCustomerPayloadEntity(
                     first_name: $this->transaction->checkout->data['contact']['firstName'],
                     last_name: $this->transaction->checkout->data['contact']['lastName'],
