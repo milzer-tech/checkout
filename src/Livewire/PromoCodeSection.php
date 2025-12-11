@@ -124,6 +124,6 @@ class PromoCodeSection extends BaseCheckoutComponent
      */
     protected function dispatchPriceChangedEvent(): void
     {
-        $this->dispatch('price-changed', prices: $this->prices);
+        $this->dispatch('price-changed', price: $this->prices);
     }
 }
