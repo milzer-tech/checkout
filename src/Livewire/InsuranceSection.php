@@ -8,6 +8,7 @@ use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Supporters\InsuranceSupporter;
 
@@ -78,6 +79,24 @@ class InsuranceSection extends BaseCheckoutComponent
     }
 
     /**
+     * Update the price.
+     *
+     * @param  array<string, array<string, float>>  $price
+     */
+    #[On('price-updated')]
+    public function priceUpdated(array $price): void
+    {
+        if (! InsuranceSupporter::isAvailable()) {
+            return;
+        }
+
+        $this->itinerary->price = ApplyPromoCodeResponse::from($price);
+
+        // tell JS side to refresh insurance widget with the new config
+        $this->dispatch('insurance-config-updated', config: $this->verticalInsuranceConfig);
+    }
+
+    /**
      * Go to the next section.
      */
     public function next(): void
@@ -85,5 +104,44 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->markAsCompletedAdnCollapse(Section::Insurance);
 
         $this->dispatch(Section::Insurance->value);
+    }
+
+    /**
+     *  Get the vertical insurance config.
+     *
+     * @return array<string, mixed>
+     *
+     * @throws \Exception
+     */
+    public function getVerticalInsuranceConfigProperty(): array
+    {
+        if (! InsuranceSupporter::isAvailable() || ! $this->contact) {
+            return [];
+        }
+
+        return [
+            'client_id' => config()->string('checkout.insurance.vertical.username'),
+            'product_config' => [
+                'travel' => [[
+                    'customer' => [
+                        'first_name' => $this->contact->firstName,
+                        'last_name' => $this->contact->lastName,
+                        'email_address' => $this->contact->email,
+                        'street' => $this->contact->address->street1.' '.$this->contact->address->street2,
+                        'city' => $this->contact->address->city,
+                        'postal_code' => $this->contact->address->postalCode,
+                        'country' => str($this->contact->address->country)->beforeLast('-')->toString(),
+                    ],
+                    'attributes' => [
+                        'trip_start_date' => $this->itinerary->startDate->toDateString(),
+                        'trip_end_date' => $this->itinerary->endDate->toDateString(),
+                        'destination_countries' => $this->itinerary->destinationCountries,
+                        'trip_cost' => $this->itinerary->price->discountedPackagePrice->toCent(),
+                        'trip_cost_currency' => (string) $this->itinerary->price->discountedPackagePrice->currency,
+                    ],
+                    'currency' => (string) $this->itinerary->price->discountedPackagePrice->currency,
+                ]],
+            ],
+        ];
     }
 }
