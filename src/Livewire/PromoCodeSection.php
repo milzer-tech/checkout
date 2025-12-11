@@ -40,10 +40,6 @@ class PromoCodeSection extends BaseCheckoutComponent
     public function mount(): void
     {
         $this->promoCode = $this->prices->promoCode?->code;
-
-        if ($this->promoCode) {
-            $this->markAsCompleted(Section::Promo);
-        }
     }
 
     /**

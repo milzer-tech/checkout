@@ -130,7 +130,7 @@ class InsuranceSection extends BaseCheckoutComponent
                         'street' => $this->contact->address->street1.' '.$this->contact->address->street2,
                         'city' => $this->contact->address->city,
                         'postal_code' => $this->contact->address->postalCode,
-                        'state' => 'MN', // todo: clarify state
+                        'state' => 'MI', // todo: clarify state
                         'country' => str($this->contact->address->country)->beforeLast('-')->toString(),
                     ],
                     'attributes' => [
