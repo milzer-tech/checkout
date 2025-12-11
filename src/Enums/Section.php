@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Enums;
 
 use AzimKordpour\PowerEnum\Traits\PowerEnum;
+use Illuminate\Support\Collection;
 
 /**
  * Enum representing different sections in the checkout process.
@@ -51,5 +52,24 @@ enum Section: string
             self::Activity->value => trans('checkout::page.trip_details.activities'),
             self::TermsAndConditions->value => trans('checkout::page.trip_details.important_information'),
         ];
+    }
+
+    /**
+     * Define the display order of the sections.
+     *
+     * @return Collection<int, Section>
+     */
+    public function displayOrder(): Collection
+    {
+        return collect([
+            self::Contact,
+            self::Traveller,
+            self::Activity,
+            self::Promo,
+            self::AdditionalService,
+            self::Insurance,
+            self::TermsAndConditions,
+            self::PaymentOptions,
+        ]);
     }
 }
