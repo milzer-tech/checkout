@@ -105,7 +105,7 @@ class ComputopGateway implements RedirectPaymentContract
             externalRefId: $paymentInit->persistentData['response']['paymentId'],
             amount: $data->price,
             paymentMethod: NezasaPaymentMethodEnum::Other,
-            paymentMethodName: self::name()
+            paymentMethodName: 'Computop'
         );
     }
 

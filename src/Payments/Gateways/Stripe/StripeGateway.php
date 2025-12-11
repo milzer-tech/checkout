@@ -108,9 +108,11 @@ class StripeGateway implements RedirectPaymentContract
     public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
     {
         return new NezasaPayload(
+            /** @phpstan-ignore-next-line  */
             externalRefId: $paymentInit->persistentData['session']['id'],
             amount: $data->price,
-            paymentMethod: NezasaPaymentMethodEnum::Stripe
+            paymentMethod: NezasaPaymentMethodEnum::Other,
+            paymentMethodName: 'Stripe'
         );
     }
 

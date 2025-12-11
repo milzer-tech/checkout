@@ -69,7 +69,7 @@ class InvoiceGateway implements RedirectPaymentContract
             /** @phpstan-ignore-next-line  */
             externalRefId: $paymentInit->persistentData['id'],
             amount: $data->price,
-            paymentMethod: NezasaPaymentMethodEnum::Invoice
+            paymentMethod: NezasaPaymentMethodEnum::BankTransfer
         );
     }
 

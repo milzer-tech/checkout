@@ -71,7 +71,8 @@ class OppwaWidgetGateway implements WidgetPaymentContract
         return new NezasaPayload(
             externalRefId: $paymentInit->persistentData->id,
             amount: $data->price,
-            paymentMethod: NezasaPaymentMethodEnum::CreditCard
+            paymentMethod: NezasaPaymentMethodEnum::Other,
+            paymentMethodName: 'Oppwa'
         );
     }
 
