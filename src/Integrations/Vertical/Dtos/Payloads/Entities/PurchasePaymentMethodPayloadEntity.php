@@ -11,11 +11,6 @@ class PurchasePaymentMethodPayloadEntity extends BaseDto
     /**
      * Create a new instance of PurchasePaymentMethodEntity.
      */
-    public function __construct(public string $token)
-    {
-        if (! app()->isProduction()) {
-            $this->token = 'stripe:pm_card_visa';
-        }
-    }
+    public function __construct(public string $token) {}
 
 }
