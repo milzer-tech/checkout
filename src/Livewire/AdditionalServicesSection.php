@@ -106,17 +106,19 @@ class AdditionalServicesSection extends BaseCheckoutComponent
     public function changeBox(string $offerId, string $categoryId): void
     {
         try {
-            NezasaConnector::make()->checkout()->addOrUpdateUpsellItem(
+            $response = NezasaConnector::make()->checkout()->addOrUpdateUpsellItem(
                 checkoutId: $this->checkoutId,
                 payload: new AddOrRemoveUpsellItemsPayload(
                     selection: new Collection([
                         new UpsellItemOfferPayloadEntity(
                             offerId: $offerId,
                             serviceCategoryRefId: $categoryId === $this->getNoSelectionValue() ? null : $categoryId,
+                            quantity: $categoryId === $this->getNoSelectionValue() ? null : 1,
                         ),
                     ])
                 )
             );
+
         } finally {
             $this->dispatch('summary-updated');
             $this->validate(['items.'.$offerId => $this->rules()['items.'.$offerId]]);
