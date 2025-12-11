@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Bus;
+use Nezasa\Checkout\Actions\Operation\SaveSectionStatusAction;
 use Nezasa\Checkout\Enums\Section;
-use Nezasa\Checkout\Jobs\SaveSectionStatusJob;
 use Nezasa\Checkout\Livewire\BaseCheckoutComponent;
+use Nezasa\Checkout\Models\Checkout;
 
 class TestableBaseCheckoutComponent extends BaseCheckoutComponent
 {
@@ -31,82 +31,134 @@ beforeEach(function (): void {
     $this->component->lang = 'en';
     $this->component->isExpanded = false;
     $this->component->isCompleted = false;
+
+    // Seed a minimal checkout model required by BaseCheckoutComponent
+    $this->component->model = Checkout::create([
+        'checkout_id' => 'co-123',
+        'itinerary_id' => 'it-999',
+        'data' => [
+            'status' => [],
+        ],
+    ]);
 });
 
-it('expand accepts string section, sets isExpanded=true and dispatches SaveSectionStatusJob with current completion state', function (): void {
-    Bus::fake();
+it('expand accepts string section, sets isExpanded=true and calls SaveSectionStatusAction with current completion state', function (): void {
+    $state = (object) ['called' => false, 'received' => []];
+    app()->bind(SaveSectionStatusAction::class, fn (): object => new readonly class($state)
+    {
+        public function __construct(private object $state) {}
+
+        public function run($model, $section, $isCompleted, $isExpanded): void
+        {
+            $this->state->called = true;
+            $this->state->received = ['model' => $model, 'section' => $section, 'isCompleted' => $isCompleted, 'isExpanded' => $isExpanded];
+        }
+    });
 
     $this->component->expand('contact');
 
     expect($this->component->isExpanded)->toBeTrue()
-        ->and($this->component->isCompleted)->toBeFalse();
-
-    // Assert dispatch
-    Bus::assertDispatched(SaveSectionStatusJob::class, fn (SaveSectionStatusJob $job): bool => $job->checkoutId === 'co-123'
-        && $job->section === Section::Contact
-        && $job->isCompleted === false
-        && $job->isExpanded === true);
+        ->and($this->component->isCompleted)->toBeFalse()
+        ->and($state->called)->toBeTrue()
+        ->and($state->received['model']->is($this->component->model))->toBeTrue()
+        ->and($state->received['section'])->toBe(Section::Contact)
+        ->and($state->received['isCompleted'])->toBeFalse()
+        ->and($state->received['isExpanded'])->toBeTrue();
 });
 
-it('collapse sets isExpanded=false and dispatches SaveSectionStatusJob', function (): void {
-    Bus::fake();
+it('collapse sets isExpanded=false and calls SaveSectionStatusAction', function (): void {
+    $state = (object) ['called' => false, 'received' => []];
+    app()->bind(SaveSectionStatusAction::class, fn (): object => new readonly class($state)
+    {
+        public function __construct(private object $state) {}
+
+        public function run($model, $section, $isCompleted, $isExpanded): void
+        {
+            $this->state->called = true;
+            $this->state->received = ['model' => $model, 'section' => $section, 'isCompleted' => $isCompleted, 'isExpanded' => $isExpanded];
+        }
+    });
 
     $this->component->isExpanded = true;
 
     $this->component->collapse(Section::Promo);
 
-    expect($this->component->isExpanded)->toBeFalse();
-
-    Bus::assertDispatched(SaveSectionStatusJob::class, fn (SaveSectionStatusJob $job): bool => $job->checkoutId === 'co-123'
-        && $job->section === Section::Promo
-        && $job->isCompleted === false
-        && $job->isExpanded === false);
+    expect($this->component->isExpanded)->toBeFalse()
+        ->and($state->called)->toBeTrue()
+        ->and($state->received['section'])->toBe(Section::Promo)
+        ->and($state->received['isCompleted'])->toBeFalse()
+        ->and($state->received['isExpanded'])->toBeFalse();
 });
 
-it('markAsCompletedAdnCollapse marks completed and collapses, then dispatches SaveSectionStatusJob', function (): void {
-    Bus::fake();
+it('markAsCompletedAdnCollapse marks completed and collapses, then calls SaveSectionStatusAction', function (): void {
+    $state = (object) ['called' => false, 'received' => []];
+    app()->bind(SaveSectionStatusAction::class, fn (): object => new readonly class($state)
+    {
+        public function __construct(private object $state) {}
+
+        public function run($model, $section, $isCompleted, $isExpanded): void
+        {
+            $this->state->called = true;
+            $this->state->received = ['model' => $model, 'section' => $section, 'isCompleted' => $isCompleted, 'isExpanded' => $isExpanded];
+        }
+    });
 
     $this->component->isExpanded = true;
 
     $this->component->markAsCompletedAdnCollapse(Section::Traveller);
 
     expect($this->component->isCompleted)->toBeTrue()
-        ->and($this->component->isExpanded)->toBeFalse();
-
-    Bus::assertDispatched(SaveSectionStatusJob::class, fn (SaveSectionStatusJob $job): bool => $job->checkoutId === 'co-123'
-        && $job->section === Section::Traveller
-        && $job->isCompleted
-        && $job->isExpanded === false);
+        ->and($this->component->isExpanded)->toBeFalse()
+        ->and($state->called)->toBeTrue()
+        ->and($state->received['section'])->toBe(Section::Traveller)
+        ->and($state->received['isCompleted'])->toBeTrue()
+        ->and($state->received['isExpanded'])->toBeFalse();
 });
 
-it('markAsCompleted sets isCompleted=true and dispatches', function (): void {
-    Bus::fake();
+it('markAsCompleted sets isCompleted=true and calls action', function (): void {
+    $state = (object) ['called' => false, 'received' => []];
+    app()->bind(SaveSectionStatusAction::class, fn (): object => new readonly class($state)
+    {
+        public function __construct(private object $state) {}
+
+        public function run($model, $section, $isCompleted, $isExpanded): void
+        {
+            $this->state->called = true;
+            $this->state->received = ['model' => $model, 'section' => $section, 'isCompleted' => $isCompleted, 'isExpanded' => $isExpanded];
+        }
+    });
 
     $this->component->callMarkAsCompleted(Section::Summary);
 
-    expect($this->component->isCompleted)->toBeTrue();
-
-    Bus::assertDispatched(SaveSectionStatusJob::class, function (SaveSectionStatusJob $job): bool {
-        return $job->checkoutId === 'co-123'
-            && $job->section === Section::Summary
-            && $job->isCompleted
-            && $job->isExpanded === false; // unchanged
-    });
+    expect($this->component->isCompleted)->toBeTrue()
+        ->and($state->called)->toBeTrue()
+        ->and($state->received['section'])->toBe(Section::Summary)
+        ->and($state->received['isCompleted'])->toBeTrue()
+        ->and($state->received['isExpanded'])->toBeFalse();
 });
 
-it('markAsNotCompleted sets isCompleted=false and dispatches', function (): void {
-    Bus::fake();
+it('markAsNotCompleted sets isCompleted=false and calls action', function (): void {
+    $state = (object) ['called' => false, 'received' => []];
+    app()->bind(SaveSectionStatusAction::class, fn (): object => new readonly class($state)
+    {
+        public function __construct(private object $state) {}
+
+        public function run($model, $section, $isCompleted, $isExpanded): void
+        {
+            $this->state->called = true;
+            $this->state->received = ['model' => $model, 'section' => $section, 'isCompleted' => $isCompleted, 'isExpanded' => $isExpanded];
+        }
+    });
 
     $this->component->isCompleted = true;
 
     $this->component->callMarkAsNotCompleted(Section::AdditionalService);
 
-    expect($this->component->isCompleted)->toBeFalse();
-
-    Bus::assertDispatched(SaveSectionStatusJob::class, fn (SaveSectionStatusJob $job): bool => $job->checkoutId === 'co-123'
-        && $job->section === Section::AdditionalService
-        && $job->isCompleted === false
-        && $job->isExpanded === false);
+    expect($this->component->isCompleted)->toBeFalse()
+        ->and($state->called)->toBeTrue()
+        ->and($state->received['section'])->toBe(Section::AdditionalService)
+        ->and($state->received['isCompleted'])->toBeFalse()
+        ->and($state->received['isExpanded'])->toBeFalse();
 });
 
 it('getQueryParams returns expected URL parameters', function (): void {
