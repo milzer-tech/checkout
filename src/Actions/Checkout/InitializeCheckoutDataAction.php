@@ -24,7 +24,7 @@ class InitializeCheckoutDataAction
 
             $this->firstConfiguration($allocatedPax, $model);
         } else {
-            $model->updateData(['insurance' => null]);
+            $this->visitedConfiguration($model);
         }
 
         AvailabilityFacade::clearCache($checkoutId);
@@ -32,35 +32,30 @@ class InitializeCheckoutDataAction
         return $model;
     }
 
+    private function visitedConfiguration(Checkout $model): void
+    {
+        $model->updateData(['insurance' => null]);
+
+        $model->updateData(['status' => $this->buildSectionStatus()]);
+    }
+
     /**
      * Initialize the checkout data on first creation.
      */
     private function firstConfiguration(PaxAllocationResponseEntity $allocatedPax, Checkout $checkout): void
     {
-        $data = [
-            'paxInfo' => [],
-            'contact' => [],
-            'activityAnswers' => [],
-            'acceptedTerms' => [],
-            'numberOfPax' => $this->countPaxes($allocatedPax),
-            'allocatedPax' => $allocatedPax,
-            'status' => [],
-            'insurance' => null,
-        ];
-
-        foreach (Section::cases() as $section) {
-            $data['status'][$section->value] = ['isExpanded' => false, 'isCompleted' => false];
-
-            if ($section->isContact()) {
-                $data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => false];
-            }
-
-            if ($section->isSummary()) {
-                $data['status'][$section->value] = ['isExpanded' => true, 'isCompleted' => true];
-            }
-        }
-
-        $checkout->fill(['data' => $data])->save();
+        $checkout->update([
+            'data' => [
+                'paxInfo' => [],
+                'contact' => [],
+                'activityAnswers' => [],
+                'acceptedTerms' => [],
+                'numberOfPax' => $this->countPaxes($allocatedPax),
+                'allocatedPax' => $allocatedPax,
+                'status' => $this->buildSectionStatus(),
+                'insurance' => null,
+            ],
+        ]);
     }
 
     /**
@@ -72,5 +67,29 @@ class InitializeCheckoutDataAction
             /** @phpstan-ignore-next-line */
             fn (RoomAllocationResponseEntity $room): int => $room->adults + $room->childAges->count()
         );
+    }
+
+    /**
+     * Create the status array for the sections.
+     *
+     * @return array<string, array<string, bool>>
+     */
+    private function buildSectionStatus(): array
+    {
+        $data = [];
+
+        foreach (Section::cases() as $section) {
+            $data[$section->value] = ['isExpanded' => false, 'isCompleted' => false];
+
+            if ($section->isContact()) {
+                $data[$section->value] = ['isExpanded' => true, 'isCompleted' => false];
+            }
+
+            if ($section->isSummary()) {
+                $data[$section->value] = ['isExpanded' => true, 'isCompleted' => true];
+            }
+        }
+
+        return $data;
     }
 }
