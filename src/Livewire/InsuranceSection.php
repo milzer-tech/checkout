@@ -93,7 +93,7 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->itinerary->price = ApplyPromoCodeResponse::from($price);
 
         // tell JS side to refresh insurance widget with the new config
-        $this->dispatch('insurance-config-updated', config: $this->verticalInsuranceConfig);
+        $this->dispatch('insurance-config-updated', config: $this->getVerticalInsuranceConfigProperty());
     }
 
     /**
@@ -138,9 +138,9 @@ class InsuranceSection extends BaseCheckoutComponent
                         'trip_end_date' => $this->itinerary->endDate->toDateString(),
                         'destination_countries' => $this->itinerary->destinationCountries,
                         'trip_cost' => $this->itinerary->price->discountedPackagePrice->toCent(),
-                        'trip_cost_currency' => (string) $this->itinerary->price->discountedPackagePrice->currency,
+                        'trip_cost_currency' => $this->itinerary->price->discountedPackagePrice->currency,
                     ],
-                    'currency' => (string) $this->itinerary->price->discountedPackagePrice->currency,
+                    'currency' => $this->itinerary->price->discountedPackagePrice->currency,
                 ]],
             ],
         ];
