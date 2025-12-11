@@ -68,12 +68,14 @@ class TripSummary extends BaseCheckoutComponent
     /**
      * Handle the promo code applied event.
      *
-     * @param  array<string, array<string, float>>  $prices
+     * @param  array<string, array<string, float>>  $price
      */
     #[On('price-changed')]
-    public function priceChanged(array $prices): void
+    public function priceChanged(array $price): void
     {
-        $this->itinerary->price = ApplyPromoCodeResponse::from($prices);
+        $this->itinerary->price = ApplyPromoCodeResponse::from($price);
+
+        $this->dispatch('price-updated', price: $price);
     }
 
     /**
@@ -90,6 +92,8 @@ class TripSummary extends BaseCheckoutComponent
             addedRentalCarResponse: $result->addedRentalCars,
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
         );
+
+        $this->dispatch('price-updated', $this->itinerary->price);
     }
 
     /**
