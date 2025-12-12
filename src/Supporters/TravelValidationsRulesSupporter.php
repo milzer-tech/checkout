@@ -58,6 +58,7 @@ final readonly class TravelValidationsRulesSupporter
             ->all();
 
         return [
+            'isMainContact' => ['boolean'],
             'firstName' => ['string', 'max:255'],
             'lastName' => ['string', 'max:255'],
             'secondOrAdditionalName' => ['string', 'max:255'],

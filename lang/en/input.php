@@ -51,6 +51,7 @@ return [
         'secondOrAdditionalName' => 'e.g. Smith',
         'taxNumber' => 'your tax number',
         'localIdNumber' => 'local Id number',
+        'is_main_contact' => 'This traveller is the main contact',
     ],
     'validations' => [
         'passportExpirationDate' => 'This date must be after the trip\'s end date.',

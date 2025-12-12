@@ -54,18 +54,6 @@ class TravelerDetails extends BaseCheckoutComponent
     public CountriesResponse $countriesResponse;
 
     /**
-     * Mount the component and initialize the traveler details.
-     */
-    public function mount(): void
-    {
-        /** @phpstan-ignore-next-line */
-        $paxInfo = $this->model->data->get('paxInfo');
-        $this->paxInfo = TravellerSupporter::setUpPaxData($this->allocatedPax, $paxInfo, $this->countriesResponse);
-        $this->paxInfo = TravellerSupporter::setShowingTravellers($this->paxInfo);
-        $this->updateFormStatus();
-    }
-
-    /**
      * Render the view for the traveler details page.
      */
     public function render(): View
@@ -80,6 +68,24 @@ class TravelerDetails extends BaseCheckoutComponent
     #[On(Section::Contact->value)]
     public function listen(): void
     {
+        /** @phpstan-ignore-next-line */
+        $paxInfo = $this->model->data->get('paxInfo');
+
+        if ($paxInfo === []) {
+            $paxInfo[0][0]['isMainContact'] = true;
+
+            foreach ($this->passengerRequirements->getVisibleFields() as $name => $requirement) {
+                if (! $requirement->isHidden() && isset($this->model->data['contact'][$name])) {
+                    $paxInfo[0][0][$name] = $this->model->data['contact'][$name];
+                }
+            }
+        }
+
+        $this->paxInfo = TravellerSupporter::setUpPaxData($this->allocatedPax, $paxInfo, $this->countriesResponse);
+        $this->paxInfo = TravellerSupporter::setShowingTravellers($this->paxInfo);
+
+        $this->updateFormStatus();
+
         $this->isCompleted ? $this->dispatch(Section::Traveller->value) : $this->expand(Section::Traveller);
     }
 
@@ -164,6 +170,11 @@ class TravelerDetails extends BaseCheckoutComponent
         $this->validate([$name => $this->rules()[$key->toString()]]);
 
         dispatch(new SaveTraverDetailsJob($this->checkoutId, $name, $value));
+    }
+
+    public function updateMainContact(string $name, mixed $value): void
+    {
+        $this->updated($name, $value);
     }
 
     /**

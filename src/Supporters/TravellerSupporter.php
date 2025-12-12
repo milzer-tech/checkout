@@ -19,13 +19,9 @@ class TravellerSupporter
      */
     public static function setShowingTravellers(array $paxInfo): array
     {
-        foreach (array_keys($paxInfo) as $roomNumber) {
-            if (collect($paxInfo[$roomNumber])
-                ->pluck('showTraveller')
-                ->filter(fn (ShowTraveller $item): bool => $item->isShowing)
-                ->isNotEmpty()
-            ) {
-                return $paxInfo;
+        foreach ($paxInfo as $room => $roomPax) {
+            foreach ($roomPax as $traveler => $pax) {
+                $paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
             }
         }
 

@@ -64,13 +64,28 @@
                         </div>
                     </div>
                 </div>
-                @foreach($room as $i => ['showTraveller' =>$showTraveller])
+                @foreach($room as $i => ['showTraveller' => $showTraveller])
                     <div @if(! $showTraveller->isShowing) class="hidden" @endif>
+
+                        @if($i === 0 && $roomNumber === 0)
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0 mb-6 mb-4">
+                                <div class="space-y-2 w-full min-w-0 lg:col-span-3">
+                                    <label class="flex items-center space-x-3 cursor-pointer">
+                                        <input type="checkbox" wire:click="updateMainContact('paxInfo.{{$roomNumber}}.{{$i}}.isMainContact', $event.target.checked)" wire:model="paxInfo.{{$roomNumber}}.{{$i}}.isMainContact"
+                                               class="h-5 w-5 text-blue-600 border-gray-300 rounded">
+                                        <span
+                                            class="text-sm text-gray-600">{{trans('checkout::input.placeholders.is_main_contact')}}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        @endif
+
                         @include('checkout::blades.inputs',[
                                  'requirements' => $passengerRequirements,
                                  'countryCodes' => $countryCodes,
                                  'countriesResponse' => $countriesResponse,
-                                 'saveTo' => "paxInfo.$roomNumber.$i"
+                                 'saveTo' => "paxInfo.$roomNumber.$i",
+                                 'isMainContact' => $i === 0 && $roomNumber === 0
                              ])
 
                         @if(config()->boolean('checkout::cuba-travel.active'))
