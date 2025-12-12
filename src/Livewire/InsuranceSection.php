@@ -91,6 +91,7 @@ class InsuranceSection extends BaseCheckoutComponent
         }
 
         $this->itinerary->price = ApplyPromoCodeResponse::from($price);
+        $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
 
         // tell JS side to refresh insurance widget with the new config
         $this->dispatch('insurance-config-updated', config: $this->getVerticalInsuranceConfigProperty());
@@ -104,6 +105,17 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->markAsCompletedAdnCollapse(Section::Insurance);
 
         $this->dispatch(Section::Insurance->value);
+    }
+
+    /**
+     * Load the contact info into the contact property.
+     */
+    #[On(Section::Contact->value)]
+    public function contactUpdated(): void
+    {
+        $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
+
+        $this->dispatch('insurance-config-updated', config: $this->getVerticalInsuranceConfigProperty());
     }
 
     /**
