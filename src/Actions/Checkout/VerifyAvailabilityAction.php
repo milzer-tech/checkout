@@ -54,8 +54,8 @@ class VerifyAvailabilityAction
      */
     protected function getVerifyAvailabilityResponse(string $checkoutId): VerifyAvailabilityResponse
     {
-        if (AvailabilityFacade::getCachedStatus($checkoutId) === 200) {
-            $dto = VerifyAvailabilityResponse::from(AvailabilityFacade::getCachedResult($checkoutId));
+        if (AvailabilityFacade::getCachedStatus(checkout_params()) === 200) {
+            $dto = VerifyAvailabilityResponse::from(AvailabilityFacade::getCachedResult(checkout_params()));
         } else {
             /** @var VerifyAvailabilityResponse $dto */
             $dto = NezasaConnector::make()->checkout()->varifyAvailability($checkoutId)->dto();

@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Jobs;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 
@@ -17,16 +18,18 @@ class VerifyAvailabilityJob implements ShouldBeUnique, ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public readonly string $checkoutId) {}
+    public function __construct(public readonly CheckoutParamsDto $params) {}
 
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        $response = resolve(NezasaConnector::class)->checkout()->varifyAvailability($this->checkoutId);
+        $response = resolve(NezasaConnector::class)
+            ->checkout()
+            ->varifyAvailability($this->params->checkoutId);
 
-        AvailabilityFacade::cacheResult($this->checkoutId, $response);
+        AvailabilityFacade::cacheResult($this->params, $response);
     }
 
     /**
@@ -34,6 +37,6 @@ class VerifyAvailabilityJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return $this->checkoutId.'-verify-availability';
+        return $this->params.'-verify-availability';
     }
 }
