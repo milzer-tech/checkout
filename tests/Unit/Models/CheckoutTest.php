@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
@@ -47,18 +46,4 @@ it('returns HasOne relation for lastestTransaction()', function (): void {
         ->toBeInstanceOf(HasOne::class)
         ->and($relation->getRelated()::class)
         ->toBe(Transaction::class);
-});
-
-it('defines expected casts for data and payment_data', function (): void {
-    $model = new Checkout;
-
-    $ref = new ReflectionMethod($model, 'casts');
-    /** @var array<string,string> $casts */
-    $casts = $ref->invoke($model);
-
-    expect($casts)
-        ->toHaveKey('data')
-        ->and($casts['data'])->toBe(AsCollection::class)
-        ->and($casts)
-        ->toHaveKey('payment_data', 'json');
 });

@@ -36,6 +36,8 @@ beforeEach(function (): void {
     $this->component->model = Checkout::create([
         'checkout_id' => 'co-123',
         'itinerary_id' => 'it-999',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
             'status' => [],
         ],

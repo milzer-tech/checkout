@@ -25,9 +25,12 @@ it('stores availability response and status in cache', function (): void {
     $response->shouldReceive('array')->once()->andReturn(['available' => true, 'items' => [1, 2]]);
     $response->shouldReceive('status')->once()->andReturn(200);
 
-    AvailabilityFacade::shouldReceive('cacheResult')
+    // Ensure the facade method is called, but let it execute real logic to store in cache
+    AvailabilityFacade::partialMock()
+        ->shouldReceive('cacheResult')
         ->withArgs([$params, $response])
-        ->once();
+        ->once()
+        ->passthru();
 
     /** @var CheckoutResource|m\MockInterface $checkoutApi */
     $checkoutApi = m::mock(CheckoutResource::class);
@@ -43,15 +46,17 @@ it('stores availability response and status in cache', function (): void {
 
     (new VerifyAvailabilityJob($params))->handle();
 
-    //    expect(Cache::get('varifyAvailability-co-VA-1'))
-    //        ->toBe(['available' => true, 'items' => [1, 2]]);
+    // Assert cached values with correct keys
+    expect(Cache::get('varifyAvailability-co--1it-11'))
+        ->toBe(['available' => true, 'items' => [1, 2]]);
 
-    //    expect(Cache::get('varifyAvailability-status-co-VA-1'))
-    //        ->toBe(200);
+    expect(Cache::get('varifyAvailability-status-co--1it-11'))
+        ->toBe(200);
 });
 
 it('returns expected uniqueId', function (): void {
-    $job = new VerifyAvailabilityJob('xyz');
+    $params = new CheckoutParamsDto('xyz', 'it-1', 'app', 'en');
+    $job = new VerifyAvailabilityJob($params);
 
-    expect($job->uniqueId())->toBe('xyz-verify-availability');
+    expect($job->uniqueId())->toBe(md5($params->toJson().'-verify-availability'));
 });

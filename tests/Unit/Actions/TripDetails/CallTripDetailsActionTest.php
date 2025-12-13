@@ -27,8 +27,8 @@ it('can retrieve a trip details', function (): void {
     ]);
 
     $result = (new CallTripDetailsAction)->run(new CheckoutParamsDto(
-        itineraryId: 'it-td-1',
         checkoutId: 'co-td-1',
+        itineraryId: 'it-td-1',
         origin: 'app',
     ));
 

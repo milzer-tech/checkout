@@ -182,6 +182,8 @@ it('run() with WidgetPaymentContract returns PaymentAsset and updates transactio
     $checkout = Checkout::create([
         'checkout_id' => 'co-h1',
         'itinerary_id' => 'it-h1',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
             'contact' => [
                 'firstName' => 'Jane',
@@ -228,6 +230,8 @@ it('run() with RedirectPaymentContract returns Uri and updates transaction', fun
     $checkout = Checkout::create([
         'checkout_id' => 'co-h2',
         'itinerary_id' => 'it-h2',
+        'origin' => 'ibe',
+        'lang' => 'de',
         'data' => [
             'contact' => [
                 'firstName' => 'John',
@@ -267,6 +271,8 @@ it('throws when gateway prepare is unavailable', function (): void {
     $checkout = Checkout::create([
         'checkout_id' => 'co-h3',
         'itinerary_id' => 'it-h3',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
             'contact' => [
                 'firstName' => 'A',
@@ -303,6 +309,8 @@ it('throws for unsupported gateway implementation', function (): void {
     $checkout = Checkout::create([
         'checkout_id' => 'co-h4',
         'itinerary_id' => 'it-h4',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
             'contact' => [
                 'firstName' => 'A',
@@ -331,6 +339,8 @@ it('makePaymentPrepareData builds correct payload', function (): void {
     $checkout = Checkout::create([
         'checkout_id' => 'co-h5',
         'itinerary_id' => 'it-h5',
+        'origin' => 'ibe',
+        'lang' => 'fr',
         'data' => [
             'contact' => [
                 'firstName' => 'Cathy',

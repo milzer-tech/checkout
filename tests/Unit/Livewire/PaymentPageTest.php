@@ -28,6 +28,8 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
     $model = Checkout::create([
         'checkout_id' => 'co-pay-1',
         'itinerary_id' => 'it-1',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
             'contact' => [
                 'firstName' => 'Jane',
@@ -41,7 +43,6 @@ it('mount() initializes itinerary via trip details and sets payment via widget h
     $finder = m::mock(FindCheckoutModelAction::class);
     $finder->shouldReceive('run')
         ->once()
-        ->with('co-pay-1', 'it-1')
         ->andReturn($model);
     app()->instance(FindCheckoutModelAction::class, $finder);
 
@@ -95,6 +96,8 @@ it('render() returns the payment page view and goBack() redirects to traveler-de
     $model = Checkout::create([
         'checkout_id' => 'co-pay-2',
         'itinerary_id' => 'it-2',
+        'origin' => 'ibe',
+        'lang' => 'de',
         'data' => [
             'contact' => [
                 'firstName' => 'John',

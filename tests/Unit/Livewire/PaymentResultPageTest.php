@@ -20,6 +20,8 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
     $checkout = Checkout::create([
         'checkout_id' => 'co-res-1',
         'itinerary_id' => 'it-res-1',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
             'paxInfo' => [
                 [
@@ -87,6 +89,8 @@ it('render returns the confirmation page view', function (): void {
     $checkout = Checkout::create([
         'checkout_id' => 'co-res-2',
         'itinerary_id' => 'it-res-2',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
             'paxInfo' => [
                 [

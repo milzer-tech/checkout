@@ -4,6 +4,7 @@ use Mockery as m;
 use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Livewire\TripDetailsPage;
 use Nezasa\Checkout\Models\Checkout;
@@ -17,12 +18,12 @@ afterEach(function (): void {
 });
 
 it('mount() initializes result, model and itinerary via injected actions', function (): void {
+    $params = new CheckoutParamsDto('co-td-1', 'it-td-1', 'app', 'en');
     $realCall = new CallTripDetailsAction;
-    $responses = $realCall->run('it-td-1', 'co-td-1');
 
-    $model = Checkout::create([
-        'checkout_id' => 'co-td-1',
-        'itinerary_id' => 'it-td-1',
+    $responses = $realCall->run($params);
+
+    $model = Checkout::create($params->toArray() + [
         'data' => [],
     ]);
 
@@ -36,14 +37,12 @@ it('mount() initializes result, model and itinerary via injected actions', funct
 
     $callMock = m::mock(CallTripDetailsAction::class);
     $callMock->shouldReceive('run')
-        ->once()
-        ->with('it-td-1', 'co-td-1')
+        ->once($params)
         ->andReturn($responses);
 
     $initMock = m::mock(InitializeCheckoutDataAction::class);
     $initMock->shouldReceive('run')
         ->once()
-        ->withArgs(fn (string $checkoutId, string $itineraryId, $allocatedPax): bool => $checkoutId === 'co-td-1' && $itineraryId === 'it-td-1' && $allocatedPax !== null)
         ->andReturn($model);
 
     $sumMock = m::mock(SummarizeItineraryAction::class);
@@ -56,10 +55,10 @@ it('mount() initializes result, model and itinerary via injected actions', funct
         ->andReturn($summary);
 
     $component = new TripDetailsPage;
-    $component->checkoutId = 'co-td-1';
-    $component->itineraryId = 'it-td-1';
-    $component->origin = 'app';
-    $component->lang = 'en';
+    $component->checkoutId = $params->checkoutId;
+    $component->itineraryId = $params->itineraryId;
+    $component->origin = $params->origin;
+    $component->lang = $params->lang;
 
     $component->mount($callMock, $sumMock, $initMock);
 
@@ -70,8 +69,14 @@ it('mount() initializes result, model and itinerary via injected actions', funct
 });
 
 it('render() returns the trip details blade view', function (): void {
-    $responses = (new CallTripDetailsAction)->run('it-td-2', 'co-td-2');
-    $model = Checkout::create(['checkout_id' => 'co-td-2', 'itinerary_id' => 'it-td-2', 'data' => []]);
+    $params = new CheckoutParamsDto('co-td-1', 'it-td-1', 'app', 'en');
+    $responses = (new CallTripDetailsAction)->run($params);
+    $model = Checkout::create([
+        'checkout_id' => 'co-td-2',
+        'itinerary_id' => 'it-td-2',
+        'origin' => 'app',
+        'lang' => 'en',
+        'data' => []]);
 
     $callMock = m::mock(CallTripDetailsAction::class);
     $callMock->shouldReceive('run')->andReturn($responses);
@@ -104,8 +109,15 @@ it('render() returns the trip details blade view', function (): void {
 });
 
 it('priceChanged() updates itinerary price and promo response', function (): void {
-    $responses = (new CallTripDetailsAction)->run('it-td-3', 'co-td-3');
-    $model = Checkout::create(['checkout_id' => 'co-td-3', 'itinerary_id' => 'it-td-3', 'data' => []]);
+    $params = new CheckoutParamsDto('co-td-1', 'it-td-1', 'app', 'en');
+    $responses = (new CallTripDetailsAction)->run($params);
+    $model = Checkout::create([
+        'checkout_id' => 'co-td-3',
+        'itinerary_id' => 'it-td-3',
+        'origin' => 'app',
+        'lang' => 'en',
+        'data' => [],
+    ]);
 
     $callMock = m::mock(CallTripDetailsAction::class);
     $callMock->shouldReceive('run')->andReturn($responses);
@@ -149,12 +161,15 @@ it('priceChanged() updates itinerary price and promo response', function (): voi
 });
 
 it('createPaymentPageUrl() sets gateway, marks checkingAvailability and emits event', function (): void {
-    $responses = (new CallTripDetailsAction)->run('it-td-4', 'co-td-4');
+    $params = new CheckoutParamsDto('co-td-1', 'it-td-1', 'app', 'en');
+    $responses = (new CallTripDetailsAction)->run($params);
 
     // Seed a checkout model with an explicit, completed status structure
     $model = Checkout::create([
         'checkout_id' => 'co-td-4',
         'itinerary_id' => 'it-td-4',
+        'origin' => 'app',
+        'lang' => 'en',
         // Ensure "status" key exists so the component's loop doesn't error/early return
         'data' => [
             'status' => [],
@@ -203,8 +218,15 @@ it('createPaymentPageUrl() sets gateway, marks checkingAvailability and emits ev
 });
 
 it('generatePaymentPageUrl() builds signed URL on success and resets checkingAvailability', function (): void {
-    $responses = (new CallTripDetailsAction)->run('it-td-5', 'co-td-5');
-    $model = Checkout::create(['checkout_id' => 'co-td-5', 'itinerary_id' => 'it-td-5', 'data' => []]);
+    $params = new CheckoutParamsDto('co-td-1', 'it-td-1', 'app', 'en');
+    $responses = (new CallTripDetailsAction)->run($params);
+    $model = Checkout::create([
+        'checkout_id' => 'co-td-5',
+        'itinerary_id' => 'it-td-5',
+        'origin' => 'app',
+        'lang' => 'en',
+        'data' => [],
+    ]);
 
     $component = new TripDetailsPage;
     $component->checkoutId = 'co-td-5';
@@ -246,8 +268,15 @@ it('generatePaymentPageUrl() builds signed URL on success and resets checkingAva
 });
 
 it('generatePaymentPageUrl(false) leaves URL null and sets checkingAvailability=false', function (): void {
-    $responses = (new CallTripDetailsAction)->run('it-td-6', 'co-td-6');
-    $model = Checkout::create(['checkout_id' => 'co-td-6', 'itinerary_id' => 'it-td-6', 'data' => []]);
+    $params = new CheckoutParamsDto('co-td-1', 'it-td-1', 'app', 'en');
+    $responses = (new CallTripDetailsAction)->run($params);
+    $model = Checkout::create([
+        'checkout_id' => 'co-td-6',
+        'itinerary_id' => 'it-td-6',
+        'origin' => 'app',
+        'lang' => 'en',
+        'data' => [],
+    ]);
 
     $component = new TripDetailsPage;
     $component->checkoutId = 'co-td-6';

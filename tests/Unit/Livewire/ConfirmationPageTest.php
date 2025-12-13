@@ -12,6 +12,8 @@ it('mount builds travelers list from paxInfo and sets itinerary price from lates
     $checkout = Checkout::create([
         'checkout_id' => 'co-conf-1',
         'itinerary_id' => 'it-conf-1',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
             'paxInfo' => [
                 [
@@ -57,6 +59,8 @@ it('render returns the confirmation page view', function (): void {
     $checkout = Checkout::create([
         'checkout_id' => 'co-conf-2',
         'itinerary_id' => 'it-conf-2',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => ['paxInfo' => [[['firstName' => 'A', 'lastName' => 'B']]]],
     ]);
 

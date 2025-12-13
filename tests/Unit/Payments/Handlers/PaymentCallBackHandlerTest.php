@@ -127,6 +127,8 @@ it('returns stored output when transaction already has result_data and skips ver
     $checkout = Checkout::create([
         'checkout_id' => 'co-cb-1',
         'itinerary_id' => 'it-cb-1',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [],
     ]);
 
@@ -160,6 +162,8 @@ it('verifies success, updates nezasa, stores result, books itinerary, and return
     $checkout = Checkout::create([
         'checkout_id' => 'co-cb-2',
         'itinerary_id' => 'it-cb-2',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [],
     ]);
 
@@ -195,6 +199,8 @@ it('verifies failure, updates nezasa as failed, booking not ok, and returns outp
     $checkout = Checkout::create([
         'checkout_id' => 'co-cb-3',
         'itinerary_id' => 'it-cb-3',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [],
     ]);
 
@@ -227,6 +233,8 @@ it('handles nezasa update exception by preserving previous nezasa_transaction', 
     $checkout = Checkout::create([
         'checkout_id' => 'co-cb-4',
         'itinerary_id' => 'it-cb-4',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [],
     ]);
 
