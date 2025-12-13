@@ -1,6 +1,7 @@
 <?php
 
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
@@ -25,7 +26,11 @@ it('can retrieve a trip details', function (): void {
         CountriesRequest::class => MockResponse::fixture('countries_response'),
     ]);
 
-    $result = (new CallTripDetailsAction)->run('itineraryId', 'checkoutId');
+    $result = (new CallTripDetailsAction)->run(new CheckoutParamsDto(
+        itineraryId: 'it-td-1',
+        checkoutId: 'co-td-1',
+        origin: 'app',
+    ));
 
     expect($result)
         ->toBeObject()

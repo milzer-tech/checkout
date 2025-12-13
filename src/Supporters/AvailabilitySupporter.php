@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Saloon\Http\Response;
 
-final class AvailabilitySupporter
+class AvailabilitySupporter
 {
     private static string $keyPrefix = 'varifyAvailability-';
 

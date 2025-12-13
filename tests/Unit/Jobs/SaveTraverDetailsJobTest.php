@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Collection;
 use Mockery as m;
+use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
@@ -16,9 +17,12 @@ afterEach(function (): void {
 });
 
 it('updates checkout data and triggers saveTravelerDetails when contact and paxInfo complete', function (): void {
+    $params = new CheckoutParamsDto('co-save-1', 'it-1', 'app', 'en');
     $checkout = Checkout::create([
-        'checkout_id' => 'co-save-1',
-        'itinerary_id' => 'it-1',
+        'checkout_id' => $params->checkoutId,
+        'itinerary_id' => $params->itineraryId,
+        'origin' => $params->origin,
+        'lang' => $params->lang,
         'data' => [
             'numberOfPax' => 2,
             'contact' => [
@@ -87,9 +91,12 @@ it('updates checkout data and triggers saveTravelerDetails when contact and paxI
 });
 
 it('does not call saveTravelerDetails when contact missing', function (): void {
+    $params = new CheckoutParamsDto('co--1', 'it-11', 'app', 'en');
     Checkout::create([
-        'checkout_id' => 'co-save-2',
-        'itinerary_id' => 'it-2',
+        'checkout_id' => $params->checkoutId,
+        'itinerary_id' => $params->itineraryId,
+        'origin' => $params->origin,
+        'lang' => $params->lang,
         'data' => [
             'numberOfPax' => 1,
             'paxInfo' => [[['firstName' => 'Solo']]],
@@ -103,13 +110,16 @@ it('does not call saveTravelerDetails when contact missing', function (): void {
     $connector->shouldReceive('checkout')->andReturn($checkoutApi);
     app()->instance(NezasaConnector::class, $connector);
 
-    (new SaveTraverDetailsJob('co-save-2', 'flags.nop', true))->handle();
+    (new SaveTraverDetailsJob($params->checkoutId, 'flags.nop', true))->handle();
 });
 
 it('does not call saveTravelerDetails when pax count mismatches numberOfPax', function (): void {
+    $params = new CheckoutParamsDto('co--1', 'it-11', 'app', 'en');
     Checkout::create([
-        'checkout_id' => 'co-save-3',
-        'itinerary_id' => 'it-3',
+        'checkout_id' => $params->checkoutId,
+        'itinerary_id' => $params->itineraryId,
+        'origin' => $params->origin,
+        'lang' => $params->lang,
         'data' => [
             'numberOfPax' => 2,
             'contact' => ['firstName' => 'Bob', 'lastName' => 'Doe', 'email' => 'bob@example.com'],
@@ -128,7 +138,7 @@ it('does not call saveTravelerDetails when pax count mismatches numberOfPax', fu
     $connector->shouldReceive('checkout')->andReturn($checkoutApi);
     app()->instance(NezasaConnector::class, $connector);
 
-    (new SaveTraverDetailsJob('co-save-3', 'contact.email', 'bobby@example.com'))->handle();
+    (new SaveTraverDetailsJob($params->checkoutId, 'contact.email', 'bobby@example.com'))->handle();
 });
 
 it('uniqueId combines checkoutId and name', function (): void {

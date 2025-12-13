@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
+use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Exceptions\AlreadyPaidException;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
@@ -11,8 +12,7 @@ use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
 it('creates a new Checkout with initial data and computed pax count when none exists', function (): void {
-    $checkoutId = 'co-123';
-    $itineraryId = 'it-456';
+    $params = new CheckoutParamsDto('co-123', 'it-456', 'app', 'en');
 
     $allocatedPax = new PaxAllocationResponseEntity(
         rooms: new Collection([
@@ -23,9 +23,9 @@ it('creates a new Checkout with initial data and computed pax count when none ex
 
     $action = new InitializeCheckoutDataAction;
 
-    $model = $action->run($checkoutId, $itineraryId, $allocatedPax);
+    $model = $action->run($params, $allocatedPax);
 
-    $persisted = Checkout::whereCheckoutId($checkoutId)->whereItineraryId($itineraryId)->first();
+    $persisted = Checkout::whereCheckoutId($params->checkoutId)->whereItineraryId($params->itineraryId)->first();
     expect($persisted)->not->toBeNull();
     expect($model->id)->toBe($persisted->id);
 
@@ -57,13 +57,13 @@ it('creates a new Checkout with initial data and computed pax count when none ex
 });
 
 it('throws AlreadyPaidException when a checkout with a succeeded transaction already exists', function (): void {
-    $checkoutId = 'co-999';
-    $itineraryId = 'it-999';
+    $params = new CheckoutParamsDto('co-123', 'it-456', 'app', 'en');
 
     // Seed an existing checkout
     $checkout = Checkout::create([
-        'checkout_id' => $checkoutId,
-        'itinerary_id' => $itineraryId,
+        'checkout_id' => $params->checkoutId,
+        'itinerary_id' => $params->itineraryId,
+        'origin' => $params->origin,
     ]);
 
     // Attach a succeeded transaction
@@ -81,5 +81,5 @@ it('throws AlreadyPaidException when a checkout with a succeeded transaction alr
 
     $this->expectException(AlreadyPaidException::class);
 
-    $action->run($checkoutId, $itineraryId, $allocatedPax);
+    $action->run($params, $allocatedPax);
 });
