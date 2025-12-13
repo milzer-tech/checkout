@@ -7,10 +7,10 @@ use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Facades\InsuranceFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
-use Nezasa\Checkout\Supporters\InsuranceSupporter;
 
 class InsuranceSection extends BaseCheckoutComponent
 {
@@ -71,7 +71,7 @@ class InsuranceSection extends BaseCheckoutComponent
     #[On(Section::AdditionalService->value)]
     public function listen(): void
     {
-        if (InsuranceSupporter::isAvailable()) {
+        if (InsuranceFacade::isAvailable()) {
             $this->expand(Section::Insurance);
         } else {
             $this->next();
@@ -86,7 +86,7 @@ class InsuranceSection extends BaseCheckoutComponent
     #[On('price-updated')]
     public function priceUpdated(array $price): void
     {
-        if (! InsuranceSupporter::isAvailable()) {
+        if (! InsuranceFacade::isAvailable()) {
             return;
         }
 
@@ -127,7 +127,7 @@ class InsuranceSection extends BaseCheckoutComponent
      */
     public function getVerticalInsuranceConfigProperty(): array
     {
-        if (! InsuranceSupporter::isAvailable() || ! $this->contact) {
+        if (! InsuranceFacade::isAvailable() || ! $this->contact) {
             return [];
         }
 

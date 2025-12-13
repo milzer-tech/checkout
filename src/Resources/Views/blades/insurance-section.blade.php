@@ -1,6 +1,6 @@
 @use(Nezasa\Checkout\Enums\Section)
 @use(Illuminate\Support\Facades\Config)
-@use(Nezasa\Checkout\Supporters\InsuranceSupporter)
+@use(Nezasa\Checkout\Facades\InsuranceFacade)
 @php($state = $isExpanded ? 'editing' : 'valid')
 
 <x-checkout::editable-box
@@ -8,13 +8,13 @@
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
-    class="{{InsuranceSupporter::isAvailable() ? '' : 'hidden'}}"
+    class="{{InsuranceFacade::isAvailable() ? '' : 'hidden'}}"
     onEdit="expand('{{Section::Insurance->value}}')"
 
 >
     <div class="space-y-4">
 
-        @if(InsuranceSupporter::isAvailable() && $contact)
+        @if(InsuranceFacade::isAvailable() && $contact)
             @if(Config::boolean('checkout.insurance.vertical.active'))
                 @push('scripts')
                     <script src="https://cdn.jsdelivr.net/npm/@vertical-insure/embedded-offer"></script>
