@@ -37,6 +37,6 @@ class VerifyAvailabilityJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return $this->params.'-verify-availability';
+        return md5($this->params->toJson().'-verify-availability');
     }
 }

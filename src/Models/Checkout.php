@@ -17,15 +17,15 @@ use Nezasa\Checkout\Enums\Section;
 /**
  * Eloquent model for checkout state.
  *
- * @property-read string $id
- * @property-read string $checkout_id
- * @property-read string $itinerary_id
- * @property-read string $origin
- * @property-read string|null $lang
- * @property-read bool $rest_payment
- * @property-read Collection<string, mixed>|array<string, mixed>|null $data
- * @property-read Carbon|null $created_at
- * @property-read Carbon|null $updated_at
+ * @property string $id
+ * @property string $checkout_id
+ * @property string $itinerary_id
+ * @property string $origin
+ * @property string|null $lang
+ * @property bool $rest_payment
+ * @property Collection<string, mixed>|array<string, mixed>|null $data
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * Relationships
  * @property-read EloquentCollection<int, Transaction> $transactions
