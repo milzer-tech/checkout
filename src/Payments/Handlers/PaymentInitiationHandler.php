@@ -115,15 +115,15 @@ class PaymentInitiationHandler
                 'transaction' => $transaction,
                 'checkoutId' => $transaction->checkout->checkout_id,
                 'itineraryId' => $transaction->checkout->itinerary_id,
-                'origin' => request()->input('origin'),
-                'lang' => request()->input('lang', 'en'),
+                'origin' => $transaction->checkout->origin,
+                'lang' => $transaction->checkout->lang ?? 'en',
             ]),
             contact: ContactInfoPayloadEntity::from($transaction->checkout->data['contact']),
-            price: new Price((float) $transaction->amount, $transaction->currency),
+            price: $transaction->price,
             checkoutId: $transaction->checkout->checkout_id,
             itineraryId: $transaction->checkout->itinerary_id,
-            origin: request()->input('origin'),
-            lang: request()->input('lang', 'en'),
+            origin: $transaction->checkout->origin,
+            lang: $transaction->checkout->lang ?? 'en',
         );
     }
 }
