@@ -75,6 +75,8 @@ class TripSummary extends BaseCheckoutComponent
     {
         $this->itinerary->price = ApplyPromoCodeResponse::from($price);
 
+        $this->total = $this->itinerary->price->discountedPackagePrice;
+
         $this->dispatch('price-updated', price: $price);
     }
 
@@ -84,7 +86,7 @@ class TripSummary extends BaseCheckoutComponent
     #[On('summary-updated')]
     public function summaryUpdated(): void
     {
-        $result = resolve(CallTripDetailsAction::class)->run($this->itineraryId, $this->checkoutId);
+        $result = resolve(CallTripDetailsAction::class)->run(checkout_params());
 
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
             itineraryResponse: $result->itinerary,

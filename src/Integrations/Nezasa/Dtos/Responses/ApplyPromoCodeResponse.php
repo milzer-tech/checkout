@@ -28,9 +28,13 @@ class ApplyPromoCodeResponse extends BaseDto
      */
     public function decreasePercent(): float
     {
-        return round(
-            (($this->packagePrice->amount - $this->discountedPackagePrice->amount) / $this->packagePrice->amount) * 100
-        );
+        if ($this->discountedPackagePrice->amount > 0 && $this->packagePrice->amount > 0) {
+            return round(
+                (($this->packagePrice->amount - $this->discountedPackagePrice->amount) / $this->packagePrice->amount) * 100
+            );
+        }
+
+        return 0;
     }
 
     /**

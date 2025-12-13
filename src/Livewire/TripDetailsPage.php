@@ -43,11 +43,10 @@ class TripDetailsPage extends BaseCheckoutComponent
         SummarizeItineraryAction $summerizeItinerary,
         InitializeCheckoutDataAction $initializeCheckoutData
     ): void {
-        $this->result = $callTripDetails->run($this->itineraryId, $this->checkoutId);
+        $this->result = $callTripDetails->run(params: checkout_params());
 
         $this->model = $initializeCheckoutData->run(
-            checkoutId: $this->checkoutId,
-            itineraryId: $this->itineraryId,
+            params: checkout_params(),
             allocatedPax: $this->result->itinerary->allocatedPax
         );
 

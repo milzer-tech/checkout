@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Actions\Checkout;
 
+use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
@@ -15,19 +16,19 @@ class InitializeCheckoutDataAction
     /**
      * Create or find existing checkout model and initialize the data if created.
      */
-    public function run(string $checkoutId, string $itineraryId, PaxAllocationResponseEntity $allocatedPax): Checkout
+    public function run(CheckoutParamsDto $params, PaxAllocationResponseEntity $allocatedPax): Checkout
     {
-        $model = resolve(FindCheckoutModelAction::class)->run($checkoutId, $itineraryId);
+        $model = resolve(FindCheckoutModelAction::class)->run(params: $params);
 
         if (! $model) {
-            $model = Checkout::create(['checkout_id' => $checkoutId, 'itinerary_id' => $itineraryId]);
+            $model = Checkout::query()->create($params->all());
 
             $this->firstConfiguration($allocatedPax, $model);
         } else {
             $this->visitedConfiguration($model);
         }
 
-        AvailabilityFacade::clearCache($checkoutId);
+        AvailabilityFacade::clearCache(params: $params);
 
         return $model;
     }

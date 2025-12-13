@@ -84,7 +84,9 @@ class TermsSection extends BaseCheckoutComponent
      */
     public function next(): void
     {
-        $this->validate($this->rules());
+        if ($this->termsAndConditions->sections->isNotEmpty()) {
+            $this->validate($this->rules());
+        }
 
         $this->markAsCompletedAdnCollapse(Section::TermsAndConditions);
 

@@ -17,34 +17,32 @@ use Nezasa\Checkout\Enums\Section;
 /**
  * Eloquent model for checkout state.
  *
- * @property string $checkout_id
- * @property string|null $itinerary_id
- * @property Collection<string, mixed>|array<string, mixed>|null $data
- * @property array<string, string|int>|null $payment_data
+ * @property-read string $id
+ * @property-read string $checkout_id
+ * @property-read string $itinerary_id
+ * @property-read string $origin
+ * @property-read string|null $lang
+ * @property-read bool $rest_payment
+ * @property-read Collection<string, mixed>|array<string, mixed>|null $data
+ * @property-read Carbon|null $created_at
+ * @property-read Carbon|null $updated_at
  *
  * Relationships
  * @property-read EloquentCollection<int, Transaction> $transactions
  * @property-read Transaction|null $lastestTransaction
  *
  * Timestamps
- * @property-read Carbon|null $created_at
- * @property-read Carbon|null $updated_at
  */
 class Checkout extends Model
 {
     use HasUlids;
 
     /**
-     * The attributes that are mass assignable.
+     * Indicates if all mass assignment is enabled.
      *
-     * {@inheritdoc}
+     * @var bool
      */
-    protected $fillable = [
-        'checkout_id',
-        'itinerary_id',
-        'data',
-        'payment_data',
-    ];
+    protected static $unguarded = true;
 
     /**
      * Get the attributes that should be cast.
@@ -55,7 +53,7 @@ class Checkout extends Model
     {
         return [
             'data' => AsCollection::class,
-            'payment_data' => 'json',
+            'rest_payment' => 'bool',
         ];
     }
 

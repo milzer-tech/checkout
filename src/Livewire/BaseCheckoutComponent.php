@@ -40,6 +40,12 @@ class BaseCheckoutComponent extends Component
     public ?string $lang = null;
 
     /**
+     * Indicates whether the payment is the down payment or the rest payment.
+     */
+    #[Url(as: 'rest-payment')]
+    public bool $restPayment = false;
+
+    /**
      * The unique identifier for the checkout process.
      */
     public Checkout $model;

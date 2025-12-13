@@ -78,7 +78,9 @@ class AdditionalServicesSection extends BaseCheckoutComponent
      */
     public function next(): void
     {
-        $this->validate();
+        if ($this->upsellItemsResponse->offers->isNotEmpty()) {
+            $this->validate();
+        }
 
         $this->markAsCompletedAdnCollapse(Section::AdditionalService);
 

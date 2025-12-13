@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Actions\TripDetails;
 
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Exceptions\NotFoundException;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
@@ -26,16 +27,16 @@ class CallTripDetailsAction
      *
      * @throws Throwable
      */
-    public function run(string $itineraryId, string $checkoutId): RequiredResponses
+    public function run(CheckoutParamsDto $params): RequiredResponses
     {
         $results = new Collection;
         $requests = [
-            'itinerary' => new GetItineraryRequest($itineraryId),
-            'checkout' => new RetrieveCheckoutRequest($checkoutId),
-            'addedRentalCars' => new AddedRentalCarsRequest($itineraryId),
-            'travelerRequirements' => new TravelerRequirementsRequest($checkoutId),
-            'upsellItems' => new GetAvailableUpsellItemsRequest($checkoutId),
-            'addedUpsellItems' => new RetrieveCheckoutUpsellItemsRequest($checkoutId),
+            'itinerary' => new GetItineraryRequest($params->itineraryId),
+            'checkout' => new RetrieveCheckoutRequest($params->checkoutId),
+            'addedRentalCars' => new AddedRentalCarsRequest($params->itineraryId),
+            'travelerRequirements' => new TravelerRequirementsRequest($params->checkoutId),
+            'upsellItems' => new GetAvailableUpsellItemsRequest($params->checkoutId),
+            'addedUpsellItems' => new RetrieveCheckoutUpsellItemsRequest($params->checkoutId),
             'countryCodes' => new CountryCodesRequest,
             'countries' => new CountriesRequest,
         ];
