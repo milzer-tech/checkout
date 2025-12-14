@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Models;
 
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Factories\CheckoutFactory;
 
 /**
  * Eloquent model for checkout state.
@@ -33,8 +36,12 @@ use Nezasa\Checkout\Enums\Section;
  *
  * Timestamps
  */
+#[UseFactory(CheckoutFactory::class)]
 class Checkout extends Model
 {
+    /** @use HasFactory<CheckoutFactory> */
+    use HasFactory;
+
     use HasUlids;
 
     /**
@@ -118,5 +125,29 @@ class Checkout extends Model
             target: $this->data,
             key: "activityAnswers.$componentId.$questionRefId"
         );
+    }
+
+    /**
+     * Create the default status array for the sections.
+     *
+     * @return array<string, array<string, bool>>
+     */
+    public static function buildSectionStatus(): array
+    {
+        $data = [];
+
+        foreach (Section::cases() as $section) {
+            $data[$section->value] = ['isExpanded' => false, 'isCompleted' => false];
+
+            if ($section->isContact()) {
+                $data[$section->value] = ['isExpanded' => true, 'isCompleted' => false];
+            }
+
+            if ($section->isSummary()) {
+                $data[$section->value] = ['isExpanded' => true, 'isCompleted' => true];
+            }
+        }
+
+        return $data;
     }
 }

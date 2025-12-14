@@ -31,7 +31,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Nezasa\\Checkout\\": "src/"
+            "Nezasa\\Checkout\\": "src/",
+            "Nezasa\\Checkout\\Factories\\": "database/factories/"
         },
         "files": [
             "src/Helpers/helpers.php"

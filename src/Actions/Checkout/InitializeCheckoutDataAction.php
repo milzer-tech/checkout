@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Actions\Checkout;
 
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
-use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
@@ -37,7 +36,7 @@ class InitializeCheckoutDataAction
     {
         $model->updateData(['insurance' => null]);
 
-        $model->updateData(['status' => $this->buildSectionStatus()]);
+        $model->updateData(['status' => Checkout::buildSectionStatus()]);
     }
 
     /**
@@ -53,7 +52,7 @@ class InitializeCheckoutDataAction
                 'acceptedTerms' => [],
                 'numberOfPax' => $this->countPaxes($allocatedPax),
                 'allocatedPax' => $allocatedPax,
-                'status' => $this->buildSectionStatus(),
+                'status' => Checkout::buildSectionStatus(),
                 'insurance' => null,
             ],
         ]);
@@ -68,29 +67,5 @@ class InitializeCheckoutDataAction
             /** @phpstan-ignore-next-line */
             fn (RoomAllocationResponseEntity $room): int => $room->adults + $room->childAges->count()
         );
-    }
-
-    /**
-     * Create the status array for the sections.
-     *
-     * @return array<string, array<string, bool>>
-     */
-    private function buildSectionStatus(): array
-    {
-        $data = [];
-
-        foreach (Section::cases() as $section) {
-            $data[$section->value] = ['isExpanded' => false, 'isCompleted' => false];
-
-            if ($section->isContact()) {
-                $data[$section->value] = ['isExpanded' => true, 'isCompleted' => false];
-            }
-
-            if ($section->isSummary()) {
-                $data[$section->value] = ['isExpanded' => true, 'isCompleted' => true];
-            }
-        }
-
-        return $data;
     }
 }
