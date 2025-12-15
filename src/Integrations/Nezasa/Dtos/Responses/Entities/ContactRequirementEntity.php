@@ -42,6 +42,7 @@ class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContra
             $this->firstName = TravelerRequirementFieldEnum::Required;
             $this->lastName = TravelerRequirementFieldEnum::Required;
             $this->email = TravelerRequirementFieldEnum::Required;
+            $this->country = TravelerRequirementFieldEnum::Required;
         }
     }
 
