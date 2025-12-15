@@ -19,7 +19,6 @@ class hostedPaymentPageEntity extends BaseDto
             'PayPal',
             'ApplePay',
             'GooglePay',
-            'KlarnaPM',
         ]
     ) {}
 
