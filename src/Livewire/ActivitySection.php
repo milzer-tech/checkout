@@ -82,7 +82,7 @@ class ActivitySection extends BaseCheckoutComponent
     #[On(Section::Traveller->value)]
     public function listen(): void
     {
-        $verifyAvailability = new VerifyAvailabilityJob(checkout_params());
+        $verifyAvailability = new VerifyAvailabilityJob($this->getParams());
 
         if (! $this->shouldRender) {
             dispatch($verifyAvailability);

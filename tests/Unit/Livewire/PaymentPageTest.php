@@ -139,6 +139,7 @@ it('render() returns the payment page view and goBack() redirects to traveler-de
         'itineraryId' => 'it-2',
         'origin' => 'ibe',
         'lang' => 'de',
+        'rest-payment' => 0,
     ]);
 
     // goBack: use a stub component to capture redirect without involving Livewire rendering

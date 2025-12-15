@@ -59,7 +59,7 @@ class PaymentResultPage extends BaseCheckoutComponent
      */
     protected function initializeRequirements(): void
     {
-        $result = resolve(CallTripDetailsAction::class)->run(checkout_params());
+        $result = resolve(CallTripDetailsAction::class)->run($this->getParams());
 
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
             itineraryResponse: $result->itinerary,

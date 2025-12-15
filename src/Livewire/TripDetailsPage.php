@@ -43,10 +43,10 @@ class TripDetailsPage extends BaseCheckoutComponent
         SummarizeItineraryAction $summerizeItinerary,
         InitializeCheckoutDataAction $initializeCheckoutData
     ): void {
-        $this->result = $callTripDetails->run(params: checkout_params());
+        $this->result = $callTripDetails->run(params: $this->getParams());
 
         $this->model = $initializeCheckoutData->run(
-            params: checkout_params(),
+            params: $this->getParams(),
             allocatedPax: $this->result->itinerary->allocatedPax
         );
 
@@ -122,7 +122,7 @@ class TripDetailsPage extends BaseCheckoutComponent
                 name: 'payment',
                 expiration: now()->addMinutes(30),
                 parameters: array_merge(
-                    $this->getQueryParams(),
+                    $this->getParams()->toArray(),
                     ['payment_method' => $this->gateway]
                 )
             );

@@ -23,7 +23,7 @@ it('mount() initializes result, model and itinerary via injected actions', funct
 
     $responses = $realCall->run($params);
 
-    $model = Checkout::create($params->toArray() + [
+    $model = Checkout::create($params->mapToModel() + [
         'data' => [],
     ]);
 

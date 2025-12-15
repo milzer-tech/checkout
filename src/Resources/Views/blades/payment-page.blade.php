@@ -24,7 +24,7 @@
                                 <p class="text-lg text-gray-700 dark:text-gray-300">
                                     {{trans('checkout::page.payment.not_available_service')}}
                                 </p>
-                                <a href="{{ route('traveler-details', $this->getQueryParams()) }}"
+                                <a href="{{ route('traveler-details', $this->getParams()->toArray()) }}"
                                     class="mt-8 px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
                                     {{trans('checkout::page.trip_details.back')}}
                                 </a>

@@ -20,7 +20,7 @@ class InitializeCheckoutDataAction
         $model = resolve(FindCheckoutModelAction::class)->run(params: $params);
 
         if (! $model) {
-            $model = Checkout::query()->create($params->all());
+            $model = Checkout::query()->create($params->mapToModel());
 
             $this->firstConfiguration($allocatedPax, $model);
         } else {
@@ -34,9 +34,12 @@ class InitializeCheckoutDataAction
 
     private function visitedConfiguration(Checkout $model): void
     {
-        $model->updateData(['insurance' => null]);
+        $data = $model->data;
 
-        $model->updateData(['status' => Checkout::buildSectionStatus()]);
+        $data['insurance'] = null;
+        $data['status'] = Checkout::buildSectionStatus();
+
+        $model->update(['data' => $data]);
     }
 
     /**

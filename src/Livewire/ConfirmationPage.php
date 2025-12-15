@@ -53,7 +53,7 @@ class ConfirmationPage extends BaseCheckoutComponent
     {
         $this->model = Checkout::with('lastestTransaction')->whereCheckoutId($this->checkoutId)->firstOrFail();
 
-        $result = resolve(CallTripDetailsAction::class)->run(checkout_params());
+        $result = resolve(CallTripDetailsAction::class)->run($this->getParams());
 
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
             $result->itinerary,

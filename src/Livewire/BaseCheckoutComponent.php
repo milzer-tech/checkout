@@ -8,6 +8,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Nezasa\Checkout\Actions\Operation\SaveSectionStatusAction;
+use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Models\Checkout;
 
@@ -129,16 +130,15 @@ class BaseCheckoutComponent extends Component
 
     /**
      * Get the query parameters for the component.
-     *
-     * @return array<string, string>
      */
-    protected function getQueryParams(): array
+    public function getParams(): CheckoutParamsDto
     {
-        return [
-            'checkoutId' => $this->checkoutId,
-            'itineraryId' => $this->itineraryId,
-            'origin' => $this->origin,
-            'lang' => $this->lang,
-        ];
+        return new CheckoutParamsDto(
+            checkoutId: $this->checkoutId,
+            itineraryId: $this->itineraryId,
+            origin: $this->origin,
+            lang: $this->lang ?? 'en',
+            restPayment: $this->restPayment
+        );
     }
 }

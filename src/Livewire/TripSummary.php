@@ -86,7 +86,7 @@ class TripSummary extends BaseCheckoutComponent
     #[On('summary-updated')]
     public function summaryUpdated(): void
     {
-        $result = resolve(CallTripDetailsAction::class)->run(checkout_params());
+        $result = resolve(CallTripDetailsAction::class)->run($this->getParams());
 
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
             itineraryResponse: $result->itinerary,
@@ -106,7 +106,7 @@ class TripSummary extends BaseCheckoutComponent
     {
         $this->dispatch(
             event: 'availability-verified',
-            result: resolve(VerifyAvailabilityAction::class)->run($this->checkoutId, $this->itinerary),
+            result: resolve(VerifyAvailabilityAction::class)->run($this->getParams(), $this->itinerary),
         );
     }
 

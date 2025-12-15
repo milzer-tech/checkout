@@ -50,7 +50,7 @@ class PaymentPage extends BaseCheckoutComponent
     public function goBack(): void
     {
         $this->redirect(
-            route('traveler-details', $this->getQueryParams())
+            route('traveler-details', $this->getParams()->toArray())
         );
     }
 
@@ -59,9 +59,9 @@ class PaymentPage extends BaseCheckoutComponent
      */
     protected function initializeRequirements(): void
     {
-        $this->model = resolve(FindCheckoutModelAction::class)->run(checkout_params());
+        $this->model = resolve(FindCheckoutModelAction::class)->run($this->getParams());
 
-        $result = resolve(CallTripDetailsAction::class)->run(checkout_params());
+        $result = resolve(CallTripDetailsAction::class)->run($this->getParams());
 
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
             itineraryResponse: $result->itinerary,

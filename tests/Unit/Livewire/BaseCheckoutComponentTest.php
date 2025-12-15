@@ -16,11 +16,6 @@ class TestableBaseCheckoutComponent extends BaseCheckoutComponent
     {
         $this->markAsNotCompleted($section);
     }
-
-    public function callGetQueryParams(): array
-    {
-        return $this->getQueryParams();
-    }
 }
 
 beforeEach(function (): void {
@@ -164,12 +159,13 @@ it('markAsNotCompleted sets isCompleted=false and calls action', function (): vo
 });
 
 it('getQueryParams returns expected URL parameters', function (): void {
-    $params = $this->component->callGetQueryParams();
+    $params = $this->component->getParams()->toArray();
 
     expect($params)->toBe([
         'checkoutId' => 'co-123',
         'itineraryId' => 'it-999',
         'origin' => 'app',
         'lang' => 'en',
+        'rest-payment' => false,
     ]);
 });

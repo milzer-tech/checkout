@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Actions\Checkout;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
@@ -15,9 +16,9 @@ use Nezasa\Checkout\Integrations\Nezasa\Enums\ComponentEnum;
 
 class VerifyAvailabilityAction
 {
-    public function run(string $checkoutId, ItinerarySummary $itinerary): bool
+    public function run(CheckoutParamsDto $params, ItinerarySummary $itinerary): bool
     {
-        $dto = $this->getVerifyAvailabilityResponse($checkoutId);
+        $dto = $this->getVerifyAvailabilityResponse($params);
 
         /** @var Collection<int, bool> $statuses */
         $statuses = new Collection;
@@ -52,13 +53,13 @@ class VerifyAvailabilityAction
     /**
      * Get the availability response from the cache or Nezasa API.
      */
-    protected function getVerifyAvailabilityResponse(string $checkoutId): VerifyAvailabilityResponse
+    protected function getVerifyAvailabilityResponse(CheckoutParamsDto $params): VerifyAvailabilityResponse
     {
-        if (AvailabilityFacade::getCachedStatus(checkout_params()) === 200) {
-            $dto = VerifyAvailabilityResponse::from(AvailabilityFacade::getCachedResult(checkout_params()));
+        if (AvailabilityFacade::getCachedStatus($params) === 200) {
+            $dto = VerifyAvailabilityResponse::from(AvailabilityFacade::getCachedResult($params));
         } else {
             /** @var VerifyAvailabilityResponse $dto */
-            $dto = NezasaConnector::make()->checkout()->varifyAvailability($checkoutId)->dto();
+            $dto = NezasaConnector::make()->checkout()->varifyAvailability($params->checkoutId)->dto();
         }
 
         return $dto;
