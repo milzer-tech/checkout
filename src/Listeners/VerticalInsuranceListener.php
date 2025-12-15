@@ -89,8 +89,9 @@ final class VerticalInsuranceListener implements ShouldQueue
             $this->transaction->update([
                 'result_data' => $this->transaction->result_data + ['payment_intent' => 'could not be retrieved'],
             ]);
-        }
 
+            throw $e;
+        }
     }
 
     /**
@@ -120,6 +121,8 @@ final class VerticalInsuranceListener implements ShouldQueue
             $this->transaction->update([
                 'result_data' => $this->transaction->result_data + ['clone_method' => 'could not be cloned'],
             ]);
+
+            throw $e;
         }
     }
 
@@ -151,6 +154,8 @@ final class VerticalInsuranceListener implements ShouldQueue
             $this->transaction->update([
                 'result_data' => $this->transaction->result_data + ['new_payment_intend' => 'could not be created'],
             ]);
+
+            throw $e;
         }
     }
 
@@ -178,6 +183,8 @@ final class VerticalInsuranceListener implements ShouldQueue
             $this->transaction->update([
                 'result_data' => $this->transaction->result_data + ['insurance_purchase' => 'could not be purchased'],
             ]);
+
+            throw $e;
         }
 
     }
@@ -208,6 +215,8 @@ final class VerticalInsuranceListener implements ShouldQueue
             $this->transaction->update([
                 'result_data' => $this->transaction->result_data + ['nezasa_insurance_response' => 'could not be saved'],
             ]);
+
+            throw $e;
         }
     }
 }

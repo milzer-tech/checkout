@@ -70,6 +70,7 @@ return [
         'info' => 'Info',
         'success' => 'Success',
         'trip_summary' => 'Trip summary',
+        'agree_to_statement' => 'I agree to the Terms and Conditions stated above',
     ],
 
     'payment' => [

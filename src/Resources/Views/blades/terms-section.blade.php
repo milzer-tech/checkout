@@ -18,15 +18,16 @@
 
             <!-- Text -->
             <div class="text-sm text-gray-600 leading-relaxed">
-                {!! str(strip_tags($term->text))->limit(300) !!}
+                {!! str(strip_tags($term->text))->limit(config()->integer('checkout.term_limit')) !!}
 
-                @if(strlen(strip_tags($term->text) > 300))
+                @if(strlen(strip_tags($term->text)) > config()->integer('checkout.term_limit'))
+                    {{strlen(strip_tags($term->text))}}
                     <button
                         type="button"
                         wire:click="openTermsModal({{ $index }})"
                         class="text-blue-600 font-medium hover:underline inline"
                     >
-                        {{@trans('checkout::page.trip_details.learn_more')}}
+                        {{trans('checkout::page.trip_details.learn_more')}}
                     </button>
 
                 @endif
@@ -46,7 +47,12 @@
                             class="h-5 w-5 text-blue-600 border-gray-300 rounded">
 
                         <span class="text-sm text-gray-600">
-                        I agree to the Terms and Conditions stated above.
+                            @if($term->checkboxText)
+                                {!! $term->checkboxText !!}
+                            @else
+                                {{trans('checkout::page.trip_details.agree_to_statement')}}
+                            @endif
+
                         </span>
                     </label>
 
@@ -72,46 +78,46 @@
         </div>
     </div>
 
-        @if($showTermsModal && $modalTermIndex !== null)
-            @php($modalTerm = $termsAndConditions->sections[$modalTermIndex] ?? null)
+    @if($showTermsModal && $modalTermIndex !== null)
+        @php($modalTerm = $termsAndConditions->sections[$modalTermIndex] ?? null)
 
-            @if($modalTerm)
+        @if($modalTerm)
+            <div
+                class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                role="dialog"
+                aria-modal="true"
+            >
+                {{-- Backdrop --}}
                 <div
-                    class="fixed inset-0 z-50 flex items-center justify-center p-4"
-                    role="dialog"
-                    aria-modal="true"
-                >
-                    {{-- Backdrop --}}
-                    <div
-                        class="fixed inset-0 bg-gray-900/50"
-                        wire:click="closeTermsModal"
-                    ></div>
+                    class="fixed inset-0 bg-gray-900/50"
+                    wire:click="closeTermsModal"
+                ></div>
 
-                    {{-- Modal panel --}}
-                    <div class="relative bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[85vh] overflow-hidden">
-                        <!-- Header (no border) -->
-                        <div class="flex items-center justify-between px-6 py-4">
-                            <h2 class="text-lg font-semibold text-gray-900">
-                                {{ $modalTerm->header }}
-                            </h2>
+                {{-- Modal panel --}}
+                <div class="relative bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[85vh] overflow-hidden">
+                    <!-- Header (no border) -->
+                    <div class="flex items-center justify-between px-6 py-4">
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            {{ $modalTerm->header }}
+                        </h2>
 
-                            <button
-                                type="button"
-                                wire:click="closeTermsModal"
-                                class="text-gray-400 hover:text-gray-600 text-xl"
-                                aria-label="Close"
-                            >
-                                &times;
-                            </button>
-                        </div>
+                        <button
+                            type="button"
+                            wire:click="closeTermsModal"
+                            class="text-gray-400 hover:text-gray-600 text-xl"
+                            aria-label="Close"
+                        >
+                            &times;
+                        </button>
+                    </div>
 
-                        <!-- Body (scrollable) -->
-                        <div class="px-6 pb-6 overflow-y-auto text-sm text-gray-700 leading-relaxed space-y-4 max-h-[70vh]">
-                            {!! $modalTerm->text !!}
-                        </div>
+                    <!-- Body (scrollable) -->
+                    <div class="px-6 pb-6 overflow-y-auto text-sm text-gray-700 leading-relaxed space-y-4 max-h-[70vh]">
+                        {!! $modalTerm->text !!}
                     </div>
                 </div>
-            @endif
+            </div>
         @endif
+    @endif
 
 </x-checkout::editable-box>
