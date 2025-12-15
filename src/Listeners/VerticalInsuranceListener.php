@@ -75,15 +75,22 @@ final class VerticalInsuranceListener implements ShouldQueue
      */
     private function getPaymentMethodId(): string
     {
-        $paymentIntentId = $this->transaction->result_data['session']['payment_intent'];
+        try {
+            $paymentIntentId = $this->transaction->result_data['session']['payment_intent'];
 
-        $paymentIntent = $this->stripe->paymentIntents->retrieve($paymentIntentId);
+            $paymentIntent = $this->stripe->paymentIntents->retrieve($paymentIntentId);
 
-        $this->transaction->update([
-            'result_data' => $this->transaction->result_data + ['payment_intent' => $paymentIntent->toArray()],
-        ]);
+            $this->transaction->update([
+                'result_data' => $this->transaction->result_data + ['payment_intent' => $paymentIntent->toArray()],
+            ]);
 
-        return $paymentIntent->toArray()['payment_method'];
+            return $paymentIntent->toArray()['payment_method'];
+        } catch (\Throwable $e) {
+            $this->transaction->update([
+                'result_data' => $this->transaction->result_data + ['payment_intent' => 'could not be retrieved'],
+            ]);
+        }
+
     }
 
     /**
@@ -93,88 +100,113 @@ final class VerticalInsuranceListener implements ShouldQueue
      */
     private function clonePayment(string $paymentMethodId): string
     {
-        $paymentMethod = $this->stripe->paymentMethods->create(
-            params: [
-                'customer' => (string) $this->transaction->result_data['session']['customer'],
-                'payment_method' => $paymentMethodId,
-            ],
-            opts: [
-                'stripe_account' => Config::string('checkout.insurance.vertical.connected_account_id'),
-            ]
-        );
+        try {
+            $paymentMethod = $this->stripe->paymentMethods->create(
+                params: [
+                    'customer' => (string) $this->transaction->result_data['session']['customer'],
+                    'payment_method' => $paymentMethodId,
+                ],
+                opts: [
+                    'stripe_account' => Config::string('checkout.insurance.vertical.connected_account_id'),
+                ]
+            );
 
-        $this->transaction->update([
-            'result_data' => $this->transaction->result_data + ['clone_method' => $paymentMethod->toArray()],
-        ]);
+            $this->transaction->update([
+                'result_data' => $this->transaction->result_data + ['clone_method' => $paymentMethod->toArray()],
+            ]);
 
-        return $paymentMethod->toArray()['id'];
+            return $paymentMethod->toArray()['id'];
+        } catch (\Throwable $e) {
+            $this->transaction->update([
+                'result_data' => $this->transaction->result_data + ['clone_method' => 'could not be cloned'],
+            ]);
+        }
     }
 
     private function createVerticalPaymentIntent(string $paymentMethodId): string
     {
-        $newPaymentIntent = $this->stripe->paymentIntents->create(
-            params: [
-                'payment_method' => $paymentMethodId,
-                'currency' => (string) $this->transaction->checkout->data['insurance']['currency'],
-                'amount' => (int) $this->transaction->checkout->data['insurance']['total'],
-                'off_session' => true,
-                'confirm' => true,
-                'metadata' => [
-                    'quote_id' => (string) $this->transaction->checkout->data['insurance']['quote_id'],
+        try {
+            $newPaymentIntent = $this->stripe->paymentIntents->create(
+                params: [
+                    'payment_method' => $paymentMethodId,
+                    'currency' => (string) $this->transaction->checkout->data['insurance']['currency'],
+                    'amount' => (int) $this->transaction->checkout->data['insurance']['total'],
+                    'off_session' => true,
+                    'confirm' => true,
+                    'metadata' => [
+                        'quote_id' => (string) $this->transaction->checkout->data['insurance']['quote_id'],
+                    ],
                 ],
-            ],
-            opts: [
-                'stripe_account' => Config::string('checkout.insurance.vertical.connected_account_id'),
-            ]
-        );
+                opts: [
+                    'stripe_account' => Config::string('checkout.insurance.vertical.connected_account_id'),
+                ]
+            );
 
-        $this->transaction->update([
-            'result_data' => $this->transaction->result_data + ['new_payment_intend' => $newPaymentIntent->toArray()],
-        ]);
+            $this->transaction->update([
+                'result_data' => $this->transaction->result_data + ['new_payment_intend' => $newPaymentIntent->toArray()],
+            ]);
 
-        return $newPaymentIntent->toArray()['id'];
+            return $newPaymentIntent->toArray()['id'];
+        } catch (\Throwable $e) {
+            $this->transaction->update([
+                'result_data' => $this->transaction->result_data + ['new_payment_intend' => 'could not be created'],
+            ]);
+        }
     }
 
     private function purchaseInsurance(string $paymentIntentId): bool
     {
-        $response = VerticalInsuranceConnector::make()->purchase()->travel(
-            new PurchaseEventPayload(
-                quote_id: $this->transaction->checkout->data['insurance']['quote_id'],
-                payment_method: new PurchasePaymentMethodPayloadEntity(token: "stripe:$paymentIntentId"),
-                customer: new VerticalCustomerPayloadEntity(
-                    first_name: $this->transaction->checkout->data['contact']['firstName'],
-                    last_name: $this->transaction->checkout->data['contact']['lastName'],
-                    email_address: $this->transaction->checkout->data['contact']['email']
-                )
-            )
-        );
-
-        $this->transaction->update([
-            'result_data' => $this->transaction->result_data + ['insurance_purchase' => $response->array()],
-        ]);
-
-        return $response->status() === 200 || $response->status() === 201;
-    }
-
-    private function saveInsuranceOnNezasa(): void
-    {
-        $insurance = data_get($this->transaction->result_data, 'insurance_purchase');
-
-        if (isset($insurance['id'])) {
-            $response = NezasaConnector::make()->checkout()->addCustomInsurance(
-                checkoutId: $this->transaction->checkout->checkout_id,
-                payload: new AddCustomInsurancePayload(
-                    name: $insurance['product']['promotional_header'],
-                    netPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
-                    salesPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
-                    bookingStatus: AvailabilityEnum::Booked,
-                    supplierConfirmationNumber: $insurance['policy_number'],
-                    description: data_get($insurance, 'product.description')
+        try {
+            $response = VerticalInsuranceConnector::make()->purchase()->travel(
+                new PurchaseEventPayload(
+                    quote_id: $this->transaction->checkout->data['insurance']['quote_id'],
+                    payment_method: new PurchasePaymentMethodPayloadEntity(token: "stripe:$paymentIntentId"),
+                    customer: new VerticalCustomerPayloadEntity(
+                        first_name: $this->transaction->checkout->data['contact']['firstName'],
+                        last_name: $this->transaction->checkout->data['contact']['lastName'],
+                        email_address: $this->transaction->checkout->data['contact']['email']
+                    )
                 )
             );
 
             $this->transaction->update([
-                'result_data' => $this->transaction->result_data + ['nezasa_insurance_response' => $response->array()],
+                'result_data' => $this->transaction->result_data + ['insurance_purchase' => $response->array()],
+            ]);
+
+            return $response->status() === 200 || $response->status() === 201;
+        } catch (\Throwable $e) {
+            $this->transaction->update([
+                'result_data' => $this->transaction->result_data + ['insurance_purchase' => 'could not be purchased'],
+            ]);
+        }
+
+    }
+
+    private function saveInsuranceOnNezasa(): void
+    {
+        try {
+            $insurance = data_get($this->transaction->result_data, 'insurance_purchase');
+
+            if (isset($insurance['id'])) {
+                $response = NezasaConnector::make()->checkout()->addCustomInsurance(
+                    checkoutId: $this->transaction->checkout->checkout_id,
+                    payload: new AddCustomInsurancePayload(
+                        name: $insurance['product']['promotional_header'],
+                        netPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
+                        salesPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
+                        bookingStatus: AvailabilityEnum::Booked,
+                        supplierConfirmationNumber: $insurance['policy_number'],
+                        description: data_get($insurance, 'product.description')
+                    )
+                );
+
+                $this->transaction->update([
+                    'result_data' => $this->transaction->result_data + ['nezasa_insurance_response' => $response->array()],
+                ]);
+            }
+        } catch (\Throwable $e) {
+            $this->transaction->update([
+                'result_data' => $this->transaction->result_data + ['nezasa_insurance_response' => 'could not be saved'],
             ]);
         }
     }
