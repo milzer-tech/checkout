@@ -80,7 +80,7 @@
                             clearTimeout(readyTimeoutId);
 
                             if (e?.detail?.offersAvailable === false) {
-                                showError("No insurance offers available right now.");
+                                showError("The insurance offers are not available in your region.");
                                 return;
                             }
 
