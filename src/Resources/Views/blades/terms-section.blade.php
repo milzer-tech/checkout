@@ -21,7 +21,6 @@
                 {!! str(strip_tags($term->text))->limit(config()->integer('checkout.term_limit')) !!}
 
                 @if(strlen(strip_tags($term->text)) > config()->integer('checkout.term_limit'))
-                    {{strlen(strip_tags($term->text))}}
                     <button
                         type="button"
                         wire:click="openTermsModal({{ $index }})"
