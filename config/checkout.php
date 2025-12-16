@@ -65,7 +65,7 @@ return [
         ComputopGateway::class,
     ],
 
-    'term_limit' => (int) env('CHECKOUT_TERM_LIMIT', 300),
+    'term_limit' => (int) env('CHECKOUT_TERM_LIMIT', 600),
 
     'fake_calls' => env('CHECKOUT_FAKE_NEZASA_CALLS', false),
 ];
