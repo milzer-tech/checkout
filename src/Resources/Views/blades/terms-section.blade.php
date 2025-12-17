@@ -17,8 +17,13 @@
             <h3 class="text-lg font-semibold text-gray-900">{{ $term->header }}</h3>
 
             <!-- Text -->
-            <div class="text-sm text-gray-600 leading-relaxed">
-                {!! str(strip_tags($term->text))->limit(config()->integer('checkout.term_limit')) !!}
+            <div class="text-sm leading-relaxed text-sm text-gray-600
+
+        [&_a]:text-blue-600
+        [&_a]:underline
+        [&_a:hover]:text-blue-700">
+{{--                {!! str(strip_tags($term->text))->limit(config()->integer('checkout.term_limit')) !!}--}}
+                {!! $term->text!!}
 
                 @if(strlen(strip_tags($term->text)) > config()->integer('checkout.term_limit'))
                     <button
@@ -45,7 +50,11 @@
                             wire:change="toggleBox('acceptedTerms.{{ $term->getKey() }}', $event.target.checked)"
                             class="h-5 w-5 text-blue-600 border-gray-300 rounded">
 
-                        <span class="text-sm text-gray-600">
+                        <span class="text-sm inline text-sm text-gray-600
+
+        [&_a]:text-blue-600
+        [&_a]:underline
+        [&_a:hover]:text-blue-700">
                             @if($term->checkboxText)
                                 {!! $term->checkboxText !!}
                             @else
@@ -111,9 +120,20 @@
                     </div>
 
                     <!-- Body (scrollable) -->
-                    <div class="px-6 pb-6 overflow-y-auto text-sm text-gray-700 leading-relaxed space-y-4 max-h-[70vh]">
+                    <div
+                        class="
+        px-6 pb-6 overflow-y-auto
+        text-sm text-gray-700 leading-relaxed space-y-4
+        max-h-[70vh]
+
+        [&_a]:text-blue-600
+        [&_a]:underline
+        [&_a:hover]:text-blue-700
+    "
+                    >
                         {!! $modalTerm->text !!}
                     </div>
+
                 </div>
             </div>
         @endif
