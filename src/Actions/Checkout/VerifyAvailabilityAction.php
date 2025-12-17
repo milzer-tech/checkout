@@ -46,6 +46,8 @@ class VerifyAvailabilityAction
                 $item->availability = $component->nonBookable ? AvailabilityEnum::None : AvailabilityEnum::Open;
             }
         }
+        /** @phpstan-ignore-next-line  */
+        $itinerary->upsellItems->each->availability = AvailabilityEnum::Open;
 
         return $statuses->reject(fn (bool $item): bool => ! $item)->isEmpty();
     }

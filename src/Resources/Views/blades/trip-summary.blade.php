@@ -277,13 +277,13 @@
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.upsell_items')}}</h3>
-                            @include('checkout::components.available',['availability' => AvailabilityEnum::Open])
+                            @include('checkout::components.available',['availability' => $itinerary->getUpsellItemsGroupStatus()])
                         </div>
                         <div class="space-y-2">
                             @foreach($itinerary->upsellItems as $item)
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center">
-                                        @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::Open])
+                                        @include('checkout::components.availability-status', ['availability' => $item->availability])
                                         <span
                                             class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
                                     </div>
