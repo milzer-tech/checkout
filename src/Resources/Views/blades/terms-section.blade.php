@@ -22,19 +22,23 @@
         [&_a]:text-blue-600
         [&_a]:underline
         [&_a:hover]:text-blue-700">
-{{--                {!! str(strip_tags($term->text))->limit(config()->integer('checkout.term_limit')) !!}--}}
-                {!! $term->text!!}
 
                 @if(strlen(strip_tags($term->text)) > config()->integer('checkout.term_limit'))
+                    {{str(strip_tags($term->text))->limit(config()->integer('checkout.term_limit')) }}
+
                     <button
                         type="button"
                         wire:click="openTermsModal({{ $index }})"
                         class="text-blue-600 font-medium hover:underline inline"
                     >
                         {{trans('checkout::page.trip_details.learn_more')}}
+
                     </button>
 
+                @else
+                    {!! $term->text!!}
                 @endif
+
             </div>
 
             @if($term->checkboxText)
