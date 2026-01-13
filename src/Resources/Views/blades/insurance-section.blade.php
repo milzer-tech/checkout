@@ -80,7 +80,7 @@
                             clearTimeout(readyTimeoutId);
 
                             if (e?.detail?.offersAvailable === false) {
-                                showError("The insurance offers are not available in your region.");
+                                showError("The insurance offers are only available in US and CAN. If you need to add an insurance, please change the contact's address to US or CAN.");
                                 return;
                             }
 
