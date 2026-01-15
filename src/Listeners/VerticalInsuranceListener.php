@@ -203,7 +203,7 @@ final class VerticalInsuranceListener implements ShouldQueue
                         salesPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
                         bookingStatus: AvailabilityEnum::Booked,
                         supplierConfirmationNumber: $insurance['policy_number'],
-                        description: $insurance['id']
+                        description: $insurance['policy_number']
                     )
                 );
 
