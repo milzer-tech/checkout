@@ -31,6 +31,9 @@ class OppwaPreparePayload extends BaseDto
         public string $billingCountry,
         public string $paymentType = 'DB',
         public bool $integrity = true,
+        public bool $createRegistration = true,
+        // TODO: remove it for production
+        public string $testMode = 'EXTERNAL'
 
     ) {}
 }
