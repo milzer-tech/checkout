@@ -49,14 +49,15 @@ class OppwaWidgetGateway implements WidgetPaymentContract
                     billingCity: $data->contact->address->city,
                     billingPostcode: $data->contact->address->postalCode,
                     billingCountry: str($data->contact->address->country)->before('-')->toString(),
+                    createRegistration: true
                 )
             );
 
             if ($response->ok()) {
                 return new PaymentInit(isAvailable: true, returnUrl: $data->returnUrl, persistentData: $response->dto());
             }
-        } catch (Throwable) {
-            // nothing to do
+        } catch (Throwable $throwable) {
+            report($throwable);
         }
 
         return new PaymentInit(isAvailable: false, returnUrl: $data->returnUrl);
@@ -107,6 +108,7 @@ class OppwaWidgetGateway implements WidgetPaymentContract
     {
         try {
             $response = OppwaConnector::make()->checkout()->status($request->query('resourcePath'));
+            dd($response->array());
 
             return new PaymentResult(
                 status: $response->failed() ? PaymentStatusEnum::Failed : PaymentStatusEnum::Succeeded,
