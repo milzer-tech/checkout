@@ -17,7 +17,7 @@ final class UpdateNezasaTransactionAction
      *
      * @return false|array<string, mixed>
      */
-    private function run(NezasaTransactionStatusEnum $status, Transaction $transaction): false|array
+    public function run(NezasaTransactionStatusEnum $status, Transaction $transaction): false|array
     {
         try {
             $payload = new UpdatePaymentTransactionPayload(status: $status);
