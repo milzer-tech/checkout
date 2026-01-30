@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Uri;
 use Mockery as m;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
@@ -14,12 +15,14 @@ use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
 use Nezasa\Checkout\Payments\Contracts\WidgetPaymentContract;
+use Nezasa\Checkout\Payments\Dtos\AbortResult;
+use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
+use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 use Nezasa\Checkout\Payments\Handlers\PaymentInitiationHandler;
 use Saloon\Http\Response;
 
@@ -65,14 +68,24 @@ class DummyWidgetGateway implements WidgetPaymentContract
         return $this->asset ?? new PaymentAsset(true, html: '<div>ok</div>');
     }
 
-    public function verify(Illuminate\Http\Request $request, array|Nezasa\Checkout\Dtos\BaseDto $persistentData): PaymentResult
+    public function authorize(Illuminate\Http\Request $request, array|Nezasa\Checkout\Dtos\BaseDto $persistentData): AuthorizationResult
     {
-        return new PaymentResult(status: PaymentStatusEnum::Succeeded);
+        return new AuthorizationResult(isSuccessful: true);
     }
 
-    public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput
+    public function output(AuthorizationResult $result, PaymentOutput $output): PaymentOutput
     {
         return $output;
+    }
+
+    public function capture(Request $request, array $persistentData, array $resultData): CaptureResult
+    {
+        // TODO: Implement capture() method.
+    }
+
+    public function abort(Request $request, array $persistentData, array $resultData): AbortResult
+    {
+        // TODO: Implement abort() method.
     }
 }
 
@@ -109,14 +122,24 @@ class DummyRedirectGateway implements RedirectPaymentContract
         );
     }
 
-    public function verify(Illuminate\Http\Request $request, array|Nezasa\Checkout\Dtos\BaseDto $persistentData): PaymentResult
+    public function authorize(Illuminate\Http\Request $request, array|Nezasa\Checkout\Dtos\BaseDto $persistentData): AuthorizationResult
     {
-        return new PaymentResult(status: PaymentStatusEnum::Succeeded);
+        return new AuthorizationResult(isSuccessful: true);
     }
 
-    public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput
+    public function output(AuthorizationResult $result, PaymentOutput $output): PaymentOutput
     {
         return $output;
+    }
+
+    public function capture(Request $request, array $persistentData, array $resultData): CaptureResult
+    {
+        // TODO: Implement capture() method.
+    }
+
+    public function abort(Request $request, array $persistentData, array $resultData): AbortResult
+    {
+        // TODO: Implement abort() method.
     }
 }
 
@@ -146,14 +169,24 @@ class DummyUnsupportedGateway implements PaymentContract
         );
     }
 
-    public function verify(Illuminate\Http\Request $request, array|Nezasa\Checkout\Dtos\BaseDto $persistentData): PaymentResult
+    public function authorize(Illuminate\Http\Request $request, array|Nezasa\Checkout\Dtos\BaseDto $persistentData): AuthorizationResult
     {
-        return new PaymentResult(status: PaymentStatusEnum::Succeeded);
+        return new AuthorizationResult(issuccessful: true);
     }
 
-    public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput
+    public function output(AuthorizationResult $result, PaymentOutput $output): PaymentOutput
     {
         return $output;
+    }
+
+    public function capture(Request $request, array $persistentData, array $resultData): CaptureResult
+    {
+        // TODO: Implement capture() method.
+    }
+
+    public function abort(Request $request, array $persistentData, array $resultData): AbortResult
+    {
+        // TODO: Implement abort() method.
     }
 }
 
@@ -220,7 +253,7 @@ it('run() with WidgetPaymentContract returns PaymentAsset and updates transactio
         ->and($tx->gateway)->toBe(DummyWidgetGateway::name())
         ->and((float) $tx->amount)->toBe(123.45)
         ->and($tx->currency)->toBe('EUR')
-        ->and($tx->status->value)->toBe(PaymentStatusEnum::Pending->value)
+        ->and($tx->status->value)->toBe(TransactionStatusEnum::Pending->value)
         ->and($tx->prepare_data)->toBe(['id' => 'abc']);
 });
 
@@ -262,7 +295,7 @@ it('run() with RedirectPaymentContract returns Uri and updates transaction', fun
         ->and($result->toStringable()->toString())->toBe($redirectUrl->toStringable()->toString());
 
     $tx = $checkout->transactions()->latest('id')->first();
-    expect($tx->status->value)->toBe(PaymentStatusEnum::Pending->value);
+    expect($tx->status->value)->toBe(TransactionStatusEnum::Pending->value);
 });
 
 it('throws when gateway prepare is unavailable', function (): void {
@@ -299,7 +332,7 @@ it('throws when gateway prepare is unavailable', function (): void {
         // A transaction is still created initially with Started status
         $tx = $checkout->transactions()->latest('id')->first();
         expect($tx)->not->toBeNull()
-            ->and($tx->status->value)->toBe(PaymentStatusEnum::Started->value);
+            ->and($tx->status->value)->toBe(TransactionStatusEnum::Started->value);
     }
 });
 
@@ -357,7 +390,7 @@ it('makePaymentPrepareData builds correct payload', function (): void {
     $tx = Transaction::create([
         'checkout_id' => $checkout->id,
         'gateway' => 'dummy',
-        'status' => PaymentStatusEnum::Started,
+        'status' => TransactionStatusEnum::Started,
         'amount' => 42.0,
         'currency' => 'EUR',
     ]);

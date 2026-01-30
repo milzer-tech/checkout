@@ -18,7 +18,7 @@ use Nezasa\Checkout\Payments\Contracts\WidgetPaymentContract;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
 class PaymentInitiationHandler
 {
@@ -60,7 +60,7 @@ class PaymentInitiationHandler
     {
         return $checkout->transactions()->create([
             'gateway' => $gateway::name(),
-            'status' => PaymentStatusEnum::Started,
+            'status' => TransactionStatusEnum::Pending,
             'amount' => $price->amount,
             'currency' => $price->currency,
         ]);
@@ -75,7 +75,7 @@ class PaymentInitiationHandler
     {
         $transaction->update([
             'prepare_data' => (array) $init->persistentData,
-            'status' => PaymentStatusEnum::Pending,
+            'status' => TransactionStatusEnum::Pending,
             'nezasa_transaction' => $nezasaTransaction,
             'nezasa_transaction_ref_id' => $nezasaTransaction['transactionRefId'] ?? null,
         ]);
