@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Payments\Dtos;
 
 use Carbon\CarbonImmutable;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Payments\Enums\BookingStatusEnum;
 
 class PaymentOutput extends BaseDto
 {
@@ -16,7 +17,7 @@ class PaymentOutput extends BaseDto
      */
     public function __construct(
         public readonly string $gatewayName,
-        public readonly bool $isNezasaBookingSuccessful,
+        public readonly BookingStatusEnum $bookingStatusEnum,
         public readonly ?string $bookingReference = null,
         public readonly ?CarbonImmutable $orderDate = null,
         public array $data = [],
