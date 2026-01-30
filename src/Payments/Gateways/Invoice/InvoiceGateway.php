@@ -11,13 +11,14 @@ use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
+use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
-class InvoiceGateway implements RedirectPaymentContract
+class InvoiceGateway
+// implements RedirectPaymentContract
 {
     /**
      * Returns whether the payment gateway is active.
@@ -78,23 +79,24 @@ class InvoiceGateway implements RedirectPaymentContract
      *
      * @param  array<string, mixed>|BaseDto  $persistentData
      */
-    public function verify(Request $request, BaseDto|array $persistentData): PaymentResult
+    public function verify(Request $request, BaseDto|array $persistentData): AuthorizationResult
     {
         $id = is_array($persistentData) ? $persistentData['id'] : false;
 
-        return new PaymentResult(
+        return new AuthorizationResult(
             /** @phpstan-ignore-next-line  */
-            status: $request->route('transaction')->id === $id
-                ? PaymentStatusEnum::Succeeded
-                : PaymentStatusEnum::Failed,
-            persistentData: (array) $persistentData
+            //            status: $request->route('transaction')->id === $id
+            //                ? TransactionStatusEnum::Succeeded
+            //                : TransactionStatusEnum::Failed,
+            isSuccessful: true,
+            resultData: (array) $persistentData
         );
     }
 
     /**
      * Shows the result of the payment process to the user.
      */
-    public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput
+    public function output(AuthorizationResult $result, PaymentOutput $output): PaymentOutput
     {
         return $output;
     }
