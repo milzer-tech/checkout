@@ -22,6 +22,9 @@ use Saloon\Http\Response;
 
 readonly class PaymentCallBackHandler
 {
+    /**
+     * Create a new instance of PaymentCallBackHandler.
+     */
     public function __construct(
         private BookItineraryAction $bookItineraryAction,
         private UpdateTransactionAction $updateTransactionAction,
