@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
 it('builds Price accessor from amount and currency', function (): void {
     $t = new Transaction;
@@ -33,7 +33,7 @@ it('returns BelongsTo relation for checkout()', function (): void {
 it('defines expected casts and respects enum/decimal casting', function (): void {
     $t = new Transaction;
 
-    $t->status = PaymentStatusEnum::Pending;
+    $t->status = TransactionStatusEnum::Pending;
     $t->gateway = 'oppwa';
     $t->amount = '100.2';
     $t->currency = 'USD';
@@ -42,7 +42,7 @@ it('defines expected casts and respects enum/decimal casting', function (): void
     $t->result_data = ['b' => 2];
     $t->nezasa_transaction = ['c' => 3];
 
-    expect($t->status)->toBe(PaymentStatusEnum::Pending)
+    expect($t->status)->toBe(TransactionStatusEnum::Pending)
         ->and($t->gateway)->toBe('oppwa')
         ->and($t->amount)->toBe('100.20')
         ->and($t->currency)->toBe('USD')
