@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Contracts;
 
 use Illuminate\Http\Request;
-use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
+use Nezasa\Checkout\Payments\Dtos\AbortResult;
+use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
+use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
-use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Dtos\PaymentResult;
 
 interface PaymentContract
 {
@@ -38,14 +38,36 @@ interface PaymentContract
     public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload;
 
     /**
-     * Handles the callback from the payment gateway.
+     * Handles the callback from the payment gateway to authorize the payment.
      *
-     * @param  array<string, mixed>|BaseDto  $persistentData
+     * Persistent data is the data that is returned from paymentInit in the prepare method.
+     *
+     * @param  array<string, mixed>  $persistentData
      */
-    public function verify(Request $request, array|BaseDto $persistentData): PaymentResult;
+    public function authorize(Request $request, array $persistentData): AuthorizationResult;
 
     /**
-     * Shows the result of the payment process to the user.
+     * Capture the authorized payment. This method is called after the payment is authorized
+     * and booking itinerary call is successful.
+     *
+     * Persistent data is the data returned from paymentInit in the prepare method.
+     *
+     * @param  array<string, mixed>  $persistentData
+     *
+     * Result data is the data returned from AuthorizationResult's resultData property.
+     * @param  array<string, mixed>  $resultData
      */
-    public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput;
+    public function capture(Request $request, array $persistentData, array $resultData): CaptureResult;
+
+    /**
+     * Abort the payment process. This method is called when the booking itinerary call fails.
+     *
+     * Persistent data is the data returned from paymentInit in the prepare method.
+     *
+     * @param  array<string, mixed>  $persistentData
+     *
+     * Result data is the data returned from AuthorizationResult's resultData property.
+     * @param  array<string, mixed>  $resultData
+     */
+    public function abort(Request $request, array $persistentData, array $resultData): AbortResult;
 }
