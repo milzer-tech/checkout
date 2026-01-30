@@ -11,6 +11,7 @@ use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Payment\UpdateNezasaTransactionAction;
 use Nezasa\Checkout\Actions\Transaction\UpdateTransactionAction;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
@@ -130,12 +131,16 @@ readonly class PaymentCallBackHandler
      */
     private function getOutput(Transaction $transaction): PaymentOutput
     {
+        $data = collect($transaction->result_data['nezasa_booking_summary']['components'])
+            ->reject(fn (array $item) => $item['isPlaceholder'])
+            ->mapwithkeys(fn (array $item) => [$item['id'] => AvailabilityEnum::tryFrom($item['status'])]);
+
         return new PaymentOutput(
             gatewayName: $transaction->gateway,
             bookingStatusEnum: $this->bookingResultAction->run($transaction->result_data['nezasa_booking_summary']),
             bookingReference: $transaction->checkout->itinerary_id,
             orderDate: $transaction->updated_at?->toImmutable(),
-            data: [],
+            data: $data->toArray(),
             isPaymentSuccessful: $transaction->status->isCaptured(),
         );
     }
