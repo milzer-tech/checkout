@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
-use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
 /**
@@ -67,7 +66,7 @@ class Transaction extends Model
             'result_data' => 'encrypted:json',
             'nezasa_transaction' => 'encrypted:json',
             'nezasa_transaction_ref_id' => 'string',
-            'status' => NezasaTransactionStatusEnum::class,
+            'status' => TransactionStatusEnum::class,
             'amount' => 'decimal:2',
         ];
     }
