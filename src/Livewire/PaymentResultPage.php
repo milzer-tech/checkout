@@ -34,11 +34,11 @@ class PaymentResultPage extends BaseCheckoutComponent
      */
     public PaymentOutput $output;
 
-    public function mount(Request $request): void
+    public function mount(Request $request, PaymentCallBackHandler $callBackHandler): void
     {
         $this->model = $this->transaction->checkout;
 
-        $this->output = resolve(PaymentCallBackHandler::class)->run($this->transaction, $request);
+        $this->output = $callBackHandler->run($this->transaction, $request);
 
         $this->initializeRequirements();
 
