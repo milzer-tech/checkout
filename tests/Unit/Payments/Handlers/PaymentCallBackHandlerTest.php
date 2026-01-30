@@ -14,9 +14,9 @@ use Nezasa\Checkout\Integrations\Nezasa\Requests\Payment\UpdatePaymentTransactio
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
+use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
-use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 use Nezasa\Checkout\Payments\Handlers\PaymentCallBackHandler;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -33,7 +33,7 @@ beforeEach(function (): void {
 
 class DummyCallbackGateway implements PaymentContract
 {
-    public function __construct(private readonly ?PaymentResult $result = null) {}
+    public function __construct(private readonly ?AuthorizationResult $result = null) {}
 
     public static function isActive(): bool
     {
@@ -55,22 +55,22 @@ class DummyCallbackGateway implements PaymentContract
         throw new RuntimeException('Not used in callback tests');
     }
 
-    public function verify(Request $request, array|\Nezasa\Checkout\Dtos\BaseDto $persistentData): PaymentResult
+    public function authorize(Request $request, array|\Nezasa\Checkout\Dtos\BaseDto $persistentData): AuthorizationResult
     {
         // If a specific result is injected, return it; otherwise derive from request
-        if ($this->result instanceof \Nezasa\Checkout\Payments\Dtos\PaymentResult) {
+        if ($this->result instanceof \Nezasa\Checkout\Payments\Dtos\AuthorizationResult) {
             return $this->result;
         }
 
         $status = str($request->query('cb_status', 'failed'))->lower()->toString();
 
-        return new PaymentResult(
-            status: $status === 'succeeded' ? PaymentStatusEnum::Succeeded : PaymentStatusEnum::Failed,
-            persistentData: ['source' => 'dummy', 'persistent' => $persistentData]
+        return new AuthorizationResult(
+            status: $status === 'succeeded' ? TransactionStatusEnum::Succeeded : TransactionStatusEnum::Failed,
+            resultData: ['source' => 'dummy', 'persistent' => $persistentData]
         );
     }
 
-    public function output(\Nezasa\Checkout\Payments\Dtos\PaymentResult $result, PaymentOutput $output): PaymentOutput
+    public function output(\Nezasa\Checkout\Payments\Dtos\AuthorizationResult $result, PaymentOutput $output): PaymentOutput
     {
         return $output;
     }
@@ -137,7 +137,7 @@ it('returns stored output when transaction already has result_data and skips ver
         'gateway' => 'dummy',
         'amount' => '100.00',
         'currency' => 'EUR',
-        'status' => PaymentStatusEnum::Succeeded,
+        'status' => TransactionStatusEnum::Succeeded,
         'result_data' => ['persisted' => true],
     ]);
 
@@ -172,7 +172,7 @@ it('verifies success, updates nezasa, stores result, books itinerary, and return
         'gateway' => 'dummy',
         'amount' => '50.00',
         'currency' => 'CHF',
-        'status' => PaymentStatusEnum::Started,
+        'status' => TransactionStatusEnum::Started,
         'prepare_data' => ['foo' => 'bar'],
         'nezasa_transaction_ref_id' => 'REF-1',
     ]);
@@ -190,7 +190,7 @@ it('verifies success, updates nezasa, stores result, books itinerary, and return
 
     expect($output)->toBeInstanceOf(PaymentOutput::class)
         ->and($output->isNezasaBookingSuccessful)->toBeTrue()
-        ->and($tx->status->value)->toBe(PaymentStatusEnum::Succeeded->value)
+        ->and($tx->status->value)->toBe(TransactionStatusEnum::Succeeded->value)
         ->and($tx->result_data)->toBe(['source' => 'dummy', 'persistent' => ['foo' => 'bar']])
         ->and($tx->nezasa_transaction)->toBe(['trx' => 'X']);
 });
@@ -209,7 +209,7 @@ it('verifies failure, updates nezasa as failed, booking not ok, and returns outp
         'gateway' => 'dummy',
         'amount' => '10.00',
         'currency' => 'USD',
-        'status' => PaymentStatusEnum::Started,
+        'status' => TransactionStatusEnum::Started,
         'prepare_data' => ['alpha' => 'beta'],
         'nezasa_transaction_ref_id' => 'REF-2',
     ]);
@@ -226,7 +226,7 @@ it('verifies failure, updates nezasa as failed, booking not ok, and returns outp
 
     expect($output)->toBeInstanceOf(PaymentOutput::class)
         ->and($output->isNezasaBookingSuccessful)->toBeFalse()
-        ->and($tx->status->value)->toBe(PaymentStatusEnum::Failed->value);
+        ->and($tx->status->value)->toBe(TransactionStatusEnum::Failed->value);
 });
 
 it('handles nezasa update exception by preserving previous nezasa_transaction', function (): void {
@@ -243,7 +243,7 @@ it('handles nezasa update exception by preserving previous nezasa_transaction', 
         'gateway' => 'dummy',
         'amount' => '20.00',
         'currency' => 'EUR',
-        'status' => PaymentStatusEnum::Started,
+        'status' => TransactionStatusEnum::Started,
         'prepare_data' => ['p' => 'q'],
         'nezasa_transaction' => ['old' => 'value'],
         'nezasa_transaction_ref_id' => 'REF-3',

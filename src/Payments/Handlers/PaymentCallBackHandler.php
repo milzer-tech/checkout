@@ -5,24 +5,29 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Handlers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Nezasa\Checkout\Actions\Checkout\BookItineraryAction;
+use Nezasa\Checkout\Actions\Checkout\FindBookingResultAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
-use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
+use Nezasa\Checkout\Actions\Payment\UpdateNezasaTransactionAction;
+use Nezasa\Checkout\Actions\Transaction\UpdateTransactionAction;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
-use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\UpdatePaymentTransactionPayload;
-use Nezasa\Checkout\Integrations\Nezasa\Enums\BookingStateEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
-use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
+use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
-use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
-use Throwable;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
+use Saloon\Http\Response;
 
-class PaymentCallBackHandler
+readonly class PaymentCallBackHandler
 {
+    public function __construct(
+        private BookItineraryAction $bookItineraryAction,
+        private UpdateTransactionAction $updateTransactionAction,
+        private UpdateNezasaTransactionAction $updateNezasaTransactionAction,
+        private FindBookingResultAction $bookingResultAction,
+    ) {}
+
     /**
      * Handle the payment callback process.
      */
@@ -30,26 +35,28 @@ class PaymentCallBackHandler
     {
         $gateway = $this->getCallBackClass($transaction->gateway);
 
-        // Means the payment was already completed.
         if ($transaction->result_data) {
-            return $this->getOutput($transaction, $gateway);
+            return $this->getOutput($transaction);
         }
 
-        $result = $gateway->verify(request(), (array) $transaction->prepare_data);
+        if ($this->handlePaymentAuthorization($gateway, $transaction)->isSuccessful) {
+            $bookingResponse = $this->bookItineraryAction->run($transaction->checkout->checkout_id);
+            $bookingResult = $this->bookingResultAction->run($bookingResponse->array('summary'));
 
-        $nezasaTransaction = $this->updateNezasaTransaction($result->status, $transaction);
+            if ($bookingResult->isCompleteFailed() || $bookingResult->isUnknown()) {
+                $this->handlePaymentAbort($gateway, $transaction);
+            }
 
-        $this->storeResult($result, $transaction, $nezasaTransaction);
+            if ($bookingResult->isCompleteSuccess() || $bookingResult->isPartialFailure()) {
+                $this->handlePaymentCapture($gateway, $transaction);
+            }
 
-        if ($result->status->isSucceeded()) {
-            $bookingResult = $this->bookItinerary($transaction->checkout);
-
-            $event = $bookingResult ? ItineraryBookingSucceededEvent::class : ItineraryBookingFailedEvent::class;
-
-            event(new $event($transaction));
+            $this->storeBookingSummary($transaction, $bookingResponse);
         }
+        // Nezasa API does not support other statuses.
+        $this->updateNezasaTransactionAction->run(NezasaTransactionStatusEnum::Closed, $transaction);
 
-        return $this->getOutput($transaction, $gateway);
+        return $this->getOutput($transaction);
     }
 
     /**
@@ -57,7 +64,6 @@ class PaymentCallBackHandler
      */
     private function getCallBackClass(string $gateway): PaymentContract
     {
-        /** @var class-string<PaymentContract> */
         $result = collect(resolve(GetPaymentProviderAction::class)->run())
             ->where('name', $gateway)
             ->firstOrFail()
@@ -67,88 +73,83 @@ class PaymentCallBackHandler
     }
 
     /**
-     * Store the result of the payment callback in the transaction.
-     *
-     * @param  false|array<string, mixed>  $nezasaTransaction
+     * Handle the payment abort process.
      */
-    private function storeResult(PaymentResult $result, Transaction $model, false|array $nezasaTransaction): void
+    private function handlePaymentAbort(PaymentContract $gateway, Transaction $transaction): void
     {
-        $model->update([
-            'result_data' => $result->persistentData,
-            'status' => $result->status->value,
-            'nezasa_transaction' => $nezasaTransaction ?: $model->nezasa_transaction,
+        $abortResult = $gateway->abort(request(), $transaction->prepare_data, $transaction->result_data);
+
+        $this->updateTransactionAction->run($transaction, [
+            'result_data' => $abortResult->persistentData,
+            'status' => $abortResult->isSuccessful
+                ? TransactionStatusEnum::Aborted
+                : TransactionStatusEnum::AuthorizationFailed,
         ]);
     }
 
     /**
-     * Update the Nezasa transaction with the payment status.
-     *
-     * @return false|array<string, mixed>
+     * Handle the payment capture process.
      */
-    private function updateNezasaTransaction(PaymentStatusEnum $status, Transaction $transaction): false|array
+    private function handlePaymentCapture(PaymentContract $gateway, Transaction $transaction): void
     {
-        try {
-            $payload = new UpdatePaymentTransactionPayload(
-                status: $status->isSucceeded()
-                    ? NezasaTransactionStatusEnum::Closed
-                    : NezasaTransactionStatusEnum::Failed
-            );
+        $captureResult = $gateway->capture(request(), $transaction->prepare_data, $transaction->result_data);
 
-            return NezasaConnector::make()
-                ->paymentTransaction()
-                ->update($transaction->checkout->checkout_id, $transaction->nezasa_transaction_ref_id, $payload)
-                ->array('transaction');
-        } catch (Throwable $exception) {
-            report($exception);
+        $this->updateTransactionAction->run($transaction, [
+            'result_data' => $captureResult->persistentData,
+            'status' => $captureResult->isSuccessful
+                ? TransactionStatusEnum::Captured
+                : TransactionStatusEnum::CaptureFailed,
+        ]);
 
-            return false;
+        if ($captureResult->isSuccessful) {
+            event(new ItineraryBookingSucceededEvent($transaction));
         }
+    }
+
+    /**
+     * Handle the payment authorization process.
+     */
+    private function handlePaymentAuthorization(PaymentContract $gateway, Transaction $transaction): AuthorizationResult
+    {
+        $authorizeResult = $gateway->authorize(request(), $transaction->prepare_data);
+
+        $this->updateTransactionAction->run($transaction, [
+            'result_data' => $authorizeResult->resultData,
+            'status' => $authorizeResult->isSuccessful
+                ? TransactionStatusEnum::Authorized
+                : TransactionStatusEnum::AuthorizationFailed,
+        ]);
+
+        $transaction->refresh();
+
+        return $authorizeResult;
     }
 
     /**
      * Return the stored output if the transaction already has result data.
      */
-    private function getOutput(Transaction $transaction, PaymentContract $callback): PaymentOutput
+    private function getOutput(Transaction $transaction): PaymentOutput
     {
-        $response = NezasaConnector::make()->checkout()->retrieve($transaction->checkout->checkout_id);
-
-        Log::info('checkout response', $response->json());
-
-        /** @var BookingStateEnum $state */
-        $state = $response->dto()->checkoutState;
-
-        $result = new PaymentResult(
-            status: $transaction->status ?? PaymentStatusEnum::Failed,
-            persistentData: $transaction->result_data ?? [],
-        );
-
-        $output = new PaymentOutput(
+        return new PaymentOutput(
             gatewayName: $transaction->gateway,
-            isNezasaBookingSuccessful: $state->isSuccessfulState(),
+            bookingStatusEnum: $this->bookingResultAction->run($transaction->result_data['nezasa_booking_summary']),
             bookingReference: $transaction->checkout->itinerary_id,
             orderDate: $transaction->updated_at?->toImmutable(),
-            data: $result->persistentData,
-            isPaymentSuccessful: $result->status->isSucceeded(),
+            data: [],
+            isPaymentSuccessful: $transaction->status->isCaptured(),
         );
-
-        return $callback->output($result, $output);
     }
 
     /**
-     * Attempt to book the itinerary if the payment was successful.
+     * Update the transaction with the booking summary.
      */
-    private function bookItinerary(Checkout $checkout): bool
+    private function storeBookingSummary(Transaction $transaction, Response $bookingResponse): void
     {
-        try {
-            $response = NezasaConnector::make()->checkout()->synchronousBooking($checkout->checkout_id);
-
-            Log::info('booking response', $response->json());
-
-            return $response->ok();
-        } catch (Throwable $exception) {
-            report($exception);
-
-            return false;
-        }
+        $this->updateTransactionAction->run($transaction->refresh(), [
+            'result_data' => [
+                ...$transaction->result_data,
+                'nezasa_booking_summary' => $bookingResponse->array('summary'),
+            ],
+        ]);
     }
 }
