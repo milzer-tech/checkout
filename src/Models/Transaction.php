@@ -17,16 +17,16 @@ use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
  *
  * Scalar/database attributes
  *
- * @property-read int|string $id
- * @property-read int|string|null $checkout_id
- * @property-read array<string, mixed>|null $prepare_data
- * @property-read array<string, mixed>|null $result_data
- * @property-read array<string, mixed>|null $nezasa_transaction
- * @property-read string|null $nezasa_transaction_ref_id
- * @property-read TransactionStatusEnum|null $status
- * @property-read string|null $gateway
- * @property-read string|null $currency
- * @property-read string|null $amount
+ * @property int|string $id
+ * @property int|string|null $checkout_id
+ * @property array<string, mixed>|null $prepare_data
+ * @property array<string, mixed>|null $result_data
+ * @property array<string, mixed>|null $nezasa_transaction
+ * @property string|null $nezasa_transaction_ref_id
+ * @property TransactionStatusEnum|null $status
+ * @property string|null $gateway
+ * @property string|null $currency
+ * @property string|null $amount
  *
  * Accessors
  * @property-read Price $price
