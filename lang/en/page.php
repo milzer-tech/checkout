@@ -44,6 +44,7 @@ return [
         'total' => 'Total',
         'destination_cost_text' => 'From the :total total price, :paid_in_destination to be paid in destination are displayed based on the current exchange rate (indicative cost), and are payable in local currency.',
         'available' => 'Available',
+        'booked' => 'Booked',
         'on_request' => 'On request',
         'unavailable' => 'Unavailable',
         'need_help_with_your_booking' => 'Need help with your booking?',

@@ -10,23 +10,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
 /**
  * Eloquent model for payment transactions related to a checkout.
  *
  * Scalar/database attributes
  *
- * @property-read int|string $id
- * @property-read int|string|null $checkout_id
- * @property-read array<string, mixed>|null $prepare_data
- * @property-read array<string, mixed>|null $result_data
- * @property-read array<string, mixed>|null $nezasa_transaction
- * @property-read string|null $nezasa_transaction_ref_id
- * @property-read PaymentStatusEnum|null $status
- * @property-read string|null $gateway
- * @property-read string|null $currency
- * @property-read string|null $amount
+ * @property int|string $id
+ * @property int|string|null $checkout_id
+ * @property array<string, mixed>|null $prepare_data
+ * @property array<string, mixed>|null $result_data
+ * @property array<string, mixed>|null $nezasa_transaction
+ * @property string|null $nezasa_transaction_ref_id
+ * @property TransactionStatusEnum|null $status
+ * @property string|null $gateway
+ * @property string|null $currency
+ * @property string|null $amount
  *
  * Accessors
  * @property-read Price $price
@@ -66,7 +66,7 @@ class Transaction extends Model
             'result_data' => 'encrypted:json',
             'nezasa_transaction' => 'encrypted:json',
             'nezasa_transaction_ref_id' => 'string',
-            'status' => PaymentStatusEnum::class,
+            'status' => TransactionStatusEnum::class,
             'amount' => 'decimal:2',
         ];
     }

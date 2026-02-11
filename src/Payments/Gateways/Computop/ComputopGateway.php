@@ -16,13 +16,14 @@ use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\UrlPayloadEntit
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
+use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
-class ComputopGateway implements RedirectPaymentContract
+class ComputopGateway
+// implements RedirectPaymentContract
 {
     /**
      * Returns whether the payment gateway is active.
@@ -114,25 +115,25 @@ class ComputopGateway implements RedirectPaymentContract
      *
      * @param  array<string, mixed>|BaseDto  $persistentData
      */
-    public function verify(Request $request, BaseDto|array $persistentData): PaymentResult
+    public function verify(Request $request, BaseDto|array $persistentData): AuthorizationResult
     {
         try {
             $response = ComputopConnector::make()->payment()->get($request->query('PayID'));
 
             return $response->ok() && in_array($response->array('status'), ['CAPTURE_REQUEST', 'OK'])
-                ? new PaymentResult(status: PaymentStatusEnum::Succeeded, persistentData: $response->array())
-                : new PaymentResult(status: PaymentStatusEnum::Failed, persistentData: $response->array());
+                ? new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Succeeded)
+                : new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Failed);
         } catch (\Throwable) {
             // do nothing
         }
 
-        return new PaymentResult(status: PaymentStatusEnum::Failed, persistentData: $request->query());
+        return new AuthorizationResult(resultData: $request->query(), status: TransactionStatusEnum::Failed);
     }
 
     /**
      * Shows the result of the payment process to the user.
      */
-    public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput
+    public function output(AuthorizationResult $result, PaymentOutput $output): PaymentOutput
     {
         return $output;
     }

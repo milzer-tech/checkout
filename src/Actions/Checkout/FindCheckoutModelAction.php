@@ -7,7 +7,7 @@ namespace Nezasa\Checkout\Actions\Checkout;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Exceptions\AlreadyPaidException;
 use Nezasa\Checkout\Models\Checkout;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
 class FindCheckoutModelAction
 {
@@ -25,7 +25,7 @@ class FindCheckoutModelAction
 
         if ($model) {
             throw_if(
-                condition: $model->transactions()->whereStatus(PaymentStatusEnum::Succeeded)->exists(),
+                condition: $model->transactions()->whereStatus(TransactionStatusEnum::Captured)->exists(),
                 exception: AlreadyPaidException::class
             );
         }

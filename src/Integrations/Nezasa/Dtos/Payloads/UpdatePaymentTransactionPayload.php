@@ -17,6 +17,10 @@ class UpdatePaymentTransactionPayload extends BaseDto
      * @note: There are other properties that we do not need to set here.
      */
     public function __construct(
+        // Indicates the status of the transaction.
+        // When creating payment transactions only the status "Open" and "Closed" are supported.
+        // When updating payment transactions only the status "Closed" is supported.
+        // The other statuses may be returned in existing payment transactions.
         public NezasaTransactionStatusEnum $status = NezasaTransactionStatusEnum::Closed,
     ) {}
 }

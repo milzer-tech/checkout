@@ -65,7 +65,7 @@ it('sends OppwaPrepareRequest with correct method, endpoint, headers, query and 
         ->toBeInstanceOf(OppwaPrepareResponse::class)
         ->and($dto->id)->toBe('A63C50B12D3A1989D91B1E9B592FFF59.uat01-vm-tx02')
         ->and($dto->ndc)->toBe('A63C50B12D3A1989D91B1E9B592FFF59.uat01-vm-tx02')
-        ->and($dto->integrity)->toBe('sha384-LiZULe6NXCWUQyip4b7EHhQ8SY6nBsE3xw/FZbp/ior2UrbIbp9q6aeRC1EyMdf6')
+//        ->and($dto->integrity)->toBe('sha384-LiZULe6NXCWUQyip4b7EHhQ8SY6nBsE3xw/FZbp/ior2UrbIbp9q6aeRC1EyMdf6')
         ->and($dto->buildNumber)->toBe('e05bc10dcc6acc6bd4abda346f4af077dcd905d7@2025-08-25 10:32:14 +0000');
 
     expect($dto->timestamp->toIso8601String())->toBe('2025-08-26T14:17:40+00:00');

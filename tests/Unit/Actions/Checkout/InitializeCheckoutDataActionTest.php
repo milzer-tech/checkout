@@ -9,7 +9,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationRes
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
 it('creates a new Checkout with initial data and computed pax count when none exists', function (): void {
     $params = new CheckoutParamsDto('co-123', 'it-456', 'app', 'en');
@@ -72,7 +72,7 @@ it('throws AlreadyPaidException when a checkout with a succeeded transaction alr
         'gateway' => 'oppwa',
         'amount' => 100,
         'currency' => 'EUR',
-        'status' => PaymentStatusEnum::Succeeded->value,
+        'status' => TransactionStatusEnum::Captured,
     ]);
 
     $allocatedPax = new PaxAllocationResponseEntity(rooms: new Collection);

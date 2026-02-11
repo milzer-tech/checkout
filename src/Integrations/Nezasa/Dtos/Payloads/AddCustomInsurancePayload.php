@@ -18,6 +18,7 @@ final class AddCustomInsurancePayload extends BaseDto
         public Price $netPrice,
         public Price $salesPrice,
         public AvailabilityEnum $bookingStatus,
+        public ?string $supplierName = null,
         public ?string $supplierConfirmationNumber = null,
         public ?string $description = null,
 

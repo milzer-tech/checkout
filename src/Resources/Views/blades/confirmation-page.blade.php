@@ -3,12 +3,12 @@
         <!-- Page header - removed the image from here -->
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold flex items-center gap-2">
-                {{trans('checkout::page.booking_confirmation.booking_confirmation')}} <span class="text-2xl">@if($output->isNezasaBookingSuccessful)
+                {{trans('checkout::page.booking_confirmation.booking_confirmation')}} <span class="text-2xl">@if($output->bookingStatusEnum->isCompleteSuccess())
                         🎉
                     @endif</span>
             </h1>
 
-            @if($output->isNezasaBookingSuccessful)
+            @if($output->bookingStatusEnum->isCompleteSuccess())
                 <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full flex items-center gap-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                          xmlns="http://www.w3.org/2000/svg">
@@ -106,7 +106,7 @@
 
                     <!-- Title -->
                     <h2 class="text-2xl font-semibold tracking-tight flex items-center gap-2 mb-4">
-                        @if($output->isNezasaBookingSuccessful)
+                        @if($output->bookingStatusEnum->isCompleteSuccess())
                             {{trans('checkout::page.booking_confirmation.your_trip_has_been_booked')}} <span>🎉</span>
                         @else
                             {{trans('checkout::page.booking_confirmation.your_trip_could_not_be_booked')}}
@@ -190,7 +190,7 @@
                                 class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.booking_status')}}</b></span>
                         </div>
 
-                        @if($output->isNezasaBookingSuccessful)
+                        @if($output->bookingStatusEnum->isCompleteSuccess())
                             <span
                                 class="inline-flex items-center gap-2 rounded-full bg-green-50 text-green-700 px-4 py-1.5 text-sm font-medium ring-1 ring-green-200">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,7 +227,7 @@
                                   d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                         </svg>
                         <a href="{{config('checkout.nezasa.base_url')}}/checkouts/{{$checkoutId}}">
-                        @if($output->isNezasaBookingSuccessful)
+                        @if($output->bookingStatusEnum->isCompleteSuccess())
                         {{trans('checkout::page.booking_confirmation.print_booking_confirmation')}}
                             @else
                                 {{trans('checkout::page.booking_confirmation.print_booking_proposal')}}

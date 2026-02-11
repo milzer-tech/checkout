@@ -13,12 +13,13 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPa
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
+use Nezasa\Checkout\Payments\Dtos\AbortResult;
+use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
+use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
-use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 use Stripe\Checkout\Session;
+use Stripe\PaymentIntent;
 use Stripe\Stripe;
 use Throwable;
 
@@ -54,8 +55,17 @@ class StripeGateway implements RedirectPaymentContract
             $payload = [
                 'locale' => $data->lang ?? 'auto',
                 'payment_method_types' => ['card'],
+                'customer_creation' => 'always',
                 'customer_email' => $data->contact->email,
                 'mode' => 'payment',
+                'payment_intent_data' => [
+                    'setup_future_usage' => 'off_session',
+                    'capture_method' => 'manual',
+                    'metadata' => [
+                        'transaction_id' => $data->transaction->id,
+                        'checkout_id' => $data->transaction->checkout_id,
+                    ],
+                ],
                 'line_items' => [
                     [
                         'price_data' => [
@@ -108,7 +118,7 @@ class StripeGateway implements RedirectPaymentContract
     public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
     {
         return new NezasaPayload(
-            /** @phpstan-ignore-next-line  */
+            /** @phpstan-ignore-next-line */
             externalRefId: $paymentInit->persistentData['session']['id'],
             amount: $data->price,
             paymentMethod: NezasaPaymentMethodEnum::Other,
@@ -121,32 +131,66 @@ class StripeGateway implements RedirectPaymentContract
      *
      * @param  array<string, mixed>|BaseDto  $persistentData
      */
-    public function verify(Request $request, BaseDto|array $persistentData): PaymentResult
+    public function authorize(Request $request, BaseDto|array $persistentData): AuthorizationResult
     {
         try {
             Stripe::setApiKey(Config::string('checkout.integrations.stripe.secret_key'));
 
-            $session = Session::retrieve($request->input('session_id'));
+            $session = Session::retrieve($persistentData['session']['id']);
+            $paymentIntent = PaymentIntent::retrieve($session->payment_intent);
 
-            if ($session->payment_status === 'paid') {
-                return new PaymentResult(
-                    status: PaymentStatusEnum::Succeeded,
-                    persistentData: ['session' => $session->toArray()]
+            if ($paymentIntent->status === 'requires_capture'
+                && $paymentIntent->amount_capturable === $persistentData['session']['amount_total']) {
+                return new AuthorizationResult(
+                    isSuccessful: true,
+                    resultData: [
+                        'session' => $session->toArray(),
+                        'payment_intent' => $paymentIntent->toArray(),
+                    ]
                 );
             }
+
         } catch (Throwable) {
             // nothing to do
         }
 
-        return new PaymentResult(status: PaymentStatusEnum::Failed, persistentData: ['request' => $request->all()]);
+        return new AuthorizationResult(isSuccessful: false, resultData: ['request' => $request->all()]);
     }
 
-    /**
-     * Shows the result of the payment process to the user.
-     */
-    public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput
+    public function capture(Request $request, array $persistentData, array $resultData): CaptureResult
     {
-        return $output;
+        try {
+            Stripe::setApiKey(Config::string('checkout.integrations.stripe.secret_key'));
+
+            $intent = PaymentIntent::retrieve($resultData['payment_intent']['id'])->capture();
+
+            $resultData['payment_intent'] = $intent->toArray();
+
+            return new CaptureResult(isSuccessful: $intent->status === 'succeeded', persistentData: $resultData);
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+
+        return new CaptureResult(isSuccessful: false, persistentData: $resultData);
+    }
+
+    public function abort(Request $request, array $persistentData, array $resultData): AbortResult
+    {
+        try {
+            Stripe::setApiKey(Config::string('checkout.integrations.stripe.secret_key'));
+
+            $intent = PaymentIntent::retrieve($resultData['payment_intent']['id'])->cancel();
+
+            $resultData['payment_intent'] = $intent->toArray();
+
+            dd($resultData['payment_intent']);
+
+            return new AbortResult(isSuccessful: $intent->status === 'succeeded', persistentData: $resultData);
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+
+        return new AbortResult(isSuccessful: false, persistentData: $resultData);
     }
 
     /**
@@ -162,10 +206,6 @@ class StripeGateway implements RedirectPaymentContract
             && $transaction->checkout->data['insurance']['quote_id']
         ) {
             $config = [
-                'customer_creation' => 'always',
-                'payment_intent_data' => [
-                    'setup_future_usage' => 'off_session',
-                ],
                 'custom_text' => [
                     'submit' => [
                         'message' => sprintf(

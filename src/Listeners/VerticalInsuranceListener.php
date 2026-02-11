@@ -198,12 +198,13 @@ final class VerticalInsuranceListener implements ShouldQueue
                 $response = NezasaConnector::make()->checkout()->addCustomInsurance(
                     checkoutId: $this->transaction->checkout->checkout_id,
                     payload: new AddCustomInsurancePayload(
-                        name: $insurance['product']['promotional_header'].' - VICoverage',
+                        name: $insurance['product']['promotional_header'],
                         netPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
                         salesPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
                         bookingStatus: AvailabilityEnum::Booked,
+                        supplierName: 'ViCoverage',
                         supplierConfirmationNumber: $insurance['policy_number'],
-                        description: $insurance['id']
+                        description: $insurance['policy_number']
                     )
                 );
 

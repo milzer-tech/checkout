@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
 
 return new class extends Migration
 {
@@ -35,7 +34,7 @@ return new class extends Migration
             $table->text('result_data')->nullable();
             $table->text('nezasa_transaction')->nullable();
             $table->string('nezasa_transaction_ref_id')->nullable();
-            $table->tinyInteger('status')->default(PaymentStatusEnum::Pending->value);
+            $table->string('status');
             $table->timestamps();
         });
     }

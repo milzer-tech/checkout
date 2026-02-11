@@ -15,15 +15,16 @@ use Nezasa\Checkout\Integrations\Oppwa\Connectors\OppwaConnector;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaPreparePayload;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Responses\OppwaPrepareResponse;
 use Nezasa\Checkout\Payments\Contracts\WidgetPaymentContract;
+use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Dtos\PaymentResult;
-use Nezasa\Checkout\Payments\Enums\PaymentStatusEnum;
+use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 use Throwable;
 
-class OppwaWidgetGateway implements WidgetPaymentContract
+class OppwaWidgetGateway
+// implements WidgetPaymentContract
 {
     public static function isActive(): bool
     {
@@ -49,14 +50,15 @@ class OppwaWidgetGateway implements WidgetPaymentContract
                     billingCity: $data->contact->address->city,
                     billingPostcode: $data->contact->address->postalCode,
                     billingCountry: str($data->contact->address->country)->before('-')->toString(),
+                    createRegistration: true
                 )
             );
 
             if ($response->ok()) {
                 return new PaymentInit(isAvailable: true, returnUrl: $data->returnUrl, persistentData: $response->dto());
             }
-        } catch (Throwable) {
-            // nothing to do
+        } catch (Throwable $throwable) {
+            report($throwable);
         }
 
         return new PaymentInit(isAvailable: false, returnUrl: $data->returnUrl);
@@ -103,26 +105,28 @@ class OppwaWidgetGateway implements WidgetPaymentContract
         );
     }
 
-    public function verify(Request $request, BaseDto|array $persistentData): PaymentResult
+    public function verify(Request $request, BaseDto|array $persistentData): AuthorizationResult
     {
         try {
             $response = OppwaConnector::make()->checkout()->status($request->query('resourcePath'));
+            dd($response->array());
 
-            return new PaymentResult(
-                status: $response->failed() ? PaymentStatusEnum::Failed : PaymentStatusEnum::Succeeded,
-                persistentData: (array) $response->array(),
+            return new AuthorizationResult(
+                //                status: $response->failed() ? TransactionStatusEnum::Failed : TransactionStatusEnum::Succeeded,
+                isSuccessful: true,
+                resultData: (array) $response->array(),
             );
         } catch (Throwable $exception) {
             report($exception);
 
-            return new PaymentResult(status: PaymentStatusEnum::Failed);
+            return new AuthorizationResult(isSuccessful: false);
         }
     }
 
     /**
      * Show the payment result to the user.
      */
-    public function output(PaymentResult $result, PaymentOutput $output): PaymentOutput
+    public function output(AuthorizationResult $result, PaymentOutput $output): PaymentOutput
     {
         return $output;
     }

@@ -34,11 +34,11 @@ class PaymentResultPage extends BaseCheckoutComponent
      */
     public PaymentOutput $output;
 
-    public function mount(Request $request): void
+    public function mount(Request $request, PaymentCallBackHandler $callBackHandler): void
     {
         $this->model = $this->transaction->checkout;
 
-        $this->output = resolve(PaymentCallBackHandler::class)->run($this->transaction, $request);
+        $this->output = $callBackHandler->run($this->transaction, $request);
 
         $this->initializeRequirements();
 
@@ -50,7 +50,8 @@ class PaymentResultPage extends BaseCheckoutComponent
     }
 
     public function render(): View
-    {   /** @phpstan-ignore-next-line */
+    {
+        /** @phpstan-ignore-next-line */
         return view('checkout::blades.confirmation-page');
     }
 
@@ -67,5 +68,15 @@ class PaymentResultPage extends BaseCheckoutComponent
             addedRentalCarResponse: $result->addedRentalCars,
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
         );
+
+        $callback = fn ($item) => $item->availability = $this->output->data[$item->id] ?? null;
+
+        $this->itinerary->stays->map($callback);
+        $this->itinerary->flights->map($callback);
+        $this->itinerary->transfers->map($callback);
+        $this->itinerary->activities->map($callback);
+        $this->itinerary->rentalCars->map($callback);
+        $this->itinerary->upsellItems->map($callback);
+        $this->itinerary->insurances->map($callback);
     }
 }

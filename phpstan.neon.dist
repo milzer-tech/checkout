@@ -8,4 +8,5 @@ parameters:
         - src
 
     reportUnmatchedIgnoredErrors: true
+    treatPhpDocTypesAsCertain: false
 
