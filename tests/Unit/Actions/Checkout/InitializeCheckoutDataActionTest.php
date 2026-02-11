@@ -72,7 +72,7 @@ it('throws AlreadyPaidException when a checkout with a succeeded transaction alr
         'gateway' => 'oppwa',
         'amount' => 100,
         'currency' => 'EUR',
-        'status' => TransactionStatusEnum::Succeeded->value,
+        'status' => TransactionStatusEnum::Captured,
     ]);
 
     $allocatedPax = new PaxAllocationResponseEntity(rooms: new Collection);
