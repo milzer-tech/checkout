@@ -19,6 +19,7 @@ class ApplyPromoCodeResponse extends BaseDto
         public Price $packagePrice,
         public Price $totalPackagePrice,
         public Price $downPayment,
+        public Price $openAmount,
         public ExternallyPaidChargesResponseEntity $externallyPaidCharges,
         public ?PromoCodeResponseEntity $promoCode = null,
     ) {}
