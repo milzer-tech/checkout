@@ -136,7 +136,7 @@ readonly class PaymentCallBackHandler
     {
         $data = collect($transaction->result_data['nezasa_booking_summary']['components'])
             ->reject(fn (array $item) => $item['isPlaceholder'])
-            ->mapwithkeys(fn (array $item) => [$item['id'] => AvailabilityEnum::tryFrom($item['status'])]);
+            ->mapwithkeys(fn (array $item): array => [$item['id'] => AvailabilityEnum::tryFrom($item['status'])]);
 
         return new PaymentOutput(
             gatewayName: $transaction->gateway,

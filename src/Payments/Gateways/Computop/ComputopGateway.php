@@ -121,13 +121,13 @@ class ComputopGateway
             $response = ComputopConnector::make()->payment()->get($request->query('PayID'));
 
             return $response->ok() && in_array($response->array('status'), ['CAPTURE_REQUEST', 'OK'])
-                ? new AuthorizationResult(status: TransactionStatusEnum::Succeeded, resultData: $response->array())
-                : new AuthorizationResult(status: TransactionStatusEnum::Failed, resultData: $response->array());
+                ? new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Succeeded)
+                : new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Failed);
         } catch (\Throwable) {
             // do nothing
         }
 
-        return new AuthorizationResult(status: TransactionStatusEnum::Failed, resultData: $request->query());
+        return new AuthorizationResult(resultData: $request->query(), status: TransactionStatusEnum::Failed);
     }
 
     /**

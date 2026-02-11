@@ -48,10 +48,10 @@ it('mount processes callback output, builds travelers, and sets itinerary price 
         ->withArgs(fn ($transaction, $request): bool => $transaction instanceof Transaction && $request instanceof Request)
         ->andReturn(new PaymentOutput(
             gatewayName: 'oppwa',
-            isNezasaBookingSuccessful: true,
             bookingReference: 'BR-123',
             orderDate: null,
-            data: ['foo' => 'bar']
+            data: ['foo' => 'bar'],
+            isNezasaBookingSuccessful: true
         ));
 
     app()->instance(PaymentCallBackHandler::class, $handler);

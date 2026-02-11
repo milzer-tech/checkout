@@ -65,8 +65,8 @@ class DummyCallbackGateway implements PaymentContract
         $status = str($request->query('cb_status', 'failed'))->lower()->toString();
 
         return new AuthorizationResult(
-            status: $status === 'succeeded' ? TransactionStatusEnum::Succeeded : TransactionStatusEnum::Failed,
-            resultData: ['source' => 'dummy', 'persistent' => $persistentData]
+            resultData: ['source' => 'dummy', 'persistent' => $persistentData],
+            status: $status === 'succeeded' ? TransactionStatusEnum::Succeeded : TransactionStatusEnum::Failed
         );
     }
 

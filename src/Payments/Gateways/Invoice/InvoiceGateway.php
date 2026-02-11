@@ -85,7 +85,7 @@ class InvoiceGateway implements RedirectPaymentContract
         return new AuthorizationResult(
             /** @phpstan-ignore-next-line */
             isSuccessful: $request->route('transaction')->id === $id,
-            resultData: (array) $persistentData
+            resultData: $persistentData
         );
     }
 
