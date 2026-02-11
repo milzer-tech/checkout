@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Number;
 use Illuminate\Support\Uri;
-use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Models\Transaction;
@@ -129,15 +128,15 @@ class StripeGateway implements RedirectPaymentContract
     /**
      * Handles the callback from the payment gateway.
      *
-     * @param  array<string, mixed>|BaseDto  $persistentData
+     * @param  array<string, mixed>  $persistentData
      */
-    public function authorize(Request $request, BaseDto|array $persistentData): AuthorizationResult
+    public function authorize(Request $request, array $persistentData): AuthorizationResult
     {
         try {
             Stripe::setApiKey(Config::string('checkout.integrations.stripe.secret_key'));
 
             $session = Session::retrieve($persistentData['session']['id']);
-            $paymentIntent = PaymentIntent::retrieve($session->payment_intent);
+            $paymentIntent = PaymentIntent::retrieve((string) $session->payment_intent);
 
             if ($paymentIntent->status === 'requires_capture'
                 && $paymentIntent->amount_capturable === $persistentData['session']['amount_total']) {
@@ -182,8 +181,6 @@ class StripeGateway implements RedirectPaymentContract
             $intent = PaymentIntent::retrieve($resultData['payment_intent']['id'])->cancel();
 
             $resultData['payment_intent'] = $intent->toArray();
-
-            dd($resultData['payment_intent']);
 
             return new AbortResult(isSuccessful: $intent->status === 'succeeded', persistentData: $resultData);
         } catch (Throwable $exception) {

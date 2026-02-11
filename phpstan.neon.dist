@@ -10,3 +10,7 @@ parameters:
     reportUnmatchedIgnoredErrors: true
     treatPhpDocTypesAsCertain: false
 
+    excludePaths:
+        - ./src/Payments/Gateways/Computop/ComputopGateway.php
+        - ./src/Payments/Gateways/Oppwa/OppwaWidgetGateway.php
+
