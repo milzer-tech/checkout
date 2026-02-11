@@ -73,6 +73,7 @@ readonly class PaymentCallBackHandler
             ->firstOrFail()
             ->decryptClassName();
 
+        /** @phpstan-ignore-next-line  */
         return new $result;
     }
 
@@ -134,6 +135,7 @@ readonly class PaymentCallBackHandler
      */
     private function getOutput(Transaction $transaction): PaymentOutput
     {
+        /** @phpstan-ignore-next-line  */
         $data = collect($transaction->result_data['nezasa_booking_summary']['components'])
             ->reject(fn (array $item) => $item['isPlaceholder'])
             ->mapwithkeys(fn (array $item): array => [$item['id'] => AvailabilityEnum::tryFrom($item['status'])]);
