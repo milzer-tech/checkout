@@ -7,7 +7,6 @@ namespace Nezasa\Checkout\Payments\Gateways\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Uri;
-use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
@@ -76,15 +75,13 @@ class InvoiceGateway implements RedirectPaymentContract
     /**
      * Handles the callback from the payment gateway.
      *
-     * @param  array<string, mixed>|BaseDto  $persistentData
+     * @param  array<string, mixed>  $persistentData
      */
     public function authorize(Request $request, array $persistentData): AuthorizationResult
     {
-        $id = is_array($persistentData) ? $persistentData['id'] : false;
-
         return new AuthorizationResult(
             /** @phpstan-ignore-next-line */
-            isSuccessful: $request->route('transaction')->id === $id,
+            isSuccessful: $request->route('transaction')->id === $persistentData['id'],
             resultData: $persistentData
         );
     }
