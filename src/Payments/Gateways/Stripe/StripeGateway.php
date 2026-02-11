@@ -58,6 +58,14 @@ class StripeGateway implements RedirectPaymentContract
                 'customer_creation' => 'always',
                 'customer_email' => $data->contact->email,
                 'mode' => 'payment',
+                'payment_intent_data' => [
+                    'setup_future_usage' => 'off_session',
+                    'capture_method' => 'manual',
+                    'metadata' => [
+                        'transaction_id' => $data->transaction->id,
+                        'checkout_id' => $data->transaction->checkout_id,
+                    ],
+                ],
                 'line_items' => [
                     [
                         'price_data' => [
@@ -198,14 +206,6 @@ class StripeGateway implements RedirectPaymentContract
             && $transaction->checkout->data['insurance']['quote_id']
         ) {
             $config = [
-                'payment_intent_data' => [
-                    'setup_future_usage' => 'off_session',
-                    'capture_method' => 'manual',
-                    'metadata' => [
-                        'transaction_id' => $transaction->id,
-                        'checkout_id' => $transaction->checkout_id,
-                    ],
-                ],
                 'custom_text' => [
                     'submit' => [
                         'message' => sprintf(
