@@ -29,11 +29,8 @@ class OppwaPreparePayload extends BaseDto
         public ?string $billingPostcode,
         #[MapOutputName('billing.country')]
         public string $billingCountry,
-        public string $paymentType = 'DB',
+        public string $paymentType,
         public bool $integrity = true,
-        public bool $createRegistration = true,
-        // TODO: remove it for production
-        public string $testMode = 'EXTERNAL'
 
     ) {}
 }
