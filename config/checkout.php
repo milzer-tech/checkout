@@ -59,7 +59,7 @@ return [
     ],
 
     'payment' => [
-        //        OppwaWidgetGateway::class,
+        OppwaWidgetGateway::class,
         InvoiceGateway::class,
         StripeGateway::class,
         //        ComputopGateway::class,
