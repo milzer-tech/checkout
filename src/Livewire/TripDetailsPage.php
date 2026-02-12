@@ -14,6 +14,7 @@ use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Throwable;
 use URL;
 
@@ -29,9 +30,20 @@ class TripDetailsPage extends BaseCheckoutComponent
      */
     public ?string $paymentPageUrl = null;
 
+    /**
+     * Indicates whether the user is checking the availability of the payment gateway.
+     */
     public ?bool $checkingAvailability = null;
 
+    /**
+     * The gateway selected by the user.
+     */
     public ?string $gateway = null;
+
+    /**
+     * The down payment for the itinerary.
+     */
+    public Price $downPayment;
 
     /**
      * The object containing the checkout data.
@@ -56,6 +68,8 @@ class TripDetailsPage extends BaseCheckoutComponent
             addedRentalCarResponse: $this->result->addedRentalCars,
             addedUpsellItemsResponse: collect($this->result->addedUpsellItems),
         );
+
+        $this->downPayment = $this->itinerary->price->downPayment;
     }
 
     /**
@@ -129,5 +143,16 @@ class TripDetailsPage extends BaseCheckoutComponent
         }
 
         $this->checkingAvailability = false;
+    }
+
+    /**
+     * Update the price.
+     *
+     * @param  array<string, array<string, float>>  $price
+     */
+    #[On('payment-amount-updated')]
+    public function priceUpdated(array $price): void
+    {
+        $this->downPayment = Price::from($price);
     }
 }

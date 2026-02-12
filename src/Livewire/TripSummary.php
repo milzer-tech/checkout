@@ -36,6 +36,9 @@ class TripSummary extends BaseCheckoutComponent
      */
     public bool $showPriceBreakdown = false;
 
+    /**
+     * The URL to the Nezasa planner.
+     */
     public string $nezasaPlannerUrl;
 
     public function mount(): void
@@ -43,8 +46,8 @@ class TripSummary extends BaseCheckoutComponent
         $this->nezasaPlannerUrl = config('checkout.nezasa.base_url').'/itineraries/'.$this->itineraryId;
 
         $this->showPriceBreakdown = $this->itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty();
-        $this->total = $this->itinerary->price->discountedPackagePrice;
-        $this->downPayment = $this->itinerary->price->downPayment;
+
+        $this->updatePaymentDetails();
     }
 
     /**
@@ -74,7 +77,7 @@ class TripSummary extends BaseCheckoutComponent
     {
         $this->itinerary->price = ApplyPromoCodeResponse::from($price);
 
-        $this->total = $this->itinerary->price->discountedPackagePrice;
+        $this->updatePaymentDetails();
 
         $this->dispatch('price-updated', price: $price);
     }
@@ -94,7 +97,7 @@ class TripSummary extends BaseCheckoutComponent
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
         );
 
-        $this->total = $this->itinerary->price->discountedPackagePrice;
+        $this->updatePaymentDetails();
 
         $this->dispatch('price-updated', $this->itinerary->price);
     }
@@ -124,6 +127,8 @@ class TripSummary extends BaseCheckoutComponent
 
         $this->total->amount = $this->itinerary->price->discountedPackagePrice->amount + intval($price['amount']);
         $this->downPayment->amount = $this->itinerary->price->downPayment->amount + intval($price['amount']);
+
+        $this->dispatch('payment-amount-updated', $this->downPayment->toArray());
     }
 
     /**
@@ -134,7 +139,18 @@ class TripSummary extends BaseCheckoutComponent
     {
         $this->itinerary->insurances = new Collection;
 
+        $this->updatePaymentDetails();
+    }
+
+    /**
+     * Update the payment details.
+     */
+    public function updatePaymentDetails(): void
+    {
         $this->total = $this->itinerary->price->discountedPackagePrice;
+
         $this->downPayment = $this->itinerary->price->downPayment;
+
+        $this->dispatch('payment-amount-updated', $this->downPayment->toArray());
     }
 }
