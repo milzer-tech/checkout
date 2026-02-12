@@ -42,7 +42,6 @@ class GetRequlatoryInformationRequest extends Request
      */
     public function createDtoFromResponse(Response $response): Collection
     {
-        dd($response->array());
         throw_unless(condition: $response->ok(), exception: NotFoundException::class);
 
         return collect(

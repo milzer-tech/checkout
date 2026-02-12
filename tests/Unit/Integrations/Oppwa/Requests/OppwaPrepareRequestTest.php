@@ -22,7 +22,8 @@ it('sends OppwaPrepareRequest with correct method, endpoint, headers, query and 
         billingStreet1: '123 Main St',
         billingCity: 'Berlin',
         billingPostcode: '10115',
-        billingCountry: 'DE'
+        billingCountry: 'DE',
+        paymentType: 'PA'
     );
 
     $mockClient = new MockClient([
