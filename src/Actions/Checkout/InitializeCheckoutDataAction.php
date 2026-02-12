@@ -10,14 +10,19 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationRes
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
 use Nezasa\Checkout\Models\Checkout;
 
-class InitializeCheckoutDataAction
+readonly class InitializeCheckoutDataAction
 {
+    /**
+     * Create a new instance of InitializeCheckoutDataAction.
+     */
+    public function __construct(private FindCheckoutModelAction $findCheckoutModelAction) {}
+
     /**
      * Create or find existing checkout model and initialize the data if created.
      */
     public function run(CheckoutParamsDto $params, PaxAllocationResponseEntity $allocatedPax): Checkout
     {
-        $model = resolve(FindCheckoutModelAction::class)->run(params: $params);
+        $model = $this->findCheckoutModelAction->run(params: $params);
 
         if (! $model) {
             $model = Checkout::query()->create($params->mapToModel());
