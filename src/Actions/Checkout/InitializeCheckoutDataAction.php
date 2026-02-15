@@ -13,17 +13,10 @@ use Nezasa\Checkout\Models\Checkout;
 class InitializeCheckoutDataAction
 {
     /**
-     * Create a new instance of InitializeCheckoutDataAction.
-     */
-    public function __construct(private readonly FindCheckoutModelAction $findCheckoutModelAction) {}
-
-    /**
      * Create or find existing checkout model and initialize the data if created.
      */
-    public function run(CheckoutParamsDto $params, PaxAllocationResponseEntity $allocatedPax): Checkout
+    public function run(?Checkout $model, CheckoutParamsDto $params, PaxAllocationResponseEntity $allocatedPax): Checkout
     {
-        $model = $this->findCheckoutModelAction->run(params: $params);
-
         if (! $model instanceof Checkout) {
             $model = Checkout::query()->create($params->mapToModel());
 

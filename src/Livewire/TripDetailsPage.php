@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
@@ -52,12 +53,14 @@ class TripDetailsPage extends BaseCheckoutComponent
 
     public function mount(
         CallTripDetailsAction $callTripDetails,
+        FindCheckoutModelAction $findCheckoutModelAction,
         SummarizeItineraryAction $summerizeItinerary,
         InitializeCheckoutDataAction $initializeCheckoutData
     ): void {
         $this->result = $callTripDetails->run(params: $this->getParams());
 
         $this->model = $initializeCheckoutData->run(
+            model: $findCheckoutModelAction->run(params: $this->getParams()),
             params: $this->getParams(),
             allocatedPax: $this->result->itinerary->allocatedPax
         );
