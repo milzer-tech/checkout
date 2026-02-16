@@ -22,6 +22,8 @@ class PriceResponse extends BaseDto
         public Price $openAmount,
         public ExternallyPaidChargesResponseEntity $externallyPaidCharges,
         public ?PromoCodeResponseEntity $promoCode = null,
+        public ?Price $showTotalPrice = null,
+        public ?Price $showPaymentPrice = null,
     ) {}
 
     /**
