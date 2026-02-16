@@ -7,23 +7,24 @@ namespace Nezasa\Checkout\Payments\Gateways\Computop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Uri;
-use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Computop\Connectors\ComputopConnector;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopPaymentPayload;
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\CaptureInfoPayloadEntity;
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\CaptureManualPayloadEntity;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\ComputopAmountDto;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\OrderPayloadEntity;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\UrlPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
+use Nezasa\Checkout\Payments\Dtos\AbortResult;
 use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
+use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
-use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
-class ComputopGateway
-// implements RedirectPaymentContract
+class ComputopGateway implements RedirectPaymentContract
 {
     /**
      * Returns whether the payment gateway is active.
@@ -46,6 +47,7 @@ class ComputopGateway
 
     /**
      * Prepares the payment initiation process.
+     * // 5232125125401459
      */
     public function prepare(PaymentPrepareData $data): PaymentInit
     {
@@ -62,6 +64,9 @@ class ComputopGateway
                     success: (string) $data->returnUrl,
                     failure: ($data->returnUrl).'&failure=1',
                     cancel: $data->getCancellationUrl(),
+                ),
+                capture: new CaptureInfoPayloadEntity(
+                    manual: new CaptureManualPayloadEntity(final: 'yes')
                 ),
                 language: $data->lang,
             );
@@ -110,31 +115,28 @@ class ComputopGateway
         );
     }
 
-    /**
-     * Handles the callback from the payment gateway.
-     *
-     * @param  array<string, mixed>|BaseDto  $persistentData
-     */
-    public function verify(Request $request, BaseDto|array $persistentData): AuthorizationResult
+    public function authorize(Request $request, array $persistentData): AuthorizationResult
     {
         try {
             $response = ComputopConnector::make()->payment()->get($request->query('PayID'));
-
-            return $response->ok() && in_array($response->array('status'), ['CAPTURE_REQUEST', 'OK'])
-                ? new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Succeeded)
-                : new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Failed);
+            dd($response->array());
+            //            return $response->ok() && in_array($response->array('status'), ['CAPTURE_REQUEST', 'OK'])
+            //                ? new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Succeeded)
+            //                : new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Failed);
         } catch (\Throwable) {
             // do nothing
         }
 
-        return new AuthorizationResult(resultData: $request->query(), status: TransactionStatusEnum::Failed);
+        //        return new AuthorizationResult(resultData: $request->query(), status: TransactionStatusEnum::Failed);
     }
 
-    /**
-     * Shows the result of the payment process to the user.
-     */
-    public function output(AuthorizationResult $result, PaymentOutput $output): PaymentOutput
+    public function capture(Request $request, array $persistentData, array $resultData): CaptureResult
     {
-        return $output;
+        return new CaptureResult(isSuccessful: true, persistentData: $resultData);
+    }
+
+    public function abort(Request $request, array $persistentData, array $resultData): AbortResult
+    {
+        return new AbortResult(isSuccessful: true, persistentData: $resultData);
     }
 }
