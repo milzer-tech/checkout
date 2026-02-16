@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout;
 
-use Illuminate\Support\Collection;
 use Nezasa\Checkout\Exceptions\NotFoundException;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ActivityQuestionResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RequlatoryInformationResponse;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
@@ -35,17 +34,12 @@ class GetRequlatoryInformationRequest extends Request
     /**
      * Cast the response to a DTO.
      *
-     *
-     * @return Collection<int, ActivityQuestionResponse>
-     *
      * @throws Throwable
      */
-    public function createDtoFromResponse(Response $response): Collection
+    public function createDtoFromResponse(Response $response): RequlatoryInformationResponse
     {
         throw_unless(condition: $response->ok(), exception: NotFoundException::class);
 
-        return collect(
-            ActivityQuestionResponse::collect($response->array())
-        );
+        return RequlatoryInformationResponse::from($response->array());
     }
 }
