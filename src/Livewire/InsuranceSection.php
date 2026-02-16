@@ -9,7 +9,7 @@ use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Facades\InsuranceFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 
 class InsuranceSection extends BaseCheckoutComponent
@@ -90,7 +90,7 @@ class InsuranceSection extends BaseCheckoutComponent
             return;
         }
 
-        $this->itinerary->price = ApplyPromoCodeResponse::from($price);
+        $this->itinerary->price = PriceResponse::from($price);
         $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
 
         // tell JS side to refresh insurance widget with the new config

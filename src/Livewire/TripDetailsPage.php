@@ -14,7 +14,7 @@ use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Enums\Section;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Throwable;
 use URL;
@@ -104,7 +104,7 @@ class TripDetailsPage extends BaseCheckoutComponent
     #[On('price-changed')]
     public function priceChanged(array $price): void
     {
-        $this->itinerary->price = ApplyPromoCodeResponse::from($price);
+        $this->itinerary->price = PriceResponse::from($price);
     }
 
     public function createPaymentPageUrl(string $gateway): void

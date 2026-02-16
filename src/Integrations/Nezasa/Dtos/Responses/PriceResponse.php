@@ -9,7 +9,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ExternallyPaidCh
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PromoCodeResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 
-class ApplyPromoCodeResponse extends BaseDto
+class PriceResponse extends BaseDto
 {
     /**
      * Create a new instance of ApplyPromoCodeResponse.

@@ -19,7 +19,7 @@ class RetrieveCheckoutResponse extends BaseDto
      */
     public function __construct(
         public BookingStateEnum $checkoutState,
-        public ApplyPromoCodeResponse $prices,
+        public PriceResponse $prices,
         public TermsAndConditionsResponseEntity $termsAndConditions = new TermsAndConditionsResponseEntity,
     ) {}
 }
