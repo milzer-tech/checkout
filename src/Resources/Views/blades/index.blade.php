@@ -118,7 +118,7 @@
                         {{-- Text always visible --}}
                         <span class="whitespace-nowrap">
                     {{ trans('checkout::page.trip_details.pay') }}
-                            {{ \Illuminate\Support\Number::currency($downPayment->amount, $downPayment->currency) }}
+                            {{ \Illuminate\Support\Number::currency($itinerary->price->showPaymentPrice->amount,$itinerary->price->showPaymentPrice->currency) }}
                 </span>
 
                         {{-- CASE 1: availability loading --}}
@@ -165,7 +165,7 @@
                 >
             <span class="whitespace-nowrap">
                 {{ trans('checkout::page.trip_details.pay') }}
-                {{ \Illuminate\Support\Number::currency($downPayment->amount, $downPayment->currency) }}
+                {{ \Illuminate\Support\Number::currency($itinerary->price->showPaymentPrice->amount, $itinerary->price->showPaymentPrice->currency) }}
             </span>
 
                     @if($checkingAvailability)

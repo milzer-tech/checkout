@@ -22,9 +22,21 @@ class PriceResponse extends BaseDto
         public Price $openAmount,
         public ExternallyPaidChargesResponseEntity $externallyPaidCharges,
         public ?PromoCodeResponseEntity $promoCode = null,
+
+        // These two properties are used to show the total price and the payment price in the checkout page.
+        // As the total price can be sum up with the insurance and other prices out of Nezasa's control, we need to have
+        // a way to show the correct price in the checkout page.
         public ?Price $showTotalPrice = null,
         public ?Price $showPaymentPrice = null,
-    ) {}
+    ) {
+        if ($this->showTotalPrice === null) {
+            $this->showTotalPrice = $this->discountedPackagePrice;
+        }
+
+        if ($this->showPaymentPrice === null) {
+            $this->showPaymentPrice = $this->downPayment;
+        }
+    }
 
     /**
      * Calculate the percentage decrease in price due to the promo code.

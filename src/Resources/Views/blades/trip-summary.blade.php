@@ -385,7 +385,7 @@
             </button>
 
             <span wire:loading.remove class="text-2xl font-bold dark:text-white">
-            {{ Number::currency($total->amount, $total->currency) }}
+            {{ Number::currency($itinerary->price->showTotalPrice->amount,$itinerary->price->showTotalPrice->currency) }}
         </span>
 
             {{-- loader --}}
@@ -410,7 +410,7 @@
                     {{ trans('checkout::page.trip_details.paid_before_departure') }}
                 </span>
                     <span class="text-gray-800 dark:text-gray-200">
-                    {{ Number::currency($downPayment->amount, $downPayment->currency) }}
+                    {{ Number::currency($itinerary->price->showPaymentPrice->amount, $itinerary->price->showPaymentPrice->currency) }}
                 </span>
                 </div>
 

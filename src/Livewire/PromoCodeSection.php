@@ -74,12 +74,15 @@ class PromoCodeSection extends BaseCheckoutComponent
 
         if (! $response->ok()) {
             session()->flash('failedPromoCode', $response->array('problems')[0]['detail']);
+
+            $this->dispatch('summary-updated');
         } else {
             $this->prices = $response->dto();
             $this->markAsCompleted(Section::Promo);
+
+            $this->dispatchPriceChangedEvent();
         }
 
-        $this->dispatchPriceChangedEvent();
     }
 
     /**

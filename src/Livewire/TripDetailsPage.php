@@ -15,7 +15,6 @@ use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Throwable;
 use URL;
 
@@ -42,11 +41,6 @@ class TripDetailsPage extends BaseCheckoutComponent
     public ?string $gateway = null;
 
     /**
-     * The down payment for the itinerary.
-     */
-    public Price $downPayment;
-
-    /**
      * The object containing the checkout data.
      */
     public RequiredResponses $result;
@@ -71,8 +65,6 @@ class TripDetailsPage extends BaseCheckoutComponent
             addedRentalCarResponse: $this->result->addedRentalCars,
             addedUpsellItemsResponse: collect($this->result->addedUpsellItems),
         );
-
-        $this->downPayment = $this->itinerary->price->downPayment;
     }
 
     /**
@@ -94,17 +86,6 @@ class TripDetailsPage extends BaseCheckoutComponent
             'addedUpsellItems' => $this->result->addedUpsellItems,
             'regulatoryInformation' => $this->result->regulatoryInformation,
         ]);
-    }
-
-    /**
-     * Handle the promo code applied event.
-     *
-     * @param  array<string, array<string, float>>  $price
-     */
-    #[On('price-changed')]
-    public function priceChanged(array $price): void
-    {
-        $this->itinerary->price = PriceResponse::from($price);
     }
 
     public function createPaymentPageUrl(string $gateway): void
@@ -150,13 +131,13 @@ class TripDetailsPage extends BaseCheckoutComponent
     }
 
     /**
-     * Update the price.
+     * Handle the promo code applied event.
      *
      * @param  array<string, array<string, float>>  $price
      */
-    #[On('payment-amount-updated')]
-    public function priceUpdated(array $price): void
+    #[On('price-updated')]
+    public function priceChanged(array $price): void
     {
-        $this->downPayment = Price::from($price);
+        $this->itinerary->price = PriceResponse::from($price);
     }
 }
