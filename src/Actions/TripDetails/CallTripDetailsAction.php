@@ -40,7 +40,7 @@ class CallTripDetailsAction
             'addedUpsellItems' => new RetrieveCheckoutUpsellItemsRequest($params->checkoutId),
             'countryCodes' => new CountryCodesRequest,
             'countries' => new CountriesRequest,
-            'regulatory-information' => new GetRequlatoryInformationRequest($params->checkoutId),
+            'regulatoryInformation' => new GetRequlatoryInformationRequest($params->checkoutId),
         ];
 
         NezasaConnector::make()

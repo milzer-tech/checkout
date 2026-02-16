@@ -92,6 +92,7 @@ class TripDetailsPage extends BaseCheckoutComponent
             'prices' => $this->result->checkout->prices,
             'upsellItemsResponse' => $this->result->upsellItems,
             'addedUpsellItems' => $this->result->addedUpsellItems,
+            'regulatory-information' => $this->result->regulatoryInformation,
         ]);
     }
 
