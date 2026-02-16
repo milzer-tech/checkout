@@ -59,4 +59,14 @@ class PriceResponse extends BaseDto
     {
         return $this->packagePrice->amount - $this->discountedPackagePrice->amount;
     }
+
+    /**
+     * percentage of the total price that is down payment.
+     */
+    public function downPercentOfTotal(): float
+    {
+        return round(
+            ($this->showPaymentPrice->amount / $this->showTotalPrice->amount) * 100
+        );
+    }
 }

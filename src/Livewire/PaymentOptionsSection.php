@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Dtos\View\PaymentOption;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RegulatoryInformationResponse;
 
 class PaymentOptionsSection extends BaseCheckoutComponent
@@ -22,6 +23,11 @@ class PaymentOptionsSection extends BaseCheckoutComponent
      * The regulatory information for the payment options.
      */
     public RegulatoryInformationResponse $regulatoryInformation;
+
+    /**
+     * The prices data transfer object containing promo code information.
+     */
+    public PriceResponse $price;
 
     /**
      * Create a new instance of the component.

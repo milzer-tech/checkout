@@ -24,7 +24,7 @@
 
                 <div class="text-gray-900">
                     <p class="text-sm leading-6">
-                        <span class="font-semibold">You will be paying 30% of down payment now.</span>
+                        <span class="font-semibold">You will be paying {{$price->downPercentOfTotal()}}% of down payment now.</span>
                         <span class="text-gray-700">
                         The rest of the payment will be payable 14 days before departure. You will receive a link to complete that payment.
                     </span>

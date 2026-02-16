@@ -58,6 +58,7 @@
                 />
                 <livewire:payment-options-section
                     :$model
+                    :price="$itinerary->price"
                     :$regulatoryInformation
                     :is-completed="$model->isCompleted(Section::PaymentOptions)"
                     :is-expanded="$model->isExpanded(Section::PaymentOptions)"
