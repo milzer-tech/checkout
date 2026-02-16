@@ -119,7 +119,7 @@ class ComputopGateway implements RedirectPaymentContract
     {
         try {
             $response = ComputopConnector::make()->payment()->get($request->query('PayID'));
-            dd($response->array());
+            dd($response->status(), $response->array());
             //            return $response->ok() && in_array($response->array('status'), ['CAPTURE_REQUEST', 'OK'])
             //                ? new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Succeeded)
             //                : new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Failed);

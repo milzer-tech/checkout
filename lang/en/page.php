@@ -73,6 +73,8 @@ return [
         'trip_summary' => 'Trip summary',
         'agree_to_statement' => 'I agree to the Terms and Conditions stated above',
         'price_for_all_travellers' => 'Price for all travellers',
+        'select_payment_methods' => 'Select the payment method',
+        'conditions_of_payment' => 'Conditions of the payment',
     ],
 
     'payment' => [
