@@ -6,7 +6,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 
 use Nezasa\Checkout\Dtos\BaseDto;
 
-class RequlatoryInformationResponse extends BaseDto
+class RegulatoryInformationResponse extends BaseDto
 {
     /**
      * Create a new instance of the RequlatoryInformationResponse

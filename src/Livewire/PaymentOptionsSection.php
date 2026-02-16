@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Dtos\View\PaymentOption;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RegulatoryInformationResponse;
 
 class PaymentOptionsSection extends BaseCheckoutComponent
 {
@@ -16,6 +17,11 @@ class PaymentOptionsSection extends BaseCheckoutComponent
      * @var array<int, PaymentOption>
      */
     public array $options = [];
+
+    /**
+     * The regulatory information for the payment options.
+     */
+    public RegulatoryInformationResponse $regulatoryInformation;
 
     /**
      * Create a new instance of the component.

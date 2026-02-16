@@ -11,7 +11,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\AddedUpsellItemResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RequlatoryInformationResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RegulatoryInformationResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RetrieveCheckoutResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\TravelerRequirementsResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\UpsellItemsResponse;
@@ -30,6 +30,6 @@ class RequiredResponses extends BaseDto
         public Collection $addedUpsellItems,
         public CountryCodesResponse $countryCodes,
         public CountriesResponse $countries,
-        public RequlatoryInformationResponse $regulatoryInformation
+        public RegulatoryInformationResponse $regulatoryInformation
     ) {}
 }

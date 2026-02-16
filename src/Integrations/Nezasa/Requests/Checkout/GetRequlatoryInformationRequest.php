@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout;
 
 use Nezasa\Checkout\Exceptions\NotFoundException;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RequlatoryInformationResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RegulatoryInformationResponse;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
@@ -36,10 +36,10 @@ class GetRequlatoryInformationRequest extends Request
      *
      * @throws Throwable
      */
-    public function createDtoFromResponse(Response $response): RequlatoryInformationResponse
+    public function createDtoFromResponse(Response $response): RegulatoryInformationResponse
     {
         throw_unless(condition: $response->ok(), exception: NotFoundException::class);
 
-        return RequlatoryInformationResponse::from($response->array());
+        return RegulatoryInformationResponse::from($response->array());
     }
 }
