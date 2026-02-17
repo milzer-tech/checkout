@@ -399,7 +399,7 @@
         </div>
 
         {{-- Price breakdown (collapsible) --}}
-        @if($showPriceBreakdown)
+        @if($showPriceBreakdown && !$model->rest_payment)
             <div class="mt-4 space-y-2 text-sm">
                 <p class="font-semibold text-gray-900 dark:text-white">
                     {{ trans('checkout::page.trip_details.price_breakdown') }}
@@ -433,7 +433,7 @@
             </div>
         @endif
 
-        @if($showPriceBreakdown)
+        @if($showPriceBreakdown && !$model->rest_payment)
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
                 {{ trans('checkout::page.trip_details.destination_cost_text',[
         'total' => Number::currency($itinerary->price->discountedPackagePrice->amount, $itinerary->price->discountedPackagePrice->currency),
@@ -441,6 +441,45 @@
     ]) }}
             </p>
         @endif
+
+
+
+
+        @if($showPriceBreakdown && $model->rest_payment)
+            <div class="mt-4 space-y-2 text-sm">
+                <p class="font-semibold text-gray-900 dark:text-white">
+                    {{ trans('checkout::page.trip_details.price_breakdown') }}
+                </p>
+                <div class="flex justify-between">
+                <span class="text-gray-800 dark:text-gray-200">
+                    {{ trans('checkout::page.trip_details.paid') }} ({{$itinerary->price->downPercentOfTotal()}}%)
+                </span>
+                    <span class="text-gray-800 dark:text-gray-200">
+                    {{ Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}
+                </span>
+                </div>
+
+                <div class="flex justify-between">
+                <span class="text-gray-800 dark:text-gray-200">
+                    {{ trans('checkout::page.trip_details.payable_now') }}
+                </span>
+                    <span class="text-gray-800 dark:text-gray-200">
+                    {{ Number::currency($itinerary->price->showPaymentPrice->amount, $itinerary->price->showPaymentPrice->currency) }}
+                </span>
+                </div>
+            </div>
+        @endif
+
+        @if($showPriceBreakdown && $model->rest_payment)
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                {{ trans('checkout::page.trip_details.out_of_total_amount',[
+        'total' => Number::currency($itinerary->price->showTotalPrice->amount, $itinerary->price->showTotalPrice->currency),
+        'paid' =>  Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency),
+    ]) }}
+            </p>
+        @endif
+
+
     </div>
 
 

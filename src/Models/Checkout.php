@@ -60,7 +60,7 @@ class Checkout extends Model
     {
         return [
             'data' => AsCollection::class,
-            'rest_payment' => 'bool',
+            'rest_payment' => 'boolean',
         ];
     }
 
