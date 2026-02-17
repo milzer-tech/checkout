@@ -12,6 +12,7 @@
 
     <div class="space-y-8">
 
+        @if($price->downPercentOfTotal() < 100)
         <div class="rounded-xl border border-blue-300 bg-blue-100 px-4 py-4">
             <div class="flex gap-3">
                 <div class="mt-0.5 shrink-0">
@@ -24,15 +25,15 @@
 
                 <div class="text-gray-900">
                     <p class="text-sm leading-6">
-                        <span class="font-semibold">You will be paying {{$price->downPercentOfTotal()}}% of down payment now.</span>
+                        <span class="font-semibold">{{trans('checkout::page.trip_details.you_will_pay_down_payment',['percentage' => $price->downPercentOfTotal()])}}</span>
                         <span class="text-gray-700">
-                        The rest of the payment will be payable 14 days before departure. You will receive a link to complete that payment.
+{{trans('checkout::page.trip_details.rest_payment_will_be_payable_later')}}
                     </span>
                     </p>
                 </div>
             </div>
         </div>
-
+        @endif
         <div class="space-y-3">
             <h3 class="text-base font-semibold text-gray-900">{{trans('checkout::page.trip_details.conditions_of_payment')}}</h3>
         </div>
