@@ -104,9 +104,6 @@ class SummarizeItineraryAction
     private function restPaymentConfigs(Checkout $checkout): void
     {
         if ($checkout->rest_payment) {
-            // TODO: remove this lane at the end
-            $this->result->price->openAmount->amount = $this->result->price->discountedPackagePrice->amount - $this->result->price->downPayment->amount;
-
             $this->result->price->showPaymentPrice = $this->result->price->openAmount;
         }
     }
