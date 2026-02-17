@@ -67,6 +67,7 @@ class PaymentResultPage extends BaseCheckoutComponent
             checkoutResponse: $result->checkout,
             addedRentalCarResponse: $result->addedRentalCars,
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
+            checkout: $this->model
         );
 
         $callback = fn ($item) => $item->availability = $this->output->data[$item->id] ?? null;

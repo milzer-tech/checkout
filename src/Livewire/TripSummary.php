@@ -81,6 +81,7 @@ class TripSummary extends BaseCheckoutComponent
             checkoutResponse: $result->checkout,
             addedRentalCarResponse: $result->addedRentalCars,
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
+            checkout: $this->model
         );
 
         $this->dispatch('price-updated', $this->itinerary->price);

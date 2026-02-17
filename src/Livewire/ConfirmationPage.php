@@ -60,6 +60,7 @@ class ConfirmationPage extends BaseCheckoutComponent
             $result->checkout,
             $result->addedRentalCars,
             collect($result->addedUpsellItems),
+            $this->model
         );
     }
 }

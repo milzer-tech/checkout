@@ -68,6 +68,7 @@ class PaymentPage extends BaseCheckoutComponent
             checkoutResponse: $result->checkout,
             addedRentalCarResponse: $result->addedRentalCars,
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
+            checkout: $this->model
         );
     }
 
