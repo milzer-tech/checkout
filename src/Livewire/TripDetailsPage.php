@@ -64,6 +64,7 @@ class TripDetailsPage extends BaseCheckoutComponent
             checkoutResponse: $this->result->checkout,
             addedRentalCarResponse: $this->result->addedRentalCars,
             addedUpsellItemsResponse: collect($this->result->addedUpsellItems),
+            checkout: $this->model
         );
     }
 
@@ -92,6 +93,12 @@ class TripDetailsPage extends BaseCheckoutComponent
     {
         $this->gateway = $gateway;
 
+        if ($this->model->rest_payment) {
+            $this->generatePaymentPageUrl(result: true);
+
+            return;
+        }
+
         foreach ($this->model->data['status'] as $name => $section) {
             if (Section::from($name)->isPaymentOptions()) {
                 continue;
@@ -109,7 +116,6 @@ class TripDetailsPage extends BaseCheckoutComponent
         }
 
         $this->checkingAvailability = true;
-
         $this->dispatch('payment-selected', run: true);
     }
 
