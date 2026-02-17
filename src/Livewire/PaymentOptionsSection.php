@@ -35,6 +35,10 @@ class PaymentOptionsSection extends BaseCheckoutComponent
     public function mount(GetPaymentProviderAction $getPaymentProviderAction): void
     {
         $this->options = $getPaymentProviderAction->run();
+
+        if ($this->model->rest_payment) {
+            $this->isExpanded = true;
+        }
     }
 
     /**

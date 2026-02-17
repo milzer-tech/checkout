@@ -12,61 +12,35 @@ use Nezasa\Checkout\Actions\Payment\UpdateNezasaTransactionAction;
 use Nezasa\Checkout\Actions\Transaction\UpdateTransactionAction;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
-use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
+use Nezasa\Checkout\Payments\Enums\BookingStatusEnum;
 use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 use Saloon\Http\Response;
 
-readonly class PaymentCallBackHandler
+abstract readonly class PaymentCallBackHandler
 {
     /**
      * Create a new instance of PaymentCallBackHandler.
      */
     public function __construct(
-        private BookItineraryAction $bookItineraryAction,
-        private UpdateTransactionAction $updateTransactionAction,
-        private UpdateNezasaTransactionAction $updateNezasaTransactionAction,
-        private FindBookingResultAction $bookingResultAction,
+        protected BookItineraryAction $bookItineraryAction,
+        protected UpdateTransactionAction $updateTransactionAction,
+        protected UpdateNezasaTransactionAction $updateNezasaTransactionAction,
+        protected FindBookingResultAction $bookingResultAction,
     ) {}
 
     /**
      * Handle the payment callback process.
      */
-    public function run(Transaction $transaction, Request $request): PaymentOutput
-    {
-        $gateway = $this->getCallBackClass($transaction->gateway);
-
-        if ($transaction->result_data) {
-            return $this->getOutput($transaction);
-        }
-
-        if ($this->handlePaymentAuthorization($gateway, $transaction)->isSuccessful) {
-            $bookingResponse = $this->bookItineraryAction->run($transaction->checkout->checkout_id);
-            $bookingResult = $this->bookingResultAction->run($bookingResponse->array('summary'));
-
-            if ($bookingResult->isCompleteFailed() || $bookingResult->isUnknown()) {
-                $this->handlePaymentAbort($gateway, $transaction);
-            }
-
-            if ($bookingResult->isCompleteSuccess() || $bookingResult->isPartialFailure()) {
-                $this->handlePaymentCapture($gateway, $transaction);
-            }
-
-            $this->storeBookingSummary($transaction, $bookingResponse);
-        }
-        // Nezasa API does not support other statuses.
-        $this->updateNezasaTransactionAction->run(NezasaTransactionStatusEnum::Closed, $transaction);
-
-        return $this->getOutput($transaction);
-    }
+    abstract public function run(Transaction $transaction, Request $request): PaymentOutput;
 
     /**
      * Validate if the payment gateway is supported and implemented correctly.
      */
-    private function getCallBackClass(string $gateway): PaymentContract
+    protected function getCallBackClass(string $gateway): PaymentContract
     {
         $result = collect(resolve(GetPaymentProviderAction::class)->run())
             ->where('name', $gateway)
@@ -80,7 +54,7 @@ readonly class PaymentCallBackHandler
     /**
      * Handle the payment abort process.
      */
-    private function handlePaymentAbort(PaymentContract $gateway, Transaction $transaction): void
+    protected function handlePaymentAbort(PaymentContract $gateway, Transaction $transaction): void
     {
         $abortResult = $gateway->abort(request(), $transaction->prepare_data, $transaction->result_data);
 
@@ -95,7 +69,7 @@ readonly class PaymentCallBackHandler
     /**
      * Handle the payment capture process.
      */
-    private function handlePaymentCapture(PaymentContract $gateway, Transaction $transaction): void
+    protected function handlePaymentCapture(PaymentContract $gateway, Transaction $transaction): void
     {
         $captureResult = $gateway->capture(request(), $transaction->prepare_data, $transaction->result_data);
 
@@ -114,7 +88,7 @@ readonly class PaymentCallBackHandler
     /**
      * Handle the payment authorization process.
      */
-    private function handlePaymentAuthorization(PaymentContract $gateway, Transaction $transaction): AuthorizationResult
+    protected function handlePaymentAuthorization(PaymentContract $gateway, Transaction $transaction): AuthorizationResult
     {
         $authorizeResult = $gateway->authorize(request(), $transaction->prepare_data);
 
@@ -133,7 +107,7 @@ readonly class PaymentCallBackHandler
     /**
      * Return the stored output if the transaction already has result data.
      */
-    private function getOutput(Transaction $transaction): PaymentOutput
+    protected function getOutput(Transaction $transaction): PaymentOutput
     {
         try {
             /** @phpstan-ignore-next-line */
@@ -145,12 +119,18 @@ readonly class PaymentCallBackHandler
             $data = [];
         }
 
+        try {
+            $bookingStatusEnum = $this->bookingResultAction->run($transaction->result_data['nezasa_booking_summary']);
+        } catch (\Throwable $th) {
+            $bookingStatusEnum = BookingStatusEnum::CompleteSuccess;
+        }
+
         return new PaymentOutput(
             gatewayName: $transaction->gateway,
-            bookingStatusEnum: $this->bookingResultAction->run($transaction->result_data['nezasa_booking_summary']),
+            bookingStatusEnum: $bookingStatusEnum,
             bookingReference: $transaction->checkout->itinerary_id,
             orderDate: $transaction->updated_at?->toImmutable(),
-            data: $data,
+            data: [],
             isPaymentSuccessful: $transaction->status->isCaptured(),
         );
     }
@@ -158,7 +138,7 @@ readonly class PaymentCallBackHandler
     /**
      * Update the transaction with the booking summary.
      */
-    private function storeBookingSummary(Transaction $transaction, Response $bookingResponse): void
+    protected function storeBookingSummary(Transaction $transaction, Response $bookingResponse): void
     {
         $this->updateTransactionAction->run($transaction->refresh(), [
             'result_data' => [

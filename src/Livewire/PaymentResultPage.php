@@ -11,7 +11,8 @@ use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
-use Nezasa\Checkout\Payments\Handlers\PaymentCallBackHandler;
+use Nezasa\Checkout\Payments\Handlers\DownPaymentCallBackHandler;
+use Nezasa\Checkout\Payments\Handlers\RestPaymentCallBackHandler;
 
 class PaymentResultPage extends BaseCheckoutComponent
 {
@@ -34,11 +35,13 @@ class PaymentResultPage extends BaseCheckoutComponent
      */
     public PaymentOutput $output;
 
-    public function mount(Request $request, PaymentCallBackHandler $callBackHandler): void
+    public function mount(Request $request): void
     {
         $this->model = $this->transaction->checkout;
 
-        $this->output = $callBackHandler->run($this->transaction, $request);
+        $this->output = $this->model->rest_payment
+                ? resolve(RestPaymentCallBackHandler::class)->run($this->transaction, $request)
+                : resolve(DownPaymentCallBackHandler::class)->run($this->transaction, $request);
 
         $this->initializeRequirements();
 
