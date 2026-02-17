@@ -86,7 +86,7 @@ class PaymentPage extends BaseCheckoutComponent
 
         $result = resolve(PaymentInitiationHandler::class)->run(
             model: $this->model,
-            price: $this->itinerary->price->downPayment,
+            price: $this->itinerary->price->showPaymentPrice,
             gateway: new $className
         );
 
