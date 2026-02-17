@@ -45,6 +45,20 @@ class InitializeCheckoutDataAction
      */
     private function firstConfiguration(PaxAllocationResponseEntity $allocatedPax, Checkout $checkout): void
     {
+        if ($checkout->rest_payment) {
+            $downCheckout = Checkout::query()
+                ->where('checkout_id', $checkout->checkout_id)
+                ->where('itinerary_id', $checkout->itinerary_id)
+                ->where('rest_payment', false)
+                ->first();
+
+            $checkout->update([
+                'data' => $downCheckout->data,
+            ]);
+
+            return;
+        }
+
         $checkout->update([
             'data' => [
                 'paxInfo' => [],

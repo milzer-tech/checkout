@@ -21,6 +21,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ModulesResponseE
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RentalCarResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\GetItineraryResponse as ItineraryResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RetrieveCheckoutResponse as CheckoutResponse;
+use Nezasa\Checkout\Models\Checkout;
 use Throwable;
 
 class SummarizeItineraryAction
@@ -41,9 +42,11 @@ class SummarizeItineraryAction
         ItineraryResponse $itineraryResponse,
         CheckoutResponse $checkoutResponse,
         AddedRentalCarResponse $addedRentalCarResponse,
-        Collection $addedUpsellItemsResponse
+        Collection $addedUpsellItemsResponse,
+        Checkout $checkout
     ): ItinerarySummary {
         $this->initializeResult($itineraryResponse, $checkoutResponse);
+        $this->restPaymentConfigs($checkout);
         $this->pushTransport($itineraryResponse->startConnections);
         $this->pushTransport($itineraryResponse->returnConnections);
         $this->pushRentalCar($addedRentalCarResponse->rentalCars);
@@ -93,6 +96,19 @@ class SummarizeItineraryAction
             termsAndConditions: $checkoutResponse->termsAndConditions,
             destinationCountries: new Collection
         );
+    }
+
+    /**
+     * Apply rest payment configs to the itinerary summary.
+     */
+    private function restPaymentConfigs(Checkout $checkout): void
+    {
+        if ($checkout->rest_payment) {
+            // TODO: remove this lane at the end
+            $this->result->price->openAmount->amount = $this->result->price->discountedPackagePrice->amount - $this->result->price->downPayment->amount;
+
+            $this->result->price->showPaymentPrice = $this->result->price->openAmount;
+        }
     }
 
     /**
