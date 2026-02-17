@@ -77,6 +77,7 @@ return [
         'conditions_of_payment' => 'Conditions of the payment',
         'rest_payment_will_be_payable_later' => 'The rest of the payment will be payable 14 days before departure. You will receive a link to complete that payment.',
         'you_will_pay_down_payment' => 'You will be paying :percentage of down payment now.',
+        'you_will_pay_remaining' => 'You will be paying the remaining amount now.',
     ],
 
     'payment' => [
