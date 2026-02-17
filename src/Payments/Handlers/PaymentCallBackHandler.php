@@ -73,7 +73,7 @@ readonly class PaymentCallBackHandler
             ->firstOrFail()
             ->decryptClassName();
 
-        /** @phpstan-ignore-next-line  */
+        /** @phpstan-ignore-next-line */
         return new $result;
     }
 
@@ -135,17 +135,22 @@ readonly class PaymentCallBackHandler
      */
     private function getOutput(Transaction $transaction): PaymentOutput
     {
-        /** @phpstan-ignore-next-line  */
-        $data = collect($transaction->result_data['nezasa_booking_summary']['components'])
-            ->reject(fn (array $item) => $item['isPlaceholder'])
-            ->mapwithkeys(fn (array $item): array => [$item['id'] => AvailabilityEnum::tryFrom($item['status'])]);
+        try {
+            /** @phpstan-ignore-next-line */
+            $data = collect($transaction->result_data['nezasa_booking_summary']['components'])
+                ->reject(fn (array $item) => $item['isPlaceholder'])
+                ->mapwithkeys(fn (array $item): array => [$item['id'] => AvailabilityEnum::tryFrom($item['status'])])
+                ->toArray();
+        } catch (\Throwable $th) {
+            $data = [];
+        }
 
         return new PaymentOutput(
             gatewayName: $transaction->gateway,
             bookingStatusEnum: $this->bookingResultAction->run($transaction->result_data['nezasa_booking_summary']),
             bookingReference: $transaction->checkout->itinerary_id,
             orderDate: $transaction->updated_at?->toImmutable(),
-            data: $data->toArray(),
+            data: $data,
             isPaymentSuccessful: $transaction->status->isCaptured(),
         );
     }

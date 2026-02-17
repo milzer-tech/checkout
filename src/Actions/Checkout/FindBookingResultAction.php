@@ -13,7 +13,7 @@ class FindBookingResultAction
      *
      * @param  array<string, array<string, mixed>>  $summary
      */
-    public function run(array $summary): BookingStatusEnum
+    public function run(?array $summary): BookingStatusEnum
     {
         $failures = collect();
         $successes = collect();
