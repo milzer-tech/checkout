@@ -77,7 +77,7 @@ class PaymentInitiationHandler
             'prepare_data' => (array) $init->persistentData,
             'status' => TransactionStatusEnum::Pending,
             'nezasa_transaction' => $nezasaTransaction,
-            'nezasa_transaction_ref_id' => $nezasaTransaction['transactionRefId'] ?? null,
+            'nezasa_transaction_ref_id' => $nezasaTransaction['transaction']['transactionRefId'] ?? null,
         ]);
     }
 
