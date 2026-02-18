@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Handlers;
 
 use Illuminate\Http\Request;
+use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
@@ -31,7 +32,11 @@ readonly class DownPaymentCallBackHandler extends PaymentCallBackHandler
             }
 
             if ($bookingResult->isCompleteSuccess() || $bookingResult->isPartialFailure()) {
-                $this->handlePaymentCapture($gateway, $transaction);
+                $captureResult = $this->handlePaymentCapture($gateway, $transaction);
+
+                if ($captureResult->isSuccessful) {
+                    event(new ItineraryBookingSucceededEvent($transaction));
+                }
             }
 
             $this->storeBookingSummary($transaction, $bookingResponse);

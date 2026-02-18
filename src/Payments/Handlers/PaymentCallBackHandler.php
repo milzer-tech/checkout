@@ -10,11 +10,11 @@ use Nezasa\Checkout\Actions\Checkout\FindBookingResultAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Payment\UpdateNezasaTransactionAction;
 use Nezasa\Checkout\Actions\Transaction\UpdateTransactionAction;
-use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
+use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Enums\BookingStatusEnum;
 use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
@@ -69,7 +69,7 @@ abstract readonly class PaymentCallBackHandler
     /**
      * Handle the payment capture process.
      */
-    protected function handlePaymentCapture(PaymentContract $gateway, Transaction $transaction): void
+    protected function handlePaymentCapture(PaymentContract $gateway, Transaction $transaction): CaptureResult
     {
         $captureResult = $gateway->capture(request(), $transaction->prepare_data, $transaction->result_data);
 
@@ -80,9 +80,7 @@ abstract readonly class PaymentCallBackHandler
                 : TransactionStatusEnum::CaptureFailed,
         ]);
 
-        if ($captureResult->isSuccessful) {
-            event(new ItineraryBookingSucceededEvent($transaction));
-        }
+        return $captureResult;
     }
 
     /**
