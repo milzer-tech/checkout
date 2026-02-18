@@ -122,7 +122,7 @@ abstract readonly class PaymentCallBackHandler
         try {
             $bookingStatusEnum = $this->bookingResultAction->run($transaction->result_data['nezasa_booking_summary']);
         } catch (\Throwable $th) {
-            $bookingStatusEnum = $transaction->checkout->rest_payment
+            $bookingStatusEnum = $transaction->checkout->rest_payment && $transaction->status->isCaptured()
                 ? BookingStatusEnum::CompleteSuccess
                 : BookingStatusEnum::Unknown;
         }
@@ -132,7 +132,7 @@ abstract readonly class PaymentCallBackHandler
             bookingStatusEnum: $bookingStatusEnum,
             bookingReference: $transaction->checkout->itinerary_id,
             orderDate: $transaction->updated_at?->toImmutable(),
-            data: [],
+            data: $data,
             isPaymentSuccessful: $transaction->status->isCaptured(),
         );
     }
