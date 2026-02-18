@@ -35,7 +35,7 @@ final class ComputopCapturePaymentRequest extends Request implements HasBody
      */
     public function resolveEndpoint(): string
     {
-        return "payments/{$this->paymentId}/capture";
+        return "payments/{$this->paymentId}/captures";
     }
 
     /**
