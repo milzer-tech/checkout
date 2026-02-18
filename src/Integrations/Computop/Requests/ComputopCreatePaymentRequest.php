@@ -12,7 +12,7 @@ use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
-final class ComputopPaymentRequest extends Request implements HasBody
+final class ComputopCreatePaymentRequest extends Request implements HasBody
 {
     use HasJsonBody;
 
