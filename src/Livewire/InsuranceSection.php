@@ -25,6 +25,11 @@ class InsuranceSection extends BaseCheckoutComponent
     public ?ContactInfoPayloadEntity $contact = null;
 
     /**
+     * Indicates whether the user selected an insurance quote.
+     */
+    public bool $insuranceSelected = false;
+
+    /**
      * Initialize the component with the promo code from the prices DTO.
      */
     public function mount(): void
@@ -58,6 +63,7 @@ class InsuranceSection extends BaseCheckoutComponent
             return;
         }
 
+        $this->insuranceSelected = true;
         $this->dispatch(
             'insurance-selected',
             new InsuranceItem(id: $quote['quote_id'], name: $quote['product']['promotional_header']),
@@ -86,7 +92,7 @@ class InsuranceSection extends BaseCheckoutComponent
     #[On('price-updated')]
     public function priceUpdated(array $price): void
     {
-        if (! InsuranceFacade::isAvailable()) {
+        if (! InsuranceFacade::isAvailable() || $this->insuranceSelected) {
             return;
         }
 
@@ -148,10 +154,10 @@ class InsuranceSection extends BaseCheckoutComponent
                         'trip_start_date' => $this->itinerary->startDate->toDateString(),
                         'trip_end_date' => $this->itinerary->endDate->toDateString(),
                         'destination_countries' => $this->itinerary->destinationCountries,
-                        'trip_cost' => $this->itinerary->price->discountedPackagePrice->toCent(),
-                        'trip_cost_currency' => $this->itinerary->price->discountedPackagePrice->currency,
+                        'trip_cost' => $this->itinerary->price->showTotalPrice->toCent(),
+                        'trip_cost_currency' => $this->itinerary->price->showTotalPrice->currency,
                     ],
-                    'currency' => $this->itinerary->price->discountedPackagePrice->currency,
+                    'currency' => $this->itinerary->price->showTotalPrice->currency,
                 ]],
             ],
         ];
