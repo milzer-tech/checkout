@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Computop\Resources;
 
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopCapturePaymentPayload;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopPaymentPayload;
+use Nezasa\Checkout\Integrations\Computop\Requests\ComputopCapturePaymentRequest;
 use Nezasa\Checkout\Integrations\Computop\Requests\ComputopCreatePaymentRequest;
 use Nezasa\Checkout\Integrations\Computop\Requests\GetComputopPaymentRequest;
 use Saloon\Http\BaseResource;
@@ -33,6 +35,18 @@ class ComputopPaymentResource extends BaseResource
     {
         return $this->connector->send(
             new GetComputopPaymentRequest($paymentId)
+        );
+    }
+
+    /**
+     * Capture a payment.
+     *
+     * @throws \Throwable
+     */
+    public function capture(string $paymentId, ComputopCapturePaymentPayload $payload): Response
+    {
+        return $this->connector->send(
+            new ComputopCapturePaymentRequest($paymentId, $payload)
         );
     }
 }

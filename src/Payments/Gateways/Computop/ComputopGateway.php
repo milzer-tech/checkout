@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Uri;
 use Nezasa\Checkout\Integrations\Computop\Connectors\ComputopConnector;
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopCapturePaymentPayload;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopPaymentPayload;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\CaptureInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\CaptureManualPayloadEntity;
@@ -22,7 +23,6 @@ use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
 use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
-use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 
 class ComputopGateway implements RedirectPaymentContract
 {
@@ -63,7 +63,7 @@ class ComputopGateway implements RedirectPaymentContract
                 urls: new UrlPayloadEntity(
                     success: (string) $data->returnUrl,
                     failure: ($data->returnUrl).'&failure=1',
-                    cancel: $data->getCancellationUrl(),
+                    cancel: (string) $data->cancelUrl,
                 ),
                 capture: new CaptureInfoPayloadEntity(
                     manual: new CaptureManualPayloadEntity(final: 'yes')
@@ -119,20 +119,38 @@ class ComputopGateway implements RedirectPaymentContract
     {
         try {
             $response = ComputopConnector::make()->payment()->get($request->query('PayID'));
-            dd($response->status(), $response->array());
-            //            return $response->ok() && in_array($response->array('status'), ['CAPTURE_REQUEST', 'OK'])
-            //                ? new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Succeeded)
-            //                : new AuthorizationResult(resultData: $response->array(), status: TransactionStatusEnum::Failed);
-        } catch (\Throwable) {
-            // do nothing
+
+            return new AuthorizationResult(
+                isSuccessful: $response->ok() && in_array($response->array('status'), ['CAPTURE_REQUEST', 'OK']),
+                resultData: ['payment' => $response->array()]
+            );
+        } catch (\Throwable $exception) {
+            report($exception);
         }
 
-        //        return new AuthorizationResult(resultData: $request->query(), status: TransactionStatusEnum::Failed);
+        return new AuthorizationResult(isSuccessful: false, resultData: (array) $request->query());
     }
 
     public function capture(Request $request, array $persistentData, array $resultData): CaptureResult
     {
-        return new CaptureResult(isSuccessful: true, persistentData: $resultData);
+        try {
+            $payload = new ComputopCapturePaymentPayload(
+                transactionId: (string) $resultData['payment']['transactionId'],
+                amount: ComputopAmountDto::from($persistentData['amount'])
+            );
+
+            $response = ComputopConnector::make()->payment()->capture($request->query('PayID'), $payload);
+            $resultData['capture'] = $response->array();
+
+            return new CaptureResult(
+                isSuccessful: $response->ok() && in_array($response->array('status'), ['CAPTURE_REQUEST', 'OK']),
+                persistentData: $resultData
+            );
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
+        return new CaptureResult(isSuccessful: false, persistentData: $resultData);
     }
 
     public function abort(Request $request, array $persistentData, array $resultData): AbortResult
