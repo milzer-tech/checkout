@@ -17,7 +17,10 @@ class PaymentPrepareData extends BaseDto
      */
     public function __construct(
         public Transaction $transaction,
+        // this the payment return URL
         public Uri $returnUrl,
+        // this is the home page URL
+        public Uri $cancelUrl,
         public ContactInfoPayloadEntity $contact,
         public Price $price,
         public string $checkoutId,
