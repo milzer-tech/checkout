@@ -10,6 +10,7 @@ use Illuminate\Support\Uri;
 use Nezasa\Checkout\Integrations\Computop\Connectors\ComputopConnector;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopCapturePaymentPayload;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopPaymentPayload;
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopReversePaymentPayload;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\CaptureInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\CaptureManualPayloadEntity;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\ComputopAmountDto;
@@ -155,6 +156,23 @@ class ComputopGateway implements RedirectPaymentContract
 
     public function abort(Request $request, array $persistentData, array $resultData): AbortResult
     {
-        return new AbortResult(isSuccessful: true, persistentData: $resultData);
+        try {
+            $payload = new ComputopReversePaymentPayload(
+                transactionId: (string) $resultData['payment']['transactionId'],
+                amount: ComputopAmountDto::from($persistentData['amount'])
+            );
+
+            $response = ComputopConnector::make()->payment()->reverse($request->query('PayID'), $payload);
+            $resultData['reverse'] = $response->array();
+
+            return new AbortResult(
+                isSuccessful: $response->ok() && in_array($response->array('status'), ['CAPTURE_REQUEST', 'OK']), persistentData: $resultData
+            );
+
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
+        return new AbortResult(isSuccessful: false, persistentData: $resultData);
     }
 }
