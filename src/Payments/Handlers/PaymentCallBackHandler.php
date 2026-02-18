@@ -122,7 +122,9 @@ abstract readonly class PaymentCallBackHandler
         try {
             $bookingStatusEnum = $this->bookingResultAction->run($transaction->result_data['nezasa_booking_summary']);
         } catch (\Throwable $th) {
-            $bookingStatusEnum = BookingStatusEnum::CompleteSuccess;
+            $bookingStatusEnum = $transaction->checkout->rest_payment
+                ? BookingStatusEnum::CompleteSuccess
+                : BookingStatusEnum::Unknown;
         }
 
         return new PaymentOutput(
