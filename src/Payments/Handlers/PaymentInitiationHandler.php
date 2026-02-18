@@ -91,7 +91,7 @@ class PaymentInitiationHandler
         return (array) NezasaConnector::make()
             ->paymentTransaction()
             ->create($checkoutId, $payload)
-            ->array('transaction');
+            ->array();
     }
 
     /**
