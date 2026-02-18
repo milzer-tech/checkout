@@ -78,12 +78,7 @@ class StripeGateway implements RedirectPaymentContract
                     ],
                 ],
                 'success_url' => $data->returnUrl.'&session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('traveler-details', [
-                    'checkoutId' => $data->checkoutId,
-                    'itineraryId' => $data->itineraryId,
-                    'origin' => $data->origin,
-                    'lang' => $data->lang,
-                ]),
+                'cancel_url' => $data->cancelUrl,
             ];
 
             $session = Session::create($this->customizeSessionPayload($payload, $data->transaction));
