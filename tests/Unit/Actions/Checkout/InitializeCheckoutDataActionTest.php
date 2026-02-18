@@ -21,7 +21,7 @@ it('creates a new Checkout with initial data and computed pax count when none ex
         ])
     );
 
-    $action = new InitializeCheckoutDataAction;
+    $action = resolve(InitializeCheckoutDataAction::class);
 
     $model = $action->run($params, $allocatedPax);
 
@@ -77,7 +77,7 @@ it('throws AlreadyPaidException when a checkout with a succeeded transaction alr
 
     $allocatedPax = new PaxAllocationResponseEntity(rooms: new Collection);
 
-    $action = new InitializeCheckoutDataAction;
+    $action = resolve(InitializeCheckoutDataAction::class);
 
     $this->expectException(AlreadyPaidException::class);
 

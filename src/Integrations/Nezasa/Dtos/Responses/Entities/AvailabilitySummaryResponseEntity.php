@@ -6,7 +6,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 
 class AvailabilitySummaryResponseEntity extends BaseDto
 {
@@ -24,7 +24,7 @@ class AvailabilitySummaryResponseEntity extends BaseDto
         public Collection $components,
         public bool $nonBookable,
         public bool $bookingWindowEnd,
-        public ApplyPromoCodeResponse $prices,
+        public PriceResponse $prices,
         public array $remarks = []
     ) {}
 }

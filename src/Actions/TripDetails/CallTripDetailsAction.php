@@ -10,6 +10,7 @@ use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Exceptions\NotFoundException;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetRequlatoryInformationRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
@@ -39,6 +40,7 @@ class CallTripDetailsAction
             'addedUpsellItems' => new RetrieveCheckoutUpsellItemsRequest($params->checkoutId),
             'countryCodes' => new CountryCodesRequest,
             'countries' => new CountriesRequest,
+            'regulatoryInformation' => new GetRequlatoryInformationRequest($params->checkoutId),
         ];
 
         NezasaConnector::make()

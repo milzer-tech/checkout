@@ -4,60 +4,64 @@
     <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-8">
         <div class="space-y-6">
             <section class="space-y-6">
-                <livewire:contact-details
-                    :$contactRequirements
-                    :$countryCodes
-                    :$countriesResponse
-                    :$model
-                    :is-completed="$model->isCompleted(Section::Contact)"
-                    :is-expanded="$model->isExpanded(Section::Contact)"
-                />
-                <livewire:traveler-details
-                    :$allocatedPax
-                    :$passengerRequirements
-                    :$countryCodes
-                    :$countriesResponse
-                    :$model
-                    :$itinerary
-                    :is-completed="$model->isCompleted(Section::Traveller)"
-                    :is-expanded="$model->isExpanded(Section::Traveller)"
-                />
+                @if(!$model->rest_payment)
+                    <livewire:contact-details
+                        :$contactRequirements
+                        :$countryCodes
+                        :$countriesResponse
+                        :$model
+                        :is-completed="$model->isCompleted(Section::Contact)"
+                        :is-expanded="$model->isExpanded(Section::Contact)"
+                    />
+                    <livewire:traveler-details
+                        :$allocatedPax
+                        :$passengerRequirements
+                        :$countryCodes
+                        :$countriesResponse
+                        :$model
+                        :$itinerary
+                        :is-completed="$model->isCompleted(Section::Traveller)"
+                        :is-expanded="$model->isExpanded(Section::Traveller)"
+                    />
 
-                <livewire:activity-section
-                    :shouldRender="$itinerary->activities->isNotEmpty()"
-                    :$model
-                    :is-completed="$model->isCompleted(Section::Activity)"
-                    :is-expanded="$model->isExpanded(Section::Activity)"
-                />
+                    <livewire:activity-section
+                        :shouldRender="$itinerary->activities->isNotEmpty()"
+                        :$model
+                        :is-completed="$model->isCompleted(Section::Activity)"
+                        :is-expanded="$model->isExpanded(Section::Activity)"
+                    />
 
-                <livewire:promo-code-section
-                    :$prices
-                    :$model
-                    :is-completed="$model->isCompleted(Section::Promo)"
-                    :is-expanded="$model->isExpanded(Section::Promo)"
-                />
-                <livewire:additional-services-section
-                    :$upsellItemsResponse
-                    :$addedUpsellItems
-                    :$model
-                    :is-completed="$model->isCompleted(Section::AdditionalService)"
-                    :is-expanded="$model->isExpanded(Section::AdditionalService)"
-                />
-                <livewire:insurance-section
-                    :$itinerary
-                    :$model
-                    :is-completed="$model->data['status']['insurance']['isCompleted']"
-                    :is-expanded="$model->data['status']['insurance']['isExpanded']"
-                />
+                    <livewire:promo-code-section
+                        :$prices
+                        :$model
+                        :is-completed="$model->isCompleted(Section::Promo)"
+                        :is-expanded="$model->isExpanded(Section::Promo)"
+                    />
+                    <livewire:additional-services-section
+                        :$upsellItemsResponse
+                        :$addedUpsellItems
+                        :$model
+                        :is-completed="$model->isCompleted(Section::AdditionalService)"
+                        :is-expanded="$model->isExpanded(Section::AdditionalService)"
+                    />
+                    <livewire:insurance-section
+                        :$itinerary
+                        :$model
+                        :is-completed="$model->data['status']['insurance']['isCompleted']"
+                        :is-expanded="$model->data['status']['insurance']['isExpanded']"
+                    />
 
-                <livewire:terms-section
-                    :termsAndConditions="$itinerary->termsAndConditions"
-                    :$model
-                    :is-completed="$model->isCompleted(Section::TermsAndConditions)"
-                    :is-expanded="$model->isExpanded(Section::TermsAndConditions)"
-                />
+                    <livewire:terms-section
+                        :termsAndConditions="$itinerary->termsAndConditions"
+                        :$model
+                        :is-completed="$model->isCompleted(Section::TermsAndConditions)"
+                        :is-expanded="$model->isExpanded(Section::TermsAndConditions)"
+                    />
+                @endif
                 <livewire:payment-options-section
                     :$model
+                    :price="$itinerary->price"
+                    :$regulatoryInformation
                     :is-completed="$model->isCompleted(Section::PaymentOptions)"
                     :is-expanded="$model->isExpanded(Section::PaymentOptions)"
                 />
@@ -117,7 +121,7 @@
                         {{-- Text always visible --}}
                         <span class="whitespace-nowrap">
                     {{ trans('checkout::page.trip_details.pay') }}
-                            {{ \Illuminate\Support\Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}
+                            {{ \Illuminate\Support\Number::currency($itinerary->price->showPaymentPrice->amount,$itinerary->price->showPaymentPrice->currency) }}
                 </span>
 
                         {{-- CASE 1: availability loading --}}
@@ -164,7 +168,7 @@
                 >
             <span class="whitespace-nowrap">
                 {{ trans('checkout::page.trip_details.pay') }}
-                {{ \Illuminate\Support\Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}
+                {{ \Illuminate\Support\Number::currency($itinerary->price->showPaymentPrice->amount, $itinerary->price->showPaymentPrice->currency) }}
             </span>
 
                     @if($checkingAvailability)
@@ -187,7 +191,6 @@
             @endif
 
         </div>
-
 
 
     </div>

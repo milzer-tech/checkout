@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Oppwa\Resources;
 
+use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaComplationPayload;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaPreparePayload;
+use Nezasa\Checkout\Integrations\Oppwa\Requests\OppwaComplationRequest;
 use Nezasa\Checkout\Integrations\Oppwa\Requests\OppwaPrepareRequest;
 use Nezasa\Checkout\Integrations\Oppwa\Requests\OppwaStatusRequest;
 use Saloon\Exceptions\Request\FatalRequestException;
@@ -37,6 +39,19 @@ class OppwaResource extends BaseResource
     {
         return $this->connector->send(
             new OppwaStatusRequest($resourcePath)
+        );
+    }
+
+    /**
+     * Complete a payment pre-authorization.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function complete(string $id, OppwaComplationPayload $payload): Response
+    {
+        return $this->connector->send(
+            new OppwaComplationRequest($id, $payload)
         );
     }
 }

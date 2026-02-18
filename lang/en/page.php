@@ -73,6 +73,14 @@ return [
         'trip_summary' => 'Trip summary',
         'agree_to_statement' => 'I agree to the Terms and Conditions stated above',
         'price_for_all_travellers' => 'Price for all travellers',
+        'select_payment_methods' => 'Select the payment method',
+        'conditions_of_payment' => 'Conditions of the payment',
+        'rest_payment_will_be_payable_later' => 'The rest of the payment will be payable 14 days before departure. You will receive a link to complete that payment.',
+        'you_will_pay_down_payment' => 'You will be paying :percentage of down payment now.',
+        'you_will_pay_remaining' => 'You will be paying the remaining amount now.',
+        'paid' => 'Paid',
+        'payable_now' => 'Payable now',
+        'out_of_total_amount' => 'Out of the total amount of :total, :paid was paid as a down payment.',
     ],
 
     'payment' => [

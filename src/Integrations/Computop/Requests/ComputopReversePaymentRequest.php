@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Computop\Requests;
 
-use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopPaymentPayload;
-use Nezasa\Checkout\Integrations\Oppwa\Dtos\Responses\OppwaPrepareResponse;
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopReversePaymentPayload;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
-final class ComputopPaymentRequest extends Request implements HasBody
+final class ComputopReversePaymentRequest extends Request implements HasBody
 {
     use HasJsonBody;
 
@@ -22,16 +21,21 @@ final class ComputopPaymentRequest extends Request implements HasBody
     protected Method $method = Method::POST;
 
     /**
-     * Create a new instance of ComputopPaymentRequest
+     * Create a new instance of ComputopReversePaymentRequest
+     *
+     * @link https://app.swaggerhub.com/apis-docs/Computop/Paygate_REST_API/1#/Payments/reversePayment
      */
-    public function __construct(public ComputopPaymentPayload $payload) {}
+    public function __construct(
+        public string $paymentId,
+        public ComputopReversePaymentPayload $payload
+    ) {}
 
     /**
      * Get the endpoint for the request.
      */
     public function resolveEndpoint(): string
     {
-        return 'payments';
+        return "payments/{$this->paymentId}/reversals";
     }
 
     /**
@@ -49,14 +53,6 @@ final class ComputopPaymentRequest extends Request implements HasBody
      */
     public function hasRequestFailed(Response $response): bool
     {
-        return $response->status() !== 201;
+        return $response->status() !== 200;
     }
-    //
-    //    /**
-    //     * Cast the response to a DTO.
-    //     */
-    //    public function createDtoFromResponse(Response $response): OppwaPrepareResponse
-    //    {
-    //        return OppwaPrepareResponse::from($response->array());
-    //    }
 }

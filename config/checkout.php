@@ -59,10 +59,10 @@ return [
     ],
 
     'payment' => [
-        //        OppwaWidgetGateway::class,
+        OppwaWidgetGateway::class,
         InvoiceGateway::class,
         StripeGateway::class,
-        //        ComputopGateway::class,
+        ComputopGateway::class,
     ],
 
     'term_limit' => (int) env('CHECKOUT_TERM_LIMIT', 600),

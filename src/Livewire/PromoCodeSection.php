@@ -6,7 +6,7 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 
 class PromoCodeSection extends BaseCheckoutComponent
 {
@@ -32,7 +32,7 @@ class PromoCodeSection extends BaseCheckoutComponent
     /**
      * The prices data transfer object containing promo code information.
      */
-    public ApplyPromoCodeResponse $prices;
+    public PriceResponse $prices;
 
     /**
      * Initialize the component with the promo code from the prices DTO.
@@ -74,12 +74,15 @@ class PromoCodeSection extends BaseCheckoutComponent
 
         if (! $response->ok()) {
             session()->flash('failedPromoCode', $response->array('problems')[0]['detail']);
+
+            $this->dispatch('summary-updated');
         } else {
             $this->prices = $response->dto();
             $this->markAsCompleted(Section::Promo);
+
+            $this->dispatchPriceChangedEvent();
         }
 
-        $this->dispatchPriceChangedEvent();
     }
 
     /**

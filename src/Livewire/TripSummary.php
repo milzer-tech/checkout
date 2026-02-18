@@ -11,7 +11,7 @@ use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 
 class TripSummary extends BaseCheckoutComponent
@@ -22,20 +22,13 @@ class TripSummary extends BaseCheckoutComponent
     public ItinerarySummary $itinerary;
 
     /**
-     * The total price of the itinerary.
-     */
-    public Price $total;
-
-    /**
-     * The down payment for the itinerary.
-     */
-    public Price $downPayment;
-
-    /**
      * Whether to show the price breakdown.
      */
     public bool $showPriceBreakdown = false;
 
+    /**
+     * The URL to the Nezasa planner.
+     */
     public string $nezasaPlannerUrl;
 
     public function mount(): void
@@ -43,8 +36,6 @@ class TripSummary extends BaseCheckoutComponent
         $this->nezasaPlannerUrl = config('checkout.nezasa.base_url').'/itineraries/'.$this->itineraryId;
 
         $this->showPriceBreakdown = $this->itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty();
-        $this->total = $this->itinerary->price->discountedPackagePrice;
-        $this->downPayment = $this->itinerary->price->downPayment;
     }
 
     /**
@@ -72,9 +63,7 @@ class TripSummary extends BaseCheckoutComponent
     #[On('price-changed')]
     public function priceChanged(array $price): void
     {
-        $this->itinerary->price = ApplyPromoCodeResponse::from($price);
-
-        $this->total = $this->itinerary->price->discountedPackagePrice;
+        $this->itinerary->price = PriceResponse::from($price);
 
         $this->dispatch('price-updated', price: $price);
     }
@@ -92,9 +81,8 @@ class TripSummary extends BaseCheckoutComponent
             checkoutResponse: $result->checkout,
             addedRentalCarResponse: $result->addedRentalCars,
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
+            checkout: $this->model
         );
-
-        $this->total = $this->itinerary->price->discountedPackagePrice;
 
         $this->dispatch('price-updated', $this->itinerary->price);
     }
@@ -122,8 +110,10 @@ class TripSummary extends BaseCheckoutComponent
     {
         $this->itinerary->insurances = new Collection([InsuranceItem::from($item)]);
 
-        $this->total->amount = $this->itinerary->price->discountedPackagePrice->amount + intval($price['amount']);
-        $this->downPayment->amount = $this->itinerary->price->downPayment->amount + intval($price['amount']);
+        $this->itinerary->price->showTotalPrice->amount = $this->itinerary->price->discountedPackagePrice->amount + intval($price['amount']);
+        $this->itinerary->price->showPaymentPrice->amount = $this->itinerary->price->downPayment->amount + intval($price['amount']);
+
+        $this->dispatch('price-updated', $this->itinerary->price);
     }
 
     /**
@@ -134,7 +124,9 @@ class TripSummary extends BaseCheckoutComponent
     {
         $this->itinerary->insurances = new Collection;
 
-        $this->total = $this->itinerary->price->discountedPackagePrice;
-        $this->downPayment = $this->itinerary->price->downPayment;
+        $this->itinerary->price->showTotalPrice->amount = $this->itinerary->price->discountedPackagePrice;
+        $this->itinerary->price->showPaymentPrice->amount = $this->itinerary->price->downPayment;
+
+        $this->dispatch('price-updated', $this->itinerary->price);
     }
 }

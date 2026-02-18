@@ -17,6 +17,10 @@
             "amount": 51,
             "currency": "EUR"
         },
+        "openAmount": {
+            "amount": 51,
+            "currency": "EUR"
+        },
         "externallyPaidCharges": {
             "totalPrice": {
                 "amount": 140.14,

@@ -7,13 +7,14 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Enums\Section;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ApplyPromoCodeResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Throwable;
 use URL;
 
@@ -29,8 +30,14 @@ class TripDetailsPage extends BaseCheckoutComponent
      */
     public ?string $paymentPageUrl = null;
 
+    /**
+     * Indicates whether the user is checking the availability of the payment gateway.
+     */
     public ?bool $checkingAvailability = null;
 
+    /**
+     * The gateway selected by the user.
+     */
     public ?string $gateway = null;
 
     /**
@@ -40,12 +47,14 @@ class TripDetailsPage extends BaseCheckoutComponent
 
     public function mount(
         CallTripDetailsAction $callTripDetails,
+        FindCheckoutModelAction $findCheckoutModelAction,
         SummarizeItineraryAction $summerizeItinerary,
         InitializeCheckoutDataAction $initializeCheckoutData
     ): void {
         $this->result = $callTripDetails->run(params: $this->getParams());
 
         $this->model = $initializeCheckoutData->run(
+            model: $findCheckoutModelAction->run(params: $this->getParams()),
             params: $this->getParams(),
             allocatedPax: $this->result->itinerary->allocatedPax
         );
@@ -55,6 +64,7 @@ class TripDetailsPage extends BaseCheckoutComponent
             checkoutResponse: $this->result->checkout,
             addedRentalCarResponse: $this->result->addedRentalCars,
             addedUpsellItemsResponse: collect($this->result->addedUpsellItems),
+            checkout: $this->model
         );
     }
 
@@ -75,23 +85,19 @@ class TripDetailsPage extends BaseCheckoutComponent
             'prices' => $this->result->checkout->prices,
             'upsellItemsResponse' => $this->result->upsellItems,
             'addedUpsellItems' => $this->result->addedUpsellItems,
+            'regulatoryInformation' => $this->result->regulatoryInformation,
         ]);
-    }
-
-    /**
-     * Handle the promo code applied event.
-     *
-     * @param  array<string, array<string, float>>  $price
-     */
-    #[On('price-changed')]
-    public function priceChanged(array $price): void
-    {
-        $this->itinerary->price = ApplyPromoCodeResponse::from($price);
     }
 
     public function createPaymentPageUrl(string $gateway): void
     {
         $this->gateway = $gateway;
+
+        if ($this->model->rest_payment) {
+            $this->generatePaymentPageUrl(result: true);
+
+            return;
+        }
 
         foreach ($this->model->data['status'] as $name => $section) {
             if (Section::from($name)->isPaymentOptions()) {
@@ -110,7 +116,6 @@ class TripDetailsPage extends BaseCheckoutComponent
         }
 
         $this->checkingAvailability = true;
-
         $this->dispatch('payment-selected', run: true);
     }
 
@@ -129,5 +134,16 @@ class TripDetailsPage extends BaseCheckoutComponent
         }
 
         $this->checkingAvailability = false;
+    }
+
+    /**
+     * Handle the promo code applied event.
+     *
+     * @param  array<string, array<string, float>>  $price
+     */
+    #[On('price-updated')]
+    public function priceChanged(array $price): void
+    {
+        $this->itinerary->price = PriceResponse::from($price);
     }
 }

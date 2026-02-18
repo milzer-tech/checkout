@@ -15,7 +15,7 @@ final class OppwaPrepareResponse extends BaseDto
      */
     public function __construct(
         public string $id,
-        //        public string $integrity,
+        public string $integrity,
         public string $ndc,
         public string $buildNumber,
         public CarbonImmutable $timestamp,

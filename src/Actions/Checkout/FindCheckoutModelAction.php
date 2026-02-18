@@ -14,13 +14,14 @@ class FindCheckoutModelAction
     /**
      * Find existing checkout model or throw exception if already paid
      *
-     * @throws AlreadyPaidException
+     * @throws AlreadyPaidException|\Throwable
      */
     public function run(CheckoutParamsDto $params): ?Checkout
     {
         $model = Checkout::query()
             ->where('checkout_id', $params->checkoutId)
             ->where('itinerary_id', $params->itineraryId)
+            ->where('rest_payment', $params->restPayment)
             ->first();
 
         if ($model) {

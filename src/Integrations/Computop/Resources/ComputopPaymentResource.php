@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Computop\Resources;
 
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopCapturePaymentPayload;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopPaymentPayload;
-use Nezasa\Checkout\Integrations\Computop\Requests\ComputopPaymentRequest;
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\ComputopReversePaymentPayload;
+use Nezasa\Checkout\Integrations\Computop\Requests\ComputopCapturePaymentRequest;
+use Nezasa\Checkout\Integrations\Computop\Requests\ComputopCreatePaymentRequest;
+use Nezasa\Checkout\Integrations\Computop\Requests\ComputopReversePaymentRequest;
 use Nezasa\Checkout\Integrations\Computop\Requests\GetComputopPaymentRequest;
 use Saloon\Http\BaseResource;
 use Saloon\Http\Response;
@@ -20,7 +24,7 @@ class ComputopPaymentResource extends BaseResource
     public function init(ComputopPaymentPayload $payload): Response
     {
         return $this->connector->send(
-            new ComputopPaymentRequest($payload)
+            new ComputopCreatePaymentRequest($payload)
         );
     }
 
@@ -33,6 +37,30 @@ class ComputopPaymentResource extends BaseResource
     {
         return $this->connector->send(
             new GetComputopPaymentRequest($paymentId)
+        );
+    }
+
+    /**
+     * Capture a payment.
+     *
+     * @throws \Throwable
+     */
+    public function capture(string $paymentId, ComputopCapturePaymentPayload $payload): Response
+    {
+        return $this->connector->send(
+            new ComputopCapturePaymentRequest($paymentId, $payload)
+        );
+    }
+
+    /**
+     * Reverse a payment.
+     *
+     * @throws \Throwable
+     */
+    public function reverse(string $paymentId, ComputopReversePaymentPayload $payload): Response
+    {
+        return $this->connector->send(
+            new ComputopReversePaymentRequest($paymentId, $payload)
         );
     }
 }

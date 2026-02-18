@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Computop\Dtos\Payloads;
 
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\CaptureInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\ComputopAmountDto;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\OrderPayloadEntity;
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\PaymentPayloadEntity;
@@ -22,6 +23,7 @@ class ComputopPaymentPayload extends BaseDto
         public ComputopAmountDto $amount,
         public OrderPayloadEntity $order,
         public UrlPayloadEntity $urls,
+        public CaptureInfoPayloadEntity $capture = new CaptureInfoPayloadEntity,
         public PaymentPayloadEntity $payment = new PaymentPayloadEntity,
         public string $language = 'en',
     ) {}

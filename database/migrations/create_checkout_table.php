@@ -21,7 +21,7 @@ return new class extends Migration
             $table->json('data')->nullable();
             $table->timestamps();
 
-            $table->unique(['checkout_id', 'itinerary_id']);
+            $table->unique(['checkout_id', 'itinerary_id', 'rest_payment']);
         });
 
         Schema::create('checkout_transactions', function (Blueprint $table) {
