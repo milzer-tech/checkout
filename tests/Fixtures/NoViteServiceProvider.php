@@ -70,7 +70,7 @@ class NoViteServiceProvider extends ServiceProvider
                 return $this;
             }
 
-            public function cspNonce(?string $nonce): self
+            public function cspNonce(?string $nonce = null): self
             {
                 return $this;
             }
