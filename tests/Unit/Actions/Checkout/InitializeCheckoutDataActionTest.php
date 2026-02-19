@@ -4,7 +4,6 @@ use Illuminate\Support\Collection;
 use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Enums\Section;
-use Nezasa\Checkout\Exceptions\AlreadyPaidException;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
 use Nezasa\Checkout\Models\Checkout;
@@ -23,7 +22,7 @@ it('creates a new Checkout with initial data and computed pax count when none ex
 
     $action = resolve(InitializeCheckoutDataAction::class);
 
-    $model = $action->run($params, $allocatedPax);
+    $model = $action->run(null, $params, $allocatedPax);
 
     $persisted = Checkout::whereCheckoutId($params->checkoutId)->whereItineraryId($params->itineraryId)->first();
     expect($persisted)->not->toBeNull();
@@ -56,7 +55,7 @@ it('creates a new Checkout with initial data and computed pax count when none ex
     expect($status[Section::PaymentOptions->value]['isCompleted'])->toBeFalse();
 });
 
-it('throws AlreadyPaidException when a checkout with a succeeded transaction already exists', function (): void {
+it('returns existing checkout when a succeeded transaction already exists', function (): void {
     $params = new CheckoutParamsDto('co-123', 'it-456', 'app', 'en');
 
     // Seed an existing checkout
@@ -79,7 +78,7 @@ it('throws AlreadyPaidException when a checkout with a succeeded transaction alr
 
     $action = resolve(InitializeCheckoutDataAction::class);
 
-    $this->expectException(AlreadyPaidException::class);
+    $result = $action->run($checkout, $params, $allocatedPax);
 
-    $action->run($params, $allocatedPax);
+    expect($result->is($checkout))->toBeTrue();
 });

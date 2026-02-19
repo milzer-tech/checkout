@@ -7,19 +7,29 @@ use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutReques
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\AddedRentalCarsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\GetItineraryRequest;
+use Nezasa\Checkout\Models\Checkout;
 use Saloon\Http\Faking\MockClient;
-use Saloon\Http\Faking\MockResponse;
 use Saloon\Http\Response;
 
 it('summarizes an itinerary', function (): void {
     fakeCarbon();
     $responses = prepare();
 
+    $checkout = Checkout::create([
+        'checkout_id' => 'test-checkout-id',
+        'itinerary_id' => 'test-itinerary-id',
+        'origin' => 'app',
+        'lang' => 'en',
+        'data' => [],
+        'rest_payment' => false,
+    ]);
+
     $result = (new SummarizeItineraryAction)->run(
         $responses['itinerary'],
         $responses['checkout'],
         $responses['addedRentalCars'],
-        collect($responses['addedUpsellItems'])
+        collect($responses['addedUpsellItems']),
+        $checkout
     );
 
     expect($result)
@@ -31,10 +41,10 @@ it('summarizes an itinerary', function (): void {
 function prepare(): array
 {
     MockClient::global([
-        GetItineraryRequest::class => MockResponse::fixture('get_itinerary_response'),
-        RetrieveCheckoutRequest::class => MockResponse::fixture('retrieve_checkout_response'),
-        AddedRentalCarsRequest::class => MockResponse::fixture('added_rental_cars_response'),
-        RetrieveCheckoutUpsellItemsRequest::class => MockResponse::fixture('retrieve_checkout_upsell_items_response'),
+        GetItineraryRequest::class => mockFixture('get_itinerary_response'),
+        RetrieveCheckoutRequest::class => mockFixture('retrieve_checkout_response'),
+        AddedRentalCarsRequest::class => mockFixture('added_rental_cars_response'),
+        RetrieveCheckoutUpsellItemsRequest::class => mockFixture('retrieve_checkout_upsell_items_response'),
     ]);
 
     $responses = [];

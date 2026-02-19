@@ -1,6 +1,7 @@
 <?php
 
 use Mockery as m;
+use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
@@ -33,12 +34,18 @@ it('mount() initializes result, model and itinerary via injected actions', funct
         checkoutResponse: $responses->checkout,
         addedRentalCarResponse: $responses->addedRentalCars,
         addedUpsellItemsResponse: collect($responses->addedUpsellItems),
+        checkout: $model,
     );
 
     $callMock = m::mock(CallTripDetailsAction::class);
     $callMock->shouldReceive('run')
         ->once($params)
         ->andReturn($responses);
+
+    $findMock = m::mock(FindCheckoutModelAction::class);
+    $findMock->shouldReceive('run')
+        ->once()
+        ->andReturn($model);
 
     $initMock = m::mock(InitializeCheckoutDataAction::class);
     $initMock->shouldReceive('run')
@@ -51,7 +58,8 @@ it('mount() initializes result, model and itinerary via injected actions', funct
         ->withArgs(fn (...$args): bool => $args[0] === $responses->itinerary
             && $args[1] === $responses->checkout
             && $args[2] === $responses->addedRentalCars
-            && (is_iterable($args[3])))
+            && (is_iterable($args[3]))
+            && $args[4] === $model)
         ->andReturn($summary);
 
     $component = new TripDetailsPage;
@@ -60,7 +68,7 @@ it('mount() initializes result, model and itinerary via injected actions', funct
     $component->origin = $params->origin;
     $component->lang = $params->lang;
 
-    $component->mount($callMock, $sumMock, $initMock);
+    $component->mount($callMock, $findMock, $sumMock, $initMock);
 
     expect($component->result)->toBe($responses)
         ->and($component->model->is($model))->toBeTrue()
@@ -76,10 +84,14 @@ it('render() returns the trip details blade view', function (): void {
         'itinerary_id' => 'it-td-2',
         'origin' => 'app',
         'lang' => 'en',
-        'data' => []]);
+        'data' => [],
+    ]);
 
     $callMock = m::mock(CallTripDetailsAction::class);
     $callMock->shouldReceive('run')->andReturn($responses);
+
+    $findMock = m::mock(FindCheckoutModelAction::class);
+    $findMock->shouldReceive('run')->andReturn($model);
 
     $initMock = m::mock(InitializeCheckoutDataAction::class);
     $initMock->shouldReceive('run')->andReturn($model);
@@ -89,6 +101,7 @@ it('render() returns the trip details blade view', function (): void {
         checkoutResponse: $responses->checkout,
         addedRentalCarResponse: $responses->addedRentalCars,
         addedUpsellItemsResponse: collect($responses->addedUpsellItems),
+        checkout: $model,
     );
 
     $sumMock = m::mock(SummarizeItineraryAction::class);
@@ -100,7 +113,7 @@ it('render() returns the trip details blade view', function (): void {
     $component->origin = 'ibe';
     $component->lang = 'de';
 
-    $component->mount($callMock, $sumMock, $initMock);
+    $component->mount($callMock, $findMock, $sumMock, $initMock);
 
     $view = $component->render();
 
@@ -122,6 +135,9 @@ it('priceChanged() updates itinerary price and promo response', function (): voi
     $callMock = m::mock(CallTripDetailsAction::class);
     $callMock->shouldReceive('run')->andReturn($responses);
 
+    $findMock = m::mock(FindCheckoutModelAction::class);
+    $findMock->shouldReceive('run')->andReturn($model);
+
     $initMock = m::mock(InitializeCheckoutDataAction::class);
     $initMock->shouldReceive('run')->andReturn($model);
 
@@ -130,6 +146,7 @@ it('priceChanged() updates itinerary price and promo response', function (): voi
         checkoutResponse: $responses->checkout,
         addedRentalCarResponse: $responses->addedRentalCars,
         addedUpsellItemsResponse: collect($responses->addedUpsellItems),
+        checkout: $model,
     );
 
     $sumMock = m::mock(SummarizeItineraryAction::class);
@@ -141,7 +158,7 @@ it('priceChanged() updates itinerary price and promo response', function (): voi
     $component->origin = 'app';
     $component->lang = 'en';
 
-    $component->mount($callMock, $sumMock, $initMock);
+    $component->mount($callMock, $findMock, $sumMock, $initMock);
 
     $component->priceChanged([
         'discountedPackagePrice' => ['amount' => 999.99, 'currency' => 'CHF'],
@@ -195,6 +212,8 @@ it('createPaymentPageUrl() sets gateway, marks checkingAvailability and emits ev
 
     $callMock = m::mock(CallTripDetailsAction::class);
     $callMock->shouldReceive('run')->andReturn($responses);
+    $findMock = m::mock(FindCheckoutModelAction::class);
+    $findMock->shouldReceive('run')->andReturn($model);
     $initMock = m::mock(InitializeCheckoutDataAction::class);
     $initMock->shouldReceive('run')->andReturn($model);
     $sumMock = m::mock(SummarizeItineraryAction::class);
@@ -202,10 +221,11 @@ it('createPaymentPageUrl() sets gateway, marks checkingAvailability and emits ev
         $responses->itinerary,
         $responses->checkout,
         $responses->addedRentalCars,
-        collect($responses->addedUpsellItems)
+        collect($responses->addedUpsellItems),
+        $model
     ));
 
-    $component->mount($callMock, $sumMock, $initMock);
+    $component->mount($callMock, $findMock, $sumMock, $initMock);
 
     $component->createPaymentPageUrl('encrypted-gateway');
 
@@ -237,6 +257,8 @@ it('generatePaymentPageUrl() builds signed URL on success and resets checkingAva
 
     $callMock = m::mock(CallTripDetailsAction::class);
     $callMock->shouldReceive('run')->andReturn($responses);
+    $findMock = m::mock(FindCheckoutModelAction::class);
+    $findMock->shouldReceive('run')->andReturn($model);
     $initMock = m::mock(InitializeCheckoutDataAction::class);
     $initMock->shouldReceive('run')->andReturn($model);
     $sumMock = m::mock(SummarizeItineraryAction::class);
@@ -244,10 +266,11 @@ it('generatePaymentPageUrl() builds signed URL on success and resets checkingAva
         $responses->itinerary,
         $responses->checkout,
         $responses->addedRentalCars,
-        collect($responses->addedUpsellItems)
+        collect($responses->addedUpsellItems),
+        $model
     ));
 
-    $component->mount($callMock, $sumMock, $initMock);
+    $component->mount($callMock, $findMock, $sumMock, $initMock);
 
     $component->gateway = 'enc-gw';
     $component->checkingAvailability = true;
@@ -287,6 +310,8 @@ it('generatePaymentPageUrl(false) leaves URL null and sets checkingAvailability=
 
     $callMock = m::mock(CallTripDetailsAction::class);
     $callMock->shouldReceive('run')->andReturn($responses);
+    $findMock = m::mock(FindCheckoutModelAction::class);
+    $findMock->shouldReceive('run')->andReturn($model);
     $initMock = m::mock(InitializeCheckoutDataAction::class);
     $initMock->shouldReceive('run')->andReturn($model);
     $sumMock = m::mock(SummarizeItineraryAction::class);
@@ -294,10 +319,11 @@ it('generatePaymentPageUrl(false) leaves URL null and sets checkingAvailability=
         $responses->itinerary,
         $responses->checkout,
         $responses->addedRentalCars,
-        collect($responses->addedUpsellItems)
+        collect($responses->addedUpsellItems),
+        $model
     ));
 
-    $component->mount($callMock, $sumMock, $initMock);
+    $component->mount($callMock, $findMock, $sumMock, $initMock);
 
     $component->gateway = 'x';
     $component->checkingAvailability = true;

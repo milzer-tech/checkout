@@ -69,7 +69,15 @@
                 }
             ]
         },
-        "promoCode": null
+        "promoCode": null,
+        "showTotalPrice": {
+            "amount": 51,
+            "currency": "EUR"
+        },
+        "showPaymentPrice": {
+            "amount": 51,
+            "currency": "EUR"
+        }
     },
     "title": "Individual trip from Rome to Rome",
     "startDate": "2025-12-18T11:20:19+00:00",

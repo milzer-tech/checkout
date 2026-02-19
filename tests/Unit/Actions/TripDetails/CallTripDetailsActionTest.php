@@ -4,6 +4,7 @@ use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetRequlatoryInformationRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\TravelerRequirementsRequest;
@@ -16,15 +17,16 @@ use Saloon\Http\Faking\MockResponse;
 
 it('can retrieve a trip details', function (): void {
     MockClient::global([
-        GetItineraryRequest::class => MockResponse::fixture('get_itinerary_response'),
-        RetrieveCheckoutRequest::class => MockResponse::fixture('retrieve_checkout_response'),
-        AddedRentalCarsRequest::class => MockResponse::fixture('added_rental_cars_response'),
-        TravelerRequirementsRequest::class => MockResponse::fixture('traveller_requirements_response'),
-        GetAvailableUpsellItemsRequest::class => MockResponse::fixture('get_available_upsell_items_response'),
-        RetrieveCheckoutUpsellItemsRequest::class => MockResponse::fixture('retrieve_checkout_upsell_items_response'),
-        CountryCodesRequest::class => MockResponse::fixture('country_codes_response'),
-        CountriesRequest::class => MockResponse::fixture('countries_response'),
-    ]);
+        GetItineraryRequest::class => mockFixture('get_itinerary_response'),
+        RetrieveCheckoutRequest::class => mockFixture('retrieve_checkout_response'),
+        AddedRentalCarsRequest::class => mockFixture('added_rental_cars_response'),
+        TravelerRequirementsRequest::class => mockFixture('traveller_requirements_response'),
+        GetAvailableUpsellItemsRequest::class => mockFixture('get_available_upsell_items_response'),
+        RetrieveCheckoutUpsellItemsRequest::class => mockFixture('retrieve_checkout_upsell_items_response'),
+        CountryCodesRequest::class => mockFixture('country_codes_response'),
+        CountriesRequest::class => mockFixture('countries_response'),
+        GetRequlatoryInformationRequest::class => mockFixture('regulatory_information_response'),
+    ], MockResponse::make([], 200));
 
     $result = (new CallTripDetailsAction)->run(new CheckoutParamsDto(
         checkoutId: 'co-td-1',
