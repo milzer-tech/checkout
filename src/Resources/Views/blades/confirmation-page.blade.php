@@ -16,6 +16,19 @@
                     </svg>
                     {{trans('checkout::page.booking_confirmation.confirmed')}}
                 </div>
+            @elseif($output->bookingStatusEnum->isPartialFailure())
+
+                <span
+                    class="inline-flex items-center gap-1 rounded-full bg-[#E8F1FF] text-gray-900 px-4 py-1.5 text-sm font-medium whitespace-nowrap">
+
+                     <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" viewBox="0 0 24 24" fill="none"
+                          xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 4v8" stroke="currentColor" stroke-width="3"
+                                                  stroke-linecap="round"></path>
+                                            <circle cx="12" cy="17" r="2" fill="currentColor"></circle>
+                                        </svg>
+                    {{trans('checkout::page.booking_confirmation.pending')}}
+                </span>
             @else
                 <span
                     class="inline-flex items-center px-3 py-1 bg-[#FEE2E2] dark:bg-red-900/30 text-black text-sm rounded-full">
