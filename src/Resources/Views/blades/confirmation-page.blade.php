@@ -1,4 +1,4 @@
-@php use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay; @endphp
+@php use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum; @endphp
 <div class="flex flex-col min-h-screen">
     <div class="flex-grow space-y-6">
         <!-- Page header - removed the image from here -->
@@ -266,182 +266,181 @@
                 </div>
 
 
-                {{--                ////--}}
 
-                @if($output->bookingStatusEnum->isPartialFailure())
-                {{-- Services without confirmation (Figma) --}}
-                <div class="mt-6 p-6 border border-[#2681FF] rounded-xl bg-white shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        {{trans('checkout::page.booking_confirmation.services_without_confirmation')}}
-                    </h3>
+                                @if($output->bookingStatusEnum->isPartialFailure())
+                    {{-- Services without confirmation (Figma) --}}
+                    <div class="mt-6 p-6 border border-[#2681FF] rounded-xl bg-white shadow-sm">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            {{trans('checkout::page.booking_confirmation.services_without_confirmation')}}
+                        </h3>
 
-                    <div class="mt-4 h-px bg-gray-200"></div>
+                        <div class="mt-4 h-px bg-gray-200"></div>
 
-                    <p class="mt-4 text-l text-gray-900 leading-6">
-                        {{trans('checkout::page.booking_confirmation.services_require_manual_confirmation')}}
-                    </p>
+                        <p class="mt-4 text-l text-gray-900 leading-6">
+                            {{trans('checkout::page.booking_confirmation.services_require_manual_confirmation')}}
+                        </p>
 
-                    {{-- Rental cars block (repeat this whole block per rental car) --}}
-                    <div class="mt-6 space-y-6">
+                        {{-- Rental cars block (repeat this whole block per rental car) --}}
+                        <div class="mt-6 space-y-6">
 
-                        @if($itinerary->getUnconfirmedStays()->isNotEmpty())
-                            {{-- Stay section --}}
-                            <div class="mb-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.stay')}}</h3>
-                                </div>
-
-                                @foreach($itinerary->getUnconfirmedStays() as $stay)
-                                    <div class="flex items-start mb-1">
-                                        <div class="flex items-center">
-                                            @include('checkout::components.availability-status', ['availability' => $stay->availability])
-                                            <span
-                                                class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->name }}</span>
-                                        </div>
-                                        <div class="ml-auto text-right">
-                                            <div
-                                                class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->checkIn->format('D, j M') }}
-                                                - {{$stay->checkOut->format('D, j M')}}</div>
-                                        </div>
+                            @if($itinerary->getUnconfirmedStays()->isNotEmpty())
+                                {{-- Stay section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.stay')}}</h3>
                                     </div>
-                                @endforeach
+
+                                    @foreach($itinerary->getUnconfirmedStays() as $stay)
+                                        <div class="flex items-start mb-1">
+                                            <div class="flex items-center">
+                                                @include('checkout::components.availability-status', ['availability' => $stay->availability])
+                                                <span
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->name }}</span>
+                                            </div>
+                                            <div class="ml-auto text-right">
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->checkIn->format('D, j M') }}
+                                                    - {{$stay->checkOut->format('D, j M')}}</div>
+                                            </div>
+                                        </div>
+                                    @endforeach
 
 
-                            </div>
-                        @endif
-
-                        @if($itinerary->getUnconfirmedActivities()->isNotEmpty())
-                            {{-- Stay section --}}
-                            <div class="mb-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.activities')}}</h3>
                                 </div>
+                            @endif
 
-                                @foreach($itinerary->getUnconfirmedActivities() as $activity)
-                                    <div class="flex items-start">
-                                        <div class="flex items-center">
-                                            @include('checkout::components.availability-status', ['availability' => $activity->availability])
-                                            <span
-                                                class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->name }}</span>
-                                        </div>
-                                        <div class="ml-auto text-right">
-                                            <div
-                                                class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
-                                        </div>
+                            @if($itinerary->getUnconfirmedActivities()->isNotEmpty())
+                                {{-- Stay section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.activities')}}</h3>
                                     </div>
-                                @endforeach
 
-
-                            </div>
-                        @endif
-
-                        @if($itinerary->getUnconfirmedFlights()->isNotEmpty())
-                            {{-- Flights section --}}
-                            <div class="mb-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.flights')}}</h3>
-                                </div>
-                                <div class="space-y-2">
-                                    @foreach($itinerary->getUnconfirmedFlights() as $flight)
-                                        <div class="flex items-center justify-between">
+                                    @foreach($itinerary->getUnconfirmedActivities() as $activity)
+                                        <div class="flex items-start">
                                             <div class="flex items-center">
-                                                @include('checkout::components.availability-status', ['availability' => $flight->availability])
+                                                @include('checkout::components.availability-status', ['availability' => $activity->availability])
                                                 <span
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->name }}</span>
                                             </div>
-                                            <div
-                                                class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
+                                            <div class="ml-auto text-right">
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
+                                            </div>
                                         </div>
                                     @endforeach
-                                </div>
-                            </div>
-                        @endif
 
-                        @if($itinerary->getUnconfirmedTransfers()->isNotEmpty())
-                            {{-- Transfers section --}}
-                            <div class="mb-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.transfers')}}</h3>
+
                                 </div>
-                                <div class="space-y-2">
-                                    @foreach($itinerary->getUnconfirmedTransfers() as $transfer)
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center">
-                                                @include('checkout::components.availability-status', ['availability' => $transfer->availability])
-                                                <span
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
+                            @endif
+
+                            @if($itinerary->getUnconfirmedFlights()->isNotEmpty())
+                                {{-- Flights section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.flights')}}</h3>
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->getUnconfirmedFlights() as $flight)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => $flight->availability])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
                                             </div>
-                                            <div
-                                                class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
-                                        </div>
-                                    @endforeach
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
 
-
-                        @if($itinerary->getUnconfirmedRentalCars()->isNotEmpty())
-                            {{-- renal car section --}}
-                            <div class="mb-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.rental_cars')}}</h3>
-                                </div>
-                                <div class="space-y-2">
-                                    @foreach($itinerary->getUnconfirmedRentalCars() as $rentalCar)
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center">
-                                                @include('checkout::components.availability-status', ['availability' => $rentalCar->availability])
-                                                <span
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
+                            @if($itinerary->getUnconfirmedTransfers()->isNotEmpty())
+                                {{-- Transfers section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.transfers')}}</h3>
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->getUnconfirmedTransfers() as $transfer)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => $transfer->availability])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
                                             </div>
-                                            <div
-                                                class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}}
-                                                - {{$rentalCar->endDateTime->format('D, j M')}}</div>
-                                        </div>
-                                    @endforeach
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
 
-                        @if($itinerary->getUnconfirmedUpsellItems()->isNotEmpty())
-                            {{-- renal car section --}}
-                            <div class="mb-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.upsell_items')}}</h3>
-                                </div>
-                                <div class="space-y-2">
-                                    @foreach($itinerary->getUnconfirmedUpsellItems() as $item)
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center">
-                                                @include('checkout::components.availability-status', ['availability' => $item->availability])
-                                                <span
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
+
+                            @if($itinerary->getUnconfirmedRentalCars()->isNotEmpty())
+                                {{-- renal car section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.rental_cars')}}</h3>
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->getUnconfirmedRentalCars() as $rentalCar)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => $rentalCar->availability])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}}
+                                                    - {{$rentalCar->endDateTime->format('D, j M')}}</div>
                                             </div>
-                                            <div
-                                                class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200"></div>
-                                        </div>
-                                    @endforeach
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
 
+                            @if($itinerary->getUnconfirmedUpsellItems()->isNotEmpty())
+                                {{-- renal car section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.upsell_items')}}</h3>
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->getUnconfirmedUpsellItems() as $item)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => $item->availability])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200"></div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                        </div>
+
+
+                        <div class="mt-6 h-px bg-gray-200"></div>
+
+                        <button
+                            type="button"
+                            wire:click="contactSupport"
+                            class="mt-5 inline-flex items-center gap-2 text-[#2681FF] font-medium text-sm hover:underline"
+                        >
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M21 12a8 8 0 01-8 8H9l-4 3v-3.5A6.5 6.5 0 013.5 12a8.5 8.5 0 018.5-8.5h1A8 8 0 0121 12Z"/>
+                            </svg>
+                            Contact support
+                        </button>
                     </div>
-
-
-                    <div class="mt-6 h-px bg-gray-200"></div>
-
-                    <button
-                        type="button"
-                        wire:click="contactSupport"
-                        class="mt-5 inline-flex items-center gap-2 text-[#2681FF] font-medium text-sm hover:underline"
-                    >
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M21 12a8 8 0 01-8 8H9l-4 3v-3.5A6.5 6.5 0 013.5 12a8.5 8.5 0 018.5-8.5h1A8 8 0 0121 12Z"/>
-                        </svg>
-                        Contact support
-                    </button>
-                </div>
                 @endif
 
                 {{--                ////--}}
@@ -460,57 +459,159 @@
                         <div class="mt-6 space-y-6">
 
                             {{-- Rental car block --}}
-                            <div class="space-y-3">
 
-                                {{-- Header line --}}
-                                <div class="flex items-center justify-between gap-4">
-                <span class="font-semibold text-gray-900">
-                    {{ trans('checkout::page.trip_details.rental_cars') }}
-                </span>
+                            @if($itinerary->stays->isNotEmpty())
+                                {{-- Stay section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.stay')}}</h3>
+                                        @include('checkout::components.available',['availability' => AvailabilityEnum::None])
+                                    </div>
 
-                                    <span
-                                        class="inline-flex items-center gap-1 rounded-full bg-red-100 text-gray-900 px-4 py-1.5 text-sm font-medium whitespace-nowrap">
-                    <svg class="w-4 h-4 text-red-500"
-                         viewBox="0 0 24 24"
-                         fill="none"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M6 18L18 6M6 6l12 12"
-                              stroke="currentColor"/>
-                    </svg>
-                    {{ trans('checkout::page.trip_details.unavailable') }}
-                </span>
-                                </div>
-
-                                {{-- Service rows --}}
-                                <div class="space-y-2">
-                                    <div class="flex items-center justify-between gap-4">
-                                        <div class="flex items-center min-w-0 gap-2">
-                                            <svg class="w-4 h-4 text-red-500"
-                                                 viewBox="0 0 24 24"
-                                                 fill="none"
-                                                 xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round"
-                                                      stroke-linejoin="round"
-                                                      stroke-width="2"
-                                                      d="M6 18L18 6M6 6l12 12"
-                                                      stroke="currentColor"/>
-                                            </svg>
-
-                                            <span class="text-sm text-gray-700 truncate">
-                            Ford Focus or similar
-                        </span>
+                                    @foreach($itinerary->stays as $stay)
+                                        <div class="flex items-start">
+                                            <div class="flex items-center mb-1">
+                                                @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                <span
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->name }}</span>
+                                            </div>
+                                            <div class="ml-auto text-right">
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->checkIn->format('D, j M') }}
+                                                    - {{$stay->checkOut->format('D, j M')}}</div>
+                                            </div>
                                         </div>
+                                    @endforeach
 
-                                        <span class="text-sm text-gray-700 whitespace-nowrap">
-                        Tue, 1 Apr - Sat, 5 Apr
-                    </span>
+
+                                </div>
+                            @endif
+
+                            @if($itinerary->activities->isNotEmpty())
+                                {{-- Stay section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.activities')}}</h3>
+                                        @include('checkout::components.available',['availability' => AvailabilityEnum::None])
+                                    </div>
+
+                                    @foreach($itinerary->activities as $activity)
+                                        <div class="flex items-start">
+                                            <div class="flex items-center">
+                                                @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                <span
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->name }}</span>
+                                            </div>
+                                            <div class="ml-auto text-right">
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+
+                                </div>
+                            @endif
+
+                            @if($itinerary->hasFlights())
+                                {{-- Flights section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.flights')}}</h3>
+                                        @include('checkout::components.available',['availability' => AvailabilityEnum::None])
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->flights as $flight)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
+                            @endif
 
-                            </div>
+                            @if($itinerary->hasTransfers())
+                                {{-- Transfers section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.transfers')}}</h3>
+                                        @include('checkout::components.available',['availability' => AvailabilityEnum::None])
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->transfers as $transfer)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+
+                            @if($itinerary->hasRentalCar())
+                                {{-- renal car section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.rental_cars')}}</h3>
+                                        @include('checkout::components.available',['availability' => AvailabilityEnum::None])
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->rentalCars as $rentalCar)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}}
+                                                    - {{$rentalCar->endDateTime->format('D, j M')}}</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if($itinerary->hasUpsellItem())
+                                {{-- renal car section --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.upsell_items')}}</h3>
+                                        @include('checkout::components.available',['availability' => AvailabilityEnum::None])
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($itinerary->upsellItems as $item)
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                    <span
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
+                                                </div>
+                                                <div
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200"></div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{--                                //--}}
+
+                            {{--//--}}
+
+
                         </div>
 
                         <div class="mt-6 h-px bg-gray-200"></div>

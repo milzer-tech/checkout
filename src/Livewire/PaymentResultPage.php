@@ -51,6 +51,8 @@ class PaymentResultPage extends BaseCheckoutComponent
                 $this->travelers[] = $pax['firstName'].' '.$pax['lastName'];
             }
         }
+
+        $this->isExpanded = true;
     }
 
     public function render(): View
