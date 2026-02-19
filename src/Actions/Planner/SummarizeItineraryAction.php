@@ -143,6 +143,10 @@ class SummarizeItineraryAction
     private function pushTransport(Collection $connections): void
     {
         foreach ($connections as $connection) {
+            if ($connection->isPlaceholder) {
+                continue;
+            }
+
             match ($connection->connectionType) {
                 'Transfer' => $this->pushTransfer($connection),
                 'Flight' => $this->pushFlight($connection),
