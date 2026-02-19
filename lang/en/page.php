@@ -92,6 +92,7 @@ return [
         'booking_confirmation' => 'Booking confirmation',
         'confirmed' => 'Confirmed',
         'failed' => 'Failed',
+        'not_booked' => 'Not booked',
         'pending' => 'Pending',
         'your_trip_has_been_booked' => 'Your trip has been booked',
         'your_trip_could_not_be_booked' => 'Your trip could not be booked',

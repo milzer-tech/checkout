@@ -38,7 +38,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M6 18L18 6M6 6l12 12" stroke="currentColor"/>
     </svg>
-    {{trans('checkout::page.booking_confirmation.failed')}}
+    {{trans('checkout::page.booking_confirmation.not_booked')}}
 </span>
             @endif
 
@@ -234,7 +234,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M6 18L18 6M6 6l12 12" stroke="currentColor"/>
     </svg>
-    {{trans('checkout::page.booking_confirmation.failed')}}
+    {{trans('checkout::page.booking_confirmation.not_booked')}}
 </span>
                         @endif
 
@@ -268,7 +268,7 @@
 
                 {{--                ////--}}
 
-
+                @if($output->bookingStatusEnum->isPartialFailure())
                 {{-- Services without confirmation (Figma) --}}
                 <div class="mt-6 p-6 border border-[#2681FF] rounded-xl bg-white shadow-sm">
                     <h3 class="text-lg font-semibold text-gray-900">
@@ -442,7 +442,7 @@
                         Contact support
                     </button>
                 </div>
-
+                @endif
 
                 {{--                ////--}}
 
