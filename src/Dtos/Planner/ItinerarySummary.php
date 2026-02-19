@@ -198,7 +198,7 @@ class ItinerarySummary extends BaseDto
      */
     public function getUnconfirmedStays(): Collection
     {
-        return $this->stays->reject(fn (ItineraryStay $stay) => $stay->availability?->isBooked());
+        return $this->stays->reject(fn (ItineraryStay $stay): bool => $stay->availability?->isBooked());
     }
 
     /**
@@ -208,7 +208,7 @@ class ItinerarySummary extends BaseDto
      */
     public function getUnconfirmedActivities(): Collection
     {
-        return $this->activities->reject(fn (ItineraryActivity $activity) => $activity->availability?->isBooked());
+        return $this->activities->reject(fn (ItineraryActivity $activity): bool => $activity->availability?->isBooked());
     }
 
     /**
@@ -254,6 +254,6 @@ class ItinerarySummary extends BaseDto
      */
     public function getUnconfirmedUpsellItems(): Collection
     {
-        return $this->upsellItems->reject(fn (UpsellItem $upsellItem) => $upsellItem->availability?->isBooked());
+        return $this->upsellItems->reject(fn (UpsellItem $upsellItem): bool => $upsellItem->availability?->isBooked());
     }
 }
