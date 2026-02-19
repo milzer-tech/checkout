@@ -60,7 +60,7 @@
         <div class="space-y-3">
             <h3 class="text-base font-semibold text-gray-900">{{trans('checkout::page.trip_details.conditions_of_payment')}}</h3>
         </div>
-        <div class="space-y-3">
+        <div class="space-y-3 [&_a]:text-blue-600 [&_a]:underline [&_a]:hover:text-blue-800">
             {!!  str($regulatoryInformation->paymentExplainer)->markdown() !!}
         </div>
 
