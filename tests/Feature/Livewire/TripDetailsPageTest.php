@@ -6,14 +6,14 @@ use Nezasa\Checkout\Livewire\TripDetailsPage;
 it('renders the trip details page', function (): void {
     fakeInitialNezasaCalls();
 
-    Livewire::test(TripDetailsPage::class, [
+    Livewire::withQueryParams([
         'itineraryId' => 'itinerary-123',
         'checkoutId' => 'checkout-456',
         'origin' => 'APP',
         'lang' => 'en',
-    ])
-        ->assertOk()
-        ->assertSee(trans('checkout::page.trip_details.traveller_details'));
+        'rest-payment' => false,
+    ])->test(TripDetailsPage::class)
+        ->assertViewIs('checkout::blades.index');
 });
 
 it('renders not-found page', function (): void {
