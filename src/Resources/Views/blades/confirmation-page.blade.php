@@ -443,10 +443,6 @@
                     </div>
                 @endif
 
-                {{--                ////--}}
-
-
-
                 @if($output->bookingStatusEnum->isCompleteFailed())
                     {{-- Services that could not be booked (Failed version) --}}
                     <div class="mt-6 p-6 border border-red-400 rounded-xl bg-white shadow-sm">
@@ -606,12 +602,6 @@
                                     </div>
                                 </div>
                             @endif
-
-                            {{--                                //--}}
-
-                            {{--//--}}
-
-
                         </div>
 
                         <div class="mt-6 h-px bg-gray-200"></div>
@@ -635,7 +625,6 @@
                     </div>
 
                 @endif
-                {{--                ///////--}}
             </div>
 
 
