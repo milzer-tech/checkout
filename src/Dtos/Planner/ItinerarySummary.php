@@ -190,4 +190,70 @@ class ItinerarySummary extends BaseDto
 
         return null;
     }
+
+    /**
+     * Returns the unconfirmed stays.
+     *
+     * @return Collection<int, ItineraryStay>
+     */
+    public function getUnconfirmedStays(): Collection
+    {
+        return $this->stays->reject(fn (ItineraryStay $stay) => $stay->availability?->isBooked());
+    }
+
+    /**
+     * Returns the unconfirmed activities.
+     *
+     * @return Collection<int, ItineraryActivity>
+     */
+    public function getUnconfirmedActivities(): Collection
+    {
+        return $this->activities->reject(fn (ItineraryActivity $activity) => $activity->availability?->isBooked());
+    }
+
+    /**
+     * Returns the unconfirmed flights.
+     *
+     * @return Collection<int, ItineraryFlight>
+     */
+    public function getUnconfirmedFlights(): Collection
+    {
+        return $this->flights->reject(
+            fn (ItineraryFlight $flight) => $flight->availability?->isBooked() || $flight->isPlaceholder
+        );
+    }
+
+    /**
+     * Returns the unconfirmed transfers.
+     *
+     * @return Collection<int, ItineraryTransfer>
+     */
+    public function getUnconfirmedTransfers(): Collection
+    {
+        return $this->transfers->reject(
+            fn (ItineraryTransfer $transfer) => $transfer->availability?->isBooked() || $transfer->isPlaceholder
+        );
+    }
+
+    /**
+     * Returns the unconfirmed rental cars.
+     *
+     * @return Collection<int, ItineraryRentalCar>
+     */
+    public function getUnconfirmedRentalCars(): Collection
+    {
+        return $this->rentalCars->reject(
+            fn (ItineraryRentalCar $car) => $car->availability?->isBooked() || $car->isPlaceholder
+        );
+    }
+
+    /**
+     * Get the unconfirmed upsell items.
+     *
+     * @return Collection<int, UpsellItem>
+     */
+    public function getUnconfirmedUpsellItems(): Collection
+    {
+        return $this->upsellItems->reject(fn (UpsellItem $upsellItem) => $upsellItem->availability?->isBooked());
+    }
 }

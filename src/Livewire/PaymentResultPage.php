@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 use Nezasa\Checkout\Payments\Handlers\DownPaymentCallBackHandler;
@@ -73,7 +74,7 @@ class PaymentResultPage extends BaseCheckoutComponent
             checkout: $this->model
         );
 
-        $callback = fn ($item) => $item->availability = $this->output->data[$item->id] ?? null;
+        $callback = fn ($item) => $item->availability = $this->output->data[$item->id] ?? AvailabilityEnum::None;
 
         $this->itinerary->stays->map($callback);
         $this->itinerary->flights->map($callback);
