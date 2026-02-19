@@ -26,7 +26,7 @@
                     <div class="text-gray-900">
                         <p class="text-sm leading-6">
                             <span
-                                class="font-semibold">{{trans('checkout::page.trip_details.you_will_pay_down_payment',['percentage' => $price->downPercentOfTotal()])}}</span>
+                                class="font-semibold">{{trans('checkout::page.trip_details.you_will_pay_down_payment',['percentage' => $price->downPercentOfTotal().'%'])}}</span>
                             <span class="text-gray-700">
 {{trans('checkout::page.trip_details.rest_payment_will_be_payable_later')}}
                     </span>
@@ -61,7 +61,7 @@
             <h3 class="text-base font-semibold text-gray-900">{{trans('checkout::page.trip_details.conditions_of_payment')}}</h3>
         </div>
         <div class="space-y-3">
-            {!!  $regulatoryInformation->paymentExplainer!!}
+            {!!  str($regulatoryInformation->paymentExplainer)->markdown() !!}
         </div>
 
         <!-- Payment method -->
