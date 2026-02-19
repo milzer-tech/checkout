@@ -4,11 +4,11 @@ it('renders the trip details page', function (): void {
     fakeInitialNezasaCalls();
 
     $this->get(getRoute())
-//        ->assertSee(trans('checkout::page.trip_details.traveller_details'))
-//        ->assertSee(trans('checkout::page.trip_details.travellers'))
-//        ->assertSee(trans('checkout::page.trip_details.add_promo_code'))
-//        ->assertSee(trans('checkout::page.trip_details.additional_services'))
-//        ->assertSee(trans('checkout::page.trip_details.payment_options'))
+        ->assertSee(trans('checkout::page.trip_details.traveller_details'))
+        ->assertSee(trans('checkout::page.trip_details.travellers'))
+        ->assertSee(trans('checkout::page.trip_details.add_promo_code'))
+        ->assertSee(trans('checkout::page.trip_details.additional_services'))
+        ->assertSee(trans('checkout::page.trip_details.payment_options'))
         ->assertOk();
 });
 
