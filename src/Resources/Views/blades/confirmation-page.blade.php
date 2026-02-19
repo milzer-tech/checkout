@@ -350,6 +350,92 @@
                 {{--                ////--}}
 
 
+
+                @if($output->bookingStatusEnum->isCompleteFailed())
+                    {{-- Services that could not be booked (Failed version) --}}
+                    <div class="mt-6 p-6 border border-red-400 rounded-xl bg-white shadow-sm">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            {{ trans('checkout::page.booking_confirmation.services_that_could_not_be_booked') }}
+                        </h3>
+
+                        <div class="mt-4 h-px bg-gray-200"></div>
+
+                        <div class="mt-6 space-y-6">
+
+                            {{-- Rental car block --}}
+                            <div class="space-y-3">
+
+                                {{-- Header line --}}
+                                <div class="flex items-center justify-between gap-4">
+                <span class="font-semibold text-gray-900">
+                    {{ trans('checkout::page.trip_details.rental_cars') }}
+                </span>
+
+                                    <span
+                                        class="inline-flex items-center gap-1 rounded-full bg-red-100 text-gray-900 px-4 py-1.5 text-sm font-medium whitespace-nowrap">
+                    <svg class="w-4 h-4 text-red-500"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"
+                              stroke="currentColor"/>
+                    </svg>
+                    {{ trans('checkout::page.trip_details.unavailable') }}
+                </span>
+                                </div>
+
+                                {{-- Service rows --}}
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between gap-4">
+                                        <div class="flex items-center min-w-0 gap-2">
+                                            <svg class="w-4 h-4 text-red-500"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round"
+                                                      stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M6 18L18 6M6 6l12 12"
+                                                      stroke="currentColor"/>
+                                            </svg>
+
+                                            <span class="text-sm text-gray-700 truncate">
+                            Ford Focus or similar
+                        </span>
+                                        </div>
+
+                                        <span class="text-sm text-gray-700 whitespace-nowrap">
+                        Tue, 1 Apr - Sat, 5 Apr
+                    </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="mt-6 h-px bg-gray-200"></div>
+
+                        <p class="mt-6 text-gray-900 text-l leading-6">
+                            {{ trans('checkout::page.booking_confirmation.you_have_not_been_charged_for_this_booking') }}
+                            {{ trans('checkout::page.booking_confirmation.we_recommend_try_again') }}
+                        </p>
+
+                        <div class="mt-6">
+                            <button
+                                type="button"
+                                wire:click="goBackToPlanner"
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl w-full">
+                                {{ trans('checkout::page.booking_confirmation.go_back_to_planner') }}
+                            </button>
+                        </div>
+                    </div>
+
+                @endif
+                {{--                ///////--}}
+
             </div>
 
 
@@ -365,7 +451,8 @@
                         <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none">
                             <path
                                 d="M19 4H5c-1.105 0-2 .895-2 2v14c0 1.105.895 2 2 2h14c1.105 0 2-.895 2-2V6c0-1.105-.895-2-2-2Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round"/>
                             <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2"
                                   stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -602,7 +689,8 @@
                     <svg class="w-7 h-7 text-gray-700" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path
                             d="M21 12a8 8 0 01-8 8H9l-4 3v-3.5A6.5 6.5 0 013.5 12a8.5 8.5 0 018.5-8.5h1A8 8 0 0121 12Z"
-                            stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                            stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                            stroke-linejoin="round"/>
                     </svg>
 
                     <h3 class="text-xl md:text-2xl font-semibold text-gray-900">
