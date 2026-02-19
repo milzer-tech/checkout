@@ -219,7 +219,7 @@ class ItinerarySummary extends BaseDto
     public function getUnconfirmedFlights(): Collection
     {
         return $this->flights->reject(
-            fn (ItineraryFlight $flight) => $flight->availability?->isBooked() || $flight->isPlaceholder
+            fn (ItineraryFlight $flight): bool => $flight->availability?->isBooked() || $flight->isPlaceholder
         );
     }
 
@@ -231,7 +231,7 @@ class ItinerarySummary extends BaseDto
     public function getUnconfirmedTransfers(): Collection
     {
         return $this->transfers->reject(
-            fn (ItineraryTransfer $transfer) => $transfer->availability?->isBooked() || $transfer->isPlaceholder
+            fn (ItineraryTransfer $transfer): bool => $transfer->availability?->isBooked() || $transfer->isPlaceholder
         );
     }
 
@@ -243,7 +243,7 @@ class ItinerarySummary extends BaseDto
     public function getUnconfirmedRentalCars(): Collection
     {
         return $this->rentalCars->reject(
-            fn (ItineraryRentalCar $car) => $car->availability?->isBooked() || $car->isPlaceholder
+            fn (ItineraryRentalCar $car): bool => $car->availability?->isBooked() || $car->isPlaceholder
         );
     }
 

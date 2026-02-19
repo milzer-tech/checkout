@@ -113,13 +113,13 @@ abstract readonly class PaymentCallBackHandler
                 ->reject(fn (array $item) => $item['isPlaceholder'])
                 ->mapwithkeys(fn (array $item): array => [$item['id'] => AvailabilityEnum::tryFrom($item['status'])])
                 ->toArray();
-        } catch (\Throwable $th) {
+        } catch (\Throwable) {
             $data = [];
         }
 
         try {
             $bookingStatusEnum = $this->bookingResultAction->run($transaction->result_data['nezasa_booking_summary']);
-        } catch (\Throwable $th) {
+        } catch (\Throwable) {
             $bookingStatusEnum = $transaction->checkout->rest_payment && $transaction->status->isCaptured()
                 ? BookingStatusEnum::CompleteSuccess
                 : BookingStatusEnum::Unknown;

@@ -29,11 +29,11 @@ class PriceResponse extends BaseDto
         public ?Price $showTotalPrice = null,
         public ?Price $showPaymentPrice = null,
     ) {
-        if ($this->showTotalPrice === null) {
+        if (! $this->showTotalPrice instanceof Price) {
             $this->showTotalPrice = $this->discountedPackagePrice;
         }
 
-        if ($this->showPaymentPrice === null) {
+        if (! $this->showPaymentPrice instanceof Price) {
             $this->showPaymentPrice = $this->downPayment;
         }
     }
