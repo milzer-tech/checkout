@@ -59,7 +59,7 @@ function fakeInitialNezasaCalls(): void
         CountryCodesRequest::class => mockFixture('country_codes_response'),
         CountriesRequest::class => mockFixture('countries_response'),
         GetRequlatoryInformationRequest::class => mockFixture('regulatory_information_response'),
-    ], MockResponse::make([], 200));
+    ]);
 }
 
 function fakeInitialNotFoundNezasaCalls(): void
@@ -74,5 +74,5 @@ function fakeInitialNotFoundNezasaCalls(): void
         CountryCodesRequest::class => mockFixture('country_codes_404_response', 404),
         CountriesRequest::class => mockFixture('countries_404_response', 404),
         GetRequlatoryInformationRequest::class => MockResponse::make([], 404),
-    ], MockResponse::make([], 404));
+    ]);
 }

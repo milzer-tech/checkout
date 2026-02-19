@@ -13,7 +13,6 @@ use Nezasa\Checkout\Integrations\Nezasa\Requests\Location\CountryCodesRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\AddedRentalCarsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\GetItineraryRequest;
 use Saloon\Http\Faking\MockClient;
-use Saloon\Http\Faking\MockResponse;
 
 it('can retrieve a trip details', function (): void {
     MockClient::global([
@@ -26,7 +25,7 @@ it('can retrieve a trip details', function (): void {
         CountryCodesRequest::class => mockFixture('country_codes_response'),
         CountriesRequest::class => mockFixture('countries_response'),
         GetRequlatoryInformationRequest::class => mockFixture('regulatory_information_response'),
-    ], MockResponse::make([], 200));
+    ]);
 
     $result = (new CallTripDetailsAction)->run(new CheckoutParamsDto(
         checkoutId: 'co-td-1',
