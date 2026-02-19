@@ -92,6 +92,7 @@ return [
         'booking_confirmation' => 'Booking confirmation',
         'confirmed' => 'Confirmed',
         'failed' => 'Failed',
+        'pending' => 'Pending',
         'your_trip_has_been_booked' => 'Your trip has been booked',
         'your_trip_could_not_be_booked' => 'Your trip could not be booked',
         'booking_reference' => 'Booking reference',
@@ -101,6 +102,8 @@ return [
         'print_booking_proposal' => 'Print booking proposal',
         'traveller_information' => 'Traveller information',
         'payment_result' => 'Payment result',
+        'services_without_confirmation' => 'Services without confirmation',
+        'services_require_manual_confirmation' => 'These services require manual confirmation. Please reach out to us about the next steps.',
     ],
     'footer' => [
         'copyright' => 'Copyright 2025 :name. All rights reserved',

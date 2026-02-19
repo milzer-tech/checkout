@@ -160,7 +160,8 @@
                                     <path d="M22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2"
                                           stroke-linecap="round" stroke-linejoin="round"></path>
                                 </svg>
-                                <span class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.payment_result')}}</b></span>
+                                <span
+                                    class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.payment_result')}}</b></span>
                             </div>
 
                             <!--[if BLOCK]><![endif]--> <span
@@ -198,6 +199,19 @@
           </svg>
           {{trans('checkout::page.booking_confirmation.confirmed')}}
         </span>
+                        @elseif($output->bookingStatusEnum->isPartialFailure())
+
+                            <span
+                                class="inline-flex items-center gap-1 rounded-full bg-[#E8F1FF] text-gray-900 px-4 py-1.5 text-sm font-medium whitespace-nowrap">
+
+                     <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" viewBox="0 0 24 24" fill="none"
+                          xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 4v8" stroke="currentColor" stroke-width="3"
+                                                  stroke-linecap="round"></path>
+                                            <circle cx="12" cy="17" r="2" fill="currentColor"></circle>
+                                        </svg>
+                    {{trans('checkout::page.booking_confirmation.pending')}}
+                </span>
                         @else
                             <span
                                 class="inline-flex items-center px-3 py-1 bg-[#FEE2E2] dark:bg-red-900/30 text-black text-sm rounded-full">
@@ -227,8 +241,8 @@
                                   d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                         </svg>
                         <a href="{{config('checkout.nezasa.base_url')}}/checkouts/{{$checkoutId}}">
-                        @if($output->bookingStatusEnum->isCompleteSuccess())
-                        {{trans('checkout::page.booking_confirmation.print_booking_confirmation')}}
+                            @if($output->bookingStatusEnum->isCompleteSuccess())
+                                {{trans('checkout::page.booking_confirmation.print_booking_confirmation')}}
                             @else
                                 {{trans('checkout::page.booking_confirmation.print_booking_proposal')}}
                             @endif
@@ -236,6 +250,106 @@
                     </button>
 
                 </div>
+
+
+                {{--                ////--}}
+
+
+                {{-- Services without confirmation (Figma) --}}
+                <div class="mt-6 p-6 border border-[#2681FF] rounded-xl bg-white shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        {{trans('checkout::page.booking_confirmation.services_without_confirmation')}}
+                    </h3>
+
+                    <div class="mt-4 h-px bg-gray-200"></div>
+
+                    <p class="mt-4 text-l text-gray-900 leading-6">
+                        {{trans('checkout::page.booking_confirmation.services_require_manual_confirmation')}}
+                    </p>
+
+                    {{-- Rental cars block (repeat this whole block per rental car) --}}
+                    <div class="mt-6 space-y-6">
+
+                        {{-- Rental car #1 --}}
+                        <div class="space-y-3">
+                            {{-- Header line: Rental car (left) + badge (right) --}}
+                            <div class="flex items-center justify-between gap-4">
+                <span class="font-semibold text-gray-900">
+                   {{trans('checkout::page.trip_details.rental_cars')}}
+                </span>
+
+                                <span
+                                    class="inline-flex items-center gap-1 rounded-full bg-[#E8F1FF] text-gray-900 px-4 py-1.5 text-sm font-medium whitespace-nowrap">
+
+                     <svg class="w-4 h-4 text-blue-500 dark:text-blue-400"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 4v8"
+                                                  stroke="currentColor"
+                                                  stroke-width="3"
+                                                  stroke-linecap="round"></path>
+                                            <circle cx="12"
+                                                    cy="17"
+                                                    r="2"
+                                                    fill="currentColor"></circle>
+                                        </svg>
+                    {{trans('checkout::page.trip_details.on_request')}}
+                </span>
+                            </div>
+
+                            {{-- Row(s) under rental car: ! + title (left) and date (right) --}}
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between gap-4">
+                                    <div class="flex items-center min-w-0">
+                                        <svg class="w-4 h-4 text-blue-500 dark:text-blue-400"
+                                             viewBox="0 0 24 24"
+                                             fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 4v8"
+                                                  stroke="currentColor"
+                                                  stroke-width="3"
+                                                  stroke-linecap="round"></path>
+                                            <circle cx="12"
+                                                    cy="17"
+                                                    r="2"
+                                                    fill="currentColor"></circle>
+                                        </svg>
+
+                                        <span class="text-sm text-gray-700 truncate">
+                            Ford Focus or similar
+                        </span>
+                                    </div>
+
+                                    <span class="text-sm text-gray-700 whitespace-nowrap">
+                        Tue, 1 Apr - Sat, 5 Apr
+                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="mt-6 h-px bg-gray-200"></div>
+
+                    <button
+                        type="button"
+                        wire:click="contactSupport"
+                        class="mt-5 inline-flex items-center gap-2 text-[#2681FF] font-medium text-sm hover:underline"
+                    >
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M21 12a8 8 0 01-8 8H9l-4 3v-3.5A6.5 6.5 0 013.5 12a8.5 8.5 0 018.5-8.5h1A8 8 0 0121 12Z"/>
+                        </svg>
+                        Contact support
+                    </button>
+                </div>
+
+
+                {{--                ////--}}
+
+
             </div>
 
 
