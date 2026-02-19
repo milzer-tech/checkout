@@ -622,18 +622,20 @@
                         </p>
 
                         <div class="mt-6">
+                            <a href="{{$this->nezasaPlannerUrl}}">
+
+
                             <button
                                 type="button"
-                                wire:click="goBackToPlanner"
                                 class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl w-full">
                                 {{ trans('checkout::page.booking_confirmation.go_back_to_planner') }}
                             </button>
+                            </a>
                         </div>
                     </div>
 
                 @endif
                 {{--                ///////--}}
-
             </div>
 
 
