@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Livewire;
 
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -140,5 +141,14 @@ class BaseCheckoutComponent extends Component
             lang: $this->lang ?? 'en',
             restPayment: $this->restPayment
         );
+    }
+
+    /**
+     * Get the planner url.
+     */
+    #[Computed]
+    public function nezasaPlannerUrl(): string
+    {
+        return config('checkout.nezasa.base_url').'/itineraries/'.$this->itineraryId;
     }
 }

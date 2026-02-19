@@ -21,7 +21,7 @@
                             fill="currentColor"/>
                     </svg>
                     <span><a
-                            href="{{$nezasaPlannerUrl}}">{{trans('checkout::page.trip_details.view_full_itinerary')}}</a></span>
+                            href="{{$this->nezasaPlannerUrl}}">{{trans('checkout::page.trip_details.view_full_itinerary')}}</a></span>
                 </button>
             </div>
         </div>

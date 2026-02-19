@@ -26,15 +26,8 @@ class TripSummary extends BaseCheckoutComponent
      */
     public bool $showPriceBreakdown = false;
 
-    /**
-     * The URL to the Nezasa planner.
-     */
-    public string $nezasaPlannerUrl;
-
     public function mount(): void
     {
-        $this->nezasaPlannerUrl = config('checkout.nezasa.base_url').'/itineraries/'.$this->itineraryId;
-
         $this->showPriceBreakdown = $this->itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty();
     }
 
