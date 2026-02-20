@@ -21,12 +21,9 @@ readonly class RestPaymentCallBackHandler extends PaymentCallBackHandler
             return $this->getOutput($transaction);
         }
 
-        if ($this->handlePaymentAuthorization($gateway, $transaction)->isSuccessful) {
-            $this->handlePaymentCapture($gateway, $transaction);
-        }
-
-        // Nezasa API does not support other statuses.
-        $this->closeNezasaTransactionAction->run($transaction);
+        $this->handlePaymentAuthorization($gateway, $transaction)->isSuccessful
+            ? $this->handlePaymentCapture($gateway, $transaction)
+            : $this->deleteNezasaTransactionAction->run($transaction);
 
         return $this->getOutput($transaction);
     }

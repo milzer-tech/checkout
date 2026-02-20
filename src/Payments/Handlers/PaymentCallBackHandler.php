@@ -9,6 +9,7 @@ use Nezasa\Checkout\Actions\Checkout\BookItineraryAction;
 use Nezasa\Checkout\Actions\Checkout\FindBookingResultAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Payment\CloseNezasaTransactionAction;
+use Nezasa\Checkout\Actions\Payment\DeleteNezasaTransactionAction;
 use Nezasa\Checkout\Actions\Transaction\UpdateTransactionAction;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Transaction;
@@ -29,6 +30,7 @@ abstract readonly class PaymentCallBackHandler
         protected BookItineraryAction $bookItineraryAction,
         protected UpdateTransactionAction $updateTransactionAction,
         protected CloseNezasaTransactionAction $closeNezasaTransactionAction,
+        protected DeleteNezasaTransactionAction $deleteNezasaTransactionAction,
         protected FindBookingResultAction $bookingResultAction,
     ) {}
 
@@ -64,6 +66,8 @@ abstract readonly class PaymentCallBackHandler
                 ? TransactionStatusEnum::Aborted
                 : TransactionStatusEnum::AuthorizationFailed,
         ]);
+
+        $this->deleteNezasaTransactionAction->run($transaction);
     }
 
     /**
@@ -79,6 +83,8 @@ abstract readonly class PaymentCallBackHandler
                 ? TransactionStatusEnum::Captured
                 : TransactionStatusEnum::CaptureFailed,
         ]);
+
+        $this->closeNezasaTransactionAction->run($transaction);
 
         return $captureResult;
     }

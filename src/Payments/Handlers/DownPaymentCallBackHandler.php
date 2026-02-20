@@ -6,7 +6,6 @@ namespace Nezasa\Checkout\Payments\Handlers;
 
 use Illuminate\Http\Request;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
-use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 
@@ -40,9 +39,9 @@ readonly class DownPaymentCallBackHandler extends PaymentCallBackHandler
             }
 
             $this->storeBookingSummary($transaction, $bookingResponse);
+        } else {
+            $this->deleteNezasaTransactionAction->run($transaction);
         }
-        // Nezasa API does not support other statuses.
-        $this->closeNezasaTransactionAction->run(NezasaTransactionStatusEnum::Closed, $transaction);
 
         return $this->getOutput($transaction);
     }
