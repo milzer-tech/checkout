@@ -10,17 +10,17 @@ use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Throwable;
 
-final class UpdateNezasaTransactionAction
+final class CloseNezasaTransactionAction
 {
     /**
-     * Handle updating a Nezasa transaction.
+     * Handle closing a Nezasa transaction. It means that the payment is completed and successful.
      *
      * @return false|array<string, mixed>
      */
-    public function run(NezasaTransactionStatusEnum $status, Transaction $transaction): false|array
+    public function run(Transaction $transaction): false|array
     {
         try {
-            $payload = new UpdatePaymentTransactionPayload(status: $status);
+            $payload = new UpdatePaymentTransactionPayload(status: NezasaTransactionStatusEnum::Closed);
 
             return NezasaConnector::make()
                 ->paymentTransaction()

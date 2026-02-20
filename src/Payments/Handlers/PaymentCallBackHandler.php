@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Nezasa\Checkout\Actions\Checkout\BookItineraryAction;
 use Nezasa\Checkout\Actions\Checkout\FindBookingResultAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
-use Nezasa\Checkout\Actions\Payment\UpdateNezasaTransactionAction;
+use Nezasa\Checkout\Actions\Payment\CloseNezasaTransactionAction;
 use Nezasa\Checkout\Actions\Transaction\UpdateTransactionAction;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Transaction;
@@ -28,7 +28,7 @@ abstract readonly class PaymentCallBackHandler
     public function __construct(
         protected BookItineraryAction $bookItineraryAction,
         protected UpdateTransactionAction $updateTransactionAction,
-        protected UpdateNezasaTransactionAction $updateNezasaTransactionAction,
+        protected CloseNezasaTransactionAction $closeNezasaTransactionAction,
         protected FindBookingResultAction $bookingResultAction,
     ) {}
 

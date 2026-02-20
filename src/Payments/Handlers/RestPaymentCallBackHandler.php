@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Handlers;
 
 use Illuminate\Http\Request;
-use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 
@@ -27,7 +26,7 @@ readonly class RestPaymentCallBackHandler extends PaymentCallBackHandler
         }
 
         // Nezasa API does not support other statuses.
-        $this->updateNezasaTransactionAction->run(NezasaTransactionStatusEnum::Closed, $transaction);
+        $this->closeNezasaTransactionAction->run($transaction);
 
         return $this->getOutput($transaction);
     }

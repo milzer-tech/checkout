@@ -42,7 +42,7 @@ readonly class DownPaymentCallBackHandler extends PaymentCallBackHandler
             $this->storeBookingSummary($transaction, $bookingResponse);
         }
         // Nezasa API does not support other statuses.
-        $this->updateNezasaTransactionAction->run(NezasaTransactionStatusEnum::Closed, $transaction);
+        $this->closeNezasaTransactionAction->run(NezasaTransactionStatusEnum::Closed, $transaction);
 
         return $this->getOutput($transaction);
     }
