@@ -443,7 +443,7 @@
                     </div>
                 @endif
 
-                @if($output->bookingStatusEnum->isCompleteFailed())
+                @if($output->bookingStatusEnum->isCompleteFailed() || $output->bookingStatusEnum->isUnknown())
                     {{-- Services that could not be booked (Failed version) --}}
                     <div class="mt-6 p-6 border border-red-400 rounded-xl bg-white shadow-sm">
                         <h3 class="text-lg font-semibold text-gray-900">
