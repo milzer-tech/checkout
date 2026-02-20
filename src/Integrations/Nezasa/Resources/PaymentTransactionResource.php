@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Resources;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\UpdatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Payment\CreatePaymentTransactionRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Payment\DeletePaymentTransactionRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Payment\UpdatePaymentTransactionRequest;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
@@ -38,6 +39,19 @@ class PaymentTransactionResource extends BaseResource
     {
         return $this->connector->send(
             new UpdatePaymentTransactionRequest($checkoutId, $refId, $payload)
+        );
+    }
+
+    /**
+     * Delete a payment transaction for a checkout.
+     *
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    public function delete(string $checkoutId, string $transactionRefId): Response
+    {
+        return $this->connector->send(
+            new DeletePaymentTransactionRequest($checkoutId, $transactionRefId)
         );
     }
 }
