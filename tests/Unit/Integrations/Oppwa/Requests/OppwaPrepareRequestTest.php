@@ -17,12 +17,6 @@ it('sends OppwaPrepareRequest with correct method, endpoint, headers, query and 
         amount: '199.90',
         currency: 'EUR',
         customerEmail: 'john.doe@example.com',
-        customerGivenName: 'John',
-        customerSurname: 'Doe',
-        billingStreet1: '123 Main St',
-        billingCity: 'Berlin',
-        billingPostcode: '10115',
-        billingCountry: 'DE',
         paymentType: 'PA'
     );
 
@@ -43,12 +37,6 @@ it('sends OppwaPrepareRequest with correct method, endpoint, headers, query and 
             'amount',
             'currency',
             'customer.email',
-            'customer.givenName',
-            'customer.surname',
-            'billing.street1',
-            'billing.city',
-            'billing.postcode',
-            'billing.country',
             'paymentType',
             'integrity',
         ]);
