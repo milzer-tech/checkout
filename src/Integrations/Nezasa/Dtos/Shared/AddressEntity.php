@@ -20,4 +20,20 @@ class AddressEntity extends BaseDto
         public ?string $street2 = null,
         public ?string $region = null
     ) {}
+
+    /**
+     * Get the postal code as an integer.
+     */
+    public function getNumericPostalCode(): ?int
+    {
+        return is_numeric($this->postalCode) ? (int) $this->postalCode : null;
+    }
+
+    /**
+     * Get the two-letter country code.
+     */
+    public function getCountryCode(): ?string
+    {
+        return str($this->country)->before('-')->toString();
+    }
 }

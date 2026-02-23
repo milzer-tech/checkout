@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Oppwa\Connectors\OppwaConnector;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaComplationPayload;
@@ -54,14 +55,6 @@ class OppwaWidgetGateway implements WidgetPaymentContract
                 amount: $data->price->getPaymentAmount(),
                 currency: $data->price->currency,
                 customerEmail: $data->contact->email,
-                customerGivenName: $data->contact->firstName,
-                customerSurname: $data->contact->lastName,
-                billingStreet1: $data->contact->address->street1,
-                billingCity: $data->contact->address->city,
-                billingPostcode: is_numeric($data->contact->address->postalCode)
-                    ? (string) $data->contact->address->postalCode
-                    : null,
-                billingCountry: str($data->contact->address->country)->before('-')->toString(),
                 paymentType: 'PA'
             );
 
@@ -71,7 +64,11 @@ class OppwaWidgetGateway implements WidgetPaymentContract
                 return new PaymentInit(
                     isAvailable: true,
                     returnUrl: $data->returnUrl,
-                    persistentData: ['prepare' => $response->dto(), 'prepare_payload' => $payload]
+                    persistentData: [
+                        'prepare' => $response->dto(),
+                        'prepare_payload' => $payload,
+                        'contact' => $data->contact,
+                    ]
                 );
             }
         } catch (Throwable $throwable) {
@@ -103,25 +100,24 @@ class OppwaWidgetGateway implements WidgetPaymentContract
      */
     public function getAssets(PaymentInit $paymentInit): PaymentAsset
     {
-
         if (! isset($paymentInit->persistentData['prepare']) || ! $paymentInit->persistentData['prepare'] instanceof OppwaPrepareResponse) {
             throw new Exception('The persistent data is not correct');
         }
 
-        /** @var OppwaPreparePayload $payload */
-        $payload = $paymentInit->persistentData['prepare_payload'];
-
+        /** @var ContactInfoPayloadEntity $contact */
+        $contact = $paymentInit->persistentData['contact'];
         $returnUrl = $paymentInit->returnUrl->toStringable()->toString();
 
         /** @var Collection<int, string> $scripts */
         $scripts = collect([
             '<script>
                     var wpwlOptions = {
+                        forceCardHolderEqualsBillingName: true,
                             billingAddress: {
-                                country: "'.$payload->billingCountry.'",
-                                city: "'.$payload->billingCity.'",
-                                postcode: "'.$payload->billingPostcode.'",
-                                street1: "'.$payload->billingStreet1.'"
+                                country: "'.$contact->address->getCountryCode().'",
+                                city: "'.$contact->address->city.'",
+                                postcode: "'.$contact->address->getNumericPostalCode().'",
+                                street1: "'.$contact->address->street1.'"
                             },
                             mandatoryBillingFields:{
                                 country: true,
@@ -134,10 +130,10 @@ class OppwaWidgetGateway implements WidgetPaymentContract
                         }
             </script>',
             '<script
-        src="https://eu-test.oppwa.com/v1/paymentWidgets.js?checkoutId='.$paymentInit->persistentData['prepare']->id.'"
-        integrity="'.$paymentInit->persistentData['prepare']->integrity.'"
-        crossorigin="anonymous">
-        </script>',
+                src="https://eu-test.oppwa.com/v1/paymentWidgets.js?checkoutId='.$paymentInit->persistentData['prepare']->id.'"
+                integrity="'.$paymentInit->persistentData['prepare']->integrity.'"
+                crossorigin="anonymous">
+            </script>',
         ]);
 
         $form = '<form action="'.$returnUrl.'" class="paymentWidgets" data-brands="VISA MASTER AMEX"> </form>';

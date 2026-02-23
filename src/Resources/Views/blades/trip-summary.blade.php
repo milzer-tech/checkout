@@ -414,7 +414,7 @@
                 </span>
                 </div>
 
-                @if($showPriceBreakdown)
+                @if($hasDestinationCost)
                     <p class="mt-2 text-gray-900 dark:text-white">
                         {{ trans('checkout::page.trip_details.paid_in_destination') }}:
                     </p>
@@ -433,7 +433,7 @@
             </div>
         @endif
 
-        @if($showPriceBreakdown && !$model->rest_payment)
+        @if($hasDestinationCost && !$model->rest_payment)
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
                 {{ trans('checkout::page.trip_details.destination_cost_text',[
         'total' => Number::currency($itinerary->price->discountedPackagePrice->amount, $itinerary->price->discountedPackagePrice->currency),

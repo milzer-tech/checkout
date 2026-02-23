@@ -17,18 +17,6 @@ class OppwaPreparePayload extends BaseDto
         public string $currency,
         #[MapOutputName('customer.email')]
         public string $customerEmail,
-        #[MapOutputName('customer.givenName')]
-        public string $customerGivenName,
-        #[MapOutputName('customer.surname')]
-        public string $customerSurname,
-        #[MapOutputName('billing.street1')]
-        public string $billingStreet1,
-        #[MapOutputName('billing.city')]
-        public string $billingCity,
-        #[MapOutputName('billing.postcode')]
-        public ?string $billingPostcode,
-        #[MapOutputName('billing.country')]
-        public string $billingCountry,
         public string $paymentType,
         public bool $integrity = true,
 

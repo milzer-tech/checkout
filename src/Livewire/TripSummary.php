@@ -26,9 +26,16 @@ class TripSummary extends BaseCheckoutComponent
      */
     public bool $showPriceBreakdown = false;
 
+    /**
+     * Indicates whether the destination has a cost.
+     */
+    public bool $hasDestinationCost = false;
+
     public function mount(): void
     {
-        $this->showPriceBreakdown = $this->itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty();
+        $this->determineHasExternalCharges();
+
+        $this->determinePriceBreakdownDisplay();
     }
 
     /**
@@ -121,5 +128,31 @@ class TripSummary extends BaseCheckoutComponent
         $this->itinerary->price->showPaymentPrice->amount = $this->itinerary->price->downPayment;
 
         $this->dispatch('price-updated', $this->itinerary->price);
+    }
+
+    /**
+     * Check if the destination has external charges.
+     */
+    public function determineHasExternalCharges(): void
+    {
+        $this->hasDestinationCost = $this->itinerary->price->externallyPaidCharges->externallyPaidCharges->isNotEmpty();
+    }
+
+    /**
+     * Hide the price breakdown if the price is not affected by it.
+     */
+    public function determinePriceBreakdownDisplay(): void
+    {
+        if ($this->hasDestinationCost) {
+            $this->showPriceBreakdown = true;
+        }
+
+        if ($this->itinerary->price->showPaymentPrice->amount < $this->itinerary->price->showTotalPrice->amount) {
+            $this->showPriceBreakdown = true;
+        }
+
+        if ($this->model->rest_payment) {
+            $this->showPriceBreakdown = true;
+        }
     }
 }
