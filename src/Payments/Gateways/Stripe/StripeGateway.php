@@ -102,7 +102,6 @@ class StripeGateway implements RedirectPaymentContract
      */
     public function getRedirectUrl(PaymentInit $init): Uri
     {
-        /** @phpstan-ignore-next-line */
         return Uri::of($init->persistentData['session']['url']);
     }
 
@@ -112,7 +111,6 @@ class StripeGateway implements RedirectPaymentContract
     public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
     {
         return new NezasaPayload(
-            /** @phpstan-ignore-next-line */
             externalRefId: $paymentInit->persistentData['session']['id'],
             amount: $data->price,
             paymentMethod: NezasaPaymentMethodEnum::Other,

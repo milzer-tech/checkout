@@ -12,12 +12,12 @@ class PaymentInit extends BaseDto
     /**
      * Create a new instance of PaymentInit.
      *
-     * @param  BaseDto|array<string, mixed>  $persistentData
+     * @param  array<string, mixed>  $persistentData
      */
     public function __construct(
         public bool $isAvailable,
         public Uri $returnUrl,
         // This property's content is stored in the database.
-        public array|BaseDto $persistentData = [],
+        public array $persistentData = [],
     ) {}
 }

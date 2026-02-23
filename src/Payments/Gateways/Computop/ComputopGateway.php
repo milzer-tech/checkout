@@ -108,7 +108,6 @@ class ComputopGateway implements RedirectPaymentContract
     public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
     {
         return new NezasaPayload(
-            /** @phpstan-ignore-next-line */
             externalRefId: $paymentInit->persistentData['response']['paymentId'].'-'.$data->transaction->id,
             amount: $data->price,
             paymentMethod: NezasaPaymentMethodEnum::Other,

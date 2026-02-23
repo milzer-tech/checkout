@@ -12,7 +12,7 @@ class PaymentAsset extends BaseDto
     /**
      * Create a new instance of PaymentAsset.
      *
-     * @param  Collection<int|string, string>|array<int|string, string>  $scripts,  each string is a script tag.
+     * @param  Collection<int, string>|array<int,string>  $scripts  ,  each string is a script tag.
      */
     public function __construct(
         public bool $isAvailable,
