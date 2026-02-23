@@ -220,7 +220,7 @@ class OppwaWidgetGateway implements WidgetPaymentContract
                 )
             );
 
-            $resultData['capture'] = $response->array();
+            $resultData['abort'] = $response->array();
 
             return new AbortResult(isSuccessful: ! $response->failed(), persistentData: $resultData);
 
