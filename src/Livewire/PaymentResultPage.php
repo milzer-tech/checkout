@@ -76,7 +76,8 @@ class PaymentResultPage extends BaseCheckoutComponent
             checkout: $this->model
         );
 
-        $callback = fn ($item) => $item->availability = $this->output->data[$item->id] ?? AvailabilityEnum::None;
+        $fallBackStatus = $this->model->rest_payment ? null : AvailabilityEnum::None;
+        $callback = fn ($item) => $item->availability = $this->output->data[$item->id] ?? $fallBackStatus;
 
         $this->itinerary->stays->map($callback);
         $this->itinerary->flights->map($callback);
