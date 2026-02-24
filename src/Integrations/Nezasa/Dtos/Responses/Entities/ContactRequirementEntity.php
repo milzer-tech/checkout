@@ -7,8 +7,8 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Integrations\Nezasa\Contracts\HasVisibleFieldsContract;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
-use Nezasa\Checkout\Integrations\Nezasa\HasVisibleFieldsContract;
 use Spatie\LaravelData\Attributes\MapInputName;
 
 class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContract
