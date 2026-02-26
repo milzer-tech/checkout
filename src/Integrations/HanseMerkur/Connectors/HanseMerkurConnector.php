@@ -6,8 +6,10 @@ namespace Nezasa\Checkout\Integrations\HanseMerkur\Connectors;
 
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Integrations\HanseMerkur\Resources\HanseMerkurOfferResource;
+use Saloon\Contracts\Body\HasBody;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
+use Saloon\Traits\Body\HasJsonBody;
 use Saloon\Traits\Makeable;
 
 /**
@@ -18,8 +20,9 @@ use Saloon\Traits\Makeable;
  *
  * @link https://api-fbt.hmrv.de/rest/swagger-ui/index.html#/
  */
-class HanseMerkurConnector extends Connector
+class HanseMerkurConnector extends Connector implements HasBody
 {
+    use HasJsonBody;
     use Makeable;
 
     /**
@@ -53,6 +56,22 @@ class HanseMerkurConnector extends Connector
             Config::string('checkout.insurance.hanse_merkur.username'),
             Config::string('checkout.insurance.hanse_merkur.password')
         );
+    }
+
+    /**
+     * Add a default body to all requests
+     *
+     * @return array<string, array<string, string>>
+     */
+    protected function defaultBody(): array
+    {
+        return [
+            'metadata' => [
+                'requestorId' => Config::string('checkout.insurance.hanse_merkur.requester_id'),
+                'partnerId' => Config::string('checkout.insurance.hanse_merkur.partner_id'),
+                'externalPartnerId' => null,
+            ],
+        ];
     }
 
     public function offers(): HanseMerkurOfferResource

@@ -64,6 +64,8 @@ return [
             'username' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_USERNAME', 'must_be_set_in_env'),
             'password' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_PASSWORD', 'must_be_set_in_env'),
             'api_key' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_API_KEY', 'must_be_set_in_env'),
+            'requester_id' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_REQUESTER_ID', 'must_be_set_in_env'),
+            'partner_id' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_PARTNER_ID', 'must_be_set_in_env'),
         ],
     ],
 

@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\Entities\HanseMerkurCoveredEventPayloadEntity;
 use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\Entities\HanseMerkurInsuredPersonPayloadEntity;
-use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\Entities\HanseMerkurMetadataPayloadEntity;
 
 class HanseMerkurCreateOffersPayload extends BaseDto
 {
@@ -18,7 +17,6 @@ class HanseMerkurCreateOffersPayload extends BaseDto
      * @param  Collection<int, HanseMerkurInsuredPersonPayloadEntity>  $insuredPersons
      */
     public function __construct(
-        public HanseMerkurMetadataPayloadEntity $metadata,
         public HanseMerkurCoveredEventPayloadEntity $coveredEvent,
         public Collection $insuredPersons,
     ) {}
