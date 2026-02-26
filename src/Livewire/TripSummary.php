@@ -124,8 +124,8 @@ class TripSummary extends BaseCheckoutComponent
     {
         $this->itinerary->insurances = new Collection;
 
-        $this->itinerary->price->showTotalPrice->amount = $this->itinerary->price->discountedPackagePrice;
-        $this->itinerary->price->showPaymentPrice->amount = $this->itinerary->price->downPayment;
+        $this->itinerary->price->showTotalPrice = $this->itinerary->price->discountedPackagePrice;
+        $this->itinerary->price->showPaymentPrice = $this->itinerary->price->downPayment;
 
         $this->dispatch('price-updated', $this->itinerary->price);
     }
