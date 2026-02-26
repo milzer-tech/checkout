@@ -12,157 +12,287 @@
     onEdit="expand('{{Section::Insurance->value}}')"
 
 >
+{{--    <div class="space-y-4">--}}
+
+{{--        @if(InsuranceFacade::isAvailable() && $contact)--}}
+{{--            @if(Config::boolean('checkout.insurance.vertical.active'))--}}
+{{--                @push('scripts')--}}
+{{--                    <script src="https://cdn.jsdelivr.net/npm/@vertical-insure/embedded-offer"></script>--}}
+{{--                    <script>--}}
+{{--                        const INSURANCE_READY_TIMEOUT_MS = 20000;--}}
+
+{{--                        let currentInitId = 0;--}}
+{{--                        let readyTimeoutId = null;--}}
+
+{{--                        function showLoader() {--}}
+{{--                            document.getElementById("insurance_loading").style.display = "flex";--}}
+{{--                            document.getElementById("insurance_error").classList.add("hidden");--}}
+{{--                        }--}}
+
+{{--                        function hideLoader() {--}}
+{{--                            document.getElementById("insurance_loading").style.display = "none";--}}
+{{--                        }--}}
+
+{{--                        function showError(msg = "Insurance offer couldn’t be loaded. Please try again.") {--}}
+{{--                            hideLoader();--}}
+{{--                            document.getElementById("insurance_error_text").textContent = msg;--}}
+{{--                            document.getElementById("insurance_error").classList.remove("hidden");--}}
+{{--                        }--}}
+
+{{--                        async function initVerticalInsure(config) {--}}
+{{--                            window.__lastInsuranceConfig = config;--}}
+
+{{--                            const myInitId = ++currentInitId;--}}
+{{--                            showLoader();--}}
+
+{{--                            clearTimeout(readyTimeoutId);--}}
+{{--                            readyTimeoutId = setTimeout(() => {--}}
+{{--                                // only affect the latest init--}}
+{{--                                if (myInitId !== currentInitId) return;--}}
+{{--                                showError("Insurance offer is taking too long to load. Please try again.");--}}
+{{--                            }, INSURANCE_READY_TIMEOUT_MS);--}}
+
+{{--                            // IMPORTANT: don't clear the offer container here, or the user will see it disappear--}}
+{{--                            // document.getElementById("insurance_offer").innerHTML = "";--}}
+
+{{--                            try {--}}
+{{--                                if (window.verticalInsureInstance && typeof window.verticalInsureInstance.destroy === "function") {--}}
+{{--                                    try {--}}
+{{--                                        window.verticalInsureInstance.destroy();--}}
+{{--                                    } catch (_) {--}}
+{{--                                    }--}}
+{{--                                }--}}
+{{--                                window.verticalInsureInstance = new VerticalInsure("#insurance_offer", config);--}}
+{{--                            } catch (e) {--}}
+{{--                                if (myInitId !== currentInitId) return;--}}
+{{--                                clearTimeout(readyTimeoutId);--}}
+{{--                                console.error(e);--}}
+{{--                                showError("Insurance offer couldn’t be initialized.");--}}
+{{--                            }--}}
+{{--                        }--}}
+
+{{--                        // Hide loader only for the latest init cycle--}}
+{{--                        window.addEventListener("offer-ready", (e) => {--}}
+{{--                            // Ignore stale ready events from previous instances--}}
+{{--                            // (If Vertical fires ready twice or older instance emits late)--}}
+{{--                            if (currentInitId === 0) return;--}}
+
+{{--                            clearTimeout(readyTimeoutId);--}}
+
+{{--                            if (e?.detail?.offersAvailable === false) {--}}
+{{--                                showError("The insurance offers are only available in US and CAN. If you need to add an insurance, please change the contact's address to US or CAN.");--}}
+{{--                                return;--}}
+{{--                            }--}}
+
+{{--                            hideLoader();--}}
+{{--                        });--}}
+
+{{--                        window.addEventListener("offer-state-change", (e) => {--}}
+{{--                            @this.--}}
+{{--                            call('handleInsuranceQuote', e.detail.quotes[0]);--}}
+{{--                        });--}}
+
+{{--                        window.retryInsuranceOffer = () => {--}}
+{{--                            if (window.__lastInsuranceConfig) initVerticalInsure(window.__lastInsuranceConfig);--}}
+{{--                        };--}}
+
+{{--                        document.addEventListener("DOMContentLoaded", () => {--}}
+{{--                            initVerticalInsure(@js($this->verticalInsuranceConfig));--}}
+{{--                        });--}}
+
+{{--                        window.addEventListener("insurance-config-updated", (e) => {--}}
+{{--                            initVerticalInsure(e.detail.config);--}}
+{{--                        });--}}
+
+{{--                        document.addEventListener('livewire:init', () => {--}}
+{{--                            initVerticalInsure(@js($this->verticalInsuranceConfig));--}}
+{{--                        });--}}
+{{--                    </script>--}}
+{{--                @endpush--}}
+
+
+{{--                <div wire:ignore class="relative">--}}
+{{--                    --}}{{-- Offer --}}
+{{--                    <div id="insurance_offer"></div>--}}
+
+{{--                    --}}{{-- Loader overlay (default visible) --}}
+{{--                    <div id="insurance_loading"--}}
+{{--                         class="absolute inset-0 z-10 flex items-center justify-center gap-2 bg-white/70 text-gray-600"--}}
+{{--                         style="display:flex;">--}}
+
+{{--                    <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"--}}
+{{--                             viewBox="0 0 24 24">--}}
+{{--                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>--}}
+{{--                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>--}}
+{{--                        </svg>--}}
+{{--                        <span>Loading insurance...</span>--}}
+{{--                    </div>--}}
+
+{{--                    --}}{{-- Error overlay --}}
+{{--                    <div id="insurance_error"--}}
+{{--                         class="hidden mb-6 px-4">--}}
+{{--                        <div class="rounded-md border border-red-200 bg-red-50 text-red-700 px-6 py-4 text-sm">--}}
+{{--                            <div class="flex items-center justify-between gap-4">--}}
+{{--            <span id="insurance_error_text">--}}
+{{--                No insurance offers available right now.--}}
+{{--            </span>--}}
+
+{{--                                <button type="button"--}}
+{{--                                        class="underline whitespace-nowrap"--}}
+{{--                                        onclick="window.retryInsuranceOffer?.()">--}}
+{{--                                    Retry--}}
+{{--                                </button>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+
+
+{{--                </div>--}}
+
+{{--            @endif--}}
+{{--        @endif--}}
+
+{{--        <div class="space-y-4 mt-8">--}}
+{{--            <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>--}}
+
+{{--            <div class="flex justify-between items-center">--}}
+{{--                <div></div>--}}
+{{--                <button type="button" wire:click="next"--}}
+{{--                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">--}}
+{{--                    Next--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
+{{--    </div>--}}
+
+
+
+
+
+
+
+
+
+
     <div class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
 
-        @if(InsuranceFacade::isAvailable() && $contact)
-            @if(Config::boolean('checkout.insurance.vertical.active'))
-                @push('scripts')
-                    <script src="https://cdn.jsdelivr.net/npm/@vertical-insure/embedded-offer"></script>
-                    <script>
-                        const INSURANCE_READY_TIMEOUT_MS = 20000;
+            <!-- Card 1: (example selected) -->
+            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm">
+                <div class="flex items-start gap-3">
+                    <!-- RADIO -->
+                    <input type="radio"
+                           class="h-4 w-4 mt-1 text-blue-600"
+                           name="INSURANCE_GROUP"
+                           value="VALUE_TRAVEL_PLUS"
+                           checked>
 
-                        let currentInitId = 0;
-                        let readyTimeoutId = null;
-
-                        function showLoader() {
-                            document.getElementById("insurance_loading").style.display = "flex";
-                            document.getElementById("insurance_error").classList.add("hidden");
-                        }
-
-                        function hideLoader() {
-                            document.getElementById("insurance_loading").style.display = "none";
-                        }
-
-                        function showError(msg = "Insurance offer couldn’t be loaded. Please try again.") {
-                            hideLoader();
-                            document.getElementById("insurance_error_text").textContent = msg;
-                            document.getElementById("insurance_error").classList.remove("hidden");
-                        }
-
-                        async function initVerticalInsure(config) {
-                            window.__lastInsuranceConfig = config;
-
-                            const myInitId = ++currentInitId;
-                            showLoader();
-
-                            clearTimeout(readyTimeoutId);
-                            readyTimeoutId = setTimeout(() => {
-                                // only affect the latest init
-                                if (myInitId !== currentInitId) return;
-                                showError("Insurance offer is taking too long to load. Please try again.");
-                            }, INSURANCE_READY_TIMEOUT_MS);
-
-                            // IMPORTANT: don't clear the offer container here, or the user will see it disappear
-                            // document.getElementById("insurance_offer").innerHTML = "";
-
-                            try {
-                                if (window.verticalInsureInstance && typeof window.verticalInsureInstance.destroy === "function") {
-                                    try {
-                                        window.verticalInsureInstance.destroy();
-                                    } catch (_) {
-                                    }
-                                }
-                                window.verticalInsureInstance = new VerticalInsure("#insurance_offer", config);
-                            } catch (e) {
-                                if (myInitId !== currentInitId) return;
-                                clearTimeout(readyTimeoutId);
-                                console.error(e);
-                                showError("Insurance offer couldn’t be initialized.");
-                            }
-                        }
-
-                        // Hide loader only for the latest init cycle
-                        window.addEventListener("offer-ready", (e) => {
-                            // Ignore stale ready events from previous instances
-                            // (If Vertical fires ready twice or older instance emits late)
-                            if (currentInitId === 0) return;
-
-                            clearTimeout(readyTimeoutId);
-
-                            if (e?.detail?.offersAvailable === false) {
-                                showError("The insurance offers are only available in US and CAN. If you need to add an insurance, please change the contact's address to US or CAN.");
-                                return;
-                            }
-
-                            hideLoader();
-                        });
-
-                        window.addEventListener("offer-state-change", (e) => {
-                            @this.
-                            call('handleInsuranceQuote', e.detail.quotes[0]);
-                        });
-
-                        window.retryInsuranceOffer = () => {
-                            if (window.__lastInsuranceConfig) initVerticalInsure(window.__lastInsuranceConfig);
-                        };
-
-                        document.addEventListener("DOMContentLoaded", () => {
-                            initVerticalInsure(@js($this->verticalInsuranceConfig));
-                        });
-
-                        window.addEventListener("insurance-config-updated", (e) => {
-                            initVerticalInsure(e.detail.config);
-                        });
-
-                        document.addEventListener('livewire:init', () => {
-                            initVerticalInsure(@js($this->verticalInsuranceConfig));
-                        });
-                    </script>
-                @endpush
-
-
-                <div wire:ignore class="relative">
-                    {{-- Offer --}}
-                    <div id="insurance_offer"></div>
-
-                    {{-- Loader overlay (default visible) --}}
-                    <div id="insurance_loading"
-                         class="absolute inset-0 z-10 flex items-center justify-center gap-2 bg-white/70 text-gray-600"
-                         style="display:flex;">
-
-                    <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
-                             viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
-                        </svg>
-                        <span>Loading insurance...</span>
-                    </div>
-
-                    {{-- Error overlay --}}
-                    <div id="insurance_error"
-                         class="hidden mb-6 px-4">
-                        <div class="rounded-md border border-red-200 bg-red-50 text-red-700 px-6 py-4 text-sm">
-                            <div class="flex items-center justify-between gap-4">
-            <span id="insurance_error_text">
-                No insurance offers available right now.
-            </span>
-
-                                <button type="button"
-                                        class="underline whitespace-nowrap"
-                                        onclick="window.retryInsuranceOffer?.()">
-                                    Retry
-                                </button>
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="text-gray-900 font-medium">
+                                Travel Plus
                             </div>
                         </div>
+
+                        <!-- PRICE PER DAY -->
+                        <div class="mt-1 text-sm">
+                            <span class="text-emerald-600 font-medium">+ 4.44 €</span>
+                            <span class="text-gray-500"> per day</span>
+                        </div>
                     </div>
-
-
                 </div>
 
-            @endif
-        @endif
+                <!-- FEATURES -->
+                <ul class="mt-4 space-y-2 text-sm text-gray-600">
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gray-500">✓</span>
+                        <span>Medical expenses (including COVID-19)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gray-500">✓</span>
+                        <span>Trip cancellation due to your illness (incl. COVID-19), accident, death</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gray-500">✓</span>
+                        <span>Assistance services</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gray-500">✓</span>
+                        <span>Lost baggage</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gray-500">✓</span>
+                        <span>Air travel insurance</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gray-500">✓</span>
+                        <span>Liability</span>
+                    </li>
+                </ul>
+            </label>
 
-        <div class="space-y-4 mt-8">
-            <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
 
-            <div class="flex justify-between items-center">
-                <div></div>
-                <button type="button" wire:click="next"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                    Next
-                </button>
-            </div>
+            <!-- Card 2: (example not selected) -->
+            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm">
+                <div class="flex items-start gap-3">
+                    <input type="radio"
+                           class="h-4 w-4 mt-1 text-blue-600"
+                           name="INSURANCE_GROUP"
+                           value="VALUE_TRAVEL_BASIC">
+
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="text-gray-900 font-medium">
+                                Travel Basic
+                            </div>
+                        </div>
+
+                        <div class="mt-1 text-sm">
+                            <span class="text-emerald-600 font-medium">+ 2.31 €</span>
+                            <span class="text-gray-500"> per day</span>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="mt-4 space-y-2 text-sm text-gray-600">
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gray-500">✓</span>
+                        <span>Medical expenses (including COVID-19)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gray-500">✓</span>
+                        <span>Trip cancellation due to your illness (incl. COVID-19), accident, death</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-gray-500">✓</span>
+                        <span>Assistance services</span>
+                    </li>
+                </ul>
+            </label>
+
+
+            <!-- Card 3: No insurance (example not selected) -->
+            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm">
+                <div class="flex items-start gap-3">
+                    <input type="radio"
+                           class="h-4 w-4 mt-1 text-blue-600"
+                           name="INSURANCE_GROUP"
+                           value="VALUE_NO_INSURANCE">
+
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="text-gray-900 font-medium">
+                                No insurance
+                            </div>
+
+                            <!-- small icon (optional) -->
+                            <span class="shrink-0 text-gray-400" aria-hidden="true">⛨</span>
+                        </div>
+                    </div>
+                </div>
+            </label>
+
         </div>
-
     </div>
 </x-checkout::editable-box>
