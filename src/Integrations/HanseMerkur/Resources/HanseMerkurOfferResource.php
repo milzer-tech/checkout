@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\HanseMerkur\Resources;
 
-use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurOffersPayload;
+use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurCreateOffersPayload;
 use Nezasa\Checkout\Integrations\HanseMerkur\Requests\HanseMerkurOffersRequest;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
@@ -19,7 +19,7 @@ class HanseMerkurOfferResource extends BaseResource
      * @throws FatalRequestException
      * @throws RequestException
      */
-    public function create(HanseMerkurOffersPayload $payload): Response
+    public function create(HanseMerkurCreateOffersPayload $payload): Response
     {
         return $this->connector->send(
             new HanseMerkurOffersRequest($payload)

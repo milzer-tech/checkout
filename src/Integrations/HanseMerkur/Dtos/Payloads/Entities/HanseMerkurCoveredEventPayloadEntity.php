@@ -18,7 +18,7 @@ class HanseMerkurCoveredEventPayloadEntity extends BaseDto
         public CarbonImmutable $bookingConfirmationDate,
         public CarbonImmutable $eventStartDate,
         public CarbonImmutable $eventEndDate,
-        public array $destinationCountries,
         public HanseMerkurMoneyEntity $totalEventCost,
+        public array $destinationCountries = [],
     ) {}
 }
