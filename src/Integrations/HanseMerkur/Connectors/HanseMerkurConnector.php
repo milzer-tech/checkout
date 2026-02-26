@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\HanseMerkur\Connectors;
 
 use Illuminate\Support\Facades\Config;
+use Nezasa\Checkout\Integrations\HanseMerkur\Resources\HanseMerkurOfferResource;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Traits\Makeable;
@@ -52,5 +53,10 @@ class HanseMerkurConnector extends Connector
             Config::string('checkout.insurance.hanse_merkur.username'),
             Config::string('checkout.insurance.hanse_merkur.password')
         );
+    }
+
+    public function offers(): HanseMerkurOfferResource
+    {
+        return new HanseMerkurOfferResource($this);
     }
 }
