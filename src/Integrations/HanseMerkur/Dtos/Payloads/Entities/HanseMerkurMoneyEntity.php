@@ -6,7 +6,7 @@ namespace Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\Entities;
 
 use Nezasa\Checkout\Dtos\BaseDto;
 
-class HanseMerkurMoneyPayloadEntity extends BaseDto
+class HanseMerkurMoneyEntity extends BaseDto
 {
     /**
      * Represents a monetary value.

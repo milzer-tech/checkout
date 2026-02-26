@@ -8,7 +8,7 @@ use Carbon\CarbonImmutable;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurGenreEnum;
 
-class HanseMerkurInsuredPersonPayload extends BaseDto
+class HanseMerkurInsuredPersonPayloadEntity extends BaseDto
 {
     /**
      * Information concerning a participant of the trip or event to be insured.
