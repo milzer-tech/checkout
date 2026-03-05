@@ -32,6 +32,7 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->app->register(CheckoutEventServiceProvider::class);
 
         $this->mergeConfigFrom(path: __DIR__.'/../../config/checkout.php', key: 'checkout');
+        $this->mergeConfigFrom(path: __DIR__.'/../../config/data.php', key: 'data');
         $this->mergeConfigFrom(path: __DIR__.'/../../config/cuba-travel.php', key: 'checkout::cuba-travel');
     }
 
@@ -87,8 +88,6 @@ class CheckoutServiceProvider extends ServiceProvider
      */
     private function setUpConfigurations(): void
     {
-        Config::set(key: 'data.date_format', value: [DATE_ATOM, 'Y-m-d', 'Y-m-d\TH:i:s.uP', 'Y-m-d H:i:sO']);
-
         Config::set(key: 'app.locale', value: request()->input('lang', 'en'));
     }
 
