@@ -18,8 +18,8 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-		Config::set(key: 'app.locale', value: $request->input('lang', Config::get(key: 'app.locale', default: 'en')));
-		
+        Config::set(key: 'app.locale', value: $request->input('lang', Config::get(key: 'app.locale', default: 'en')));
+
         return $next($request);
     }
 }

@@ -2,10 +2,10 @@
 
 use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Support\Facades\Route;
-use Nezasa\Checkout\Middleware\SetLocale;
 use Nezasa\Checkout\Livewire\PaymentPage;
 use Nezasa\Checkout\Livewire\PaymentResultPage;
 use Nezasa\Checkout\Livewire\TripDetailsPage;
+use Nezasa\Checkout\Middleware\SetLocale;
 
 Route::get('checkout/details', TripDetailsPage::class)
     ->middleware(['web', SetLocale::class])
