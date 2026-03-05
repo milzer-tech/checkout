@@ -32,7 +32,6 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->app->register(CheckoutEventServiceProvider::class);
 
         $this->mergeConfigFrom(path: __DIR__.'/../../config/checkout.php', key: 'checkout');
-        $this->mergeConfigFrom(path: __DIR__.'/../../config/data.php', key: 'data');
         $this->mergeConfigFrom(path: __DIR__.'/../../config/cuba-travel.php', key: 'checkout::cuba-travel');
     }
 
@@ -44,6 +43,8 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->loadResources();
 
         $this->registerLivewireComponents();
+
+        $this->setUpConfigurations();
 
         $this->publishAssets();
     }
@@ -79,6 +80,16 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->loadViewsFrom(path: __DIR__.'/../Resources/Views', namespace: 'checkout');
 
         $this->loadTranslationsFrom(path: __DIR__.'/../../lang', namespace: 'checkout');
+    }
+
+    /**
+     * Set up configurations for the package.
+     */
+    private function setUpConfigurations(): void
+    {
+        Config::set(key: 'data.date_format', value: array_merge(
+		    (array) Config::get(key: 'data.date_format'), [DATE_ATOM, 'Y-m-d', 'Y-m-d\TH:i:s.uP', 'Y-m-d H:i:sO']
+		));
     }
 
     /**
