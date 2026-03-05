@@ -45,8 +45,6 @@ class CheckoutServiceProvider extends ServiceProvider
 
         $this->registerLivewireComponents();
 
-        $this->setUpConfigurations();
-
         $this->publishAssets();
     }
 
@@ -81,14 +79,6 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->loadViewsFrom(path: __DIR__.'/../Resources/Views', namespace: 'checkout');
 
         $this->loadTranslationsFrom(path: __DIR__.'/../../lang', namespace: 'checkout');
-    }
-
-    /**
-     * Set up configurations for the package.
-     */
-    private function setUpConfigurations(): void
-    {
-        Config::set(key: 'app.locale', value: request()->input('lang', 'en'));
     }
 
     /**
