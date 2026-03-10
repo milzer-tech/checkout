@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Factories\CheckoutFactory;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
 
 /**
  * Eloquent model for checkout state.
@@ -149,5 +150,17 @@ class Checkout extends Model
         }
 
         return $data;
+    }
+
+    /**
+     * Get the pax info for the checkout.
+     *
+     * @return Collection<int, PaxInfoPayloadEntity>
+     */
+    public function getPaxInfo(): Collection
+    {
+        return collect($this->data['paxInfo'] ?? [])->flatten(1)->mapWithKeys(
+            fn ($pax, $index) => [PaxInfoPayloadEntity::from(['refId' => "pax-$index", ...$pax])]
+        );
     }
 }
