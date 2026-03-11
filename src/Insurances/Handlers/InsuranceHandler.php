@@ -5,10 +5,17 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Insurances\Handlers;
 
 use Exception;
-use Illuminate\Support\Facades\Config;
+use Nezasa\Checkout\Actions\Insurance\GetActiveInsuranceAction;
+use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Insurances\Contracts\InsuranceContract;
+use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
+use Nezasa\Checkout\Models\Checkout;
 
 final class InsuranceHandler
 {
+    public function __construct(private GetActiveInsuranceAction $getActiveInsuranceAction) {}
+
     /**
      * Indicate if any insurance provider is active.
      *
@@ -16,12 +23,27 @@ final class InsuranceHandler
      */
     public function isAvailable(): bool
     {
-        $count = Config::collection('checkout.insurance')->pluck('active')->filter()->count();
+        return $this->getActiveInsuranceAction->run() instanceof InsuranceContract;
+    }
 
-        if ($count > 1) {
-            throw new Exception('Only one insurance provider can be active at a time.');
-        }
+    /**
+     * @return false|array<int, InsuranceOfferDto>
+     */
+    public function createOffers(Checkout $model, ItinerarySummary $itinerary): false|array
+    {
+        $createOffersDto = new CreateInsuranceOffersDto(
+            startDate: $itinerary->startDate->toImmutable(),
+            endDate: $itinerary->endDate->toImmutable(),
+            totalPrice: $itinerary->price->showTotalPrice,
+            contact: $model->getContact(),
+            paxInfo: $model->getPaxInfo(),
+            destinationCountries: $itinerary->destinationCountries,
+        );
 
-        return $count === 1;
+        $result = $this->getActiveInsuranceAction->run()->getOffers($createOffersDto);
+
+        $model->updateData(['insurance_meta' => $result->meta]);
+
+        return $result->isSuccessful ? $result->offers : false;
     }
 }

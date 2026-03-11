@@ -7,7 +7,8 @@ use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
-use Nezasa\Checkout\Facades\InsuranceFacade;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
+use Nezasa\Checkout\Insurances\Handlers\InsuranceHandler;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
@@ -29,14 +30,54 @@ class InsuranceSection extends BaseCheckoutComponent
      */
     public bool $insuranceSelected = false;
 
+    public ?string $selectedOfferId = null;
+
+    /**
+     * @var array<int, InsuranceOfferDto>
+     */
+    public array $offers = [];
+
+    public bool $isInsuranceAvailable = false;
+
+    public ?bool $insuranceProviderIsAvailable = null;
+
     /**
      * Initialize the component with the promo code from the prices DTO.
      */
-    public function mount(): void
+    public function mount(InsuranceHandler $insuranceHandler): void
     {
+        $this->isInsuranceAvailable = $insuranceHandler->isAvailable();
+
         if (isset($this->model->data['contact'])) {
             $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
         }
+
+        $this->isExpanded = true;
+
+        $offers = $insuranceHandler->createOffers($this->model, $this->itinerary);
+
+        if ($offers === false) {
+            $this->insuranceProviderIsAvailable = false;
+        } else {
+            $this->offers = $offers;
+        }
+    }
+
+    public function updateSelectedOfferId(?string $id): void
+    {
+        $offer = collect($this->offers)->firstWhere('id', $id);
+
+        if (is_null($offer)) {
+            $this->selectedOfferId = null;
+            $this->model->updateData(['insurance' => null]);
+            $this->dispatch('insurance-declined');
+
+            return;
+        }
+
+        $this->selectedOfferId = $id;
+        $this->model->updateData(['insurance' => $id]);
+        $this->dispatch('insurance-selected', new InsuranceItem($id, $offer->title), $offer->price);
     }
 
     /**
@@ -77,7 +118,7 @@ class InsuranceSection extends BaseCheckoutComponent
     #[On(Section::AdditionalService->value)]
     public function listen(): void
     {
-        if (InsuranceFacade::isAvailable()) {
+        if ($this->isInsuranceAvailable) {
             $this->expand(Section::Insurance);
         } else {
             $this->next();
@@ -92,7 +133,7 @@ class InsuranceSection extends BaseCheckoutComponent
     #[On('price-updated')]
     public function priceUpdated(array $price): void
     {
-        if (! InsuranceFacade::isAvailable() || $this->insuranceSelected) {
+        if (! $this->isInsuranceAvailable || $this->insuranceSelected || $this->selectedOfferId) {
             return;
         }
 
@@ -133,7 +174,7 @@ class InsuranceSection extends BaseCheckoutComponent
      */
     public function getVerticalInsuranceConfigProperty(): array
     {
-        if (! InsuranceFacade::isAvailable() || ! $this->contact) {
+        if (! $this->isInsuranceAvailable || ! $this->contact) {
             return [];
         }
 

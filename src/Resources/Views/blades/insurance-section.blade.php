@@ -8,7 +8,7 @@
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
-    class="{{InsuranceFacade::isAvailable() ? '' : 'hidden'}}"
+    class="{{$isInsuranceAvailable ? '' : 'hidden'}}"
     onEdit="expand('{{Section::Insurance->value}}')"
 
 >
@@ -175,118 +175,126 @@
 
 
 
+{{--    <div class="space-y-4">--}}
+{{--        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">--}}
+
+{{--            @foreach($offers as $offer)--}}
+{{--            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm">--}}
+{{--                <div class="flex items-start gap-3">--}}
+{{--                    <!-- RADIO -->--}}
+{{--                    <input type="radio"--}}
+{{--                           class="h-4 w-4 mt-1 text-blue-600"--}}
+{{--                           name="INSURANCE_GROUP"--}}
+{{--                           value="VALUE_TRAVEL_PLUS"--}}
+{{--                           checked>--}}
+
+{{--                    <div class="flex-1">--}}
+{{--                        <div class="flex items-start justify-between gap-3">--}}
+{{--                            <div class="text-gray-900 font-medium">--}}
+{{--                               {{$offer->title}}--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                        <div class="mt-1 text-sm">--}}
+{{--                            <span class="text-emerald-600 font-medium">+ {{$offer->price->toHtml()}}</span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+
+{{--                <!-- FEATURES -->--}}
+{{--                <ul class="mt-4 space-y-2 text-sm text-gray-600">--}}
+{{--                    @foreach($offer->coverage as $coverage)--}}
+{{--                    <li class="flex items-start gap-2">--}}
+{{--                        <span class="mt-0.5 text-gray-500">✓</span>--}}
+{{--                        <span>{{$coverage}}</span>--}}
+{{--                    </li>--}}
+{{--                    @endforeach--}}
+{{--                </ul>--}}
+{{--            </label>--}}
+{{--            @endforeach--}}
+
+{{--            <!-- Card 3: No insurance (example not selected) -->--}}
+{{--            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm">--}}
+{{--                <div class="flex items-start gap-3">--}}
+{{--                    <input type="radio"--}}
+{{--                           class="h-4 w-4 mt-1 text-blue-600"--}}
+{{--                           name="INSURANCE_GROUP"--}}
+{{--                           value="VALUE_NO_INSURANCE">--}}
+
+{{--                    <div class="flex-1">--}}
+{{--                        <div class="flex items-start justify-between gap-3">--}}
+{{--                            <div class="text-gray-900 font-medium">--}}
+{{--                                No insurance--}}
+{{--                            </div>--}}
+
+{{--                            <!-- small icon (optional) -->--}}
+{{--                            <span class="shrink-0 text-gray-400" aria-hidden="true">⛨</span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </label>--}}
+
+{{--        </div>--}}
+{{--    </div>--}}
+
+
+
+
     <div class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+        <div class="grid grid-cols-1 gap-4">
 
-            <!-- Card 1: (example selected) -->
-            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm">
-                <div class="flex items-start gap-3">
-                    <!-- RADIO -->
-                    <input type="radio"
-                           class="h-4 w-4 mt-1 text-blue-600"
-                           name="INSURANCE_GROUP"
-                           value="VALUE_TRAVEL_PLUS"
-                           checked>
+            @foreach($offers as $offer)
+                <label class="border rounded-xl p-4 cursor-pointer hover:shadow-sm w-full block
+                 {{ $selectedOfferId == $offer->id
+        ? 'border-blue-500 ring-1 ring-blue-500'
+        : 'border-gray-200' }}
+                ">
+                    <div class="flex items-start gap-3">
+                        <input type="radio"
+                               class="h-4 w-4 mt-1 text-blue-600 shrink-0"
+                               name="INSURANCE_GROUP"
+                               value="{{ $offer->id ?? $loop->index }}"
+                               wire:click="updateSelectedOfferId('{{$offer->id}}')"
+                        >
 
-                    <div class="flex-1">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="text-gray-900 font-medium">
-                                Travel Plus
+                        <div class="min-w-0 flex-1">
+                            <div class="text-gray-900 font-medium break-words whitespace-normal leading-snug">
+                                {{ $offer->title }}
+                            </div>
+
+                            <div class="mt-1 text-sm">
+                                <span class="text-emerald-600 font-medium">+ {!! $offer->price->toHtml() !!}</span>
                             </div>
                         </div>
-
-                        <!-- PRICE PER DAY -->
-                        <div class="mt-1 text-sm">
-                            <span class="text-emerald-600 font-medium">+ 4.44 €</span>
-                            <span class="text-gray-500"> per day</span>
-                        </div>
                     </div>
-                </div>
 
-                <!-- FEATURES -->
-                <ul class="mt-4 space-y-2 text-sm text-gray-600">
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-gray-500">✓</span>
-                        <span>Medical expenses (including COVID-19)</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-gray-500">✓</span>
-                        <span>Trip cancellation due to your illness (incl. COVID-19), accident, death</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-gray-500">✓</span>
-                        <span>Assistance services</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-gray-500">✓</span>
-                        <span>Lost baggage</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-gray-500">✓</span>
-                        <span>Air travel insurance</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-gray-500">✓</span>
-                        <span>Liability</span>
-                    </li>
-                </ul>
-            </label>
+                    @if(!empty($offer->coverage))
+                        <ul class="mt-4 space-y-2 text-sm text-gray-600">
+                            @foreach($offer->coverage as $coverage)
+                                <li class="flex items-start gap-2">
+                                    <span class="mt-0.5 text-gray-500 shrink-0">✓</span>
+                                    <span class="break-words whitespace-normal">{{ $coverage }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </label>
+            @endforeach
 
-
-            <!-- Card 2: (example not selected) -->
-            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm">
+            <!-- No insurance -->
+            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm w-full block">
                 <div class="flex items-start gap-3">
                     <input type="radio"
-                           class="h-4 w-4 mt-1 text-blue-600"
+                           class="h-4 w-4 mt-1 text-blue-600 shrink-0"
                            name="INSURANCE_GROUP"
-                           value="VALUE_TRAVEL_BASIC">
+                           value="VALUE_NO_INSURANCE"
+                           wire:click="updateSelectedOfferId(null)"
+                    >
 
-                    <div class="flex-1">
+                    <div class="min-w-0 flex-1">
                         <div class="flex items-start justify-between gap-3">
-                            <div class="text-gray-900 font-medium">
-                                Travel Basic
-                            </div>
-                        </div>
-
-                        <div class="mt-1 text-sm">
-                            <span class="text-emerald-600 font-medium">+ 2.31 €</span>
-                            <span class="text-gray-500"> per day</span>
-                        </div>
-                    </div>
-                </div>
-
-                <ul class="mt-4 space-y-2 text-sm text-gray-600">
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-gray-500">✓</span>
-                        <span>Medical expenses (including COVID-19)</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-gray-500">✓</span>
-                        <span>Trip cancellation due to your illness (incl. COVID-19), accident, death</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-gray-500">✓</span>
-                        <span>Assistance services</span>
-                    </li>
-                </ul>
-            </label>
-
-
-            <!-- Card 3: No insurance (example not selected) -->
-            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm">
-                <div class="flex items-start gap-3">
-                    <input type="radio"
-                           class="h-4 w-4 mt-1 text-blue-600"
-                           name="INSURANCE_GROUP"
-                           value="VALUE_NO_INSURANCE">
-
-                    <div class="flex-1">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="text-gray-900 font-medium">
+                            <div class="text-gray-900 font-medium break-words whitespace-normal leading-snug">
                                 No insurance
                             </div>
-
-                            <!-- small icon (optional) -->
                             <span class="shrink-0 text-gray-400" aria-hidden="true">⛨</span>
                         </div>
                     </div>
@@ -295,4 +303,5 @@
 
         </div>
     </div>
+
 </x-checkout::editable-box>
