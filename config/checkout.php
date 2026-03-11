@@ -1,5 +1,6 @@
 <?php
 
+use Nezasa\Checkout\Insurances\Providers\HanseMerkur\HanseMerkurInsurance;
 use Nezasa\Checkout\Payments\Gateways\Computop\ComputopGateway;
 use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceGateway;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaWidgetGateway;
@@ -74,6 +75,10 @@ return [
         InvoiceGateway::class,
         StripeGateway::class,
         ComputopGateway::class,
+    ],
+
+    'insurance_provider' => [
+        HanseMerkurInsurance::class,
     ],
 
     'term_limit' => (int) env('CHECKOUT_TERM_LIMIT', 600),
