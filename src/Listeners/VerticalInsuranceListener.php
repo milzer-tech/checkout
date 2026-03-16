@@ -6,7 +6,6 @@ namespace Nezasa\Checkout\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Config;
-use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
@@ -35,7 +34,7 @@ final class VerticalInsuranceListener implements ShouldQueue
     /**
      * Handle the event.
      */
-    public function handle(ItineraryBookingFailedEvent|ItineraryBookingSucceededEvent $event): void
+    public function handle(ItineraryBookingSucceededEvent $event): void
     {
         $this->transaction = $event->transaction;
 
