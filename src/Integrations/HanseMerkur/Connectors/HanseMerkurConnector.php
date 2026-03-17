@@ -30,7 +30,7 @@ class HanseMerkurConnector extends Connector implements HasBody
      */
     public function resolveBaseUrl(): string
     {
-        return Config::string('checkout.insurance.hanse_merkur.base_url');
+        return Config::string('checkout.insurance.hanse_merkur.offers_base_url');
     }
 
     /**
