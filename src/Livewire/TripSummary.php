@@ -113,6 +113,8 @@ class TripSummary extends BaseCheckoutComponent
         $this->itinerary->price->showTotalPrice->amount = $this->itinerary->price->discountedPackagePrice->amount + intval($price['amount']);
         $this->itinerary->price->showPaymentPrice->amount = $this->itinerary->price->downPayment->amount + intval($price['amount']);
 
+        resolve(VerifyAvailabilityAction::class)->run($this->getParams(), $this->itinerary);
+
         $this->dispatch('price-updated', $this->itinerary->price);
     }
 
@@ -126,6 +128,8 @@ class TripSummary extends BaseCheckoutComponent
 
         $this->itinerary->price->showTotalPrice = $this->itinerary->price->discountedPackagePrice;
         $this->itinerary->price->showPaymentPrice = $this->itinerary->price->downPayment;
+
+        resolve(VerifyAvailabilityAction::class)->run($this->getParams(), $this->itinerary);
 
         $this->dispatch('price-updated', $this->itinerary->price);
     }
