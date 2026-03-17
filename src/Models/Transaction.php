@@ -92,4 +92,16 @@ class Transaction extends Model
             get: fn ($value, array $attributes): Price => new Price((float) $attributes['amount'], $attributes['currency'])
         );
     }
+
+    /**
+     * Update the result data for the transaction.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function pushToResultData(array $data): void
+    {
+        $this->update([
+            'result_data' => array_merge($this->result_data ?? [], $data),
+        ]);
+    }
 }
