@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\HanseMerkur\Requests;
 
-use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurCreateBookingPayload;
-use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Responses\HanseMerkurCreateOffersResponse;
+use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurReservePayload;
+use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Responses\HanseMerkurReserveResponse;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
-class HanseMerkurCreateBookingRequest extends Request implements HasBody
+class HanseMerkurReserveRequest extends Request implements HasBody
 {
     use HasJsonBody;
 
@@ -24,7 +24,7 @@ class HanseMerkurCreateBookingRequest extends Request implements HasBody
     /**
      * Create a new instance of HanseMerkurCreateBookingRequest
      */
-    public function __construct(public HanseMerkurCreateBookingPayload $payload) {}
+    public function __construct(public HanseMerkurReservePayload $payload) {}
 
     /**
      * Define the endpoint for the request.
@@ -44,8 +44,11 @@ class HanseMerkurCreateBookingRequest extends Request implements HasBody
         return $this->payload->toArray();
     }
 
-    public function createDtoFromResponse(Response $response): HanseMerkurCreateOffersResponse
+    /**
+     * {@inheritDoc}
+     */
+    public function createDtoFromResponse(Response $response): HanseMerkurReserveResponse
     {
-        return HanseMerkurCreateOffersResponse::from($response->json());
+        return HanseMerkurReserveResponse::from($response->json());
     }
 }
