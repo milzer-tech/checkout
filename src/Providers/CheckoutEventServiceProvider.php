@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Event;
 use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Listeners\CubaTravel\SendEmailToCubaTravelListener;
+use Nezasa\Checkout\Listeners\InsuranceListener;
 use Nezasa\Checkout\Listeners\VerticalInsuranceListener;
 
 class CheckoutEventServiceProvider extends EventServiceProvider
@@ -20,6 +21,7 @@ class CheckoutEventServiceProvider extends EventServiceProvider
     {
         Event::listen(ItineraryBookingSucceededEvent::class, SendEmailToCubaTravelListener::class);
         Event::listen(ItineraryBookingSucceededEvent::class, VerticalInsuranceListener::class);
+        Event::listen(ItineraryBookingSucceededEvent::class, InsuranceListener::class);
 
         Event::listen(ItineraryBookingFailedEvent::class, SendEmailToCubaTravelListener::class);
     }
