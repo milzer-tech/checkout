@@ -26,6 +26,14 @@ final class CreateInsuranceOffersDto extends BaseDto
         public ContactInfoPayloadEntity $contact,
         public Collection $paxInfo,
         public Collection $destinationCountries,
-
     ) {}
+
+    public static function from(...$payloads): static
+    {
+        if (isset($payloads[0]['destinationCountries']) && is_array($payloads[0]['destinationCountries'])) {
+            $payloads[0]['destinationCountries'] = collect($payloads[0]['destinationCountries']);
+        }
+
+        return parent::from(...$payloads);
+    }
 }
