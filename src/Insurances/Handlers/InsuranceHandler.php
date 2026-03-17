@@ -8,15 +8,15 @@ use Exception;
 use Nezasa\Checkout\Actions\Insurance\GetActiveInsuranceAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Insurances\Contracts\InsuranceContract;
+use Nezasa\Checkout\Insurances\Dtos\BookInsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
-use Throwable;
 
 final class InsuranceHandler
 {
@@ -33,6 +33,8 @@ final class InsuranceHandler
     }
 
     /**
+     * Create insurance offers.
+     *
      * @return false|array<int, InsuranceOfferDto>
      */
     public function createOffers(Checkout $model, ItinerarySummary $itinerary): false|array
@@ -56,37 +58,48 @@ final class InsuranceHandler
         return $result->isSuccessful ? $result->offers : false;
     }
 
-    public function bookOffer(Transaction $transaction) {}
-
-    private function saveInsuranceOnNezasa(Transaction $transaction): void
+    /**
+     * Book the selected insurance offer.
+     */
+    public function bookOffer(Transaction $transaction): void
     {
-        try {
-            $insurance = data_get($transaction->result_data, 'insurance_purchase');
+        $data = $transaction->checkout->data;
 
-            if (isset($insurance['id'])) {
-                $response = NezasaConnector::make()->checkout()->addCustomInsurance(
-                    checkoutId: $transaction->checkout->checkout_id,
+        $selectedOffer = InsuranceOfferDto::from($data['insurance']);
+        $result = $this->getActiveInsuranceAction->run()->bookOffer(
+            bookOfferDto: new BookInsuranceOfferDto(
+                selectedOffer: $selectedOffer,
+                createdOfferDto: CreateInsuranceOffersDto::from($data['insurance_create_offer']),
+                meta: $data['insurance_meta'],
+            )
+        );
+
+        $transaction->pushToResultData(['insurance' => $result->toArray()]);
+
+        $this->recordInsuranceBooking($result, $transaction, $selectedOffer);
+    }
+
+    /**
+     * Record the insurance booking in Nezasa.
+     */
+    public function recordInsuranceBooking(InsuranceBookOfferResult $result, Transaction $transaction, InsuranceOfferDto $selectedOffer): void
+    {
+        if ($result->isSuccessful) {
+            $nezasa = NezasaConnector::make()->checkout()->addCustomInsurance(
+                checkoutId: $transaction->checkout->checkout_id,
+                payload: $this->getActiveInsuranceAction->run()->getNezasaPayload(
                     payload: new AddCustomInsurancePayload(
-                        name: $insurance['product']['promotional_header'],
-                        netPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
-                        salesPrice: new Price(intval($insurance['total']) / 100, $insurance['currency']),
+                        name: $selectedOffer->title,
+                        netPrice: $selectedOffer->price,
+                        salesPrice: $selectedOffer->price,
                         bookingStatus: AvailabilityEnum::Booked,
-                        supplierName: 'ViCoverage',
-                        supplierConfirmationNumber: $insurance['policy_number'],
-                        description: $insurance['policy_number']
+                        supplierName: $this->getActiveInsuranceAction->run()->getName(),
+                        supplierConfirmationNumber: $result->confirmationId,
                     )
-                );
+                )
+            );
 
-                $transaction->update([
-                    'result_data' => $transaction->result_data + ['nezasa_insurance_response' => $response->array()],
-                ]);
-            }
-        } catch (Throwable $e) {
-            $transaction->update([
-                'result_data' => $transaction->result_data + ['nezasa_insurance_response' => 'could not be saved'],
-            ]);
-
-            throw $e;
+            $transaction->pushToResultData(['nezasa_insurance_response' => $nezasa->array()]);
         }
     }
 }
