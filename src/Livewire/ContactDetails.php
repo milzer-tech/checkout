@@ -105,7 +105,7 @@ class ContactDetails extends BaseCheckoutComponent
 
             ],
             'mobilePhone.phoneNumber' => ['numeric'],
-            'postalCode' => ['string', 'max:20'],
+            'postalCode' => ['numeric'],
             'city' => ['string', 'max:255'],
             'state' => ['string', 'max:255'],
             'country' => ['string', 'max:255'],
