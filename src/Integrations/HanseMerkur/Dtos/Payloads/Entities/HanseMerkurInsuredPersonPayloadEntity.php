@@ -6,7 +6,7 @@ namespace Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\Entities;
 
 use Carbon\CarbonImmutable;
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurGenreEnum;
+use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurGenderEnum;
 
 class HanseMerkurInsuredPersonPayloadEntity extends BaseDto
 {
@@ -18,6 +18,6 @@ class HanseMerkurInsuredPersonPayloadEntity extends BaseDto
         public CarbonImmutable $birthDate,
         public ?string $givenName = null,
         public ?string $surname = null,
-        public ?HanseMerkurGenreEnum $gender = null,
+        public ?HanseMerkurGenderEnum $gender = null,
     ) {}
 }
