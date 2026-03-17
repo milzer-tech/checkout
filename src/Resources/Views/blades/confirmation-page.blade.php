@@ -878,7 +878,7 @@
                     <div class="flex justify-between items-center mb-2">
                         <span class="font-bold text-lg">Total paid (EUR)</span>
                         <span
-                            class="font-bold text-lg">{{ Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}</span>
+                            class="font-bold text-lg">{{ $paid->toHtml() }}</span>
                     </div>
 
                     <button
