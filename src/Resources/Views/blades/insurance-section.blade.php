@@ -302,6 +302,19 @@
             </label>
 
         </div>
+
+
+        <div class="space-y-4 mt-8">
+                        <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
+{{----}}
+                        <div class="flex justify-between items-center">
+                            <div></div>
+                            <button type="button" wire:click="next"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
+                                Next
+                            </button>
+                        </div>
+                    </div>
     </div>
 
 </x-checkout::editable-box>
