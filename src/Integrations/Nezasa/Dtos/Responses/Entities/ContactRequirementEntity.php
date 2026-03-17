@@ -45,6 +45,15 @@ class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContra
             $this->postalCode = TravelerRequirementFieldEnum::Required;
             $this->country = TravelerRequirementFieldEnum::Required;
         }
+
+        if (Config::boolean('checkout.insurance.hanse_merkur.active')) {
+            $this->firstName = TravelerRequirementFieldEnum::Required;
+            $this->lastName = TravelerRequirementFieldEnum::Required;
+            $this->email = TravelerRequirementFieldEnum::Required;
+            $this->street1 = TravelerRequirementFieldEnum::Required;
+            $this->postalCode = TravelerRequirementFieldEnum::Required;
+            $this->country = TravelerRequirementFieldEnum::Required;
+        }
     }
 
     /**
