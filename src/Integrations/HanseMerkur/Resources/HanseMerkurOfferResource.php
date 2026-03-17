@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\HanseMerkur\Resources;
 
-use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurCreateBookingPayload;
 use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurCreateOffersPayload;
-use Nezasa\Checkout\Integrations\HanseMerkur\Requests\HanseMerkurCreateBookingRequest;
+use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurReservePayload;
 use Nezasa\Checkout\Integrations\HanseMerkur\Requests\HanseMerkurOffersRequest;
+use Nezasa\Checkout\Integrations\HanseMerkur\Requests\HanseMerkurReserveRequest;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\BaseResource;
@@ -34,10 +34,10 @@ class HanseMerkurOfferResource extends BaseResource
      * @throws FatalRequestException
      * @throws RequestException
      */
-    public function reserveBooking(HanseMerkurCreateBookingPayload $payload): Response
+    public function reserve(HanseMerkurReservePayload $payload): Response
     {
         return $this->connector->send(
-            new HanseMerkurCreateBookingRequest($payload)
+            new HanseMerkurReserveRequest($payload)
         );
     }
 }
