@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Supporters;
 
 use Illuminate\Support\Facades\Cache;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\VerifyAvailabilityResponse;
 use Saloon\Http\Response;
 
 class AvailabilitySupporter
@@ -40,6 +41,13 @@ class AvailabilitySupporter
     public function getCachedResult(CheckoutParamsDto $params): array
     {
         return Cache::get(self::$keyPrefix.$params->checkoutId.$params->itineraryId, []);
+    }
+
+    public function getCachedResultDto(CheckoutParamsDto $params): VerifyAvailabilityResponse
+    {
+        return VerifyAvailabilityResponse::from(
+            $this->getCachedResult($params)
+        );
     }
 
     /**
