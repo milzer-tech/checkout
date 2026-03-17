@@ -7,11 +7,13 @@ use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Handlers\InsuranceHandler;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
+use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
 
 class InsuranceSection extends BaseCheckoutComponent
 {
@@ -48,13 +50,15 @@ class InsuranceSection extends BaseCheckoutComponent
     {
         $this->isInsuranceAvailable = $insuranceHandler->isAvailable();
 
+        if (! $this->isInsuranceAvailable) {
+            $this->next();
+
+            return;
+        }
+
         if (isset($this->model->data['contact'])) {
             $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
         }
-
-        $this->isExpanded = true;
-
-        $this->generateInsuranceOffers();
     }
 
     public function updateSelectedOfferId(?string $id): void
@@ -113,7 +117,12 @@ class InsuranceSection extends BaseCheckoutComponent
     public function listen(): void
     {
         if ($this->isInsuranceAvailable) {
+            (new VerifyAvailabilityJob($this->getParams()))->handle();
+
+            $this->itinerary->price = AvailabilityFacade::getCachedResultDto($this->getParams())->summary->prices;
+
             $this->generateInsuranceOffers();
+
             $this->expand(Section::Insurance);
         } else {
             $this->next();
