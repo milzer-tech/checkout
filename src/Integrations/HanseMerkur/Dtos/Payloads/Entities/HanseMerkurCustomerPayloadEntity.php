@@ -6,7 +6,7 @@ namespace Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\Entities;
 
 use Carbon\CarbonImmutable;
 use Nezasa\Checkout\Dtos\BaseDto;
-use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurGenreEnum;
+use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurGenderEnum;
 
 class HanseMerkurCustomerPayloadEntity extends BaseDto
 {
@@ -17,7 +17,7 @@ class HanseMerkurCustomerPayloadEntity extends BaseDto
         // Country of residence of the insurance customer according to ISO 3166-1 alpha-2, for example, "DE"
         public HanseMerkurContactDataPayloadEntity $contactData,
         public string $countryOfResidence,
-        public HanseMerkurGenreEnum $genre,
+        public HanseMerkurGenderEnum $gender,
 
         public ?CarbonImmutable $birthDate = null,
         public ?string $givenName = null,

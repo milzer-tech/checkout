@@ -14,7 +14,7 @@ use AzimKordpour\PowerEnum\Traits\PowerEnum;
  * @method bool isChild()
  * @method bool isCompany()
  */
-enum HanseMerkurGenreEnum: string
+enum HanseMerkurGenderEnum: string
 {
     use PowerEnum;
 
