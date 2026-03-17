@@ -54,13 +54,7 @@ class InsuranceSection extends BaseCheckoutComponent
 
         $this->isExpanded = true;
 
-        $offers = $insuranceHandler->createOffers($this->model, $this->itinerary);
-
-        if ($offers === false) {
-            $this->insuranceProviderIsAvailable = false;
-        } else {
-            $this->offers = $offers;
-        }
+        $this->generateInsuranceOffers();
     }
 
     public function updateSelectedOfferId(?string $id): void
@@ -76,7 +70,7 @@ class InsuranceSection extends BaseCheckoutComponent
         }
 
         $this->selectedOfferId = $id;
-        $this->model->updateData(['insurance' => $id]);
+        $this->model->updateData(['insurance' => $offer->toArray()]);
         $this->dispatch('insurance-selected', new InsuranceItem($id, $offer->title), $offer->price);
     }
 
@@ -119,6 +113,7 @@ class InsuranceSection extends BaseCheckoutComponent
     public function listen(): void
     {
         if ($this->isInsuranceAvailable) {
+            $this->generateInsuranceOffers();
             $this->expand(Section::Insurance);
         } else {
             $this->next();
@@ -202,5 +197,17 @@ class InsuranceSection extends BaseCheckoutComponent
                 ]],
             ],
         ];
+    }
+
+    public function generateInsuranceOffers(): void
+    {
+        if ($this->model->isCompleted(Section::Contact) && $this->model->isCompleted(Section::Traveller)) {
+            $offers = resolve(InsuranceHandler::class)->createOffers($this->model, $this->itinerary);
+            if ($offers === false) {
+                $this->insuranceProviderIsAvailable = false;
+            } else {
+                $this->offers = $offers;
+            }
+        }
     }
 }
