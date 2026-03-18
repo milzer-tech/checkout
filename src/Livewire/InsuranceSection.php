@@ -145,6 +145,7 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->expand(Section::Insurance);
 
         $this->dispatch('insurance-load-offers');
+        $this->dispatch('insurance-declined');
     }
 
     public function loadOffer(): void
