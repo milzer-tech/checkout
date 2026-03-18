@@ -280,6 +280,9 @@
                 </label>
             @endforeach
 
+            @if(! empty($offers))
+
+
             <!-- No insurance -->
             <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm w-full block">
                 <div class="flex items-start gap-3">
@@ -300,6 +303,7 @@
                     </div>
                 </div>
             </label>
+                @endif
 
         </div>
 
