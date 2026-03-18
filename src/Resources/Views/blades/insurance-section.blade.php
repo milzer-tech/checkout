@@ -239,8 +239,19 @@
 
 
 
-    <div class="space-y-4">
-        <div class="grid grid-cols-1 gap-4">
+    <div class="relative" x-data @insurance-load-offers.window="$wire.call('loadOffer')">
+        <div wire:loading.flex wire:target="listen,loadOffer"
+             class="absolute inset-0 z-10 items-center justify-center gap-3 rounded-xl bg-white/80 backdrop-blur-sm text-gray-700">
+            <svg class="h-5 w-5 animate-spin text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+            </svg>
+            <span class="text-sm">Loading insurance offers...</span>
+        </div>
+
+        <div wire:loading.remove wire:target="listen,loadOffer" class="space-y-4">
+            <div class="grid grid-cols-1 gap-4">
 
             @foreach($offers as $offer)
                 <label class="border rounded-xl p-4 cursor-pointer hover:shadow-sm w-full block
@@ -310,7 +321,6 @@
 
         <div class="space-y-4 mt-8">
                         <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
-{{----}}
                         <div class="flex justify-between items-center">
                             <div></div>
                             <button type="button" wire:click="next"
@@ -319,6 +329,7 @@
                             </button>
                         </div>
                     </div>
+        </div>
     </div>
 
 </x-checkout::editable-box>

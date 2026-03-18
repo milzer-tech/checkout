@@ -116,21 +116,34 @@ class InsuranceSection extends BaseCheckoutComponent
     #[On(Section::AdditionalService->value)]
     public function listen(): void
     {
-        if ($this->isInsuranceAvailable) {
-            $this->offers = [];
-            $this->expand(Section::Insurance);
-        } else {
+        if (! $this->isInsuranceAvailable) {
             $this->next();
+
+            return;
         }
+
+        $this->offers = [];
+        $this->selectedOfferId = null;
+        $this->insuranceSelected = false;
+        $this->insuranceProviderIsAvailable = null;
+
+        $this->expand(Section::Insurance);
+
+        $this->dispatch('insurance-load-offers');
     }
 
     public function loadOffer(): void
     {
         (new VerifyAvailabilityJob($this->getParams()))->handle();
 
-        $this->itinerary->price = AvailabilityFacade::getCachedResultDto($this->getParams())->summary->prices;
+        if (AvailabilityFacade::getCachedStatus($this->getParams()) === 200) {
+            $this->itinerary->price = AvailabilityFacade::getCachedResultDto($this->getParams())->summary->prices;
 
-        $this->generateInsuranceOffers();
+            $this->generateInsuranceOffers();
+        } else {
+            $this->insuranceProviderIsAvailable = null;
+        }
+
     }
 
     /**
