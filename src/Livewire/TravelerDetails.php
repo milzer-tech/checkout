@@ -21,17 +21,6 @@ use Nezasa\Checkout\Supporters\TravelValidationsRulesSupporter;
 
 class TravelerDetails extends BaseCheckoutComponent
 {
-    #[On('sections-reset')]
-    public function resetSection(array $sections): void
-    {
-        if (! in_array(Section::Traveller->value, $sections, true)) {
-            return;
-        }
-
-        $this->isCompleted = false;
-        $this->isExpanded = false;
-    }
-
     /**
      * The summary of the itinerary.
      */
@@ -230,5 +219,16 @@ class TravelerDetails extends BaseCheckoutComponent
                 return [$key => strtolower(trans("checkout::input.attributes.$translatedKey"))];
             })
             ->toArray();
+    }
+
+    #[On('sections-reset')]
+    public function resetSection(array $sections): void
+    {
+        if (! in_array(Section::Traveller->value, $sections, true)) {
+            return;
+        }
+
+        $this->isCompleted = false;
+        $this->isExpanded = false;
     }
 }

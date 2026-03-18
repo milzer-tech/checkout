@@ -17,21 +17,6 @@ use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
 
 class InsuranceSection extends BaseCheckoutComponent
 {
-    #[On('sections-reset')]
-    public function resetSection(array $sections): void
-    {
-        if (! in_array(Section::Insurance->value, $sections, true)) {
-            return;
-        }
-
-        $this->isCompleted = false;
-        $this->isExpanded = false;
-        $this->offers = [];
-        $this->selectedOfferId = null;
-        $this->insuranceSelected = false;
-        $this->insuranceProviderIsAvailable = null;
-    }
-
     /**
      * The summary of the itinerary.
      */
@@ -251,5 +236,20 @@ class InsuranceSection extends BaseCheckoutComponent
                 $this->offers = $offers;
             }
         }
+    }
+
+    #[On('sections-reset')]
+    public function resetSection(array $sections): void
+    {
+        if (! in_array(Section::Insurance->value, $sections, true)) {
+            return;
+        }
+
+        $this->isCompleted = false;
+        $this->isExpanded = false;
+        $this->offers = [];
+        $this->selectedOfferId = null;
+        $this->insuranceSelected = false;
+        $this->insuranceProviderIsAvailable = null;
     }
 }
