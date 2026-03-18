@@ -12,6 +12,8 @@ use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceTerm;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceTerms;
 use Nezasa\Checkout\Integrations\HanseMerkur\Connectors\HanseMerkurConnector;
 use Nezasa\Checkout\Integrations\HanseMerkur\Connectors\HanseMerkurPaymentConnector;
 use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\Entities\HanseMerkurAddressPayloadEntity;
@@ -61,11 +63,24 @@ final class HanseMerkurInsurance implements InsuranceContract
 
         /** @var HanseMerkurOfferProductResponseEntity $product */
         foreach ($response->dto()->offers->pluck('products')->flatten()->sortBy('productTotalPremium.amount') as $product) {
+
+            $terms = [];
+            foreach ($product->documents as $document) {
+                if ($document->documentType?->mustBeDisplayed()) {
+                    $terms[] = new InsuranceTerm(
+                        text: $document->documentType->isIpid() ? 'IPID' : 'Avb',
+                        link: $document->url
+                    );
+                }
+            }
+
             $offers[] = new InsuranceOfferDto(
                 id: $product->productInstanceId,
                 title: $product->title ?? 'Unknown',
                 price: Price::from($product->productTotalPremium),
-                coverage: $product->coverageData->pluck('title')->toArray()
+                coverage: $product->coverageData->pluck('title')->toArray(),
+                terms: new InsuranceTerms(text: 'txt', checkboxText: 'check', terms: $terms),
+
             );
         }
 

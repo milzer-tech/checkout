@@ -19,6 +19,7 @@ final class InsuranceOfferDto extends BaseDto
         public string $title,
         public Price $price,
         public array $coverage,
+        public InsuranceTerms $terms = new InsuranceTerms
     ) {}
 
 }
