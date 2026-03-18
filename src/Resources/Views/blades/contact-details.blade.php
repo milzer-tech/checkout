@@ -8,7 +8,7 @@
         :state="$state"
         :showEdit="$state === 'valid'"
         :showCheck="$isCompleted"
-        onEdit="expand('{{Section::Contact->value}}')"
+        onEdit="reopen('{{Section::Contact->value}}')"
 >
     <form wire:submit="save" class="space-y-6">
 

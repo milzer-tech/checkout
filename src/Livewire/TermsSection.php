@@ -11,6 +11,17 @@ use Nezasa\Checkout\Jobs\SaveTermAgreementJob;
 
 class TermsSection extends BaseCheckoutComponent
 {
+    #[On('sections-reset')]
+    public function resetSection(array $sections): void
+    {
+        if (! in_array(Section::TermsAndConditions->value, $sections, true)) {
+            return;
+        }
+
+        $this->isCompleted = false;
+        $this->isExpanded = false;
+    }
+
     /**
      * The terms and conditions response containing the terms and conditions.
      */

@@ -19,6 +19,17 @@ use Nezasa\Checkout\Models\Checkout;
 
 class AdditionalServicesSection extends BaseCheckoutComponent
 {
+    #[On('sections-reset')]
+    public function resetSection(array $sections): void
+    {
+        if (! in_array(Section::AdditionalService->value, $sections, true)) {
+            return;
+        }
+
+        $this->isCompleted = false;
+        $this->isExpanded = false;
+    }
+
     /**
      * The upsell items response containing available upsell items.
      */

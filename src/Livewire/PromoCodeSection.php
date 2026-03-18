@@ -10,6 +10,17 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 
 class PromoCodeSection extends BaseCheckoutComponent
 {
+    #[On('sections-reset')]
+    public function resetSection(array $sections): void
+    {
+        if (! in_array(Section::Promo->value, $sections, true)) {
+            return;
+        }
+
+        $this->isCompleted = false;
+        $this->isExpanded = false;
+    }
+
     /**
      * The promo code entered by the user.
      */

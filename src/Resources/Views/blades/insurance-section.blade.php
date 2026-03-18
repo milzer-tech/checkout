@@ -9,7 +9,7 @@
     :showEdit="true"
     :showCheck="$isCompleted"
     class="{{$isInsuranceAvailable ? '' : 'hidden'}}"
-    onEdit="expand('{{Section::Insurance->value}}')"
+    onEdit="reopen('{{Section::Insurance->value}}')"
 
 >
 {{--    <div class="space-y-4">--}}

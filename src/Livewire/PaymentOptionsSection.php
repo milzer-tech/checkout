@@ -12,6 +12,17 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RegulatoryInformationResp
 
 class PaymentOptionsSection extends BaseCheckoutComponent
 {
+    #[On('sections-reset')]
+    public function resetSection(array $sections): void
+    {
+        if (! in_array(Section::PaymentOptions->value, $sections, true)) {
+            return;
+        }
+
+        $this->isCompleted = false;
+        $this->isExpanded = false;
+    }
+
     /**
      * Available payment options.
      *

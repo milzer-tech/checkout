@@ -19,6 +19,17 @@ use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
 
 class ActivitySection extends BaseCheckoutComponent
 {
+    #[On('sections-reset')]
+    public function resetSection(array $sections): void
+    {
+        if (! in_array(Section::Activity->value, $sections, true)) {
+            return;
+        }
+
+        $this->isCompleted = false;
+        $this->isExpanded = false;
+    }
+
     /**
      * Indicates whether the component should be rendered.
      */

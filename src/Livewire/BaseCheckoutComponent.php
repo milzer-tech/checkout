@@ -69,10 +69,48 @@ class BaseCheckoutComponent extends Component
     {
         $section = $section instanceof Section ? $section : Section::from($section);
 
+        if (! $this->canExpand($section)) {
+            $blocking = $this->firstIncompleteSection();
+
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'title' => trans('checkout::page.trip_details.error'),
+                'message' => trans('checkout::exceptions.please_complete_this_section').($blocking ? ': '.$blocking->label() : ''),
+            ]);
+
+            return;
+        }
+
+        $this->resetLaterSections($section);
+
         $this->isExpanded = true;
 
         resolve(SaveSectionStatusAction::class)
             ->run($this->model, $section, $this->isCompleted, $this->isExpanded);
+    }
+
+    /**
+     * Reopen an already completed section for editing and force the user to continue forward again.
+     */
+    public function reopen(Section|string $section): void
+    {
+        $section = $section instanceof Section ? $section : Section::from($section);
+
+        if (! $this->canExpand($section)) {
+            $blocking = $this->firstIncompleteSection();
+
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'title' => trans('checkout::page.trip_details.error'),
+                'message' => trans('checkout::exceptions.please_complete_this_section').($blocking ? ': '.$blocking->label() : ''),
+            ]);
+
+            return;
+        }
+
+        $this->markAsNotCompletedAndExpand($section);
+
+        $this->resetLaterSections($section);
     }
 
     /**
@@ -127,6 +165,94 @@ class BaseCheckoutComponent extends Component
 
         resolve(SaveSectionStatusAction::class)
             ->run($this->model, $section, $this->isCompleted, $this->isExpanded);
+    }
+
+    /**
+     * Collapse and mark as not completed all sections that come after the given one.
+     */
+    protected function resetLaterSections(Section $section): void
+    {
+        $flow = $this->sectionFlow();
+        $index = array_search($section, $flow, true);
+
+        if ($index === false) {
+            return;
+        }
+
+        $laterSections = array_slice($flow, $index + 1);
+
+        if (empty($laterSections)) {
+            return;
+        }
+
+        $updates = [];
+
+        foreach ($laterSections as $later) {
+            $updates["status.{$later->value}.isCompleted"] = false;
+            $updates["status.{$later->value}.isExpanded"] = false;
+        }
+
+        $this->model->updateData($updates);
+
+        $this->dispatch('sections-reset', sections: array_map(fn (Section $s): string => $s->value, $laterSections));
+    }
+
+    /**
+     * Ordered list of sections to enforce linear progression.
+     *
+     * @return array<int, Section>
+     */
+    protected function sectionFlow(): array
+    {
+        return [
+            Section::Contact,
+            Section::Traveller,
+            Section::Activity,
+            Section::Promo,
+            Section::AdditionalService,
+            Section::Insurance,
+            Section::TermsAndConditions,
+            Section::PaymentOptions,
+        ];
+    }
+
+    /**
+     * Get the first incomplete section based on stored status.
+     */
+    protected function firstIncompleteSection(): ?Section
+    {
+        $status = $this->model->data['status'] ?? [];
+
+        foreach ($this->sectionFlow() as $section) {
+            if (! data_get($status, "{$section->value}.isCompleted")) {
+                return $section;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Determine if the requested section may be expanded.
+     */
+    protected function canExpand(Section $section): bool
+    {
+        $flow = $this->sectionFlow();
+        $requestedIndex = array_search($section, $flow, true);
+
+        if ($requestedIndex === false) {
+            return true;
+        }
+
+        $firstIncomplete = $this->firstIncompleteSection();
+
+        if (! $firstIncomplete) {
+            return true;
+        }
+
+        $firstIncompleteIndex = array_search($firstIncomplete, $flow, true);
+
+        return $requestedIndex <= $firstIncompleteIndex;
     }
 
     /**

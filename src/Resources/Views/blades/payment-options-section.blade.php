@@ -7,7 +7,7 @@
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
-    onEdit="expand('{{Section::PaymentOptions->value}}')"
+    onEdit="reopen('{{Section::PaymentOptions->value}}')"
 >
 
     <div class="space-y-8">

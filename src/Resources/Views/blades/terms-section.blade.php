@@ -7,7 +7,7 @@
     :showEdit="true"
     :showCheck="$isCompleted"
     class="{{$termsAndConditions->sections->isEmpty() ? 'hidden' : ''}}"
-    onEdit="expand('{{Section::TermsAndConditions->value}}')"
+    onEdit="reopen('{{Section::TermsAndConditions->value}}')"
 >
 
     @foreach($termsAndConditions->sections as $index => $term)
