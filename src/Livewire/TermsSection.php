@@ -65,7 +65,7 @@ class TermsSection extends BaseCheckoutComponent
             ])
             ->toArray();
 
-        if ($this->insuranceTerms->checkboxText) {
+        if ($this->insuranceTerms?->checkboxText) {
             $insurances = ['acceptedInsurance.'.$this->insuranceTerms?->getKey() => ['required', 'accepted']];
         }
 
