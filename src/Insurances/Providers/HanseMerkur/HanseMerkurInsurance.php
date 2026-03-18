@@ -12,7 +12,6 @@ use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
-use Nezasa\Checkout\Insurances\Dtos\InsuranceTerm;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceTerms;
 use Nezasa\Checkout\Integrations\HanseMerkur\Connectors\HanseMerkurConnector;
 use Nezasa\Checkout\Integrations\HanseMerkur\Connectors\HanseMerkurPaymentConnector;
@@ -67,20 +66,23 @@ final class HanseMerkurInsurance implements InsuranceContract
             $terms = [];
             foreach ($product->documents as $document) {
                 if ($document->documentType?->mustBeDisplayed()) {
-                    $terms[] = new InsuranceTerm(
-                        text: $document->documentType->isIpid() ? 'IPID' : 'Avb',
-                        link: $document->url
-                    );
+                    $text = $document->documentType->isIpid()
+                        ? 'Informationsblatt zu den Versicherungsprodukten'
+                        : 'Allgemeine Versicherungsbedingungen';
+                    $terms[] = '<a target="_blank" href="'.$document->url.'">'.$text.'</a>';
                 }
             }
+            $terms[] = '<a target="_blank" href="https://www.hmrv.de/datenschutz">HanseMerkur Reiseversicherung AG</a>';
 
             $offers[] = new InsuranceOfferDto(
                 id: $product->productInstanceId,
                 title: $product->title ?? 'Unknown',
                 price: Price::from($product->productTotalPremium),
                 coverage: $product->coverageData->pluck('title')->toArray(),
-                terms: new InsuranceTerms(text: 'txt', checkboxText: 'check', terms: $terms),
-
+                terms: new InsuranceTerms(
+                    checkboxText: 'Ich habe das Informationsblatt zu den Versicherungsprodukten zur Kenntnis genommen und akzeptiere die Allgemeinen Versicherungsbedingungen sowie die Übertragung der für die Buchung notwendigen Daten an die HanseMerkur Reiseversicherung',
+                    conditions: $terms
+                ),
             );
         }
 

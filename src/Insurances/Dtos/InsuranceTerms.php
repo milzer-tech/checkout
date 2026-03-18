@@ -10,13 +10,18 @@ final class InsuranceTerms extends BaseDto
 {
     /**
      * Create a new instance of InsuranceTerms.
+     * // values can be HTML
      *
-     * @param  array<int, InsuranceTerm>  $terms
+     * @param  array<int, string>  $conditions
      */
     public function __construct(
         public ?string $text = null,
         public ?string $checkboxText = null,
-        public array $terms = []
+        public array $conditions = []
     ) {}
 
+    public function getKey(): string
+    {
+        return md5($this->toJson());
+    }
 }
