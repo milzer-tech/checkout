@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Insurances\Dtos;
 
-final class InsuranceOffersResult
+use Nezasa\Checkout\Dtos\BaseDto;
+
+final class InsuranceOffersResult extends BaseDto
 {
     /**
      * Create a new instance of InsuranceOffersResult.

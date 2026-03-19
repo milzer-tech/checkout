@@ -253,6 +253,7 @@
         <div wire:loading.remove wire:target="listen,loadOffer" class="space-y-4">
             <div class="grid grid-cols-1 gap-4">
 
+            @if($insuranceProviderIsAvailable)
             @foreach($offers as $offer)
                 <label class="border rounded-xl p-4 cursor-pointer hover:shadow-sm w-full block
                  {{ $selectedOfferId == $offer->id
@@ -292,8 +293,6 @@
             @endforeach
 
             @if(! empty($offers))
-
-
             <!-- No insurance -->
             <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-sm w-full block">
                 <div class="flex items-start gap-3">
@@ -314,6 +313,14 @@
                     </div>
                 </div>
             </label>
+                @endif
+                @else
+                    <div class="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+                        <svg class="h-5 w-5 text-red-500 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M4.93 19.07A10 10 0 1 1 19.07 4.93 10 10 0 0 1 4.93 19.07Z" />
+                        </svg>
+                        <div class="min-w-0">{{ $notAvailableMessage }}</div>
+                    </div>
                 @endif
 
         </div>
