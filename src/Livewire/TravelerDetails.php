@@ -221,6 +221,11 @@ class TravelerDetails extends BaseCheckoutComponent
             ->toArray();
     }
 
+    /**
+     * Reset the section.
+     *
+     * @param  array<int, string>  $sections
+     */
     #[On('sections-reset')]
     public function resetSection(array $sections): void
     {

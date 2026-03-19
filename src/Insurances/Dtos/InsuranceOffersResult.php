@@ -12,7 +12,7 @@ final class InsuranceOffersResult extends BaseDto
      * Create a new instance of InsuranceOffersResult.
      *
      * @param  array<int, InsuranceOfferDto>  $offers
-     * @param  array<int, ???>  $terms
+     * @param  array<string|int, mixed>  $meta
      */
     public function __construct(
         // to check if the insurance provider is available or not

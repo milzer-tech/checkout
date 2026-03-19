@@ -61,7 +61,7 @@ class HanseMerkurConnector extends Connector implements HasBody
     /**
      * Add a default body to all requests
      *
-     * @return array<string, array<string, string>>
+     * @return array<string, array<string, string|null>>
      */
     protected function defaultBody(): array
     {

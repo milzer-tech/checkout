@@ -4,6 +4,7 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Email;
 use Illuminate\Validation\Rules\Enum;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
@@ -88,7 +89,7 @@ class ContactDetails extends BaseCheckoutComponent
     /**
      * returns the validation rules for the contact details.
      *
-     * @return array<string, array<string|Enum>>
+     * @return array<string, array<string|Enum|Email>>
      */
     protected function rules(): array
     {

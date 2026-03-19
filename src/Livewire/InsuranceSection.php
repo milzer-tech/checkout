@@ -249,6 +249,11 @@ class InsuranceSection extends BaseCheckoutComponent
         }
     }
 
+    /**
+     * Reset the section.
+     *
+     * @param  array<int, string>  $sections
+     */
     #[On('sections-reset')]
     public function resetSection(array $sections): void
     {

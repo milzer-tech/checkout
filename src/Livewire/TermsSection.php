@@ -37,6 +37,9 @@ class TermsSection extends BaseCheckoutComponent
 
     public ?InsuranceTerms $insuranceTerms = null;
 
+    /**
+     * @var array<string, bool>
+     */
     public $acceptedInsurance = [];
 
     /**
@@ -66,7 +69,7 @@ class TermsSection extends BaseCheckoutComponent
             ->toArray();
 
         if ($this->insuranceTerms?->checkboxText) {
-            $insurances = ['acceptedInsurance.'.$this->insuranceTerms?->getKey() => ['required', 'accepted']];
+            $insurances = ['acceptedInsurance.'.$this->insuranceTerms->getKey() => ['required', 'accepted']];
         }
 
         return array_merge($rules, $insurances ?? []);
@@ -143,6 +146,11 @@ class TermsSection extends BaseCheckoutComponent
         $this->modalTermIndex = null;
     }
 
+    /**
+     * Reset the section.
+     *
+     * @param  array<int, string>  $sections
+     */
     #[On('sections-reset')]
     public function resetSection(array $sections): void
     {

@@ -28,6 +28,9 @@ final class CreateInsuranceOffersDto extends BaseDto
         public Collection $destinationCountries,
     ) {}
 
+    /**
+     * @param  array<string|int, mixed>  ...$payloads
+     */
     public static function from(...$payloads): static
     {
         if (isset($payloads[0]['destinationCountries']) && is_array($payloads[0]['destinationCountries'])) {

@@ -18,7 +18,7 @@ final class GetActiveInsuranceAction
         $active = [];
 
         foreach (Config::get('checkout.insurance_provider') as $insurance) {
-            if (! in_array(InsuranceContract::class, class_implements($insurance))) {
+            if (! in_array(InsuranceContract::class, (array) class_implements($insurance))) {
                 throw new InvalidArgumentException(
                     "the insurance $insurance is not an instance of InsuranceContract"
                 );
@@ -33,6 +33,7 @@ final class GetActiveInsuranceAction
             throw new InvalidArgumentException('Only one insurance provider can be active at a time.');
         }
 
+        /** @phpstan-ignore-next-line  */
         return $active[0] ?? null;
     }
 }

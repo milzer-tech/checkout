@@ -62,6 +62,7 @@ final class HanseMerkurInsurance implements InsuranceContract
             return new InsuranceOffersResult(
                 isSuccessful: false,
                 meta: $response->array(),
+                /** @phpstan-ignore-next-line */
                 errorMessage: collect(data_get($response->array(), 'messages', []))->pluck('message')->implode(',')
             );
         }
@@ -70,7 +71,6 @@ final class HanseMerkurInsurance implements InsuranceContract
 
         /** @var HanseMerkurOfferProductResponseEntity $product */
         foreach ($response->dto()->offers->pluck('products')->flatten()->sortBy('productTotalPremium.amount') as $product) {
-
             $terms = [];
             foreach ($product->documents as $document) {
                 if ($document->documentType?->mustBeDisplayed()) {

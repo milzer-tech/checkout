@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Insurances\Handlers;
 
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Actions\Insurance\GetActiveInsuranceAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
@@ -46,7 +47,9 @@ final readonly class InsuranceHandler
             totalPrice: $itinerary->price->showTotalPrice,
             contact: $model->getContact(),
             paxInfo: $model->getPaxInfo(),
-            destinationCountries: $itinerary->destinationCountries,
+            destinationCountries: $itinerary->destinationCountries instanceof Collection
+                ? $itinerary->destinationCountries
+                : collect($itinerary->destinationCountries),
         );
 
         try {

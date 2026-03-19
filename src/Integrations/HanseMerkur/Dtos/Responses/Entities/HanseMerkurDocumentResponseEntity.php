@@ -13,7 +13,7 @@ final class HanseMerkurDocumentResponseEntity extends BaseDto
      * Create a new instance of HanseMerkurOfferProductCoverageResponseEntity.
      */
     public function __construct(
-        public HanseMerkurDocumentTypeEnum $documentType,
+        public ?HanseMerkurDocumentTypeEnum $documentType,
         public ?string $url,
     ) {}
 

@@ -126,6 +126,11 @@ class PromoCodeSection extends BaseCheckoutComponent
         $this->dispatch('price-changed', price: $this->prices);
     }
 
+    /**
+     * Reset the section.
+     *
+     * @param  array<int, string>  $sections
+     */
     #[On('sections-reset')]
     public function resetSection(array $sections): void
     {

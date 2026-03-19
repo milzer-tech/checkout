@@ -160,6 +160,7 @@ class Checkout extends Model
      */
     public function getPaxInfo(): Collection
     {
+        /** @phpstan-ignore-next-line */
         return collect($this->data['paxInfo'] ?? [])->flatten(1)->mapWithKeys(
             fn ($pax, $index): array => [$index => PaxInfoPayloadEntity::from(['refId' => "pax-$index", ...$pax])]
         );

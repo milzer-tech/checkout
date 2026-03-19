@@ -159,6 +159,11 @@ class AdditionalServicesSection extends BaseCheckoutComponent
         return 'no_selection';
     }
 
+    /**
+     * Reset the section.
+     *
+     * @param  array<int, string>  $sections
+     */
     #[On('sections-reset')]
     public function resetSection(array $sections): void
     {
