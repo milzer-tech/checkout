@@ -234,7 +234,8 @@ class InsuranceSection extends BaseCheckoutComponent
         if ($this->model->isCompleted(Section::Contact) && $this->model->isCompleted(Section::Traveller)) {
             $offers = resolve(InsuranceHandler::class)->createOffers($this->model, $this->itinerary);
             if ($offers->isSuccessful) {
-                $this->offers = $offers;
+                $this->offers = $offers->offers;
+                $this->insuranceProviderIsAvailable = true;
             } else {
                 $this->insuranceProviderIsAvailable = false;
                 $this->notAvailableMessage = $offers->errorMessage ?? $this->notAvailableMessage;
