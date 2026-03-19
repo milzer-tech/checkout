@@ -8,7 +8,9 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Transaction;
@@ -49,6 +51,7 @@ class PaymentResultPage extends BaseCheckoutComponent
             : resolve(DownPaymentCallBackHandler::class)->run($this->transaction, $request);
 
         $this->initializeRequirements();
+        $this->processInsuranceData();
 
         foreach ($this->model->data['paxInfo'] as $room) {
             foreach ($room as $pax) {
@@ -92,5 +95,25 @@ class PaymentResultPage extends BaseCheckoutComponent
         $this->itinerary->insurances->map($callback);
 
         $this->paid = $this->itinerary->price->downPayment;
+    }
+
+    protected function processInsuranceData(): void
+    {
+        try {
+            $insurance = $this->transaction->checkout->data['insurance']
+                ? InsuranceOfferDto::from($this->transaction->checkout->data['insurance'])
+                : null;
+            if ($insurance) {
+                $availability = data_get($this->transaction->result_data, 'insurance.isSuccessful', false)
+                    ? AvailabilityEnum::Booked
+                    : AvailabilityEnum::None;
+
+                $this->itinerary->insurances = collect([
+                    new InsuranceItem(id: $insurance->id, name: $insurance->title, availability: $availability),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 }
