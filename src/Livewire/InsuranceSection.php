@@ -108,7 +108,7 @@ class InsuranceSection extends BaseCheckoutComponent
             coverage: []
         );
 
-        $this->model->updateData(['insurance' => $offer->toArray()]);
+        $this->model->updateData(['insurance_meta' => $quote, 'insurance' => $offer->toArray()]);
         $this->dispatch('insurance-selected', new InsuranceItem($offer->id, $offer->title), $offer->price);
     }
 
