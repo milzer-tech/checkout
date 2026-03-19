@@ -97,7 +97,7 @@ class ContactDetails extends BaseCheckoutComponent
             'lastName' => ['string', 'max:255'],
             'companyName' => ['string', 'max:255'],
             'gender' => [new Enum(GenderEnum::class)],
-            'email' => ['email', 'max:255'],
+            'email' => [Rule::email()->rfcCompliant(strict: false)->validateMxRecord()->preventSpoofing(), 'max:255'],
             'mobilePhone' => ['array'],
             'mobilePhone.countryCode' => [
                 'numeric',
