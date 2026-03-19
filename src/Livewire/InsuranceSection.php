@@ -17,19 +17,10 @@ use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
 
 class InsuranceSection extends BaseCheckoutComponent
 {
-    /**
-     * The summary of the itinerary.
-     */
     public ItinerarySummary $itinerary;
 
-    /**
-     * The contact information payload entity.
-     */
     public ?ContactInfoPayloadEntity $contact = null;
 
-    /**
-     * Indicates whether the user selected an insurance quote.
-     */
     public bool $insuranceSelected = false;
 
     public ?string $selectedOfferId = null;
@@ -139,6 +130,7 @@ class InsuranceSection extends BaseCheckoutComponent
         if (Config::boolean('checkout.insurance.vertical.active')) {
             $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
 
+            $this->dispatch('insurance-reset-ui');
             $this->shouldInitVerticalWidget = true;
             $this->isLoadingOffers = true;
 
@@ -168,8 +160,9 @@ class InsuranceSection extends BaseCheckoutComponent
         }
 
         $this->updateAvailability();
-        $this->shouldInitVerticalWidget = false;
         $this->dispatch('insurance-config-updated', config: $this->getVerticalInsuranceConfigProperty());
+        $this->shouldInitVerticalWidget = false;
+        $this->isLoadingOffers = false;
     }
 
     public function loadOffer(): void

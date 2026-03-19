@@ -101,6 +101,19 @@
                             if (window.__lastInsuranceConfig) initVerticalInsure(window.__lastInsuranceConfig);
                         };
 
+                        window.addEventListener("insurance-reset-ui", () => {
+                            try {
+                                if (window.verticalInsureInstance && typeof window.verticalInsureInstance.destroy === "function") {
+                                    window.verticalInsureInstance.destroy();
+                                }
+                            } catch (_) {}
+
+                            const offerEl = document.getElementById("insurance_offer");
+                            if (offerEl) offerEl.innerHTML = "";
+
+                            showLoader();
+                        });
+
                         window.addEventListener("insurance-config-updated", (e) => {
                             initVerticalInsure(e.detail.config);
                         });
