@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Config;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
@@ -97,7 +98,7 @@ class InsuranceSection extends BaseCheckoutComponent
      */
     public function handleInsuranceQuote(?array $quote): void
     {
-        $this->model->updateData(['insurance' => $quote]);
+        $this->model->updateData(['insurance_meta' => $quote]);
 
         if (is_null($quote)) {
             $this->dispatch('insurance-declined');
@@ -106,11 +107,16 @@ class InsuranceSection extends BaseCheckoutComponent
         }
 
         $this->insuranceSelected = true;
-        $this->dispatch(
-            'insurance-selected',
-            new InsuranceItem(id: $quote['quote_id'], name: $quote['product']['promotional_header']),
-            new Price(amount: $quote['total'] / 100, currency: $quote['currency'])
+
+        $offer = new InsuranceOfferDto(
+            id: $quote['quote_id'],
+            title: $quote['product']['promotional_header'],
+            price: new Price(amount: $quote['total'] / 100, currency: $quote['currency']),
+            coverage: []
         );
+
+        $this->model->updateData(['insurance' => $offer->toArray()]);
+        $this->dispatch('insurance-selected', new InsuranceItem($offer->id, $offer->title), $offer->price);
     }
 
     /**
@@ -121,6 +127,16 @@ class InsuranceSection extends BaseCheckoutComponent
     {
         if (! $this->isInsuranceAvailable) {
             $this->next();
+
+            return;
+        }
+
+        $this->expand(Section::Insurance);
+
+        if (Config::boolean('checkout.insurance.vertical.active')) {
+            $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
+
+            $this->dispatch('insurance-config-updated', config: $this->getVerticalInsuranceConfigProperty());
 
             return;
         }
@@ -138,16 +154,23 @@ class InsuranceSection extends BaseCheckoutComponent
 
     public function loadOffer(): void
     {
-        (new VerifyAvailabilityJob($this->getParams()))->handle();
+        $this->updateAvailability();
 
         if (AvailabilityFacade::getCachedStatus($this->getParams()) === 200) {
-            $this->itinerary->price = AvailabilityFacade::getCachedResultDto($this->getParams())->summary->prices;
-
             $this->generateInsuranceOffers();
         } else {
             $this->insuranceProviderIsAvailable = null;
         }
 
+    }
+
+    public function updateAvailability(): void
+    {
+        (new VerifyAvailabilityJob($this->getParams()))->handle();
+
+        if (AvailabilityFacade::getCachedStatus($this->getParams()) === 200) {
+            $this->itinerary->price = AvailabilityFacade::getCachedResultDto($this->getParams())->summary->prices;
+        }
     }
 
     /**
@@ -180,17 +203,6 @@ class InsuranceSection extends BaseCheckoutComponent
     }
 
     /**
-     * Load the contact info into the contact property.
-     */
-    #[On(Section::Contact->value)]
-    public function contactUpdated(): void
-    {
-        $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
-
-        $this->dispatch('insurance-config-updated', config: $this->getVerticalInsuranceConfigProperty());
-    }
-
-    /**
      *  Get the vertical insurance config.
      *
      * @return array<string, mixed>
@@ -199,9 +211,10 @@ class InsuranceSection extends BaseCheckoutComponent
      */
     public function getVerticalInsuranceConfigProperty(): array
     {
-        if (! $this->isInsuranceAvailable || ! $this->contact) {
+        if (! $this->isInsuranceAvailable || ! $this->contact || ! $this->isExpanded) {
             return [];
         }
+        $this->updateAvailability();
 
         return [
             'client_id' => config()->string('checkout.insurance.vertical.username'),

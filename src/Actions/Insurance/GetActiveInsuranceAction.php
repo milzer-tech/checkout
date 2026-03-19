@@ -29,7 +29,7 @@ final class GetActiveInsuranceAction
             }
         }
 
-        if (count($active) > 1) {
+        if (count($active) > 1 || (count($active) === 1 && Config::boolean('checkout.insurance.vertical.active'))) {
             throw new InvalidArgumentException('Only one insurance provider can be active at a time.');
         }
 

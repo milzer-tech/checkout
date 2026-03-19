@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Insurances\Handlers;
 
 use Exception;
+use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Actions\Insurance\GetActiveInsuranceAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Insurances\Contracts\InsuranceContract;
@@ -30,7 +31,8 @@ final class InsuranceHandler
      */
     public function isAvailable(): bool
     {
-        return $this->getActiveInsuranceAction->run() instanceof InsuranceContract;
+        return $this->getActiveInsuranceAction->run() instanceof InsuranceContract
+            || Config::boolean('checkout.insurance.vertical.active');
     }
 
     /**
