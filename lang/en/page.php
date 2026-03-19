@@ -81,6 +81,7 @@ return [
         'paid' => 'Paid',
         'payable_now' => 'Payable now',
         'out_of_total_amount' => 'Out of the total amount of :total, :paid was paid as a down payment.',
+        'insurance_not_available' => 'The Insurance provider is not available or does not any offers.',
     ],
 
     'payment' => [
