@@ -15,6 +15,9 @@
 
     @if(config()->boolean('checkout.insurance.vertical.active'))
     <div class="space-y-4">
+        @if($shouldInitVerticalWidget)
+            <div wire:init="initVerticalWidget"></div>
+        @endif
 
         @if($isInsuranceAvailable && $contact)
             @if(Config::boolean('checkout.insurance.vertical.active'))
@@ -98,17 +101,10 @@
                             if (window.__lastInsuranceConfig) initVerticalInsure(window.__lastInsuranceConfig);
                         };
 
-                        document.addEventListener("DOMContentLoaded", () => {
-                            initVerticalInsure(@js($this->verticalInsuranceConfig));
-                        });
-
                         window.addEventListener("insurance-config-updated", (e) => {
                             initVerticalInsure(e.detail.config);
                         });
 
-                        document.addEventListener('livewire:init', () => {
-                            initVerticalInsure(@js($this->verticalInsuranceConfig));
-                        });
                     </script>
                 @endpush
 

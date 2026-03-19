@@ -12,7 +12,6 @@ use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Handlers\InsuranceHandler;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
 
@@ -35,6 +34,8 @@ class InsuranceSection extends BaseCheckoutComponent
 
     public ?string $selectedOfferId = null;
 
+    public bool $isLoadingOffers = false;
+
     /**
      * @var array<int, InsuranceOfferDto>
      */
@@ -45,6 +46,8 @@ class InsuranceSection extends BaseCheckoutComponent
     public ?bool $insuranceProviderIsAvailable = null;
 
     public string $notAvailableMessage;
+
+    public bool $shouldInitVerticalWidget = false;
 
     /**
      * Initialize the component with the promo code from the prices DTO.
@@ -136,11 +139,13 @@ class InsuranceSection extends BaseCheckoutComponent
         if (Config::boolean('checkout.insurance.vertical.active')) {
             $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
 
-            $this->dispatch('insurance-config-updated', config: $this->getVerticalInsuranceConfigProperty());
+            $this->shouldInitVerticalWidget = true;
+            $this->isLoadingOffers = true;
 
             return;
         }
 
+        $this->isLoadingOffers = true;
         $this->offers = [];
         $this->selectedOfferId = null;
         $this->insuranceSelected = false;
@@ -150,6 +155,21 @@ class InsuranceSection extends BaseCheckoutComponent
 
         $this->dispatch('insurance-load-offers');
         $this->dispatch('insurance-declined');
+    }
+
+    public function initVerticalWidget(): void
+    {
+        if (! Config::boolean('checkout.insurance.vertical.active') || ! $this->shouldInitVerticalWidget) {
+            return;
+        }
+
+        if (! $this->contact && isset($this->model->data['contact'])) {
+            $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
+        }
+
+        $this->updateAvailability();
+        $this->shouldInitVerticalWidget = false;
+        $this->dispatch('insurance-config-updated', config: $this->getVerticalInsuranceConfigProperty());
     }
 
     public function loadOffer(): void
@@ -162,6 +182,7 @@ class InsuranceSection extends BaseCheckoutComponent
             $this->insuranceProviderIsAvailable = null;
         }
 
+        $this->isLoadingOffers = false;
     }
 
     public function updateAvailability(): void
@@ -171,25 +192,6 @@ class InsuranceSection extends BaseCheckoutComponent
         if (AvailabilityFacade::getCachedStatus($this->getParams()) === 200) {
             $this->itinerary->price = AvailabilityFacade::getCachedResultDto($this->getParams())->summary->prices;
         }
-    }
-
-    /**
-     * Update the price.
-     *
-     * @param  array<string, array<string, float>>  $price
-     */
-    #[On('price-updated')]
-    public function priceUpdated(array $price): void
-    {
-        if (! $this->isInsuranceAvailable || $this->insuranceSelected || $this->selectedOfferId) {
-            return;
-        }
-
-        $this->itinerary->price = PriceResponse::from($price);
-        $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
-
-        // tell JS side to refresh insurance widget with the new config
-        $this->dispatch('insurance-config-updated', config: $this->getVerticalInsuranceConfigProperty());
     }
 
     /**
@@ -214,7 +216,6 @@ class InsuranceSection extends BaseCheckoutComponent
         if (! $this->isInsuranceAvailable || ! $this->contact || ! $this->isExpanded) {
             return [];
         }
-        $this->updateAvailability();
 
         return [
             'client_id' => config()->string('checkout.insurance.vertical.username'),
@@ -269,5 +270,7 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->selectedOfferId = null;
         $this->insuranceSelected = false;
         $this->insuranceProviderIsAvailable = null;
+        $this->isLoadingOffers = false;
+        $this->shouldInitVerticalWidget = false;
     }
 }
