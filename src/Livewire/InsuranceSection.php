@@ -43,11 +43,14 @@ class InsuranceSection extends BaseCheckoutComponent
 
     public ?bool $insuranceProviderIsAvailable = null;
 
+    public string $notAvailableMessage;
+
     /**
      * Initialize the component with the promo code from the prices DTO.
      */
     public function mount(InsuranceHandler $insuranceHandler): void
     {
+        $this->notAvailableMessage = trans('checkout::page.trip_details.insurance_not_available');
         $this->isInsuranceAvailable = $insuranceHandler->isAvailable();
 
         if (! $this->isInsuranceAvailable) {
@@ -230,10 +233,11 @@ class InsuranceSection extends BaseCheckoutComponent
     {
         if ($this->model->isCompleted(Section::Contact) && $this->model->isCompleted(Section::Traveller)) {
             $offers = resolve(InsuranceHandler::class)->createOffers($this->model, $this->itinerary);
-            if ($offers === false) {
-                $this->insuranceProviderIsAvailable = false;
-            } else {
+            if ($offers->isSuccessful) {
                 $this->offers = $offers;
+            } else {
+                $this->insuranceProviderIsAvailable = false;
+                $this->notAvailableMessage = $offers->errorMessage ?? $this->notAvailableMessage;
             }
         }
     }
