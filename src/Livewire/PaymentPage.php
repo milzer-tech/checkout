@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Uri;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
@@ -85,7 +86,7 @@ class PaymentPage extends BaseCheckoutComponent
             ->firstOrFail()
             ->decryptClassName();
 
-        if (data_get($this->model->data, 'insurance.price')) {
+        if (data_get($this->model->data, 'insurance.price') && ! Config::boolean('checkout.insurance.vertical.active')) {
             $this->itinerary->price->showPaymentPrice->amount += Price::from($this->model->data['insurance']['price'])->amount;
         }
 

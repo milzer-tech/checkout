@@ -128,11 +128,12 @@ final class VerticalInsuranceListener implements ShouldQueue
     private function createVerticalPaymentIntent(string $paymentMethodId): string
     {
         try {
+            $quote = $this->transaction->checkout->data['insurance_meta'];
             $newPaymentIntent = $this->stripe->paymentIntents->create(
                 params: [
                     'payment_method' => $paymentMethodId,
-                    'currency' => (string) $this->transaction->checkout->data['insurance']['currency'],
-                    'amount' => (int) $this->transaction->checkout->data['insurance']['total'],
+                    'currency' => (string) $quote['currency'],
+                    'amount' => (int) $quote['total'],
                     'off_session' => true,
                     'confirm' => true,
                     'metadata' => [
@@ -173,7 +174,7 @@ final class VerticalInsuranceListener implements ShouldQueue
                 )
             );
 
-            $this->transaction->update([
+            $this->transaction->pushToResultData([
                 'result_data' => $this->transaction->result_data + ['insurance_purchase' => $response->array()],
                 'insurance' => ['isSuccessful' => $response->successful()],
             ]);
