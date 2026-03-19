@@ -43,7 +43,6 @@ class PaymentResultPage extends BaseCheckoutComponent
 
     public function mount(Request $request): void
     {
-
         $this->model = $this->transaction->checkout;
 
         $this->output = $this->model->rest_payment

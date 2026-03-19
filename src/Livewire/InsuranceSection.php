@@ -92,9 +92,8 @@ class InsuranceSection extends BaseCheckoutComponent
      */
     public function handleInsuranceQuote(?array $quote): void
     {
-        $this->model->updateData(['insurance_meta' => $quote]);
-
         if (is_null($quote)) {
+            $this->model->updateData(['insurance_meta' => $quote, 'insurance' => null]);
             $this->dispatch('insurance-declined');
 
             return;
