@@ -19,7 +19,8 @@ final class InsuranceOffersResult
         public array $offers = [],
         public InsuranceTerms $terms = new InsuranceTerms,
         // This property's content is stored in the database and accessible after the payment is successful.
-        public array $meta = []
+        public array $meta = [],
+        public ?string $errorMessage = null,
     ) {}
 
 }
