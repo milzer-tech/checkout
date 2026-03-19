@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Integrations\Nezasa\Contracts\HasVisibleFieldsContract;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
-use Nezasa\Checkout\Integrations\Nezasa\HasVisibleFieldsContract;
 use Spatie\LaravelData\Attributes\MapInputName;
 
 class PassengerRequirementEntity extends BaseDto implements HasVisibleFieldsContract
@@ -36,7 +37,11 @@ class PassengerRequirementEntity extends BaseDto implements HasVisibleFieldsCont
         public TravelerRequirementFieldEnum $postalCode,
         public TravelerRequirementFieldEnum $city,
         public TravelerRequirementFieldEnum $country,
-    ) {}
+    ) {
+        if (Config::boolean('checkout.insurance.vertical.active')) {
+            $this->birthDate = TravelerRequirementFieldEnum::Required;
+        }
+    }
 
     /**
      * Get the visible fields for the contact information.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nezasa\Checkout\Integrations\Nezasa;
+namespace Nezasa\Checkout\Integrations\Nezasa\Contracts;
 
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;

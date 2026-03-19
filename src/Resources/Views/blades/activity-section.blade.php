@@ -11,7 +11,7 @@
     :showEdit="true"
     :showCheck="$isCompleted"
     class="{{$shouldRender ? '' : 'hidden'}}"
-    onEdit="expand('{{Section::Activity->value}}')"
+    onEdit="reopen('{{Section::Activity->value}}')"
 >
     <form wire:submit="save">
         @foreach($activityQuestions as $componentIndex =>  $component)
@@ -109,4 +109,3 @@
         @endforeach
     </form>
 </x-checkout::editable-box>
-

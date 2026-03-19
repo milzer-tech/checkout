@@ -88,6 +88,11 @@ class TravelerDetails extends BaseCheckoutComponent
 
         $this->updateFormStatus();
 
+        // If this section was reset in the flow, honor the stored status instead of auto-completing.
+        if (! $this->model->isCompleted(Section::Traveller)) {
+            $this->isCompleted = false;
+        }
+
         $this->isCompleted ? $this->dispatch(Section::Traveller->value) : $this->expand(Section::Traveller);
     }
 
@@ -214,5 +219,21 @@ class TravelerDetails extends BaseCheckoutComponent
                 return [$key => strtolower(trans("checkout::input.attributes.$translatedKey"))];
             })
             ->toArray();
+    }
+
+    /**
+     * Reset the section.
+     *
+     * @param  array<int, string>  $sections
+     */
+    #[On('sections-reset')]
+    public function resetSection(array $sections): void
+    {
+        if (! in_array(Section::Traveller->value, $sections, true)) {
+            return;
+        }
+
+        $this->isCompleted = false;
+        $this->isExpanded = false;
     }
 }

@@ -424,6 +424,7 @@
                                 </div>
                             @endif
 
+
                         </div>
 
 
@@ -841,6 +842,29 @@
                                     </div>
                                 </div>
                             @endif
+
+                                @if($itinerary->hasInsurance())
+                                    {{-- renal car section --}}
+                                    <div class="mb-4">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h3 class="font-semibold dark:text-white">{{trans('checkout::page.trip_details.Insurance')}}</h3>
+                                            @include('checkout::components.available',['availability' => $itinerary->insurances->first()->availability])
+                                        </div>
+                                        <div class="space-y-2">
+                                            @foreach($itinerary->insurances as $item)
+                                                <div class="flex items-center justify-between">
+                                                    <div class="flex items-center">
+                                                        @include('checkout::components.availability-status', ['availability' => $item->availability])
+                                                        <span
+                                                            class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
+                                                    </div>
+                                                    <div
+                                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200"></div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                         </div>
 
                     @endif
@@ -854,7 +878,7 @@
                     <div class="flex justify-between items-center mb-2">
                         <span class="font-bold text-lg">Total paid (EUR)</span>
                         <span
-                            class="font-bold text-lg">{{ Number::currency($itinerary->price->downPayment->amount, $itinerary->price->downPayment->currency) }}</span>
+                            class="font-bold text-lg">{{ $paid->toHtml() }}</span>
                     </div>
 
                     <button

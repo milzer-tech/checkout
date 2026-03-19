@@ -74,7 +74,7 @@ class PaymentInitiationHandler
     private function updateTransaction(Transaction $transaction, PaymentInit $init, array $nezasaTransaction): void
     {
         $transaction->update([
-            'prepare_data' => (array) $init->persistentData,
+            'prepare_data' => $init->persistentData,
             'status' => TransactionStatusEnum::Pending,
             'nezasa_transaction' => $nezasaTransaction,
             'nezasa_transaction_ref_id' => $nezasaTransaction['transaction']['transactionRefId'] ?? null,

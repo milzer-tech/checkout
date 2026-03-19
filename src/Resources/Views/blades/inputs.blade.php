@@ -8,7 +8,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0 mb-4">
             @endif
 
-            @if(! in_array($name, ['passportExpirationDate','birthDate', 'gender', 'mobilePhone', 'country', 'nationality', 'passportIssuingCountry', 'localIdNumber']))
+            @if(! in_array($name, ['passportExpirationDate','birthDate', 'gender', 'mobilePhone', 'country', 'nationality', 'passportIssuingCountry', 'localIdNumber', 'postalCode']))
                 @include('checkout::components.input', [
                     'label' => $name,
                     'wireModel' => "$saveTo.$name",
@@ -18,7 +18,7 @@
                 @php($inputs++)
             @endif
 
-            @if(in_array($name, ['localIdNumber']))
+            @if(in_array($name, ['localIdNumber', 'postalCode']))
                 @include('checkout::components.numeric_input', [
                    'label' => $name,
                    'wireModel' => "$saveTo.$name",

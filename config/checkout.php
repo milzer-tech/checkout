@@ -1,5 +1,6 @@
 <?php
 
+use Nezasa\Checkout\Insurances\Providers\HanseMerkur\HanseMerkurInsurance;
 use Nezasa\Checkout\Payments\Gateways\Computop\ComputopGateway;
 use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceGateway;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaWidgetGateway;
@@ -56,6 +57,18 @@ return [
             'username' => env('CHECKOUT_VERTICAL_INSURANCE_USERNAME', 'must_be_set_in_env'),
             'password' => env('CHECKOUT_VERTICAL_INSURANCE_PASSWORD', 'must_be_set_in_env'),
         ],
+
+        'hanse_merkur' => [
+            'active' => (bool) env('CHECKOUT_HANSE_MERKUR_INSURANCE_ACTIVE', false),
+            'name' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_NAME', 'Hanse Merkur'),
+            'offers_base_url' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_OFFERS_BASE_URL', 'https://api-fbt.hmrv.de/rest'),
+            'payment_base_url' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_PAYMENT_BASE_URL', 'https://payment-test.hmrv.de/rest'),
+            'username' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_USERNAME', 'must_be_set_in_env'),
+            'password' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_PASSWORD', 'must_be_set_in_env'),
+            'api_key' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_API_KEY', 'must_be_set_in_env'),
+            'requester_id' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_REQUESTER_ID', 'must_be_set_in_env'),
+            'partner_id' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_PARTNER_ID', 'must_be_set_in_env'),
+        ],
     ],
 
     'payment' => [
@@ -63,6 +76,10 @@ return [
         InvoiceGateway::class,
         StripeGateway::class,
         ComputopGateway::class,
+    ],
+
+    'insurance_provider' => [
+        HanseMerkurInsurance::class,
     ],
 
     'term_limit' => (int) env('CHECKOUT_TERM_LIMIT', 600),

@@ -6,7 +6,6 @@ namespace Nezasa\Checkout\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Config;
-use Nezasa\Checkout\Events\ItineraryBookingFailedEvent;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
@@ -35,7 +34,7 @@ final class VerticalInsuranceListener implements ShouldQueue
     /**
      * Handle the event.
      */
-    public function handle(ItineraryBookingFailedEvent|ItineraryBookingSucceededEvent $event): void
+    public function handle(ItineraryBookingSucceededEvent $event): void
     {
         $this->transaction = $event->transaction;
 
@@ -65,7 +64,7 @@ final class VerticalInsuranceListener implements ShouldQueue
             && Config::boolean('checkout.insurance.vertical.active') === true
             && isset($this->transaction->checkout->data['insurance'])
             && is_array($this->transaction->checkout->data['insurance'])
-            && isset($this->transaction->checkout->data['insurance']['quote_id']);
+            && isset($this->transaction->checkout->data['insurance']['id']);
     }
 
     /**
@@ -129,15 +128,16 @@ final class VerticalInsuranceListener implements ShouldQueue
     private function createVerticalPaymentIntent(string $paymentMethodId): string
     {
         try {
+            $quote = $this->transaction->checkout->data['insurance_meta'];
             $newPaymentIntent = $this->stripe->paymentIntents->create(
                 params: [
                     'payment_method' => $paymentMethodId,
-                    'currency' => (string) $this->transaction->checkout->data['insurance']['currency'],
-                    'amount' => (int) $this->transaction->checkout->data['insurance']['total'],
+                    'currency' => (string) $quote['currency'],
+                    'amount' => (int) $quote['total'],
                     'off_session' => true,
                     'confirm' => true,
                     'metadata' => [
-                        'quote_id' => (string) $this->transaction->checkout->data['insurance']['quote_id'],
+                        'quote_id' => (string) $this->transaction->checkout->data['insurance']['id'],
                     ],
                 ],
                 opts: [
@@ -164,7 +164,7 @@ final class VerticalInsuranceListener implements ShouldQueue
         try {
             $response = VerticalInsuranceConnector::make()->purchase()->travel(
                 new PurchaseEventPayload(
-                    quote_id: $this->transaction->checkout->data['insurance']['quote_id'],
+                    quote_id: $this->transaction->checkout->data['insurance']['id'],
                     payment_method: new PurchasePaymentMethodPayloadEntity(token: "stripe:$paymentIntentId"),
                     customer: new VerticalCustomerPayloadEntity(
                         first_name: $this->transaction->checkout->data['contact']['firstName'],
@@ -174,8 +174,9 @@ final class VerticalInsuranceListener implements ShouldQueue
                 )
             );
 
-            $this->transaction->update([
+            $this->transaction->pushToResultData([
                 'result_data' => $this->transaction->result_data + ['insurance_purchase' => $response->array()],
+                'insurance' => ['isSuccessful' => $response->successful()],
             ]);
 
             return $response->status() === 200 || $response->status() === 201;

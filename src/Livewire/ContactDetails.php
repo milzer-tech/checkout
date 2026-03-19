@@ -4,6 +4,7 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Email;
 use Illuminate\Validation\Rules\Enum;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
@@ -88,7 +89,7 @@ class ContactDetails extends BaseCheckoutComponent
     /**
      * returns the validation rules for the contact details.
      *
-     * @return array<string, array<string|Enum>>
+     * @return array<string, array<string|Enum|Email>>
      */
     protected function rules(): array
     {
@@ -97,7 +98,7 @@ class ContactDetails extends BaseCheckoutComponent
             'lastName' => ['string', 'max:255'],
             'companyName' => ['string', 'max:255'],
             'gender' => [new Enum(GenderEnum::class)],
-            'email' => ['email', 'max:255'],
+            'email' => [Rule::email()->rfcCompliant(strict: false)->validateMxRecord()->preventSpoofing(), 'max:255'],
             'mobilePhone' => ['array'],
             'mobilePhone.countryCode' => [
                 'numeric',
@@ -105,7 +106,7 @@ class ContactDetails extends BaseCheckoutComponent
 
             ],
             'mobilePhone.phoneNumber' => ['numeric'],
-            'postalCode' => ['string', 'max:20'],
+            'postalCode' => ['numeric'],
             'city' => ['string', 'max:255'],
             'state' => ['string', 'max:255'],
             'country' => ['string', 'max:255'],

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared;
 
+use Illuminate\Support\Number;
 use Nezasa\Checkout\Dtos\BaseDto;
 
 class Price extends BaseDto
@@ -31,5 +32,13 @@ class Price extends BaseDto
     public function toCent(): int
     {
         return (int) ($this->amount * 100);
+    }
+
+    /**
+     * Display the price in HTML with the currency symbol.
+     */
+    public function toHtml(): string
+    {
+        return (string) Number::currency($this->amount, $this->currency);
     }
 }

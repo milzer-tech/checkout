@@ -6,7 +6,7 @@
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
-    onEdit="expand('{{Section::Promo->value}}')"
+    onEdit="reopen('{{Section::Promo->value}}')"
 
 >
     <div class="space-y-4">

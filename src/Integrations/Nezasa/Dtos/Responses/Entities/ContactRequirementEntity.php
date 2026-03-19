@@ -7,8 +7,8 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Integrations\Nezasa\Contracts\HasVisibleFieldsContract;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
-use Nezasa\Checkout\Integrations\Nezasa\HasVisibleFieldsContract;
 use Spatie\LaravelData\Attributes\MapInputName;
 
 class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContract
@@ -44,6 +44,16 @@ class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContra
             $this->email = TravelerRequirementFieldEnum::Required;
             $this->postalCode = TravelerRequirementFieldEnum::Required;
             $this->country = TravelerRequirementFieldEnum::Required;
+        }
+
+        if (Config::boolean('checkout.insurance.hanse_merkur.active')) {
+            $this->firstName = TravelerRequirementFieldEnum::Required;
+            $this->lastName = TravelerRequirementFieldEnum::Required;
+            $this->email = TravelerRequirementFieldEnum::Required;
+            $this->street1 = TravelerRequirementFieldEnum::Required;
+            $this->postalCode = TravelerRequirementFieldEnum::Required;
+            $this->country = TravelerRequirementFieldEnum::Required;
+            $this->gender = TravelerRequirementFieldEnum::Required;
         }
     }
 

@@ -7,7 +7,7 @@
     :showEdit="true"
     :showCheck="$isCompleted"
     class="{{$termsAndConditions->sections->isEmpty() ? 'hidden' : ''}}"
-    onEdit="expand('{{Section::TermsAndConditions->value}}')"
+    onEdit="reopen('{{Section::TermsAndConditions->value}}')"
 >
 
     @foreach($termsAndConditions->sections as $index => $term)
@@ -76,6 +76,75 @@
         </div>
 
     @endforeach
+
+
+
+
+
+    @if($insuranceTerms !== null)
+
+            <div class="space-y-3 mb-10">
+                <!-- Title -->
+                <h3 class="text-lg font-semibold text-gray-900">{{ 'Insurance' }}</h3>
+
+                <!-- Text -->
+                <div class="text-sm leading-relaxed text-sm text-gray-600
+
+        [&_a]:text-blue-600
+        [&_a]:underline
+        [&_a:hover]:text-blue-700">
+
+                    {!! $insuranceTerms->text  !!}
+
+                </div>
+                @foreach($insuranceTerms->conditions as $condition)
+                    <div class="text-sm leading-relaxed text-sm text-gray-600
+
+        [&_a]:text-blue-600
+        [&_a]:underline
+        [&_a:hover]:text-blue-700">
+                        {!! $condition !!}
+                    </div>
+                @endforeach
+
+                @if($insuranceTerms->checkboxText)
+                    <!-- Checkbox Block Container -->
+                    <div class="rounded-md p-6 mt-4 border
+                @error('acceptedInsurance.' .$insuranceTerms->getKey())
+                border-red-500 @else border-gray-300 @enderror">
+
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                wire:model="acceptedInsurance.{{ $insuranceTerms->getKey() }}"
+
+                                class="h-5 w-5 text-blue-600 border-gray-300 rounded">
+
+                            <span class="text-sm inline text-sm text-gray-600
+
+           [&_a]:text-blue-600
+        [&_a]:underline
+        [&_a:hover]:text-blue-700">
+
+                                    {!! $insuranceTerms->checkboxText !!}
+
+
+                        </span>
+                        </label>
+
+                        @error('acceptedInsurance.' .$insuranceTerms->getKey())
+                        <p class="text-red-600 text-sm mt-2">{{trans('checkout::input.validations.agree_to_continue')}}</p>
+                        @enderror
+                    </div>
+                @endif
+            </div>
+        @endif
+
+
+
+
+
+
 
     <div class="space-y-4 mt-8">
         <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>

@@ -5,6 +5,8 @@ namespace Nezasa\Checkout\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceTerms;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TermsAndConditionsResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TextSectionResponseEntity;
 use Nezasa\Checkout\Jobs\SaveTermAgreementJob;
@@ -33,6 +35,13 @@ class TermsSection extends BaseCheckoutComponent
      */
     public ?int $modalTermIndex = null;
 
+    public ?InsuranceTerms $insuranceTerms = null;
+
+    /**
+     * @var array<string, bool>
+     */
+    public $acceptedInsurance = [];
+
     /**
      * Initialize the component with the promo code from the prices DTO.
      */
@@ -52,12 +61,18 @@ class TermsSection extends BaseCheckoutComponent
      */
     protected function rules(): array
     {
-        return $this->termsAndConditions->sections
+        $rules = $this->termsAndConditions->sections
             ->filter(fn (TextSectionResponseEntity $section): bool => $section->checkboxText !== null)
             ->mapWithKeys(fn (TextSectionResponseEntity $value, $key): array => [
                 'acceptedTerms.'.$value->getKey() => ['required', 'accepted'],
             ])
             ->toArray();
+
+        if ($this->insuranceTerms?->checkboxText) {
+            $insurances = ['acceptedInsurance.'.$this->insuranceTerms->getKey() => ['required', 'accepted']];
+        }
+
+        return array_merge($rules, $insurances ?? []);
     }
 
     /**
@@ -99,6 +114,13 @@ class TermsSection extends BaseCheckoutComponent
     #[On(Section::Insurance->value)]
     public function listen(): void
     {
+        $this->insuranceTerms = null;
+        $insuranceTerms = data_get($this->model->data, 'insurance.terms.conditions.0', false);
+
+        if ($insuranceTerms) {
+            $this->insuranceTerms = InsuranceOfferDto::from($this->model->data['insurance'])->terms;
+        }
+
         $this->termsAndConditions->sections->isEmpty()
             ? $this->next()
             : $this->expand(Section::TermsAndConditions);
@@ -122,5 +144,21 @@ class TermsSection extends BaseCheckoutComponent
         $this->showTermsModal = false;
 
         $this->modalTermIndex = null;
+    }
+
+    /**
+     * Reset the section.
+     *
+     * @param  array<int, string>  $sections
+     */
+    #[On('sections-reset')]
+    public function resetSection(array $sections): void
+    {
+        if (! in_array(Section::TermsAndConditions->value, $sections, true)) {
+            return;
+        }
+
+        $this->isCompleted = false;
+        $this->isExpanded = false;
     }
 }
