@@ -58,6 +58,16 @@ final class HanseMerkurInsurance implements InsuranceContract
             )
         );
 
+        if (! $response->successful()) {
+            return new InsuranceOffersResult(
+                isSuccessful: false,
+                meta: $response->array(),
+                errorMessage: collect(data_get($response->array(), 'messages', []))
+                    ->pluck('message')
+                    ->implode(',')
+            );
+        }
+
         $offers = [];
 
         /** @var HanseMerkurOfferProductResponseEntity $product */
