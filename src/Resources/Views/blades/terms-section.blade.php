@@ -110,7 +110,7 @@
                 @if($insuranceTerms->checkboxText)
                     <!-- Checkbox Block Container -->
                     <div class="rounded-md p-6 mt-4 border
-                @error('acceptedTerms.' .$insuranceTerms->getKey())
+                @error('acceptedInsurance.' .$insuranceTerms->getKey())
                 border-red-500 @else border-gray-300 @enderror">
 
                         <label class="flex items-center space-x-3 cursor-pointer">
