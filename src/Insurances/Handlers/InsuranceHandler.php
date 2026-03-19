@@ -12,6 +12,7 @@ use Nezasa\Checkout\Insurances\Dtos\BookInsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
@@ -34,10 +35,8 @@ final class InsuranceHandler
 
     /**
      * Create insurance offers.
-     *
-     * @return false|array<int, InsuranceOfferDto>
      */
-    public function createOffers(Checkout $model, ItinerarySummary $itinerary): false|array
+    public function createOffers(Checkout $model, ItinerarySummary $itinerary): InsuranceOffersResult
     {
         $createOffersDto = new CreateInsuranceOffersDto(
             startDate: $itinerary->startDate->toImmutable(),
@@ -55,7 +54,7 @@ final class InsuranceHandler
             'insurance_create_offer' => $createOffersDto->toArray(),
         ]);
 
-        return $result->isSuccessful ? $result->offers : false;
+        return $result;
     }
 
     /**
