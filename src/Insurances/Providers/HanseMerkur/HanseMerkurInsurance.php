@@ -125,7 +125,7 @@ final class HanseMerkurInsurance implements InsuranceContract
                 new HanseMerkurProductPayloadEntity(
                     productInstanceId: $bookOfferDto->selectedOffer->id,
                     insuredPersonAllocations: $insuredPersons->map(
-                        fn (HanseMerkurInsuredPersonPayloadEntity $person) => new HanseMerkurAllocationPayloadEntity(
+                        fn (HanseMerkurInsuredPersonPayloadEntity $person): \Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\Entities\HanseMerkurAllocationPayloadEntity => new HanseMerkurAllocationPayloadEntity(
                             insuredPersonId: $person->insuredPersonId,
                         )
                     )

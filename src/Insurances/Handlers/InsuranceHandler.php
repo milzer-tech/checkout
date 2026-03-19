@@ -20,7 +20,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 
-final class InsuranceHandler
+final readonly class InsuranceHandler
 {
     public function __construct(private GetActiveInsuranceAction $getActiveInsuranceAction) {}
 

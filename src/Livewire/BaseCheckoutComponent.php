@@ -75,7 +75,7 @@ class BaseCheckoutComponent extends Component
             $this->dispatch('toast', [
                 'type' => 'error',
                 'title' => trans('checkout::page.trip_details.error'),
-                'message' => trans('checkout::exceptions.please_complete_this_section').($blocking ? ': '.$blocking->label() : ''),
+                'message' => trans('checkout::exceptions.please_complete_this_section').($blocking instanceof \Nezasa\Checkout\Enums\Section ? ': '.$blocking->label() : ''),
             ]);
 
             return;
@@ -102,7 +102,7 @@ class BaseCheckoutComponent extends Component
             $this->dispatch('toast', [
                 'type' => 'error',
                 'title' => trans('checkout::page.trip_details.error'),
-                'message' => trans('checkout::exceptions.please_complete_this_section').($blocking ? ': '.$blocking->label() : ''),
+                'message' => trans('checkout::exceptions.please_complete_this_section').($blocking instanceof \Nezasa\Checkout\Enums\Section ? ': '.$blocking->label() : ''),
             ]);
 
             return;
@@ -181,7 +181,7 @@ class BaseCheckoutComponent extends Component
 
         $laterSections = array_slice($flow, $index + 1);
 
-        if (empty($laterSections)) {
+        if ($laterSections === []) {
             return;
         }
 
@@ -246,7 +246,7 @@ class BaseCheckoutComponent extends Component
 
         $firstIncomplete = $this->firstIncompleteSection();
 
-        if (! $firstIncomplete) {
+        if (! $firstIncomplete instanceof \Nezasa\Checkout\Enums\Section) {
             return true;
         }
 
