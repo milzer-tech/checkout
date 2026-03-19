@@ -47,14 +47,20 @@ final class InsuranceHandler
             destinationCountries: $itinerary->destinationCountries,
         );
 
-        $result = $this->getActiveInsuranceAction->run()->getOffers($createOffersDto);
+        try {
+            $result = $this->getActiveInsuranceAction->run()->getOffers($createOffersDto);
 
-        $model->updateData([
-            'insurance_meta' => $result->meta,
-            'insurance_create_offer' => $createOffersDto->toArray(),
-        ]);
+            $model->updateData([
+                'insurance_meta' => $result->meta,
+                'insurance_create_offer' => $createOffersDto->toArray(),
+            ]);
 
-        return $result;
+            return $result;
+        } catch (Exception $e) {
+            report($e);
+
+            return new InsuranceOffersResult(isSuccessful: false);
+        }
     }
 
     /**
