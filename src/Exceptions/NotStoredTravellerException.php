@@ -19,7 +19,7 @@ class NotStoredTravellerException extends HttpException
     {
         parent::__construct(
             statusCode: SymfonyResponse::HTTP_CONFLICT,
-            message: 'Traveller not stored, response received from Nezasa:'.json_encode($travellers),
+            message: 'Traveller not stored: '.json_encode($travellers),
         );
     }
 
