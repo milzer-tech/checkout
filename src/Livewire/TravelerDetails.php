@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\In;
 use Livewire\Attributes\On;
+use Nezasa\Checkout\Actions\Checkout\SaveTravellersOnNezasaAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
@@ -145,6 +146,7 @@ class TravelerDetails extends BaseCheckoutComponent
 
             $this->updateFormStatus();
             $this->markAsCompletedAdnCollapse(Section::Traveller);
+            resolve(SaveTravellersOnNezasaAction::class)->run($this->model);
             $this->dispatch(Section::Traveller->value);
         }
     }
