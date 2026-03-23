@@ -13,11 +13,11 @@ class UnavailableServiceException extends HttpException
     /**
      * Create a new instance of the ParentException
      */
-    public function __construct()
+    public function __construct(array $data = [])
     {
         parent::__construct(
             statusCode: SymfonyResponse::HTTP_SERVICE_UNAVAILABLE,
-            message: trans('checkout::exceptions.unavailable_service')
+            message: trans('checkout::exceptions.unavailable_service').': '.json_encode($data),
         );
     }
 

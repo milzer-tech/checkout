@@ -11,6 +11,7 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
+use Throwable;
 
 class VerifyAvailabilityRequest extends Request implements HasBody
 {
@@ -39,8 +40,14 @@ class VerifyAvailabilityRequest extends Request implements HasBody
      */
     public function createDtoFromResponse(Response $response): VerifyAvailabilityResponse
     {
-        throw_unless(condition: $response->ok(), exception: UnavailableServiceException::class);
+        try {
+            if (! $response->successful()) {
+                throw new UnavailableServiceException($response->array());
+            }
 
-        return VerifyAvailabilityResponse::from($response->array());
+            return VerifyAvailabilityResponse::from($response->array());
+        } catch (Throwable $exception) {
+            throw new UnavailableServiceException([$exception->getMessage()]);
+        }
     }
 }
