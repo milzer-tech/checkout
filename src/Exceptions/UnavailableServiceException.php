@@ -12,6 +12,8 @@ class UnavailableServiceException extends HttpException
 {
     /**
      * Create a new instance of the ParentException
+     *
+     * @param  array<int|string, string|array<string, mixed>>  $data
      */
     public function __construct(array $data = [])
     {

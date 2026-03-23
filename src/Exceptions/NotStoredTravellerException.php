@@ -12,6 +12,8 @@ class NotStoredTravellerException extends HttpException
 {
     /**
      * Create a new instance of the ParentException
+     *
+     * @param  array<int|string, string|array<string, mixed>>  $travellers
      */
     public function __construct(array $travellers = [])
     {

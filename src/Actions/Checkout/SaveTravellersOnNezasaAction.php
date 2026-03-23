@@ -14,7 +14,7 @@ use Nezasa\Checkout\Models\Checkout;
 
 final class SaveTravellersOnNezasaAction
 {
-    public function run(Checkout $model)
+    public function run(Checkout $model): void
     {
         /** @var Collection<int, PaxInfoPayloadEntity> $paxInfo */
         $paxInfo = new Collection;
