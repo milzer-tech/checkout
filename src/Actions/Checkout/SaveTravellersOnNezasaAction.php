@@ -20,6 +20,7 @@ final class SaveTravellersOnNezasaAction
         $paxInfo = new Collection;
 
         try {
+            $model->refresh();
             /** @phpstan-ignore-next-line */
             foreach (collect($model->data['paxInfo'] ?? [])->flatten(1) as $index => $pax) {
                 $paxInfo[] = PaxInfoPayloadEntity::from([
@@ -39,6 +40,7 @@ final class SaveTravellersOnNezasaAction
 
             if ($response->failed()) {
                 $model->updateData([
+                    'send' => $payload->toArray(),
                     'travelerDetailsError' => $response->array(),
                 ]);
 
