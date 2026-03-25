@@ -178,7 +178,7 @@ class TravelerDetails extends BaseCheckoutComponent
 
         $this->validate([$name => $this->rules()[$key->toString()]]);
 
-        dispatch(new SaveTraverDetailsJob($this->checkoutId, $name, $value));
+        (new SaveTraverDetailsJob($this->checkoutId, $name, $value))->handle();
     }
 
     public function updateMainContact(string $name, mixed $value): void

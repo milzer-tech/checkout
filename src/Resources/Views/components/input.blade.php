@@ -12,7 +12,7 @@
       @default
       "text"
       @endswitch
-       wire:model.blur="{{$wireModel}}"
+       wire:model.live="{{$wireModel}}"
        {{AutocompleteSupporter::get($name)}}
         class="form-input w-full" placeholder="{{trans("checkout::input.placeholders.$name")}}"/>
       @error($wireModel)<span class="text-red-500 text-sm">{{ $message }}</span>@enderror

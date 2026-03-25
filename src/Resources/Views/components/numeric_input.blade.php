@@ -8,7 +8,7 @@
          type="text"
          inputmode="numeric"
          oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-       wire:model.blur="{{$wireModel}}"
+       wire:model.live="{{$wireModel}}"
        {{AutocompleteSupporter::get($name)}}
         class="form-input w-full" placeholder="{{trans("checkout::input.placeholders.$name")}}"/>
       @error($wireModel)<span class="text-red-500 text-sm">{{ $message }}</span>@enderror

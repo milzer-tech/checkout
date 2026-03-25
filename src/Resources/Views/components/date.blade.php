@@ -9,7 +9,7 @@
             <input  type="text"
                     inputmode="numeric"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                    wire:model.blur="{{$wireModel}}.day" placeholder="DD"
+                    wire:model.live="{{$wireModel}}.day" placeholder="DD"
                    @if($name === 'birthDate')
                        {{AutocompleteSupporter::get('day')}}
                    @else
@@ -54,7 +54,7 @@
                    @else
                        autocomplete="off"
                    @endif
-                   wire:model.blur="{{$wireModel}}.year" placeholder="YYYY"
+                   wire:model.live="{{$wireModel}}.year" placeholder="YYYY"
                    class="form-input w-[80px] px-4 ">
         </div>
     </div>

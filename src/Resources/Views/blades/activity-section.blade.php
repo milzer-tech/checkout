@@ -50,7 +50,7 @@
                                             class="flex items-center space-x-2 text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
                                             <input
                                                 name="result.{{$component->componentId}}.{{$question->refId}}"
-                                                wire:model.blur="result.{{$component->componentId}}.{{$question->refId}}"
+                                                wire:model.live="result.{{$component->componentId}}.{{$question->refId}}"
                                                 type="checkbox" value="1" class="form-checkbox ml-1">
                                             <span> {{$question->question}} @if($question->required)
                                                     ({{trans('checkout::page.trip_details.required')}})
@@ -62,7 +62,7 @@
                                             name="result.{{$component->componentId}}.{{$question->refId}}"
                                             type="text"
                                             @if($question->placeholder) placeholder="{{$question->placeholder}}" @endif
-                                            wire:model.blur="result.{{$component->componentId}}.{{$question->refId}}"
+                                            wire:model.live="result.{{$component->componentId}}.{{$question->refId}}"
                                             class="form-input w-full">
                                 @endswitch
                                 @error("result.$component->componentId.$question->refId")<span

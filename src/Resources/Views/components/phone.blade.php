@@ -33,7 +33,7 @@
                        type="text"
                         inputmode="numeric"
                         oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                        wire:model.blur="{{ $wireModel.'.phoneNumber' }}" class="form-input w-full px-4">
+                        wire:model.live="{{ $wireModel.'.phoneNumber' }}" class="form-input w-full px-4">
 
             </div>
 
