@@ -216,6 +216,7 @@ class InsuranceSection extends BaseCheckoutComponent
                     'customer' => [
                         'first_name' => $this->contact->firstName,
                         'last_name' => $this->contact->lastName,
+                        'birthDate' => $this->model->refresh()->getPaxInfo()->first()->birthDate->toDateString(),
                         'email_address' => $this->contact->email,
                         'street' => $this->contact->address->street1.' '.$this->contact->address->street2,
                         'city' => $this->contact->address->city,
