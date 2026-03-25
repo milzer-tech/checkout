@@ -179,7 +179,7 @@ final class VerticalInsuranceListener implements ShouldQueue
                 'insurance' => ['isSuccessful' => $response->successful()],
             ]);
 
-            return $response->status() === 200 || $response->status() === 201;
+            return $response->successful();
         } catch (\Throwable $e) {
             $this->transaction->update([
                 'result_data' => $this->transaction->result_data + ['insurance_purchase' => 'could not be purchased'],
