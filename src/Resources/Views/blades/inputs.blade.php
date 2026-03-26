@@ -19,12 +19,21 @@
             @endif
 
             @if(in_array($name, ['localIdNumber', 'postalCode']))
-                @include('checkout::components.numeric_input', [
-                   'label' => $name,
-                   'wireModel' => "$saveTo.$name",
-                   'placeholder' => $name,
-                   'isRequired' => $value->isRequired()
-               ])
+                @if($name === 'postalCode' && config()->boolean('checkout.insurance.vertical.active'))
+                    @include('checkout::components.input', [
+                        'label' => $name,
+                        'wireModel' => "$saveTo.$name",
+                        'placeholder' => $name,
+                        'isRequired' => $value->isRequired()
+                    ])
+                @else
+                    @include('checkout::components.numeric_input', [
+                       'label' => $name,
+                       'wireModel' => "$saveTo.$name",
+                       'placeholder' => $name,
+                       'isRequired' => $value->isRequired()
+                   ])
+                @endif
                 @php($inputs++)
             @endif
 

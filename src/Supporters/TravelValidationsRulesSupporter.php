@@ -56,6 +56,9 @@ final readonly class TravelValidationsRulesSupporter
             ->countries
             ->map(fn (CountryResponseEntity $item): string => $item->iso_code.'-'.$item->name)
             ->all();
+        $postalCodeRules = Config::boolean('checkout.insurance.vertical.active')
+            ? ['string', 'max:20']
+            : ['numeric'];
 
         return [
             'isMainContact' => ['boolean'],
@@ -84,7 +87,7 @@ final readonly class TravelValidationsRulesSupporter
                 new PassportExpirationDateRule($this->travelerDetails->itinerary->endDate),
             ],
             'passportIssuingCountry' => ['string', Rule::in($countries)],
-            'postalCode' => ['string', 'max:20'],
+            'postalCode' => $postalCodeRules,
             'city' => ['string', 'max:255'],
             'country' => ['string', Rule::in($countries)],
             'countryCode' => ['string', 'max:10'],
