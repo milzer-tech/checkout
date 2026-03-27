@@ -29,6 +29,38 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
     {
         $model = Checkout::query()->firstOrCreate(['checkout_id' => $this->checkoutId]);
 
-        $model->updateData([$this->name => $this->value]);
+        $value = $this->value;
+
+        if (preg_match('/\.(birthDate|passportExpirationDate)$/', $this->name) === 1) {
+            $existing = data_get($model->data, $this->name);
+            if ($existing instanceof \Illuminate\Support\Collection) {
+                $existing = $existing->all();
+            }
+            $value = $this->mergeTripDate(is_array($existing) ? $existing : [], is_array($value) ? $value : []);
+        }
+
+        $model->updateData([$this->name => $value]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $existing
+     * @param  array<string, mixed>  $incoming
+     * @return array<string, int>
+     */
+    private function mergeTripDate(array $existing, array $incoming): array
+    {
+        $out = [];
+
+        foreach (['day', 'month', 'year'] as $key) {
+            $new = $incoming[$key] ?? null;
+            $old = $existing[$key] ?? null;
+            $chosen = ($new !== null && $new !== '') ? $new : $old;
+
+            if ($chosen !== null && $chosen !== '') {
+                $out[$key] = (int) $chosen;
+            }
+        }
+
+        return $out;
     }
 }

@@ -133,14 +133,17 @@ class TravelerDetails extends BaseCheckoutComponent
         [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
         $this->validateTravellerData($room, $traveler);
         $this->paxInfo = TravellerSupporter::saveActiveTraveller($this->paxInfo, $this->checkoutId, $room, $traveler);
+        $this->model->refresh();
 
         $nextTraveler = $traveler + 1;
         $nextRoom = $room + 1;
 
         if (isset($this->paxInfo[$room][$nextTraveler])) {
             $this->paxInfo = TravellerSupporter::nextInactiveTraveller($this->paxInfo, $this->checkoutId, $room, $nextTraveler);
+            $this->model->refresh();
         } elseif (isset($this->paxInfo[$nextRoom])) {
             $this->paxInfo = TravellerSupporter::nextInactiveTraveller($this->paxInfo, $this->checkoutId, $nextRoom, 0);
+            $this->model->refresh();
         } else {
             $this->paxInfo[$room][0]['showTraveller']->isShowing = true;
 
@@ -174,6 +177,18 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     public function updated(string $name, mixed $value): void
     {
+        if (preg_match('/^paxInfo\.(\d+)\.(\d+)\.(birthDate|passportExpirationDate)\.(day|month|year)$/', $name, $m)
+            === 1) {
+            $ruleKey = 'paxInfo.*.*.'.$m[3].'.'.$m[4];
+            $this->validate([$name => $this->rules()[$ruleKey]]);
+
+            $path = 'paxInfo.'.$m[1].'.'.$m[2].'.'.$m[3];
+            $dateValue = data_get($this->paxInfo, $m[1].'.'.$m[2].'.'.$m[3]);
+            (new SaveTraverDetailsJob($this->checkoutId, $path, $dateValue))->handle();
+
+            return;
+        }
+
         $key = str($name)->after('.')->after('.')->after('.')->prepend('paxInfo.*.*.');
 
         $this->validate([$name => $this->rules()[$key->toString()]]);

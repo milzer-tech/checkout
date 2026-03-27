@@ -118,7 +118,9 @@ class TravellerSupporter
         $paxInfo[$room][$traveler]['showTraveller']->isFilled = true;
         $paxInfo[$room][$traveler]['showTraveller']->isShowing = false;
 
-        (new SaveTraverDetailsJob($checkoutId, "paxInfo.$room.$traveler", $paxInfo[$room][$traveler]))->handle();
+        $payload = self::normalizePaxForPersistence($paxInfo[$room][$traveler]);
+
+        (new SaveTraverDetailsJob($checkoutId, "paxInfo.$room.$traveler", $payload))->handle();
 
         return $paxInfo;
     }
@@ -134,8 +136,40 @@ class TravellerSupporter
         $paxInfo[$room][$traveler]['showTraveller']->isFilled = false;
         $paxInfo[$room][$traveler]['showTraveller']->isShowing = true;
 
-        (new SaveTraverDetailsJob($checkoutId, "paxInfo.$room.$traveler", $paxInfo[$room][$traveler]))->handle();
+        $payload = self::normalizePaxForPersistence($paxInfo[$room][$traveler]);
+
+        (new SaveTraverDetailsJob($checkoutId, "paxInfo.$room.$traveler", $payload))->handle();
 
         return $paxInfo;
+    }
+
+    /**
+     * Ensure JSON storage in checkout.data is plain arrays (DTOs / Collections can break or drop keys).
+     *
+     * @param  array<string, mixed>  $pax
+     * @return array<string, mixed>
+     */
+    public static function normalizePaxForPersistence(array $pax): array
+    {
+        if (isset($pax['showTraveller'])) {
+            $st = $pax['showTraveller'];
+            if ($st instanceof ShowTraveller) {
+                $pax['showTraveller'] = $st->toArray();
+            } elseif (! is_array($st)) {
+                $pax['showTraveller'] = ShowTraveller::from($st)->toArray();
+            }
+        }
+
+        foreach (['birthDate', 'passportExpirationDate'] as $key) {
+            if (! isset($pax[$key])) {
+                continue;
+            }
+            $d = $pax[$key];
+            if ($d instanceof \Illuminate\Support\Collection) {
+                $pax[$key] = $d->all();
+            }
+        }
+
+        return $pax;
     }
 }
