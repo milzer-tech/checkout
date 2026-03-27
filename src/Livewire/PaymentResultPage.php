@@ -99,6 +99,8 @@ class PaymentResultPage extends BaseCheckoutComponent
     protected function processInsuranceData(): void
     {
         try {
+            $this->transaction->refresh();
+
             $insurance = $this->transaction->checkout->data['insurance']
                 ? InsuranceOfferDto::from($this->transaction->checkout->data['insurance'])
                 : null;
