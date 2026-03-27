@@ -116,7 +116,7 @@ class OppwaWidgetGateway implements WidgetPaymentContract
                             billingAddress: {
                                 country: "'.$contact->address->getCountryCode().'",
                                 city: "'.$contact->address->city.'",
-                                postcode: "'.$contact->address->getNumericPostalCode().'",
+                                postcode: "'.$contact->address->postalCode.'",
                                 street1: "'.$contact->address->street1.'"
                             },
                             mandatoryBillingFields:{
