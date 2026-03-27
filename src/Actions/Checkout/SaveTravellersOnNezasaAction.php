@@ -7,7 +7,6 @@ namespace Nezasa\Checkout\Actions\Checkout;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Exceptions\NotStoredTravellerException;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
 use Nezasa\Checkout\Models\Checkout;
@@ -21,17 +20,10 @@ final class SaveTravellersOnNezasaAction
 
         try {
             $model->refresh();
-            /** @phpstan-ignore-next-line */
-            foreach (collect($model->data['paxInfo'] ?? [])->flatten(1) as $index => $pax) {
-                $paxInfo[] = PaxInfoPayloadEntity::from([
-                    'refId' => "pax-$index",
-                    ...$pax,
-                ]);
-            }
 
             $payload = new SaveTravellersDetailsPayload(
-                contactInfo: ContactInfoPayloadEntity::from($model->data['contact']),
-                paxInfo: $paxInfo
+                contactInfo: $model->getContact(),
+                paxInfo: $model->getPaxInfo(),
             );
 
             $response = resolve(NezasaConnector::class)
