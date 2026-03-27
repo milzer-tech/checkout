@@ -45,9 +45,11 @@ class ContactDetails extends BaseCheckoutComponent
     public function mount(): void
     {
         /** @phpstan-ignore-next-line */
-        $this->contact = $this->model->data->get('contact');
+        $loaded = $this->model->data->get('contact');
+        $this->contact = is_array($loaded) ? $loaded : [];
 
         $this->defineDefaultValues();
+        $this->model->updateData(['contact' => $this->contact]);
     }
 
     /**
@@ -68,9 +70,17 @@ class ContactDetails extends BaseCheckoutComponent
             $name => $this->rules()[$name],
         ]);
 
-        $job = new SaveTraverDetailsJob(checkoutId: $this->checkoutId, name: $name, value: $value);
+        if (str_starts_with($name, 'contact.mobilePhone.')) {
+            dispatch(new SaveTraverDetailsJob(
+                checkoutId: $this->checkoutId,
+                name: 'contact.mobilePhone',
+                value: $this->contact['mobilePhone'] ?? [],
+            ));
 
-        dispatch($job);
+            return;
+        }
+
+        dispatch(new SaveTraverDetailsJob(checkoutId: $this->checkoutId, name: $name, value: $value));
     }
 
     /**
@@ -145,14 +155,13 @@ class ContactDetails extends BaseCheckoutComponent
      */
     public function defineDefaultValues(): void
     {
-        // if the country code is not set, set the default country code.
-        if ($this->contactRequirements->mobilePhoneDefaultCountryCode
+        if ($this->contactRequirements->getVisibleFields()->has('mobilePhone')
             && ! data_get($this->contact, 'mobilePhone.countryCode')) {
-            data_set(
-                $this->contact,
-                'mobilePhone.countryCode',
-                $this->contactRequirements->mobilePhoneDefaultCountryCode->callingCode
-            );
+            $callingCode = $this->defaultCallingCodeForPhoneSelect();
+
+            if ($callingCode !== null) {
+                data_set($this->contact, 'mobilePhone.countryCode', $callingCode);
+            }
         }
 
         $defaultCountry = $this->countriesResponse->countries->firstWhere('preferred', true);
@@ -160,6 +169,24 @@ class ContactDetails extends BaseCheckoutComponent
         if ($defaultCountry && ! isset($this->contact['country'])) {
             $this->contact['country'] = "$defaultCountry->iso_code-$defaultCountry->name";
         }
+    }
+
+    /**
+     * Match the phone country-code select: API default when present, otherwise first option
+     * (same order as checkout::components.phone — sortBy callingCode, unique).
+     */
+    private function defaultCallingCodeForPhoneSelect(): ?string
+    {
+        if ($this->contactRequirements->mobilePhoneDefaultCountryCode !== null) {
+            return $this->contactRequirements->mobilePhoneDefaultCountryCode->callingCode;
+        }
+
+        $first = $this->countryCodes->callingCodes
+            ->sortBy('callingCode')
+            ->unique('callingCode')
+            ->first();
+
+        return $first?->callingCode;
     }
 
     /**
