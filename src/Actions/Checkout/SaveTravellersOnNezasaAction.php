@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Actions\Checkout;
 
-use Illuminate\Support\Collection;
 use Nezasa\Checkout\Exceptions\NotStoredTravellerException;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
 use Nezasa\Checkout\Models\Checkout;
 
@@ -15,9 +13,6 @@ final class SaveTravellersOnNezasaAction
 {
     public function run(Checkout $model): void
     {
-        /** @var Collection<int, PaxInfoPayloadEntity> $paxInfo */
-        $paxInfo = new Collection;
-
         try {
             $model->refresh();
 

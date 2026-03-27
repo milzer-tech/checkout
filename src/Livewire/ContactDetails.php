@@ -177,7 +177,7 @@ class ContactDetails extends BaseCheckoutComponent
      */
     private function defaultCallingCodeForPhoneSelect(): ?string
     {
-        if ($this->contactRequirements->mobilePhoneDefaultCountryCode !== null) {
+        if ($this->contactRequirements->mobilePhoneDefaultCountryCode instanceof \Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\CountryCallingCodeResponseEntity) {
             return $this->contactRequirements->mobilePhoneDefaultCountryCode->callingCode;
         }
 
