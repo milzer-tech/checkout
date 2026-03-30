@@ -29,6 +29,15 @@
                         let currentInitId = 0;
                         let readyTimeoutId = null;
 
+                        function logVertical(direction, label, payload) {
+                            const prefix = '[Vertical Insurance]';
+                            if (payload !== undefined) {
+                                console.log(prefix, direction, label, payload);
+                            } else {
+                                console.log(prefix, direction, label);
+                            }
+                        }
+
                         function showLoader() {
                             document.getElementById("insurance_loading").style.display = "flex";
                             document.getElementById("insurance_error").classList.add("hidden");
@@ -39,6 +48,7 @@
                         }
 
                         function showError(msg = "Insurance offer couldn’t be loaded. Please try again.") {
+                            logVertical('← Vertical', 'UI / error message', msg);
                             hideLoader();
                             document.getElementById("insurance_error_text").textContent = msg;
                             document.getElementById("insurance_error").classList.remove("hidden");
@@ -61,16 +71,22 @@
                             // document.getElementById("insurance_offer").innerHTML = "";
 
                             try {
+                                logVertical('→ Vertical', 'init config (embedded-offer)', config);
                                 if (window.verticalInsureInstance && typeof window.verticalInsureInstance.destroy === "function") {
                                     try {
                                         window.verticalInsureInstance.destroy();
                                     } catch (_) {
                                     }
                                 }
-                                window.verticalInsureInstance = new VerticalInsure("#insurance_offer", config);
+                                window.verticalInsureInstance = new VerticalInsure("#insurance_offer", config, {
+                                    onError(error) {
+                                        logVertical('← Vertical', 'SDK onError', error);
+                                    },
+                                });
                             } catch (e) {
                                 if (myInitId !== currentInitId) return;
                                 clearTimeout(readyTimeoutId);
+                                logVertical('← Vertical', 'init exception', e);
                                 console.error(e);
                                 showError("Insurance offer couldn’t be initialized.");
                             }
@@ -78,6 +94,7 @@
 
                         // Hide loader only for the latest init cycle
                         window.addEventListener("offer-ready", (e) => {
+                            logVertical('← Vertical', 'offer-ready (event)', e?.detail);
                             // Ignore stale ready events from previous instances
                             // (If Vertical fires ready twice or older instance emits late)
                             if (currentInitId === 0) return;
@@ -93,6 +110,7 @@
                         });
 
                         window.addEventListener("offer-state-change", (e) => {
+                            logVertical('← Vertical', 'offer-state-change (event)', e?.detail);
                             @this.
                             call('handleInsuranceQuote', e.detail.quotes[0]);
                         });
@@ -115,6 +133,7 @@
                         });
 
                         window.addEventListener("insurance-config-updated", (e) => {
+                            logVertical('→ Vertical', 'Livewire insurance-config-updated', e?.detail?.config);
                             initVerticalInsure(e.detail.config);
                         });
 
