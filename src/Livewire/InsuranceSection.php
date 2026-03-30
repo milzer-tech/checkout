@@ -216,7 +216,6 @@ class InsuranceSection extends BaseCheckoutComponent
                     'customer' => [
                         'first_name' => $this->contact->firstName,
                         'last_name' => $this->contact->lastName,
-                        'birthDate' => $this->model->refresh()->getPaxInfo()->first()->birthDate->toDateString(),
                         'email_address' => $this->contact->email,
                         'street' => $this->contact->address->street1.' '.$this->contact->address->street2,
                         'city' => $this->contact->address->city,
@@ -224,6 +223,7 @@ class InsuranceSection extends BaseCheckoutComponent
                         'country' => str($this->contact->address->country)->beforeLast('-')->toString(),
                     ],
                     'attributes' => [
+                        'birth_date' => $this->model->refresh()->getPaxInfo()->first()->birthDate->toDateString(),
                         'trip_start_date' => $this->itinerary->startDate->toDateString(),
                         'trip_end_date' => $this->itinerary->endDate->toDateString(),
                         'destination_countries' => $this->itinerary->destinationCountries,
