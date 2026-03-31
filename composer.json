@@ -13,7 +13,7 @@
         "php": "^8.3.0",
         "azimkordpour/power-enum": "^1.2",
         "livewire/livewire": "^3.6",
-        "saloonphp/saloon": "^3.0",
+        "saloonphp/saloon": "^4.0",
         "spatie/laravel-data": "^4.15",
         "stripe/stripe-php": "^19.0"
     },
