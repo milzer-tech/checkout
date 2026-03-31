@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Supporters;
 
+use Illuminate\Support\Collection;
 use Nezasa\Checkout\Dtos\View\ShowTraveller;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
@@ -165,7 +166,7 @@ class TravellerSupporter
                 continue;
             }
             $d = $pax[$key];
-            if ($d instanceof \Illuminate\Support\Collection) {
+            if ($d instanceof Collection) {
                 $pax[$key] = $d->all();
             }
         }

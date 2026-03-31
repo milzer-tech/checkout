@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Jobs;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Collection;
 use Nezasa\Checkout\Models\Checkout;
 
 class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
@@ -33,7 +34,7 @@ class SaveTraverDetailsJob implements ShouldBeUnique, ShouldQueue
 
         if (preg_match('/\.(birthDate|passportExpirationDate)$/', $this->name) === 1) {
             $existing = data_get($model->data, $this->name);
-            if ($existing instanceof \Illuminate\Support\Collection) {
+            if ($existing instanceof Collection) {
                 $existing = $existing->all();
             }
             $value = $this->mergeTripDate(is_array($existing) ? $existing : [], is_array($value) ? $value : []);

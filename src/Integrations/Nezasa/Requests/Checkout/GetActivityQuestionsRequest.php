@@ -60,7 +60,7 @@ class GetActivityQuestionsRequest extends Request
         }
 
         return parent::middleware()
-            ->onRequest(function (PendingRequest $pendingRequest): \Saloon\Http\Faking\FakeResponse {
+            ->onRequest(function (PendingRequest $pendingRequest): FakeResponse {
                 $file = file_get_contents(
                     checkout_path('tests/Fixtures/Saloon/get_activity_question_response.json')
                 );

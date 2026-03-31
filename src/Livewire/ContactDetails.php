@@ -11,6 +11,7 @@ use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountriesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\CountryCodesResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ContactRequirementEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\CountryCallingCodeResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 use Nezasa\Checkout\Models\Checkout;
@@ -177,7 +178,7 @@ class ContactDetails extends BaseCheckoutComponent
      */
     private function defaultCallingCodeForPhoneSelect(): ?string
     {
-        if ($this->contactRequirements->mobilePhoneDefaultCountryCode instanceof \Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\CountryCallingCodeResponseEntity) {
+        if ($this->contactRequirements->mobilePhoneDefaultCountryCode instanceof CountryCallingCodeResponseEntity) {
             return $this->contactRequirements->mobilePhoneDefaultCountryCode->callingCode;
         }
 

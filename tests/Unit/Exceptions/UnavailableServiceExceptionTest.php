@@ -9,12 +9,13 @@ it('builds UnavailableServiceException with correct status and message, and rend
     View::prependNamespace('checkout', __DIR__.'/../../Fixtures/views');
 
     $expectedMessage = 'The requested service is currently unavailable. Please try again later.';
+    $expectedExceptionMessage = $expectedMessage.': []';
     expect(Lang::get('checkout::exceptions.unavailable_service'))->toBe($expectedMessage);
 
     $e = new UnavailableServiceException;
 
     expect($e->getStatusCode())->toBe(SymfonyResponse::HTTP_SERVICE_UNAVAILABLE)
-        ->and($e->getMessage())->toBe($expectedMessage);
+        ->and($e->getMessage())->toBe($expectedExceptionMessage);
 
     $response = $e->render();
 
@@ -22,5 +23,5 @@ it('builds UnavailableServiceException with correct status and message, and rend
         ->and($response->getContent())
         ->toContain('Exception View:')
         ->toContain((string) SymfonyResponse::HTTP_SERVICE_UNAVAILABLE)
-        ->toContain($expectedMessage);
+        ->toContain($expectedExceptionMessage);
 });

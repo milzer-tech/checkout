@@ -104,7 +104,7 @@ class PaymentResultPage extends BaseCheckoutComponent
             $insurance = $this->transaction->checkout->data['insurance']
                 ? InsuranceOfferDto::from($this->transaction->checkout->data['insurance'])
                 : null;
-            if ($insurance instanceof \Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto) {
+            if ($insurance instanceof InsuranceOfferDto) {
                 $availability = data_get($this->transaction->result_data, 'insurance.isSuccessful', false)
                     ? AvailabilityEnum::Booked
                     : AvailabilityEnum::None;

@@ -23,8 +23,9 @@ use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\AddedRentalCarsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Planner\GetItineraryRequest;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class)->in(__DIR__);
+uses(TestCase::class)->in(__DIR__);
 
 function mockFixture(string $name, int $status = 200): MockResponse
 {

@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Livewire\LivewireServiceProvider;
@@ -20,7 +21,7 @@ abstract class TestCase extends OrchestraTestCase
     /**
      * Get package providers.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      * @return array<int, class-string>
      *
      * @api

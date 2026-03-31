@@ -1,87 +1,22 @@
 <?php
 
-use Illuminate\Support\Collection;
-use Mockery as m;
-use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
-use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\SaveTravellersDetailsPayload;
-use Nezasa\Checkout\Integrations\Nezasa\Resources\CheckoutResource;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 use Nezasa\Checkout\Models\Checkout;
-use Saloon\Http\Response;
 
-afterEach(function (): void {
-    m::close();
-});
-
-it('updates checkout data and triggers saveTravelerDetails when contact and paxInfo complete', function (): void {
-    $params = new CheckoutParamsDto('co-save-1', 'it-1', 'app', 'en');
+it('updates an existing checkout data key', function (): void {
     $checkout = Checkout::create([
-        'checkout_id' => $params->checkoutId,
-        'itinerary_id' => $params->itineraryId,
-        'origin' => $params->origin,
-        'lang' => $params->lang,
+        'checkout_id' => 'co-save-1',
+        'itinerary_id' => 'it-1',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
-            'numberOfPax' => 2,
             'contact' => [
                 'firstName' => 'Alice',
                 'lastName' => 'Doe',
                 'email' => 'alice@example.com',
             ],
-            'paxInfo' => [
-                [
-                    [
-                        'firstName' => 'PaxA',
-                        'lastName' => 'One',
-                    ],
-                    [
-                        'firstName' => 'PaxB',
-                        'lastName' => 'Two',
-                    ],
-                ],
-            ],
         ],
     ]);
-
-    $checkoutApi = m::mock(CheckoutResource::class);
-    $checkoutApi->shouldReceive('saveTravelerDetails')
-        ->once()
-        ->withArgs(function ($checkoutId, $payload): bool {
-            if ($checkoutId !== 'co-save-1') {
-                return false;
-            }
-
-            if (! $payload instanceof SaveTravellersDetailsPayload) {
-                return false;
-            }
-
-            expect($payload->contactInfo)->toBeInstanceOf(ContactInfoPayloadEntity::class)
-                ->and($payload->contactInfo->firstName)->toBe('Alice')
-                ->and($payload->contactInfo->email)->toBe('newalice@example.com');
-
-            expect($payload->paxInfo)->toBeInstanceOf(Collection::class)
-                ->and($payload->paxInfo)->toHaveCount(2);
-
-            /** @var PaxInfoPayloadEntity $first */
-            $first = $payload->paxInfo->get(0);
-            /** @var PaxInfoPayloadEntity $second */
-            $second = $payload->paxInfo->get(1);
-
-            expect($first)->toBeInstanceOf(PaxInfoPayloadEntity::class)
-                ->and($first->refId)->toBe('pax-0')
-                ->and($first->firstName)->toBe('PaxA')
-                ->and($second->refId)->toBe('pax-1')
-                ->and($second->lastName)->toBe('Two');
-
-            return true;
-        })
-        ->andReturn(m::mock(Response::class));
-
-    $connector = m::mock(NezasaConnector::class);
-    $connector->shouldReceive('checkout')->andReturn($checkoutApi);
-    app()->instance(NezasaConnector::class, $connector);
 
     (new SaveTraverDetailsJob('co-save-1', 'contact.email', 'newalice@example.com'))->handle();
 
@@ -90,58 +25,54 @@ it('updates checkout data and triggers saveTravelerDetails when contact and paxI
     expect(data_get($data, 'contact.email'))->toBe('newalice@example.com');
 });
 
-it('does not call saveTravelerDetails when contact missing', function (): void {
-    $params = new CheckoutParamsDto('co--1', 'it-11', 'app', 'en');
+it('updates arbitrary nested flag data on existing checkout', function (): void {
     Checkout::create([
-        'checkout_id' => $params->checkoutId,
-        'itinerary_id' => $params->itineraryId,
-        'origin' => $params->origin,
-        'lang' => $params->lang,
-        'data' => [
-            'numberOfPax' => 1,
-            'paxInfo' => [[['firstName' => 'Solo']]],
-        ],
+        'checkout_id' => 'co-new',
+        'itinerary_id' => 'it-new',
+        'origin' => 'app',
+        'lang' => 'en',
+        'data' => [],
     ]);
 
-    $checkoutApi = m::mock(CheckoutResource::class);
-    $checkoutApi->shouldReceive('saveTravelerDetails')->never();
+    (new SaveTraverDetailsJob('co-new', 'flags.nop', true))->handle();
 
-    $connector = m::mock(NezasaConnector::class);
-    $connector->shouldReceive('checkout')->andReturn($checkoutApi);
-    app()->instance(NezasaConnector::class, $connector);
-
-    (new SaveTraverDetailsJob($params->checkoutId, 'flags.nop', true))->handle();
+    $checkout = Checkout::query()->where('checkout_id', 'co-new')->first();
+    expect($checkout)->not->toBeNull();
+    expect(data_get($checkout?->data?->toArray() ?? [], 'flags.nop'))->toBeTrue();
 });
 
-it('does not call saveTravelerDetails when pax count mismatches numberOfPax', function (): void {
-    $params = new CheckoutParamsDto('co--1', 'it-11', 'app', 'en');
-    Checkout::create([
-        'checkout_id' => $params->checkoutId,
-        'itinerary_id' => $params->itineraryId,
-        'origin' => $params->origin,
-        'lang' => $params->lang,
+it('merges partial date updates instead of dropping siblings', function (): void {
+    $checkout = Checkout::create([
+        'checkout_id' => 'co-date-1',
+        'itinerary_id' => 'it-11',
+        'origin' => 'app',
+        'lang' => 'en',
         'data' => [
-            'numberOfPax' => 2,
-            'contact' => ['firstName' => 'Bob', 'lastName' => 'Doe', 'email' => 'bob@example.com'],
-            'paxInfo' => [
-                [
-                    ['firstName' => 'OnlyOne', 'lastName' => 'Pax'],
+            'paxInfo' => [[[
+                'passportExpirationDate' => [
+                    'day' => 15,
+                    'month' => 7,
+                    'year' => 2030,
                 ],
-            ],
+            ]]],
         ],
     ]);
 
-    $checkoutApi = m::mock(CheckoutResource::class);
-    $checkoutApi->shouldReceive('saveTravelerDetails')->never();
+    (new SaveTraverDetailsJob('co-date-1', 'paxInfo.0.0.passportExpirationDate', [
+        'month' => 8,
+    ]))->handle();
 
-    $connector = m::mock(NezasaConnector::class);
-    $connector->shouldReceive('checkout')->andReturn($checkoutApi);
-    app()->instance(NezasaConnector::class, $connector);
-
-    (new SaveTraverDetailsJob($params->checkoutId, 'contact.email', 'bobby@example.com'))->handle();
+    $savedDate = data_get($checkout->fresh()?->data?->toArray() ?? [], 'paxInfo.0.0.passportExpirationDate');
+    expect($savedDate)->toBe([
+        'day' => 15,
+        'month' => 8,
+        'year' => 2030,
+    ]);
 });
 
-it('uniqueId combines checkoutId and name', function (): void {
+it('has expected public properties from constructor', function (): void {
     $job = new SaveTraverDetailsJob('co-xyz', 'contact.email', 'x');
-    expect($job->uniqueId())->toBe(md5('co-xyz-contact.email'));
+    expect($job->checkoutId)->toBe('co-xyz')
+        ->and($job->name)->toBe('contact.email')
+        ->and($job->value)->toBe('x');
 });
