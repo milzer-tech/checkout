@@ -1,0 +1,57 @@
+{
+  "data": {
+    "coveredEvent": {
+      "bookingConfirmationDate": "2025-08-27T11:20:19+00:00",
+      "eventStartDate": "2025-09-01T00:00:00+00:00",
+      "eventEndDate": "2025-09-10T00:00:00+00:00",
+      "totalEventCost": {
+        "amount": "1000.00",
+        "currency": "EUR"
+      },
+      "destinationCountries": ["DE"]
+    },
+    "insuredPersons": [],
+    "offers": [
+      {
+        "products": [
+          {
+            "productId": "prod-high",
+            "productInstanceId": "instance-high",
+            "productTotalPremium": {
+              "amount": "80.00",
+              "currency": "EUR"
+            },
+            "title": "High premium",
+            "coverageData": [
+              {
+                "title": "Medical assistance",
+                "description": null
+              }
+            ],
+            "documents": [
+              {
+                "documentType": "IPID",
+                "url": "https://example.test/ipid.pdf"
+              },
+              {
+                "documentType": "AVB",
+                "url": "https://example.test/avb.pdf"
+              }
+            ]
+          },
+          {
+            "productId": "prod-low",
+            "productInstanceId": "instance-low",
+            "productTotalPremium": {
+              "amount": "25.00",
+              "currency": "EUR"
+            },
+            "title": "Low premium",
+            "coverageData": [],
+            "documents": []
+          }
+        ]
+      }
+    ]
+  }
+}
