@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2013 rel. 2 sp1 (x64) (http://www.altova.com) von erv0500 (ITERGO Lizenzmanagement) bearbeitet -->
+<wsdl:definitions xmlns:erv="http://www.erv.de/eSoap/2019/09" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.erv.de/eSoap.wsdl" xmlns:ns="http://www.erv.de/eSoap/2019/09/common" targetNamespace="http://www.erv.de/eSoap.wsdl">
+	<wsdl:types>
+		<xs:schema>
+			<xs:import schemaLocation="ERV_ESC_v201909.xsd" namespace="http://www.erv.de/eSoap/2019/09"/>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="ERV_InsuranceBookSoapIn">
+		<wsdl:part name="ERV_InsuranceBookRQ" element="erv:ERV_InsuranceBookRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceBookSoapOut">
+		<wsdl:part name="ERV_InsuranceBookRS" element="erv:ERV_InsuranceBookRS"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceCancelSoapIn">
+		<wsdl:part name="ERV_InsuranceCancelRQ" element="erv:ERV_InsuranceCancelRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceCancelSoapOut">
+		<wsdl:part name="ERV_InsuranceCancelRS" element="erv:ERV_InsuranceCancelRS"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsurancePlanSearchSoapIn">
+		<wsdl:part name="ERV_InsurancePlanSearchRQ" element="erv:ERV_InsurancePlanSearchRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsurancePlanSearchSoapOut">
+		<wsdl:part name="ERV_InsurancePlanSearchRS" element="erv:ERV_InsurancePlanSearchRS"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceQuoteSoapIn">
+		<wsdl:part name="ERV_InsuranceQuoteRQ" element="erv:ERV_InsuranceQuoteRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceQuoteSoapOut">
+		<wsdl:part name="ERV_InsuranceQuoteRS" element="erv:ERV_InsuranceQuoteRS"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceReadSoapIn">
+		<wsdl:part name="ERV_InsuranceReadRQ" element="erv:ERV_InsuranceReadRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceReadSoapOut">
+		<wsdl:part name="ERV_InsuranceReadRS" element="erv:ERV_InsuranceReadRS"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceSearchSoapIn">
+		<wsdl:part name="ERV_InsuranceSearchRQ" element="erv:ERV_InsuranceSearchRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceSearchSoapOut">
+		<wsdl:part name="ERV_InsuranceSearchRS" element="erv:ERV_InsuranceSearchRS"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_PingSoapIn">
+		<wsdl:part name="ERV_PingRQ" element="erv:ERV_PingRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_PingSoapOut">
+		<wsdl:part name="ERV_PingRS" element="erv:ERV_PingRS"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_PayPageUrlSoapIn">
+		<wsdl:part name="ERV_PayPageUrlRQ" element="erv:ERV_PayPageUrlRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_PayPageUrlSoapOut">
+		<wsdl:part name="ERV_PayPageUrlRS" element="erv:ERV_PayPageUrlRS"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceCreatePreContractualInformationSoapIn">
+		<wsdl:part name="ERV_InsuranceCreatePreContractualInformationRQ" element="erv:ERV_InsuranceCreatePreContractualInformationRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceCreatePreContractualInformationSoapOut">
+		<wsdl:part name="ERV_InsuranceCreatePreContractualInformationRS" element="erv:ERV_InsuranceCreatePreContractualInformationRS"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceReadPreContractualInformationSoapIn">
+		<wsdl:part name="ERV_InsuranceReadPreContractualInformationRQ" element="erv:ERV_InsuranceReadPreContractualInformationRQ"/>
+	</wsdl:message>
+	<wsdl:message name="ERV_InsuranceReadPreContractualInformationSoapOut">
+		<wsdl:part name="ERV_InsuranceReadPreContractualInformationRS" element="erv:ERV_InsuranceReadPreContractualInformationRS"/>
+	</wsdl:message>
+	<wsdl:portType name="ESoapConnector">
+		<wsdl:operation name="ERV_InsuranceBookRQ">
+			<wsdl:input message="tns:ERV_InsuranceBookSoapIn"/>
+			<wsdl:output message="tns:ERV_InsuranceBookSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceCancelRQ">
+			<wsdl:input message="tns:ERV_InsuranceCancelSoapIn"/>
+			<wsdl:output message="tns:ERV_InsuranceCancelSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsurancePlanSearchRQ">
+			<wsdl:input message="tns:ERV_InsurancePlanSearchSoapIn"/>
+			<wsdl:output message="tns:ERV_InsurancePlanSearchSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceQuoteRQ">
+			<wsdl:input message="tns:ERV_InsuranceQuoteSoapIn"/>
+			<wsdl:output message="tns:ERV_InsuranceQuoteSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceReadRQ">
+			<wsdl:input message="tns:ERV_InsuranceReadSoapIn"/>
+			<wsdl:output message="tns:ERV_InsuranceReadSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceSearchRQ">
+			<wsdl:input message="tns:ERV_InsuranceSearchSoapIn"/>
+			<wsdl:output message="tns:ERV_InsuranceSearchSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_PingRQ">
+			<wsdl:input message="tns:ERV_PingSoapIn"/>
+			<wsdl:output message="tns:ERV_PingSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_PayPageUrlRQ">
+			<wsdl:input message="tns:ERV_PayPageUrlSoapIn"/>
+			<wsdl:output message="tns:ERV_PayPageUrlSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceCreatePreContractualInformationRQ">
+			<wsdl:input message="tns:ERV_InsuranceCreatePreContractualInformationSoapIn"/>
+			<wsdl:output message="tns:ERV_InsuranceCreatePreContractualInformationSoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceReadPreContractualInformationRQ">
+			<wsdl:input message="tns:ERV_InsuranceReadPreContractualInformationSoapIn"/>
+			<wsdl:output message="tns:ERV_InsuranceReadPreContractualInformationSoapOut"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="ESoap_SoapBinding" type="tns:ESoapConnector">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="ERV_InsuranceBookRQ">
+			<soap:operation soapAction="ERV_InsuranceBookRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_InsuranceBookRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_InsuranceBookRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceCancelRQ">
+			<soap:operation soapAction="ERV_InsuranceCancelRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_InsuranceCancelRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_InsuranceCancelRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsurancePlanSearchRQ">
+			<soap:operation soapAction="ERV_InsurancePlanSearchRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_InsurancePlanSearchRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_InsurancePlanSearchRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceQuoteRQ">
+			<soap:operation soapAction="ERV_InsuranceQuoteRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_InsuranceQuoteRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_InsuranceQuoteRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceReadRQ">
+			<soap:operation soapAction="ERV_InsuranceReadRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_InsuranceReadRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_InsuranceReadRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceSearchRQ">
+			<soap:operation soapAction="ERV_InsuranceSearchRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_InsuranceSearchRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_InsuranceSearchRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_PingRQ">
+			<soap:operation soapAction="ERV_PingRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_PingRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_PingRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_PayPageUrlRQ">
+			<soap:operation soapAction="ERV_PayPageUrlRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_PayPageUrlRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_PayPageUrlRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceCreatePreContractualInformationRQ">
+			<soap:operation soapAction="ERV_InsuranceCreatePreContractualInformationRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_InsuranceCreatePreContractualInformationRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_InsuranceCreatePreContractualInformationRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="ERV_InsuranceReadPreContractualInformationRQ">
+			<soap:operation soapAction="ERV_InsuranceReadPreContractualInformationRQ" style="document"/>
+			<wsdl:input>
+				<soap:body parts="ERV_InsuranceReadPreContractualInformationRQ" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="ERV_InsuranceReadPreContractualInformationRS" use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="ESoap_Service">
+		<wsdl:port name="ESoapConnector" binding="tns:ESoap_SoapBinding">
+			<soap:address location="REPLACED_JBOSS_LOCATION"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

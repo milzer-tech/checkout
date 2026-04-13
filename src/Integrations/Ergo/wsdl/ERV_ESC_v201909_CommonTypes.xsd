@@ -1,0 +1,2103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2013 rel. 2 sp1 (x64) (http://www.altova.com) von Andrea Steiger (ITERGO Lizenzmanagement) bearbeitet -->
+<xs:schema xmlns:common="http://www.erv.de/eSoap/2019/09/common" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.erv.de/eSoap/2019/09/common" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="ProductComponentsType">
+		<xs:annotation/>
+		<xs:sequence>
+			<xs:element name="ProductComponent" type="common:ProductComponentType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Product Component</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="creditcardHolderType">
+		<xs:sequence>
+			<xs:element name="prename" type="common:StringLength0to30">
+				<xs:annotation>
+					<xs:documentation>cardHolder prename [Vorname Kreditkarteninhaber]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="surname" type="common:StringLength1to60">
+				<xs:annotation>
+					<xs:documentation>cardHolder surname [Name Kreditkarteninhaber]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="streetAndNumber" type="common:StringLength1to50">
+				<xs:annotation>
+					<xs:documentation>street [Strasse]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="zipCode" type="common:StringLength1to7">
+				<xs:annotation>
+					<xs:documentation>zip code [PLZ]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="city" type="common:StringLength1to30">
+				<xs:annotation>
+					<xs:documentation>city [Stadt]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="countryCode" type="common:AlphaStringLength2">
+				<xs:annotation>
+					<xs:documentation>country [Land 2-stellig]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="email" type="common:StringLength1to100" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>email address [eMail Adresse]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ProductComponentType">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">ProductComponent attributes</xs:documentation>
+			</xs:annotation>
+			<xs:attribute name="Ordering" type="xs:integer" use="required">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Sort sequence</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="Name" type="common:StringLength1to255" use="required">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Product Component Name</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="AddressType">
+		<xs:sequence>
+			<xs:element name="StreetAndNr" type="common:StringLength1to100">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Street name, street number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CityName" type="common:StringLength1to30">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">City</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PostalCode" type="common:StringLength1to9">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Post Office Code number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Country" type="common:CountryCodeISO3166">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">ISO 3166 country code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtraAddressLine" type="common:StringLength1to30" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Additional address information</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AvailablePlans">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Available insurance plans</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AvailablePlan" type="common:AvailablePlanType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Available insurance plan</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AvailablePlanType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Information container for an insurance plan</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PlanDetail">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Insurance plan informations</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Title" type="common:StringLength1to255"/>
+						<xs:element name="DescriptionURL" type="common:DescriptionURLType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Quote" type="common:QuoteType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The response will only contain this element, if the AutoQuote-attribute in the insurance plan request is 'true'</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="PlanCode" type="common:StringLength1to32" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique insurance plan identifier</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Ordering" type="xs:integer" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Sort sequence</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="BankAcctType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Customer bank accounts for payments</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:sequence>
+				<xs:element name="BankID" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Bank code or BIC</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="BankAcctNumber" type="xs:string">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Identifier for the account assigned by the bank. Account number or IBAN</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DifferingAccountHolder" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Differing (from insurance customer) bank account holder.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NamePrefix" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">Salutation</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="B">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">Baby</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="I">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">Infant</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="K">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">Child</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="H">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">Mr.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="D">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">Mrs.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="G">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">Group</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="NameTitle" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">Degree or honors (e.g., Ph.D., M.D.) </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="GivenName" type="xs:string">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">Given name, first name</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Surname" type="xs:string">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">Family name, last name</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Email" type="xs:string">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">Email address</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Address">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="StreetAndNr" type="xs:string">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">Street name, street number</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="CityName" type="xs:string">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">City</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="PostalCode" type="xs:string">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">Post Office Code number.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Country" type="common:CountryCodeISO3166">
+											<xs:annotation>
+												<xs:documentation xml:lang="en">ISO 3166 country code</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:element name="bankSecureHandleID" type="common:secureHandleIDType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">pay with bank secureHandle ID</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="CancelAllocationType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Allocation which has to be cancelled.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="AllocationIDRef" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Allocation reference</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="CancelServiceType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Service which has to be cancelled.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="ServiceIDRef" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Service reference</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="CancelTravelerType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Covered person which has to be cancelled</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="TravelerIDRef" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Covered person reference</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="CoveredTravelersType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Container for covered travelers</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CoveredTraveler" type="common:CoveredTravelerType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CoveredTravelerType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Contains identifying information as well as coverage requirements and journey information for each individual requesting coverage by the insurance plan.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CoveredPerson" type="common:PersonType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Name data of the covered person</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IndCoverageReqs" type="common:IndCoverageReqsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Container for individual coverage details.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>probably additional fields</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique covered person identifier</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="CoveredTripSearchCritType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Search criterions based on covered trip data</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="StartDate" type="common:PeriodType" minOccurs="0">
+				<xs:annotation/>
+			</xs:element>
+			<xs:element name="EndDate" type="common:PeriodType" minOccurs="0">
+				<xs:annotation/>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DescriptionURLType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Container for description information</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:anyURI">
+				<xs:attribute name="Type" type="common:StringLength1to16" use="required"/>
+				<xs:attribute name="DefaultInd" type="xs:boolean" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="DestinationType">
+		<xs:choice>
+			<xs:element name="Country" type="common:CountryCodeISO3166" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">ISO3166 country code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Airport" type="common:AirportCodeIATA" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">IATA airport code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Region" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">region</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="EmailsType">
+		<xs:sequence>
+			<xs:element name="AdditionalEmail" type="common:StringLength1to255" minOccurs="0" maxOccurs="2">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Email address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EPaymentCardType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Identification about a specific epayment credit card</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EPaymentProvider" type="common:EPaymentProviderType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">payment service provider code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CardType" type="common:CardTypeType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Indicates the type of credit card.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransactionID" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Unique payment transaction ID</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ReferenceID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Unique merchant order reference id/Shopping basket id/Shopping cart id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ErrorsType">
+		<xs:sequence>
+			<xs:element name="Error" type="common:ErrorType" maxOccurs="99"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ErrorType">
+		<xs:sequence>
+			<xs:element name="ErrorCode" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Unique eror code - format = XXX-XXXXX. There are 3 different error types. Error codes starting with "ERV-" are business errors and should be forwarded to the end user (travel agent). Error codes starting with "SYS-" are system errors and should not be forwarded to the end user. ErrorCodes starting with "FAT-" are fatal errors.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ErrorMessage" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Error message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="language" type="common:LanguageCodeISO639">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Language of the error message.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="ERVAgencyType">
+		<xs:sequence>
+			<xs:element name="Hagtnr" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">ERV hagtnr</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Nagtnr" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">ERV nagtnr</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="PayPageHandleIDType">
+		<xs:annotation>
+			<xs:documentation>type for ERV payPagehandle ID</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="128"/>
+			<xs:minLength value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ExtensionsType">
+		<xs:sequence>
+			<xs:element name="Extension" type="common:ExtensionType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ExtensionType">
+		<xs:sequence>
+			<xs:element name="Key" type="common:StringLength1to30">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Key</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Value" type="common:StringLength1to250">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Value</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IndCoverageReqsType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Contains identifying information as well as coverage requirements and journey information for each individual.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="IndTripCost" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Individual trip price.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="FlightAccidentAmount" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Individual flight accident coverage sum.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TripAccidentAmount" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Individual trip accident coverage sum.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CoveredLuggage" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Individual luggage coverage sum.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InsuranceCritsType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Additional insurance information</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TariffCategory" type="common:AlphaLength2" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Category of the insured item. Refer to Appendix A3</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TourOperator" type="common:StringLength1to40" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Touroperator</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InsuranceCustomerType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Contains data on the insurance customer.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PersonName" type="common:CustomerNameType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Name data of the insurance customer</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Email" type="common:StringLength1to255" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Email address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Address" type="common:AddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Address data of the insurance customer</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentForm" type="common:PaymentFormType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Form of payment</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Telephone" type="common:StringLength1to25" minOccurs="0" maxOccurs="2">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Phone number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Mobile" type="common:StringLength1to25" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Mobile number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Fax" type="common:StringLength1to25" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Fax number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Birthdate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Birthdate</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>additional fields as key-value pairs , example: to provide tax details as a key-value pair in extension, use key as TaxID and provide a valid Tax id as value </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InsuranceCustomerPreContractualInformationType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Contains data on the insurance customer.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PersonName" type="common:CustomerNameType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Name data of the insurance customer</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Email" type="common:StringLength1to255">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Email address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Address" type="common:AddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Address data of the insurance customer</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Telephone" type="common:StringLength1to25" minOccurs="0" maxOccurs="2">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Phone number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Mobile" type="common:StringLength1to25" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Mobile number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Fax" type="common:StringLength1to25" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Fax number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InsuranceCustomerQuoteType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Contains quote data on the insurance customer.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ResidenceCountryCode" type="common:CountryCodeISO3166" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InsuredPersonSearchCritType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Search criterions based on covered person data.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Surname" type="common:StringLength1to64">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Last name search. Supports wild card characters % ? </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LocalisationType">
+		<xs:sequence>
+			<xs:element name="Country" type="common:CountryCodeISO3166">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">ISO 3166-1 country code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Language" type="common:LanguageCodeISO639">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">ISO 639 language code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Currency" type="common:CurrencyCodeISO4217">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">ISO 4217 currency code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PaymentCardType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Identification about a specific credit card</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:sequence>
+				<xs:element name="CardHolder" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Name of the credit card holder</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="CardType" type="common:CardTypeType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Indicates the type of credit card.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:choice>
+					<xs:element name="CardNumber" type="xs:string">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Credit card number embossed on the card.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="CardNumberAlias">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Alias Credit card number generated by payment service provider B+S.</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="common:AlphaNumericStringLength12to255">
+									<xs:attribute name="CardNumberMasked" type="common:AlphaNumericStringLength12to25" use="required">
+										<xs:annotation>
+											<xs:documentation>Masked credit card number</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:choice>
+				<xs:element name="ExpireDate" type="common:MMYYYYDate">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Credit card expire date (format: MMYYYY)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="VerificationCode" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Verification digits printed on the card following the embossed number. This may also accommodate the customer identification/batch number (CID), card verification value (CVV2 ), card validation code number (CVC2) on credit card.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="AdditionalPaymentInfo" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Special credit card specific informationen e.g. Airplus approval-code.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="PSD2Parameter" type="common:PSD2ParameterType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">PSD2 parameter, mandatory if initiator is customer</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:element name="ccSecureHandleID" type="common:secureHandleIDType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">pay with payment card secureHandle ID</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ccPayPageHandleID" type="common:payPageHandleIDType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">pay with PayPage</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="PaymentFormType">
+		<xs:choice>
+			<xs:element name="PaymentCard" type="common:PaymentCardType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Credit card payment</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BankAcct" type="common:BankAcctType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Direct debit</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EPayment">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">External payments</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="EPaymentCard" type="common:EPaymentCardType">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">External credit card payments</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="PSD2ParameterType">
+		<xs:annotation>
+			<xs:documentation>type for psd2 parameter</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="cavv">
+				<xs:annotation>
+					<xs:documentation>Cardholder Authentication Verification Value</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="50"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="eci" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Electronic Commerce Indicator</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="threeDSVersion">
+				<xs:annotation>
+					<xs:documentation>3D Secure Version 1.0.2,2.1.0 or 2.2.0</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="5"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="threeDSTransactionId"> 
+				<xs:annotation> 
+					<xs:documentation>TransaktionsId 3D Secure 1.0 -xid- or 2.0 -dstid-</xs:documentation> 
+				</xs:annotation> 
+				<xs:simpleType> 
+					<xs:restriction base="xs:string"> 
+						<xs:minLength value="1"/> 
+						<xs:maxLength value="50"/> 
+					</xs:restriction> 
+				</xs:simpleType> 
+			</xs:element>
+			<xs:element name="psd2Extensions" type="common:ExtensionsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>probably additional fields for PSD2 Authorization [mögliche weitere Felder für PSD2]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PeriodType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Time period</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FromDate" type="xs:date">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Time period lower limit</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="ToDate" type="xs:date" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Time period upper limit</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Duration" type="xs:duration" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Duration (days)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PersonNameType">
+		<xs:sequence>
+			<xs:element name="NamePrefix" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Salutation</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="B">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Baby</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="I">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Infant</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="K">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Child</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="H">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Mr.</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="D">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Mrs.</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="G">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Group</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="F">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Company</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GivenName" type="common:StringLength1to30" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Given name, first name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Surname" type="common:StringLength1to30">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Family name, last name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NameTitle" type="common:StringLength1to16" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Degree or honors (e.g., Ph.D., M.D.) </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+		<xs:complexType name="CustomerNameType">
+		<xs:sequence>
+			<xs:element name="NamePrefix" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Salutation</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="B">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Baby</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="I">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Infant</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="K">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Child</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="H">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Mr.</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="D">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Mrs.</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="G">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Group</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="F">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Company</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GivenName" type="common:StringLength1to30" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Given name, first name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Surname" type="common:StringLength1to60">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Family name, last name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NameTitle" type="common:StringLength1to16" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Degree or honors (e.g., Ph.D., M.D.) </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PersonType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Container for person data</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PersonName" type="common:PersonNameType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Name data of the person</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="Birthdate" type="xs:date" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Birthdate</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Age" type="xs:nonNegativeInteger" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Age</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PolicyDetailSearchCritType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Search criterions based on policy header data</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PolicyNumber" type="common:StringLength1to32" minOccurs="0">
+				<xs:annotation/>
+			</xs:element>
+			<xs:element name="Status" type="xs:string" minOccurs="0">
+				<xs:annotation/>
+			</xs:element>
+			<xs:element name="OrderDate" type="common:PeriodType" minOccurs="0">
+				<xs:annotation/>
+			</xs:element>
+			<xs:element name="CancellationDate" type="common:PeriodType" minOccurs="0">
+				<xs:annotation/>
+			</xs:element>
+			<xs:element name="Agent" type="common:StringLength1to30" minOccurs="0">
+				<xs:annotation/>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PolicyDetailType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Policy header data</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PolicyNumber" type="common:StringLength1to32">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Policy number (confirmation number)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Status" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Policy state: XX=canceled, OK=active</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PolicyPeriod">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Policy period: ST=short term, LT=short term/annual</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ST">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">short term insurance</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="LT">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">long term insurance</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ParentPolicyNumber" type="common:StringLength1to32" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Parent policy number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ChildPolicyNumber" type="common:StringLength1to32" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Child policy number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PolicyPrintURL" type="xs:anyURI" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Print url of the policy (PDF)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AdditionalPolicyInfo" type="common:StringLength1to60" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Additional policy information, e.g. bookkeeping note</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExternalReferenceId" type="common:StringLength1to100" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">External reference identifier of the ESC service user, e.g. PNR number. This information will not be printed on the policy.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="OrderDate" type="xs:date" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Order date of the policy</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="OrderAgent" type="common:StringLength1to30" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Identifier of the order travel agent</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CancelDate" type="xs:date">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Date of the cancellation</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CancelAgent" type="common:StringLength1to30">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Identifier of the cancel travel agent</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="QuotePlanType">
+		<xs:attribute name="ID" type="xs:positiveInteger" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="QuoteTariffType">
+		<xs:choice>
+			<xs:element name="TariffCode" type="common:StringLength1to32">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Tariff key (expert mode)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PlanCodeRef" type="common:StringLength1to32">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Reference (ID) to an insurance plan id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="QuoteType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Insurance quote</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Services" type="common:ServicesType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Container for services</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="InsuranceTypes">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Contained insurance types.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="InsuranceType" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Code" type="common:AlphaLength3">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">Code of the insurance type. Refer to Appendix A5</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Title" type="common:StringLength1to255">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">Title of the insurance type.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="InsuranceDetails">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="InsuranceDetail" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Code" type="common:AlphaLength3">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">Code of the insurance detail. Refer to Appendix A6</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Title" type="common:StringLength1to255">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">Title of the insurance detail.</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="ProductComponents" type="common:ProductComponentsType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">Sorted List of Product Components</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AcceptedPaymentTypes">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Container for the accepted form of payment types</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DirectCollection">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="PaymentCard">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="AcceptedCard" minOccurs="0" maxOccurs="11">
+													<xs:complexType>
+														<xs:attribute name="Type" type="common:CardTypeType" use="required">
+															<xs:annotation>
+																<xs:documentation xml:lang="en">Defines the accepted credit card type</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+											<xs:attribute name="Accepted" type="xs:boolean" use="required">
+												<xs:annotation>
+													<xs:documentation xml:lang="en">Is credit card payment accpeted (true|false).</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="BankAcct">
+										<xs:complexType>
+											<xs:attribute name="Accepted" type="xs:boolean" use="required">
+												<xs:annotation>
+													<xs:documentation xml:lang="en">Is electronic direct debiting accepted (true|false).</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="AgencyCollection">
+							<xs:complexType>
+								<xs:attribute name="Accepted" type="xs:boolean" use="required">
+									<xs:annotation>
+										<xs:documentation xml:lang="en">Is agency collection accepted (true|false).</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="EPaymentCollection">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="EPaymentCard">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="AcceptedProvider" minOccurs="0" maxOccurs="11">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="AcceptedCard" minOccurs="0" maxOccurs="11">
+																<xs:complexType>
+																	<xs:attribute name="Type" type="common:CardTypeType" use="required">
+																		<xs:annotation>
+																			<xs:documentation xml:lang="en">Defines the accepted credit card type</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+														<xs:attribute name="Type" type="common:EPaymentProviderType" use="required">
+															<xs:annotation>
+																<xs:documentation xml:lang="en">Defines the accepted credit card type</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+											<xs:attribute name="Accepted" type="xs:boolean" use="required">
+												<xs:annotation>
+													<xs:documentation xml:lang="en">Is credit card payment accpeted (true|false).</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="ID" type="common:StringLength1to36" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Global unique identifier for an insurance quote</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="RequestorType">
+		<xs:annotation/>
+		<xs:sequence>
+			<xs:element name="CRS" type="common:StringLength1to64">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Unique crs/ibe identifier</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CRSAgency" type="common:StringLength1to64">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Agency number of the requesting POS</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BusinessUnit" type="common:StringLength1to64" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Business unit of the requesting POS</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TerminalID" type="common:StringLength1to64" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Terminal id of the requesting POS</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Initiator" type="common:InitiatorType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Defines the person who has initiated the request.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Agent" type="common:StringLength1to30">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Travel agent identifier</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Localisation" type="common:LocalisationType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Localisation information of the requesting POS</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="ClientTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="standard">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">standard client</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="mobile">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">mobile client</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="RequestServicesType">
+		<xs:annotation/>
+		<xs:sequence>
+			<xs:element name="Service" type="common:RequestServiceType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Requested service</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RequestServiceType">
+		<xs:sequence>
+			<xs:element name="QuotedTariff" type="common:QuoteTariffType">
+				<xs:annotation/>
+			</xs:element>
+			<xs:element name="TravelerAllocations" type="common:TravelerAllocationsType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Allocation of the requested insurance service to the covered person</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique identifier of the reuqested service</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SearchResultsType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Container for search results</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SearchResult" type="common:SearchResultType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SearchResultType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Search results</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PolicyDetail" type="common:PolicyDetailType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Policy header</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CoveredTrip" type="common:TripType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Trip data</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentForm">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Form of payment</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="AC">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Agency collection</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="PC">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">payment/credit card (direct debit)</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="BA">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">bank collection (direct debit)</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="PX">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">external payment processing</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="TotalPremium">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Total premium of the policy</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:sequence>
+					<xs:element name="TotalFirstPremium">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Total premium of the policy</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="TotalRenewnalPremium">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Total premium of the policy</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique identifier of the search result</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SearchTravelersType">
+		<xs:sequence>
+			<xs:element name="Traveler" type="common:SearchTravelerType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SearchTravelerType">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="Birthdate" type="xs:date" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Birthdate</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Age" type="xs:nonNegativeInteger" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Age</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="IndCoverageReqs" type="common:IndCoverageReqsType" minOccurs="0"/>
+			<xs:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>probably additional fields</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique identifier</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ServicesType">
+		<xs:sequence>
+			<xs:element name="Service" type="common:ServiceType" maxOccurs="unbounded">
+				<xs:annotation/>
+			</xs:element>
+			<xs:element name="TotalPremium">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Total premium</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PreContractualInformationServicesType">
+		<xs:sequence>
+			<xs:element name="PreContractualInformationService" type="common:PreContractualInformationServiceType" maxOccurs="unbounded">
+				<xs:annotation/>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ServiceType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Service</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Tariff" type="common:TariffType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Tariff</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TravelerAllocations" type="common:TravelerAllocationsType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Allocation of the requested insurance service to the covered person</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="ServiceTotalPremium">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Total service premium</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:choice>
+					<xs:element name="ServiceTotalFirstPremium">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Total service first premium</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="ServiceTotalRenewalPremium">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Total service renewal premium</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:choice>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique service identifier </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SourceServiceID" type="xs:positiveInteger">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">If a requested service will be splitted into 2 separat response services, then the SourceServiceID contains the origin request service id.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="PreContractualInformationServiceType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Service</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ProductName" type="common:StringLength1to100">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Product name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PreContractualInformation" type="common:DescriptionURLType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Product specific pre-contractual information urls</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique service identifier </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SuccessType"/>
+	<xs:complexType name="PreContractualInformationRSTariffType">
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:complexType name="TariffType">
+		<xs:sequence>
+			<xs:element name="TariffCode" type="common:StringLength1to32" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Tariff key</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="Premium">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">tariff premium</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:sequence>
+					<xs:element name="FirstPremium">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">tariff first premium</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="RenewalPremium">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">tariff renewal premium</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:choice>
+			<xs:element name="TariffDescription">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Tariff information (title, productinformation, urls).</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Title" type="common:StringLength1to255">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">Tariff title</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="DescriptionURL" type="common:DescriptionURLType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TravelerAllocationsType">
+		<xs:sequence>
+			<xs:element name="TravelerAllocation" type="common:TravelerAllocationType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TravelerAllocationType">
+		<xs:attribute name="ID" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique allocation identifier</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TravelerIDRef" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Traveler reference (ID)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CoInsured" type="xs:string" default="false">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Coinsured marker</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="TripType">
+		<xs:sequence>
+			<xs:element name="StartDate" type="xs:date">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Trip start date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="EndDate" type="xs:date">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Trip end date</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Duration" type="xs:duration">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Trip duration</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="Destination" type="common:DestinationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Trip destination</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TravelType" type="common:AlphaLength3" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Travel type. Refer to Appendix A2</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BookingConfirmation" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Trip booking confirmation date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalTripCost" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Total trip cost</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="Coverage" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Total coverage sum</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:sequence>
+					<xs:element name="TotalCoveredLuggage" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Total luggage coverage sum</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="CarCurrentAmount" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Current value of the covered car.</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:attributeGroup ref="common:CurrencyAmountGroup"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="AirportCodeIATA">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">IATA airport code</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z]{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AlphaLength2">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for an Alpha String, length exactly 2.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AlphaLength3">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for an Alpha String, length exactly 3.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z]{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AlphaNumericStringLength12to25">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Alpha-Numeric Strings, length 12 to25</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9*]{12,25}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AlphaNumericStringLength12to255">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Alpha-Numeric Strings, length 12 to 255</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9a-zA-Z]{12,255}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CardTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AX">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">American Express</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BC">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Bank Card</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BL">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Carte Bleu</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CB">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Carte Blanche</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DN">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Diner's Club</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DS">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Discover Card</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EC">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Eurocard</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="JC">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Japanese Credit Bureau Credit Card</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MC">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Mastercard</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TP">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Universal Air Travel Card</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VI">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Visa</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CountryCodeISO3166">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">ISO3166 country code</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CurrencyCodeISO4217">
+		<xs:annotation>
+			<xs:documentation xml:lang="en"> ISO 4217 currency code</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z]{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EPaymentProviderType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DT">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Datatrans</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="InitiatorType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="broker">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The initiator of the request is a broker, e.g. insurance broker, travel agent. Typical "broker" systems: GDS, CRS.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="customer">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The initiator of the request is end-consumer. Typical "customer" systems: IBE.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LanguageCodeISO639">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">ISO 639 language code</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MMYYYYDate">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">date format MMYYYY.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="(0[1-9]|1[0-2])(19|[2-9][0-9])[0-9][0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Money">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for amounts, max 3 decimals</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength0to30">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 0 to 30.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to7">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 7.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="7"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to100">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 100.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to128">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 128.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="128"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to16">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 16.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to25">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 25.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="25"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to255">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 255.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to30">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 30.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to32">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 32.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to36">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 36.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="36"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to40">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 40.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to50">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 50.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to60">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 60.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to64">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 64.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="64"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to9">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 9.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="secureHandleIDType">
+		<xs:annotation/>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="128"/>
+			<xs:minLength value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="payPageHandleIDType">
+		<xs:annotation/>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="128"/>
+			<xs:minLength value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringLength1to250">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used for Character Strings, length 1 to 250</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="250"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AlphaStringLength2">
+		<xs:annotation>
+			<xs:documentation>Language Code ISO 639-2-Alpha-2 [Sprachkennzeichen]</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}|[a-z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:attributeGroup name="CurrencyAmountGroup">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Provides a monetary amount and the currency code to reflect the currency in which this amount is expressed.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="Amount" type="common:Money" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Amount</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CurrencyCode" type="common:CurrencyCodeISO4217" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The code specifying a monetary unit. Use ISO 4217, three alpha code.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DecimalPlaces" type="xs:nonNegativeInteger" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates the number of decimal places for a particular currency. This is equivalent to the ISO 4217 standard "minor unit". Typically used when the amount provided includes the minor unit of currency without a decimal point (e.g., USD 8500 needs DecimalPlaces="2" to represent $85).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="PayloadStdAttributes">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">This element defines standard attributes that appear on the root element for all ERV payloads</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="MsgId" type="common:StringLength1to128" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique message identifier</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="EchoToken" type="common:StringLength1to128" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">A reference for additional message identification, assigned by the requesting host system. When a request message includes an echo token the corresponding response message MUST include an echo token with an identical value.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TransactionContext" type="common:StringLength1to128" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">A unique identifier to relate all messages within a transaction (e.g. this would be sent in all request and response messages that are part of an on-going transaction).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TimeStamp" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates the creation date and time of the message in UTC using the following format specified by ISO 8601; YYYY-MM-DDThh:mm:ssZ with time values using the 24 hour clock (e.g. 20 November 2003, 1:59:38 pm UTC becomes 2003-11-20T13:59:38Z).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Target" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Used to indicate whether the request is a Test or Production request.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="T">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Test</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="P">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Production</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:attributeGroup>
+</xs:schema>

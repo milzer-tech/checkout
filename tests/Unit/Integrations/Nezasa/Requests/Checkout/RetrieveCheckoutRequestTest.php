@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
 use Saloon\Enums\Method;
 

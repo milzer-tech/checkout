@@ -7,6 +7,11 @@ parameters:
     paths:
         - src
 
+    excludePaths:
+        # SOAP/XSD-mapped Spatie Data objects (generated-style); typed at integration boundaries.
+        - src/Integrations/Ergo/Dtos
+        - src/Integrations/Ergo/Casts
+
     reportUnmatchedIgnoredErrors: true
     treatPhpDocTypesAsCertain: false
 
