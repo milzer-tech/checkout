@@ -16,6 +16,8 @@
     'resources/vendor/checkout/css/app.css',
      'resources/vendor/checkout/js/app.js'
      ])
+    {{-- Child script for iframe-resizer v4 (pairs with host iframe-resizer 4.x) --}}
+    <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.4.5/js/iframeResizer.contentWindow.min.js"></script>
     @livewireStyles
     @livewireScripts
     @stack('scripts')
