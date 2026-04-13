@@ -1,5 +1,6 @@
 <?php
 
+use Nezasa\Checkout\Insurances\Providers\Ergo\ErgoInsurance;
 use Nezasa\Checkout\Insurances\Providers\HanseMerkur\HanseMerkurInsurance;
 use Nezasa\Checkout\Payments\Gateways\Computop\ComputopGateway;
 use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceGateway;
@@ -69,6 +70,28 @@ return [
             'requester_id' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_REQUESTER_ID', 'must_be_set_in_env'),
             'partner_id' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_PARTNER_ID', 'must_be_set_in_env'),
         ],
+
+        /**
+         * ERGO / ERV eSoap (SOAP 1.1). WSDL ships with the package next to ErgoConnector.
+         *
+         * Defaults target the public ERV test gateway; override via env in production.
+         */
+        'ergo' => [
+            'active' => (bool) env('CHECKOUT_ERGO_INSURANCE_ACTIVE', false),
+            'name' => env('CHECKOUT_ERGO_INSURANCE_NAME', 'ERV Reiseversicherung'),
+            'base_url' => env('CHECKOUT_ERGO_INSURANCE_BASE_URL', 'https://egate2.erv.de/esc201909/ESCConnector'),
+            'crs' => env('CHECKOUT_ERGO_INSURANCE_CRS', 'ESC_DE'),
+            'crs_agency' => env('CHECKOUT_ERGO_INSURANCE_CRS_AGENCY', '033315000000'),
+            'initiator' => env('CHECKOUT_ERGO_INSURANCE_INITIATOR', 'customer'),
+            'agent' => env('CHECKOUT_ERGO_INSURANCE_AGENT', 'customer'),
+            'locale_country' => env('CHECKOUT_ERGO_INSURANCE_LOCALE_COUNTRY', 'DE'),
+            'locale_language' => env('CHECKOUT_ERGO_INSURANCE_LOCALE_LANGUAGE', 'de'),
+            'locale_currency' => env('CHECKOUT_ERGO_INSURANCE_LOCALE_CURRENCY', 'EUR'),
+            'list_type' => env('CHECKOUT_ERGO_INSURANCE_LIST_TYPE', 'DE_STANDARD'),
+            'auto_quote' => (bool) env('CHECKOUT_ERGO_INSURANCE_AUTO_QUOTE', true),
+            'echo_token' => env('CHECKOUT_ERGO_INSURANCE_ECHO_TOKEN'),
+            'transaction_context' => env('CHECKOUT_ERGO_INSURANCE_TRANSACTION_CONTEXT'),
+        ],
     ],
 
     'payment' => [
@@ -80,6 +103,7 @@ return [
 
     'insurance_provider' => [
         HanseMerkurInsurance::class,
+        ErgoInsurance::class,
     ],
 
     'term_limit' => (int) env('CHECKOUT_TERM_LIMIT', 600),
