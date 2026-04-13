@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Support\Facades\Route;
 use Nezasa\Checkout\Livewire\PaymentPage;
