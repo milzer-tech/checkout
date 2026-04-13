@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared;
 
 use Nezasa\Checkout\Dtos\BaseDto;
+use Spatie\LaravelData\Attributes\MapInputName;
 
 class AddressEntity extends BaseDto
 {
@@ -18,6 +19,7 @@ class AddressEntity extends BaseDto
         public ?string $postalCode = null,
         public ?string $street1 = null,
         public ?string $street2 = null,
+        #[MapInputName('state')]
         public ?string $region = null
     ) {}
 
