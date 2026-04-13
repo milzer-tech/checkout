@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 if (! function_exists('checkout_path')) {
     /**
      * Get the root path of the package.
