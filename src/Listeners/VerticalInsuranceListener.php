@@ -175,7 +175,7 @@ final class VerticalInsuranceListener implements ShouldQueue
             );
 
             $this->transaction->pushToResultData([
-                'result_data' => $this->transaction->result_data + ['insurance_purchase' => $response->array()],
+                'insurance_purchase' => $response->array(),
                 'insurance' => ['isSuccessful' => $response->successful()],
             ]);
 
