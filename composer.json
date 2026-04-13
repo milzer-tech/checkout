@@ -13,6 +13,9 @@
         "php": "^8.3.0",
         "azimkordpour/power-enum": "^1.2",
         "livewire/livewire": "^3.6",
+        "php-soap/encoding": "^0.31.0",
+        "php-soap/wsdl": "^1.18",
+        "php-soap/wsdl-reader": "^0.31.0",
         "saloonphp/saloon": "^4.0",
         "spatie/laravel-data": "^4.15",
         "stripe/stripe-php": "^19.0"
@@ -60,6 +63,7 @@
         "test:lint": "pint --test",
         "test:types": "phpstan analyse --ansi",
         "test:unit": "pest --colors=always",
+        "test:ergo-live": "CHECKOUT_ERGO_LIVE_TEST=1 pest tests/Integration/Ergo --colors=always",
         "test": [
             "@test:refactor",
             "@test:lint",
