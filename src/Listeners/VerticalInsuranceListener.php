@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
@@ -19,7 +18,7 @@ use Nezasa\Checkout\Models\Transaction;
 use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
 
-final class VerticalInsuranceListener implements ShouldQueue
+final class VerticalInsuranceListener
 {
     /**
      * The stripe client.
