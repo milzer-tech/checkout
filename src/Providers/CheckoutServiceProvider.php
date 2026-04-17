@@ -87,9 +87,11 @@ class CheckoutServiceProvider extends ServiceProvider
      */
     private function setUpConfigurations(): void
     {
-        Config::set(key: 'data.date_format', value: [DATE_ATOM, 'Y-m-d', 'Y-m-d\TH:i:s.uP', 'Y-m-d H:i:sO']);
-
-        Config::set(key: 'app.locale', value: request()->input('lang', 'en'));
+        Config::set(key: 'data.date_format', value: array_unique(
+            array_merge(
+                (array) Config::get(key: 'data.date_format'), [DATE_ATOM, 'Y-m-d', 'Y-m-d\TH:i:s.uP', 'Y-m-d H:i:sO']
+            )
+        ));
     }
 
     /**
