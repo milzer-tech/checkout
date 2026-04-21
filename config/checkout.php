@@ -78,7 +78,7 @@ return [
          */
         'ergo' => [
             'active' => (bool) env('CHECKOUT_ERGO_INSURANCE_ACTIVE', false),
-            'name' => env('CHECKOUT_ERGO_INSURANCE_NAME', 'ERV Reiseversicherung'),
+            'name' => env('CHECKOUT_ERGO_INSURANCE_NAME', 'Ergo'),
             'base_url' => env('CHECKOUT_ERGO_INSURANCE_BASE_URL', 'https://egate2.erv.de/esc201909/ESCConnector'),
             'crs' => env('CHECKOUT_ERGO_INSURANCE_CRS', 'ESC_DE'),
             'crs_agency' => env('CHECKOUT_ERGO_INSURANCE_CRS_AGENCY', '033315000000'),
