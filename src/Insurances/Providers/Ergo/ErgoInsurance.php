@@ -531,16 +531,29 @@ final class ErgoInsurance implements InsuranceContract
                 is_string($url) => $url,
                 default => (string) $url,
             };
-            if ($href !== '') {
-                $safe = htmlspecialchars($href, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                $links[] = '<a target="_blank" rel="noopener" href="'.$safe.'">'.$safe.'</a>';
+            if ($href === '' || $this->isExcludedInsuranceTermsDocumentUrl($href)) {
+                continue;
             }
+            $safe = htmlspecialchars($href, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $links[] = '<a target="_blank" rel="noopener" href="'.$safe.'">'.$safe.'</a>';
         }
 
         return new InsuranceTerms(
             checkboxText: 'Ich habe die Produktinformationen und Vorschlagsinformationen zur Kenntnis genommen.',
             conditions: $links,
         );
+    }
+
+    /**
+     * ERGO document portal links (e.g. doc2.ergo-reiseversicherung.de) require authentication
+     * and must not be shown as public terms links in checkout.
+     */
+    private function isExcludedInsuranceTermsDocumentUrl(string $href): bool
+    {
+        $host = parse_url($href, PHP_URL_HOST);
+
+        return is_string($host)
+            && strcasecmp($host, 'doc2.ergo-reiseversicherung.de') === 0;
     }
 
     private function offerId(ErgoAvailablePlanDto $plan): string
