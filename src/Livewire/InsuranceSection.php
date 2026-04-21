@@ -265,7 +265,7 @@ class InsuranceSection extends BaseCheckoutComponent
             $this->insuranceIban = $iban;
 
             if (! $this->isValidIban($iban)) {
-                $this->addError('insuranceIban', 'Please enter a valid IBAN to pay ERGO insurance via SEPA direct debit.');
+                $this->addError('insuranceIban', 'Please enter a valid IBAN to pay insurance via SEPA direct debit.');
 
                 return;
             }
