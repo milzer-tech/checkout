@@ -41,6 +41,13 @@ class InsuranceSection extends BaseCheckoutComponent
     public bool $shouldInitVerticalWidget = false;
 
     /**
+     * Ergo SEPA (IBAN) payment input.
+     */
+    public ?string $insuranceIban = null;
+
+    public bool $requiresInsuranceIban = false;
+
+    /**
      * Initialize the component with the promo code from the prices DTO.
      */
     public function mount(InsuranceHandler $insuranceHandler): void
@@ -57,6 +64,10 @@ class InsuranceSection extends BaseCheckoutComponent
         if (isset($this->model->data['contact'])) {
             $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
         }
+
+        if (isset($this->model->data['insurance_payment']['iban'])) {
+            $this->insuranceIban = (string) $this->model->data['insurance_payment']['iban'];
+        }
     }
 
     public function updateSelectedOfferId(?string $id): void
@@ -66,6 +77,9 @@ class InsuranceSection extends BaseCheckoutComponent
         if (is_null($offer)) {
             $this->selectedOfferId = null;
             $this->model->updateData(['insurance' => null]);
+            $this->requiresInsuranceIban = false;
+            $this->insuranceIban = null;
+            $this->model->updateData(['insurance_payment' => null]);
             $this->dispatch('insurance-declined');
 
             return;
@@ -73,7 +87,55 @@ class InsuranceSection extends BaseCheckoutComponent
 
         $this->selectedOfferId = $id;
         $this->model->updateData(['insurance' => $offer->toArray()]);
+
+        $this->requiresInsuranceIban = Config::boolean('checkout.insurance.ergo.active');
+        if (! $this->requiresInsuranceIban) {
+            $this->insuranceIban = null;
+            $this->model->updateData(['insurance_payment' => null]);
+        }
+
         $this->dispatch('insurance-selected', new InsuranceItem($id, $offer->title), $offer->price);
+    }
+
+    public function updatedInsuranceIban(?string $value): void
+    {
+        $iban = $this->normalizeIban($value);
+        $this->insuranceIban = $iban;
+
+        if ($iban === null) {
+            $this->model->updateData(['insurance_payment' => null]);
+        } else {
+            $this->model->updateData(['insurance_payment' => ['iban' => $iban]]);
+        }
+
+        $this->resetValidation('insuranceIban');
+    }
+
+    private function normalizeIban(?string $iban): ?string
+    {
+        if ($iban === null) {
+            return null;
+        }
+
+        $clean = strtoupper(preg_replace('/\s+/', '', $iban) ?? '');
+        $clean = preg_replace('/[^A-Z0-9]/', '', $clean) ?? '';
+
+        return $clean !== '' ? $clean : null;
+    }
+
+    private function isValidIban(?string $iban): bool
+    {
+        if ($iban === null || $iban === '') {
+            return false;
+        }
+
+        // Basic format validation (actual checksum validation can be added if needed).
+        $len = strlen($iban);
+        if ($len < 15 || $len > 34) {
+            return false;
+        }
+
+        return (bool) preg_match('/^[A-Z]{2}[A-Z0-9]{13,32}$/', $iban);
     }
 
     /**
@@ -191,6 +253,26 @@ class InsuranceSection extends BaseCheckoutComponent
      */
     public function next(): void
     {
+        if (Config::boolean('checkout.insurance.vertical.active')) {
+            $this->markAsCompletedAdnCollapse(Section::Insurance);
+            $this->dispatch(Section::Insurance->value);
+
+            return;
+        }
+
+        if ($this->requiresInsuranceIban && $this->selectedOfferId !== null) {
+            $iban = $this->normalizeIban($this->insuranceIban);
+            $this->insuranceIban = $iban;
+
+            if (! $this->isValidIban($iban)) {
+                $this->addError('insuranceIban', 'Please enter a valid IBAN to pay ERGO insurance via SEPA direct debit.');
+
+                return;
+            }
+
+            $this->model->updateData(['insurance_payment' => ['iban' => $iban]]);
+        }
+
         $this->markAsCompletedAdnCollapse(Section::Insurance);
 
         $this->dispatch(Section::Insurance->value);

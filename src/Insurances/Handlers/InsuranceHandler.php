@@ -81,6 +81,7 @@ final readonly class InsuranceHandler
                 selectedOffer: $selectedOffer,
                 createdOfferDto: CreateInsuranceOffersDto::from($data['insurance_create_offer']),
                 meta: $data['insurance_meta'],
+                payment: is_array(data_get($data, 'insurance_payment')) ? data_get($data, 'insurance_payment') : [],
             )
         );
 
@@ -109,7 +110,10 @@ final readonly class InsuranceHandler
                 )
             );
 
-            $transaction->pushToResultData(['nezasa_insurance_response' => $nezasa->array()]);
+            $transaction->pushToResultData([
+                'nezasa_insurance_request' => (array) $nezasa->getPendingRequest()->body()->all(),
+                'nezasa_insurance_response' => $nezasa->array(),
+            ]);
         }
     }
 }
