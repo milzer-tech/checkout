@@ -249,6 +249,34 @@
                             @endforeach
                         </ul>
                     @endif
+
+                    @if($requiresInsuranceIban && $selectedOfferId === $offer->id)
+                        <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4" wire:click.stop>
+                            <div class="text-sm font-medium text-gray-900">
+                                SEPA direct debit (IBAN) required
+                            </div>
+                            <div class="mt-1 text-sm text-gray-600">
+                                To book this ERGO insurance, please enter the IBAN of the account to be charged.
+                            </div>
+
+                            <div class="mt-3">
+                                <label class="block text-sm font-medium text-gray-700" for="insurance-iban-{{ $loop->index }}">IBAN</label>
+                                <input
+                                    id="insurance-iban-{{ $loop->index }}"
+                                    type="text"
+                                    inputmode="text"
+                                    autocomplete="off"
+                                    placeholder="DE00 0000 0000 0000 0000 00"
+                                    class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                    wire:model.live.debounce.400ms="insuranceIban"
+                                />
+
+                                @error('insuranceIban')
+                                    <div class="mt-2 text-sm text-red-600">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    @endif
                 </label>
             @endforeach
 
@@ -284,7 +312,6 @@
                 @endif
 
         </div>
-
 
         <div class="space-y-4 mt-8">
                         <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>

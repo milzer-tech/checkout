@@ -8,11 +8,13 @@ use DOMDocument;
 use DOMElement;
 use Illuminate\Support\Carbon;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoAddressDto;
+use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoBankAcctTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoCoveredTravelersDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoCustomerNameTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoDestinationTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoInsuranceCustomerPreContractualInformationDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoInsuranceCustomerTypeDto;
+use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoPaymentFormTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoPlanSearchInsuranceCustomerDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoRequestorDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoRequestServicesTypeDto;
@@ -283,6 +285,43 @@ final class ErgoSoapDocumentBuilder
         $el->appendChild(self::comText($doc, 'Email', $c->Email));
         $el->appendChild(self::elementAddress($doc, $c->Address));
 
+        if ($c->PaymentForm instanceof ErgoPaymentFormTypeDto) {
+            $el->appendChild(self::elementPaymentForm($doc, $c->PaymentForm));
+        }
+
+        if ($c->Telephone !== null && $c->Telephone !== '') {
+            $el->appendChild(self::comText($doc, 'Telephone', $c->Telephone));
+        }
+
+        if ($c->Mobile !== null && $c->Mobile !== '') {
+            $el->appendChild(self::comText($doc, 'Mobile', $c->Mobile));
+        }
+
+        return $el;
+    }
+
+    private static function elementPaymentForm(DOMDocument $doc, ErgoPaymentFormTypeDto $p): DOMElement
+    {
+        $el = $doc->createElementNS(self::NS_COM, 'PaymentForm');
+
+        // We only implement the choice(s) we actively use.
+        if ($p->BankAcct instanceof ErgoBankAcctTypeDto) {
+            $bank = $doc->createElementNS(self::NS_COM, 'BankAcct');
+            if ($p->BankAcct->BankID !== null && $p->BankAcct->BankID !== '') {
+                $bank->appendChild(self::comText($doc, 'BankID', $p->BankAcct->BankID));
+            }
+            if ($p->BankAcct->BankAcctNumber !== null && $p->BankAcct->BankAcctNumber !== '') {
+                $bank->appendChild(self::comText($doc, 'BankAcctNumber', $p->BankAcct->BankAcctNumber));
+            }
+            if ($p->BankAcct->bankSecureHandleID !== null && $p->BankAcct->bankSecureHandleID !== '') {
+                $bank->appendChild(self::comText($doc, 'bankSecureHandleID', $p->BankAcct->bankSecureHandleID));
+            }
+            $el->appendChild($bank);
+
+            return $el;
+        }
+
+        // If no supported payment choice present, return empty element (schema allows omission; caller checks instance anyway).
         return $el;
     }
 

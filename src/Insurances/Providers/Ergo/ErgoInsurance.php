@@ -17,6 +17,7 @@ use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceTerms;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoAddressDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoAvailablePlanDto;
+use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoBankAcctTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoCoveredPersonDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoCoveredTravelerDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoCoveredTravelersDto;
@@ -29,6 +30,7 @@ use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoErrorsTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoInsuranceCustomerPreContractualInformationDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoInsuranceCustomerTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoInsuranceDetailDto;
+use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoPaymentFormTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoPersonNameDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoPlanSearchInsuranceCustomerDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoQuotedTariffDto;
@@ -136,6 +138,14 @@ final class ErgoInsurance implements InsuranceContract
         $created = $bookOfferDto->createdOfferDto;
         $contact = $created->contact;
 
+        $iban = $this->sepaIbanFrom($bookOfferDto->payment);
+        if ($iban === null || $iban === '') {
+            return new InsuranceBookOfferResult(
+                isSuccessful: false,
+                data: ['error' => 'Missing IBAN for ERGO SEPA payment.'],
+            );
+        }
+
         $quoteRef = (string) $plan->Quote->ID;
 
         $prePayload = new ErgoCreatePreContractualInformationRQDto(
@@ -180,7 +190,7 @@ final class ErgoInsurance implements InsuranceContract
             CoveredTravelers: $this->buildCoveredTravelers($created->paxInfo),
             QuoteIDRef: $quoteRef,
             CoveredTrip: $this->buildTripDto($created),
-            InsuranceCustomer: $this->buildInsuranceCustomer($contact),
+            InsuranceCustomer: $this->buildInsuranceCustomer($contact, $iban),
             BookServices: $this->toRequestServices($plan),
             EmailPolicy: $this->emailsFor($contact->email),
         );
@@ -319,8 +329,18 @@ final class ErgoInsurance implements InsuranceContract
         );
     }
 
-    private function buildInsuranceCustomer(ContactInfoPayloadEntity $contact): ErgoInsuranceCustomerTypeDto
+    private function buildInsuranceCustomer(ContactInfoPayloadEntity $contact, ?string $sepaIban): ErgoInsuranceCustomerTypeDto
     {
+        $paymentForm = null;
+        if ($sepaIban !== null && $sepaIban !== '') {
+            $paymentForm = new ErgoPaymentFormTypeDto(
+                BankAcct: new ErgoBankAcctTypeDto(
+                    BankID: null,
+                    BankAcctNumber: $sepaIban,
+                )
+            );
+        }
+
         return new ErgoInsuranceCustomerTypeDto(
             PersonName: new ErgoCustomerNameTypeDto(
                 NamePrefix: ErgoNamePrefixEnum::fromNezasaGender($contact->gender),
@@ -329,10 +349,26 @@ final class ErgoInsurance implements InsuranceContract
             ),
             Email: $contact->email ?? '',
             Address: $this->buildAddress($contact),
-            PaymentForm: null,
+            PaymentForm: $paymentForm,
             Telephone: null,
             Mobile: $contact->mobilePhone,
         );
+    }
+
+    /**
+     * @param  array<string, mixed>  $payment
+     */
+    private function sepaIbanFrom(array $payment): ?string
+    {
+        $iban = data_get($payment, 'iban');
+        if (! is_string($iban)) {
+            return null;
+        }
+
+        $clean = strtoupper(preg_replace('/\s+/', '', $iban) ?? '');
+        $clean = preg_replace('/[^A-Z0-9]/', '', $clean) ?? '';
+
+        return $clean !== '' ? $clean : null;
     }
 
     private function buildAddress(ContactInfoPayloadEntity $contact): ErgoAddressDto
