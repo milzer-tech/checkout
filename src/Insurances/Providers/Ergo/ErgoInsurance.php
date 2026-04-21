@@ -130,7 +130,7 @@ final class ErgoInsurance implements InsuranceContract
         if (! is_array($planData)) {
             return new InsuranceBookOfferResult(
                 isSuccessful: false,
-                data: ['error' => 'Missing Ergo plan data on selected offer; quote again.'],
+                data: ['error' => trans('checkout::page.trip_details.insurance_selected_offer_unavailable')],
             );
         }
 
@@ -142,7 +142,7 @@ final class ErgoInsurance implements InsuranceContract
         if ($iban === null || $iban === '') {
             return new InsuranceBookOfferResult(
                 isSuccessful: false,
-                data: ['error' => 'Missing IBAN for ERGO SEPA payment.'],
+                data: ['error' => trans('checkout::page.trip_details.insurance_booking_missing_payment_details')],
             );
         }
 

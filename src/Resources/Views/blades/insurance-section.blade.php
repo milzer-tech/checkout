@@ -1,7 +1,15 @@
 @use(Nezasa\Checkout\Enums\Section)
 @use(Illuminate\Support\Facades\Config)
 @use(Nezasa\Checkout\Facades\InsuranceFacade)
-@php($state = $isExpanded ? 'editing' : 'valid')
+@php
+    $state = $isExpanded ? 'editing' : 'valid';
+    $insuranceVerticalScriptI18n = [
+        'offerLoadError' => trans('checkout::page.trip_details.insurance_offer_load_error'),
+        'offerTimeout' => trans('checkout::page.trip_details.insurance_offer_timeout'),
+        'offerInitError' => trans('checkout::page.trip_details.insurance_offer_init_error'),
+        'offersRegionNotice' => trans('checkout::page.trip_details.insurance_offers_region_notice'),
+    ];
+@endphp
 
 <x-checkout::editable-box
     title="{{trans('checkout::page.trip_details.travel_insurance')}}"
@@ -24,6 +32,7 @@
                 @push('scripts')
                     <script src="https://cdn.jsdelivr.net/npm/@vertical-insure/embedded-offer"></script>
                     <script>
+                        const insuranceUiI18n = @json($insuranceVerticalScriptI18n);
                         const INSURANCE_READY_TIMEOUT_MS = 20000;
 
                         let currentInitId = 0;
@@ -47,7 +56,7 @@
                             document.getElementById("insurance_loading").style.display = "none";
                         }
 
-                        function showError(msg = "Insurance offer couldn’t be loaded. Please try again.") {
+                        function showError(msg = insuranceUiI18n.offerLoadError) {
                             logVertical('← Vertical', 'UI / error message', msg);
                             hideLoader();
                             document.getElementById("insurance_error_text").textContent = msg;
@@ -64,7 +73,7 @@
                             readyTimeoutId = setTimeout(() => {
                                 // only affect the latest init
                                 if (myInitId !== currentInitId) return;
-                                showError("Insurance offer is taking too long to load. Please try again.");
+                                showError(insuranceUiI18n.offerTimeout);
                             }, INSURANCE_READY_TIMEOUT_MS);
 
                             // IMPORTANT: don't clear the offer container here, or the user will see it disappear
@@ -88,7 +97,7 @@
                                 clearTimeout(readyTimeoutId);
                                 logVertical('← Vertical', 'init exception', e);
                                 console.error(e);
-                                showError("Insurance offer couldn’t be initialized.");
+                                showError(insuranceUiI18n.offerInitError);
                             }
                         }
 
@@ -102,7 +111,7 @@
                             clearTimeout(readyTimeoutId);
 
                             if (e?.detail?.offersAvailable === false) {
-                                showError("The insurance offers are only available in US and CAN. If you need to add an insurance, please change the contact's address to US or CAN.");
+                                showError(insuranceUiI18n.offersRegionNotice);
                                 return;
                             }
 
@@ -154,7 +163,7 @@
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
                         </svg>
-                        <span>Loading insurance...</span>
+                        <span>{{ trans('checkout::page.trip_details.insurance_loading_widget') }}</span>
                     </div>
 
 
@@ -163,13 +172,13 @@
                         <div class="rounded-md border border-red-200 bg-red-50 text-red-700 px-6 py-4 text-sm">
                             <div class="flex items-center justify-between gap-4">
             <span id="insurance_error_text">
-                No insurance offers available right now.
+                {{ trans('checkout::page.trip_details.insurance_no_offers_default') }}
             </span>
 
                                 <button type="button"
                                         class="underline whitespace-nowrap"
                                         onclick="window.retryInsuranceOffer?.()">
-                                    Retry
+                                    {{ trans('checkout::page.trip_details.insurance_retry') }}
                                 </button>
                             </div>
                         </div>
@@ -188,7 +197,7 @@
                 <div></div>
                 <button type="button" wire:click="next"
                         class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                    Next
+                    {{ trans('checkout::page.trip_details.next') }}
                 </button>
             </div>
         </div>
@@ -207,7 +216,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
             </svg>
-            <span class="text-sm">Loading insurance offers...</span>
+            <span class="text-sm">{{ trans('checkout::page.trip_details.insurance_loading_offers') }}</span>
         </div>
 
         <div wire:loading.remove wire:target="listen,loadOffer" class="space-y-4">
@@ -253,20 +262,20 @@
                     @if($requiresInsuranceIban && $selectedOfferId === $offer->id)
                         <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4" wire:click.stop>
                             <div class="text-sm font-medium text-gray-900">
-                                SEPA direct debit (IBAN) required
+                                {{ trans('checkout::page.trip_details.insurance_iban_section_title') }}
                             </div>
                             <div class="mt-1 text-sm text-gray-600">
-                                To book this insurance, please enter the IBAN of the account to be charged.
+                                {{ trans('checkout::page.trip_details.insurance_iban_section_intro') }}
                             </div>
 
                             <div class="mt-3">
-                                <label class="block text-sm font-medium text-gray-700" for="insurance-iban-{{ $loop->index }}">IBAN</label>
+                                <label class="block text-sm font-medium text-gray-700" for="insurance-iban-{{ $loop->index }}">{{ trans('checkout::page.trip_details.insurance_iban_field_label') }}</label>
                                 <input
                                     id="insurance-iban-{{ $loop->index }}"
                                     type="text"
                                     inputmode="text"
                                     autocomplete="off"
-                                    placeholder="DE00 0000 0000 0000 0000 00"
+                                    placeholder="{{ trans('checkout::page.trip_details.insurance_iban_field_placeholder') }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                                     wire:model.live.debounce.400ms="insuranceIban"
                                 />
@@ -294,7 +303,7 @@
                     <div class="min-w-0 flex-1">
                         <div class="flex items-start justify-between gap-3">
                             <div class="text-gray-900 font-medium break-words whitespace-normal leading-snug">
-                                No insurance
+                                {{ trans('checkout::page.trip_details.insurance_no_insurance_option') }}
                             </div>
                             <span class="shrink-0 text-gray-400" aria-hidden="true">⛨</span>
                         </div>
@@ -319,7 +328,7 @@
                             <div></div>
                             <button type="button" wire:click="next"
                                     class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                                Next
+                                {{ trans('checkout::page.trip_details.next') }}
                             </button>
                         </div>
                     </div>

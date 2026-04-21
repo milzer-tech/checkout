@@ -4,7 +4,6 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Validator;
 use Intervention\Validation\Rules\Iban;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
@@ -43,7 +42,7 @@ class InsuranceSection extends BaseCheckoutComponent
     public bool $shouldInitVerticalWidget = false;
 
     /**
-     * Ergo SEPA (IBAN) payment input.
+     * IBAN for providers that require bank details (e.g. direct debit).
      */
     public ?string $insuranceIban = null;
 
@@ -251,18 +250,15 @@ class InsuranceSection extends BaseCheckoutComponent
             $iban = $this->normalizeIban($this->insuranceIban);
             $this->insuranceIban = $iban;
 
-            $validator = Validator::make(
-                ['insuranceIban' => $iban],
-                ['insuranceIban' => ['required', new Iban]],
-                [
-                    'insuranceIban.required' => 'Please enter your IBAN for SEPA direct debit.',
-                ]
-            );
+            if ($iban === null || $iban === '') {
+                $this->addError('insuranceIban', trans('checkout::page.trip_details.insurance_iban_validation_required'));
 
-            if ($validator->fails()) {
-                foreach ($validator->errors()->get('insuranceIban') as $message) {
-                    $this->addError('insuranceIban', $message);
-                }
+                return;
+            }
+
+            $ibanRule = new Iban;
+            if (! $ibanRule->isValid($iban)) {
+                $this->addError('insuranceIban', trans('checkout::page.trip_details.insurance_iban_validation_invalid'));
 
                 return;
             }
