@@ -4,6 +4,8 @@ namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Validator;
+use Intervention\Validation\Rules\Iban;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
@@ -121,21 +123,6 @@ class InsuranceSection extends BaseCheckoutComponent
         $clean = preg_replace('/[^A-Z0-9]/', '', $clean) ?? '';
 
         return $clean !== '' ? $clean : null;
-    }
-
-    private function isValidIban(?string $iban): bool
-    {
-        if ($iban === null || $iban === '') {
-            return false;
-        }
-
-        // Basic format validation (actual checksum validation can be added if needed).
-        $len = strlen($iban);
-        if ($len < 15 || $len > 34) {
-            return false;
-        }
-
-        return (bool) preg_match('/^[A-Z]{2}[A-Z0-9]{13,32}$/', $iban);
     }
 
     /**
@@ -264,8 +251,18 @@ class InsuranceSection extends BaseCheckoutComponent
             $iban = $this->normalizeIban($this->insuranceIban);
             $this->insuranceIban = $iban;
 
-            if (! $this->isValidIban($iban)) {
-                $this->addError('insuranceIban', 'Please enter a valid IBAN to pay insurance via SEPA direct debit.');
+            $validator = Validator::make(
+                ['insuranceIban' => $iban],
+                ['insuranceIban' => ['required', new Iban]],
+                [
+                    'insuranceIban.required' => 'Please enter your IBAN for SEPA direct debit.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                foreach ($validator->errors()->get('insuranceIban') as $message) {
+                    $this->addError('insuranceIban', $message);
+                }
 
                 return;
             }

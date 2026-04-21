@@ -12,6 +12,7 @@
     "require": {
         "php": "^8.3.0",
         "azimkordpour/power-enum": "^1.2",
+        "intervention/validation": "^4.0",
         "livewire/livewire": "^3.6",
         "php-soap/encoding": "^0.31.0",
         "php-soap/wsdl": "^1.18",

@@ -256,7 +256,7 @@
                                 SEPA direct debit (IBAN) required
                             </div>
                             <div class="mt-1 text-sm text-gray-600">
-                                To book this ERGO insurance, please enter the IBAN of the account to be charged.
+                                To book this insurance, please enter the IBAN of the account to be charged.
                             </div>
 
                             <div class="mt-3">
