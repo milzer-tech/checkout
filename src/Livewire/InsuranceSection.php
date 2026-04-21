@@ -66,8 +66,11 @@ class InsuranceSection extends BaseCheckoutComponent
             $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
         }
 
-        if (isset($this->model->data['insurance_payment']['iban'])) {
-            $this->insuranceIban = (string) $this->model->data['insurance_payment']['iban'];
+        // Do not restore IBAN after a full page load (refresh or revisit). Payment details are
+        // re-captured in-session; clear any persisted value so the input stays empty.
+        $this->insuranceIban = null;
+        if (isset($this->model->data['insurance_payment'])) {
+            $this->model->updateData(['insurance_payment' => null]);
         }
     }
 
@@ -345,5 +348,8 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->insuranceProviderIsAvailable = null;
         $this->isLoadingOffers = false;
         $this->shouldInitVerticalWidget = false;
+        $this->insuranceIban = null;
+        $this->requiresInsuranceIban = false;
+        $this->model->updateData(['insurance_payment' => null]);
     }
 }
