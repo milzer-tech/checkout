@@ -15,6 +15,7 @@ use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
@@ -55,10 +56,13 @@ final readonly class InsuranceHandler
         try {
             $result = $this->getActiveInsuranceAction->run()->getOffers($createOffersDto);
 
-            $model->updateData([
-                'insurance_meta' => $result->meta,
-                'insurance_create_offer' => $createOffersDto->toArray(),
-            ]);
+            $checkoutArr = InsuranceCheckoutData::checkoutDataArray($model->data);
+            $bucket = InsuranceCheckoutData::getNormalizedInsuranceBucket($checkoutArr)
+                ?? InsuranceCheckoutData::emptyInsuranceBucket();
+            $bucket[InsuranceCheckoutData::META] = $result->meta;
+            $bucket[InsuranceCheckoutData::CREATE_OFFER] = $createOffersDto->toArray();
+
+            $model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
 
             return $result;
         } catch (Exception $e) {
@@ -73,14 +77,27 @@ final readonly class InsuranceHandler
      */
     public function bookOffer(Transaction $transaction): void
     {
-        $data = $transaction->checkout->data;
+        $data = InsuranceCheckoutData::checkoutDataArray($transaction->checkout->data);
 
-        $selectedOffer = InsuranceOfferDto::from($data['insurance']);
+        $offerArr = InsuranceCheckoutData::getOffer($data);
+        if (! is_array($offerArr)) {
+            throw new \RuntimeException('Checkout insurance offer is missing.');
+        }
+
+        $createArr = InsuranceCheckoutData::getCreateOffer($data);
+        if (! is_array($createArr)) {
+            throw new \RuntimeException('Checkout insurance create_offer context is missing.');
+        }
+
+        $rawMeta = InsuranceCheckoutData::getMeta($data);
+
+        $selectedOffer = InsuranceOfferDto::from($offerArr);
         $result = $this->getActiveInsuranceAction->run()->bookOffer(
             bookOfferDto: new BookInsuranceOfferDto(
                 selectedOffer: $selectedOffer,
-                createdOfferDto: CreateInsuranceOffersDto::from($data['insurance_create_offer']),
-                meta: $data['insurance_meta'],
+                createdOfferDto: CreateInsuranceOffersDto::from($createArr),
+                meta: is_array($rawMeta) ? $rawMeta : [],
+                payment: InsuranceCheckoutData::getPayment($data),
             )
         );
 
@@ -109,7 +126,10 @@ final readonly class InsuranceHandler
                 )
             );
 
-            $transaction->pushToResultData(['nezasa_insurance_response' => $nezasa->array()]);
+            $transaction->pushToResultData([
+                'nezasa_insurance_request' => (array) $nezasa->getPendingRequest()->body()->all(),
+                'nezasa_insurance_response' => $nezasa->array(),
+            ]);
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Listeners;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Insurances\Handlers\InsuranceHandler;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 
 final readonly class InsuranceListener
 {
@@ -25,7 +26,8 @@ final readonly class InsuranceListener
                 return;
             }
 
-            if (data_get(target: $event->transaction->checkout->data, key: 'insurance.id', default: false)) {
+            $checkoutData = InsuranceCheckoutData::checkoutDataArray($event->transaction->checkout->data);
+            if (InsuranceCheckoutData::hasSelectedOffer($checkoutData)) {
                 $this->insuranceHandler->bookOffer($event->transaction);
             }
         } catch (\Exception $e) {

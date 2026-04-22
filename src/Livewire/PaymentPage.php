@@ -10,6 +10,7 @@ use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
@@ -86,8 +87,9 @@ class PaymentPage extends BaseCheckoutComponent
             ->firstOrFail()
             ->decryptClassName();
 
-        if (data_get($this->model->data, 'insurance.price') && ! Config::boolean('checkout.insurance.vertical.active')) {
-            $this->itinerary->price->showPaymentPrice->amount += Price::from($this->model->data['insurance']['price'])->amount;
+        $offer = InsuranceCheckoutData::getOffer(InsuranceCheckoutData::checkoutDataArray($this->model->data));
+        if (data_get($offer, 'price') && ! Config::boolean('checkout.insurance.vertical.active')) {
+            $this->itinerary->price->showPaymentPrice->amount += Price::from($offer['price'])->amount;
         }
 
         $result = resolve(PaymentInitiationHandler::class)->run(

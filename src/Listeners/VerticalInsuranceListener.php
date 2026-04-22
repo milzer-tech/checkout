@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Listeners;
 
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
@@ -61,9 +62,9 @@ final class VerticalInsuranceListener
     {
         return $this->transaction->gateway === 'Stripe'
             && Config::boolean('checkout.insurance.vertical.active') === true
-            && isset($this->transaction->checkout->data['insurance'])
-            && is_array($this->transaction->checkout->data['insurance'])
-            && isset($this->transaction->checkout->data['insurance']['id']);
+            && InsuranceCheckoutData::hasSelectedOffer(
+                InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data)
+            );
     }
 
     /**
@@ -127,7 +128,8 @@ final class VerticalInsuranceListener
     private function createVerticalPaymentIntent(string $paymentMethodId): string
     {
         try {
-            $quote = $this->transaction->checkout->data['insurance_meta'];
+            $checkoutData = InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data);
+            $quote = InsuranceCheckoutData::getMeta($checkoutData);
             $newPaymentIntent = $this->stripe->paymentIntents->create(
                 params: [
                     'payment_method' => $paymentMethodId,
@@ -136,7 +138,7 @@ final class VerticalInsuranceListener
                     'off_session' => true,
                     'confirm' => true,
                     'metadata' => [
-                        'quote_id' => (string) $this->transaction->checkout->data['insurance']['id'],
+                        'quote_id' => (string) (InsuranceCheckoutData::getOffer($checkoutData)['id'] ?? ''),
                     ],
                 ],
                 opts: [
@@ -161,9 +163,12 @@ final class VerticalInsuranceListener
     private function purchaseInsurance(string $paymentIntentId): bool
     {
         try {
+            $checkoutData = InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data);
+            $offer = InsuranceCheckoutData::getOffer($checkoutData) ?? [];
+
             $response = VerticalInsuranceConnector::make()->purchase()->travel(
                 new PurchaseEventPayload(
-                    quote_id: $this->transaction->checkout->data['insurance']['id'],
+                    quote_id: (string) ($offer['id'] ?? ''),
                     payment_method: new PurchasePaymentMethodPayloadEntity(token: "stripe:$paymentIntentId"),
                     customer: new VerticalCustomerPayloadEntity(
                         first_name: $this->transaction->checkout->data['contact']['firstName'],

@@ -1,0 +1,865 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2013 rel. 2 sp1 (x64) (http://www.altova.com) von Andrea Steiger (ITERGO Lizenzmanagement) bearbeitet -->
+<xsd:schema xmlns:common="http://www.erv.de/eSoap/2019/09/common" xmlns:tns="http://www.erv.de/eSoap/2019/09" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.erv.de/eSoap/2019/09" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.erv.de/eSoap/2019/09/common" schemaLocation="ERV_ESC_v201909_CommonTypes.xsd"/>
+	<xsd:element name="ERV_InsuranceCancelRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV cancellation and partial cancellation request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Requestor" type="common:RequestorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="PolicyNumber" type="common:StringLength1to32">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Policy number to cancel. If the request does not contain: CancelTravelers, CancelServices and CancelAllocations, than it's a total cancellation.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="CancelTravelers" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Reference on the insured persons, which have to be cancelled.</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="CancelTraveler" type="common:CancelTravelerType" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation xml:lang="en">Insured person (CoveredTraveler - ID) which has to be cancelled.</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="CancelServices" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Reference on the services (Service - ID) which have to be cancelled.</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="CancelService" type="common:CancelServiceType" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation xml:lang="en">Service which has to be cancelled.</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="CancelAllocations" minOccurs="0">
+					<xsd:annotation/>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="CancelAllocation" type="common:CancelAllocationType" maxOccurs="unbounded">
+								<xsd:annotation/>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="Verification" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Verification data of the origin policy</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="CoveredTravelers" type="common:CoveredTravelersType" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation xml:lang="en">Covered traveler data of the origin policy.</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="Services" type="common:ServicesType" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation xml:lang="en">Service data of the origin policy.</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="EmailPolicy" type="common:EmailsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">If the request contains this element, then the new policy (partial cancellation) will be sent per email: 1. If there are AdditionalEmail-elements, then the policy will be sent to these email addresses. 2. If there is no AdditionalEmail-Element, then the policy will be sent to the email address of the insurance customer.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceCancelRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV cancellation and partial cancellation response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="common:RequestorType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="PolicyDetail" type="common:PolicyDetailType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">policy header data</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="CoveredTrip" type="common:TripType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for any information about the trip(s) for which the traveler(s) are requesting coverage.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="CoveredTravelers" type="common:CoveredTravelersType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for information about the travelers requesting coverage by the insurance plan</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="InsuranceCustomer" type="common:InsuranceCustomerType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for information about the insurance customer</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Services" type="common:ServicesType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for information about the booked services</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceBookRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV book request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Requestor" type="common:RequestorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="RebookPolicyNumber" type="common:StringLength1to32" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">To rebook a policy, the policy number of the origin contract has to be sent in this element.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="PreContractualInformationID" type="common:StringLength1to50" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">ID reference to the pre-contractual information</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="CoveredTravelers" type="common:CoveredTravelersType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Container for information about the travelers requesting coverage by the insurance plan.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="QuoteIDRef" type="common:StringLength1to36" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Reference on an insurance offer (QuoteRS).</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="CoveredTrip" type="common:TripType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Container for any information about the trip(s) for which the traveler(s) are requesting coverage.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="InsuranceCustomer" type="common:InsuranceCustomerType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Contains data on the insurance customer</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="BookServices" type="common:RequestServicesType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Requested service</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="AdditionalPolicyInfo" type="common:StringLength1to60" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Additional policy information, e.g. bookkeeping note. This information will be printed on the policy.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="ExternalReferenceId" type="common:StringLength1to100" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">External reference identifier of the ESC service user, e.g. PNR number. This information will not be printed on the policy.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="EmailPolicy" type="common:EmailsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">If this element contains email addresses, then the policy will be sent to these addresses. If there is no EmailPolicy element, then no emails will be sent.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Insurance" type="common:InsuranceCritsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Additional insurance information</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>additional fields as key-value pairs , example: to provide vehicle details as a key-value pair in extension, use key as VehicleDetails and provide value in format BRAND|MODEL|LICENCEPLATE say Renault|Clio|MNI-1234 </xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceBookRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV book response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="common:RequestorType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="PolicyDetail" type="common:PolicyDetailType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Policy header data</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="CoveredTrip" type="common:TripType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for any information about the trip(s) for which the traveler(s) are requesting coverage.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="CoveredTravelers" type="common:CoveredTravelersType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for information about the travelers requesting coverage by the insurance plan.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="InsuranceCustomer" type="common:InsuranceCustomerType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Insurance customer data</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Services" type="common:ServicesType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Booked services</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>probably additional fields</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceCreatePreContractualInformationRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV create pre-contractual information request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Requestor" type="common:RequestorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="RebookPolicyNumber" type="common:StringLength1to32" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">To rebook a policy, the policy number of the origin contract has to be sent in this element.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="CoveredTravelers" type="common:CoveredTravelersType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Container for information about the travelers requesting coverage by the insurance plan.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="QuoteIDRef" type="common:StringLength1to36" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Reference on an insurance offer (QuoteRS).</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="CoveredTrip" type="common:TripType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Container for any information about the trip(s) for which the traveler(s) are requesting coverage.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="InsuranceCustomerPreContractualInformation" type="common:InsuranceCustomerPreContractualInformationType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Contains data on the insurance customer</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="PreContractualInformationServices" type="common:RequestServicesType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Requested service</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="EmailPreContractualInformation" type="common:EmailsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">If this element contains email addresses, then the pre-contractual information will be sent to these addresses. If there is no EmailPreContractualInformation  element, then no emails will be sent.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Insurance" type="common:InsuranceCritsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Additional insurance information</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>probably additional fields</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceCreatePreContractualInformationRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV create pre-contractual information response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="common:RequestorType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="PreContractualInformationID" type="common:StringLength1to50">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">ID of the pre-contractual information, has to be sent in corresponding booking request</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="RecordOfAdviceURL" type="xsd:anyURI" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Record of Advice document url</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="PreContractualInformationServices" type="common:PreContractualInformationServicesType"/>
+					<xsd:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>probably additional fields</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsurancePlanSearchRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV insurance plan search request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Requestor" type="common:RequestorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="RebookPolicyNumber" type="common:StringLength1to32" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">To get all valid products for a rebooking, the policy number of the origin contract has to be sent in this element.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="CoveredTrip" type="common:TripType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Container for any information about the trip(s) for which the traveler(s) are requesting coverage.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Travelers" type="common:SearchTravelersType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Container for information about the travelers requesting coverage by the insurance plan.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="InsuranceCustomer" type="common:InsuranceCustomerQuoteType" minOccurs="0"/>
+				<xsd:element name="Insurance" type="common:InsuranceCritsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Additional insurance information</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>probably additional fields</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+			<xsd:attribute name="AutoQuote" type="xsd:boolean" default="false">
+				<xsd:annotation/>
+			</xsd:attribute>
+			<xsd:attribute name="ListType" type="xsd:string">
+				<xsd:annotation/>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsurancePlanSearchRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV insurance plan search response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="common:RequestorType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Travelers" type="common:SearchTravelersType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for information about the travelers requesting coverage by the insurance plan.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="AvailablePlans" type="common:AvailablePlans">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Insurance plan results</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>probably additional fields</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceQuoteRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV quote request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Requestor" type="common:RequestorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="RebookPolicyNumber" type="common:StringLength1to32" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">To get a valid quote for a rebooking, the policy number of the origin contract has to be sent in this element.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="CoveredTrip" type="common:TripType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Container for any information about the trip(s) for which the traveler(s) are requesting coverage.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Travelers" type="common:SearchTravelersType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Container for information about the travelers requesting coverage by the insurance plan.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="QuoteServices" type="common:RequestServicesType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Requested services</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="InsuranceCustomer" type="common:InsuranceCustomerQuoteType" minOccurs="0"/>
+				<xsd:element name="Insurance" type="common:InsuranceCritsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Additional insurance information</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>probably additional fields</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceQuoteRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV quote response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="common:RequestorType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Travelers" type="common:SearchTravelersType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for information about the travelers requesting coverage by the insurance plan.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="CoveredTrip" type="common:TripType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for any information about the trip(s) for which the traveler(s) are requesting coverage.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Quote" type="common:QuoteType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Quote with the requested services</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Extensions" type="common:ExtensionsType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>probably additional fields</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceReadRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV insurance read request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Requestor" type="common:RequestorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="PolicyNumber" type="common:StringLength1to32">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Policy number (confirmation number) of the policy to be shown.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="EmailPolicy" type="common:EmailsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">If this element contains email addresses, then the policy will be sent to these addresses. If there is no EmailPolicy element, then no emails will be sent.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceReadRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV insurance read response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="common:RequestorType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="PolicyDetail" type="common:PolicyDetailType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Policy header data</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="CoveredTrip" type="common:TripType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for any information about the trip(s) for which the traveler(s) are requesting coverage.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="CoveredTravelers" type="common:CoveredTravelersType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for information about the travelers requesting coverage by the insurance plan.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="InsuranceCustomer" type="common:InsuranceCustomerType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Insurance customer data</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Services" type="common:ServicesType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Booked services</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceReadPreContractualInformationRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV insurance read pre-contractual information request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Requestor" type="common:RequestorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="PreContractualInformationID" type="common:StringLength1to50">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">ID of the requested pre-contractual information.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="EmailPreContractualInformation" type="common:EmailsType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">If this element contains email addresses, then the pre-contractual information will be sent to these addresses. If there is no EmailPreContractualInformation element, then no emails will be sent.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceReadPreContractualInformationRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV insurance read pre-contractual information reponse</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="common:RequestorType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="PreContractualInformationID" type="common:StringLength1to50">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">ID of the requested pre-contractual information</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="RecordOfAdvice" type="xsd:anyURI" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">the record of advice</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="PreContractualInformationServices" type="common:PreContractualInformationServicesType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Pre-contractual information services</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceSearchRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV insurance search request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Requestor" type="common:RequestorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="InsuredPerson" type="common:InsuredPersonSearchCritType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Search criterions based on covered persons</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="CoveredTrip" type="common:CoveredTripSearchCritType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Search criterions based on covered trip data</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="PolicyDetail" type="common:PolicyDetailSearchCritType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Search criterions based on the policy header data</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_InsuranceSearchRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV insurance search response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="common:RequestorType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="SearchResults" type="common:SearchResultsType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">Container for found policies</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_PingRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV service monitoring ping request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="EchoData" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">The free-text data that is expected to be echoed back in the response message.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_PingRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">ERV service monitoring ping response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EchoData" type="xsd:string">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">The free-text data that is to be echoed back.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_PayPageUrlRQ">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">request for PaymentServiceFormular Url</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Requestor" type="common:RequestorType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="PayPageData">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="SuccessUrl" type="xsd:anyURI"/>
+							<xsd:element name="ErrorUrl" type="xsd:anyURI" minOccurs="0"/>
+							<xsd:element name="NotificationFailedUrl" type="xsd:anyURI" minOccurs="0"/>
+							<xsd:element name="ClientType" type="common:ClientTypeType"/>
+							<xsd:element name="creditCardHolder" type="common:creditcardHolderType" minOccurs="0"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ERV_PayPageUrlRS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">response for PaymentServiceFormular Url</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:sequence>
+					<xsd:element name="Success" type="common:SuccessType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">success marker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="common:RequestorType">
+						<xsd:annotation>
+							<xsd:documentation xml:lang="en">This holds details regarding the requestor.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="PayPageUrl">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="PayPageHandleId" type="common:PayPageHandleIDType"/>
+								<xsd:element name="Url" type="xsd:anyURI"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:element name="Errors" type="common:ErrorsType">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Error container</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attributeGroup ref="common:PayloadStdAttributes"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

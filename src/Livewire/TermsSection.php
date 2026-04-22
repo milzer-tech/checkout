@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceTerms;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TermsAndConditionsResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TextSectionResponseEntity;
 use Nezasa\Checkout\Jobs\SaveTermAgreementJob;
@@ -115,10 +116,11 @@ class TermsSection extends BaseCheckoutComponent
     public function listen(): void
     {
         $this->insuranceTerms = null;
-        $insuranceTerms = data_get($this->model->data, 'insurance.terms.conditions.0', false);
+        $offer = InsuranceCheckoutData::getOffer(InsuranceCheckoutData::checkoutDataArray($this->model->data));
+        $insuranceTerms = $offer && data_get($offer, 'terms.conditions.0', false);
 
         if ($insuranceTerms) {
-            $this->insuranceTerms = InsuranceOfferDto::from($this->model->data['insurance'])->terms;
+            $this->insuranceTerms = InsuranceOfferDto::from($offer)->terms;
         }
 
         $this->termsAndConditions->sections->isEmpty()
