@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Payments\Gateways\Stripe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Uri;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
@@ -191,17 +192,19 @@ class StripeGateway implements RedirectPaymentContract
      */
     protected function customizeSessionPayload(array $payload, Transaction $transaction): array
     {
-        if (Config::boolean('checkout.insurance.vertical.active')
-            && isset($transaction->checkout->data['insurance'])
-            && $transaction->checkout->data['insurance']['id']
-        ) {
+        $checkoutData = InsuranceCheckoutData::checkoutDataArray($transaction->checkout->data);
+        $offer = InsuranceCheckoutData::getOffer($checkoutData);
 
+        if (Config::boolean('checkout.insurance.vertical.active')
+            && is_array($offer)
+            && ($offer['id'] ?? null)
+        ) {
             $config = [
                 'custom_text' => [
                     'submit' => [
                         'message' => sprintf(
                             @trans('checkout::page.payment.additional_insurance_cost'),
-                            Price::from($transaction->checkout->data['insurance']['price'])->toHtml()
+                            Price::from($offer['price'])->toHtml()
                         ),
                     ],
                 ],

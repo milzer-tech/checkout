@@ -8,6 +8,7 @@ use Nezasa\Checkout\Actions\Operation\SaveSectionStatusAction;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Facades\AvailabilityFacade;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
 use Nezasa\Checkout\Models\Checkout;
@@ -39,10 +40,12 @@ class InitializeCheckoutDataAction
 
     private function visitedConfiguration(Checkout $model): void
     {
-        $data = $model->data;
-
-        $data['insurance'] = null;
+        $data = array_merge(
+            InsuranceCheckoutData::checkoutDataArray($model->data ?? []),
+            InsuranceCheckoutData::prepareInsuranceUpdate(InsuranceCheckoutData::emptyInsuranceBucket())
+        );
         $data['status'] = Checkout::buildSectionStatus();
+        $data = InsuranceCheckoutData::stripLegacyInsuranceKeys($data);
 
         $model->update(['data' => $data]);
     }
@@ -59,7 +62,10 @@ class InitializeCheckoutDataAction
                 ->where('rest_payment', false)
                 ->first();
 
-            $checkout->update(['data' => $downCheckout->data]);
+            $data = InsuranceCheckoutData::stripLegacyInsuranceKeys(
+                InsuranceCheckoutData::checkoutDataArray($downCheckout->data ?? [])
+            );
+            $checkout->update(['data' => $data]);
             $this->saveSectionStatusAction->run($checkout, Section::PaymentOptions, true, true);
 
             return;

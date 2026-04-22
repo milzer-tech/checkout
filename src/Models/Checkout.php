@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Factories\CheckoutFactory;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
 
@@ -75,6 +76,10 @@ class Checkout extends Model
     {
         /** @phpstan-ignore-next-line */
         $array = $this->data?->toArray() ?? [];
+
+        if (array_key_exists('insurance', $data)) {
+            $array = InsuranceCheckoutData::stripLegacyInsuranceKeys($array);
+        }
 
         foreach ($data as $key => $value) {
             $array = data_set($array, $key, $value);

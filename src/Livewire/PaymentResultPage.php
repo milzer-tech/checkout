@@ -11,6 +11,7 @@ use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Transaction;
@@ -101,9 +102,10 @@ class PaymentResultPage extends BaseCheckoutComponent
         try {
             $this->transaction->refresh();
 
-            $insurance = $this->transaction->checkout->data['insurance']
-                ? InsuranceOfferDto::from($this->transaction->checkout->data['insurance'])
-                : null;
+            $offerRaw = InsuranceCheckoutData::getOffer(
+                InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data)
+            );
+            $insurance = $offerRaw ? InsuranceOfferDto::from($offerRaw) : null;
             if ($insurance instanceof InsuranceOfferDto) {
                 $availability = data_get($this->transaction->result_data, 'insurance.isSuccessful', false)
                     ? AvailabilityEnum::Booked

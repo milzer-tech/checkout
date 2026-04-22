@@ -12,6 +12,7 @@ use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Handlers\InsuranceHandler;
+use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
@@ -69,8 +70,11 @@ class InsuranceSection extends BaseCheckoutComponent
         // Do not restore IBAN after a full page load (refresh or revisit). Payment details are
         // re-captured in-session; clear any persisted value so the input stays empty.
         $this->insuranceIban = null;
-        if (isset($this->model->data['insurance_payment'])) {
-            $this->model->updateData(['insurance_payment' => null]);
+        $checkoutArr = InsuranceCheckoutData::checkoutDataArray($this->model->data);
+        $bucket = InsuranceCheckoutData::getNormalizedInsuranceBucket($checkoutArr);
+        if ($bucket !== null) {
+            $bucket[InsuranceCheckoutData::PAYMENT] = null;
+            $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
         }
     }
 
@@ -80,23 +84,27 @@ class InsuranceSection extends BaseCheckoutComponent
 
         if (is_null($offer)) {
             $this->selectedOfferId = null;
-            $this->model->updateData(['insurance' => null]);
             $this->requiresInsuranceIban = false;
             $this->insuranceIban = null;
-            $this->model->updateData(['insurance_payment' => null]);
+            $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate(null));
             $this->dispatch('insurance-declined');
 
             return;
         }
 
         $this->selectedOfferId = $id;
-        $this->model->updateData(['insurance' => $offer->toArray()]);
+        $checkoutArr = InsuranceCheckoutData::checkoutDataArray($this->model->data);
+        $bucket = InsuranceCheckoutData::getNormalizedInsuranceBucket($checkoutArr)
+            ?? InsuranceCheckoutData::emptyInsuranceBucket();
+        $bucket[InsuranceCheckoutData::OFFER] = $offer->toArray();
 
         $this->requiresInsuranceIban = Config::boolean('checkout.insurance.ergo.active');
         if (! $this->requiresInsuranceIban) {
             $this->insuranceIban = null;
-            $this->model->updateData(['insurance_payment' => null]);
+            $bucket[InsuranceCheckoutData::PAYMENT] = null;
         }
+
+        $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
 
         $this->dispatch('insurance-selected', new InsuranceItem($id, $offer->title), $offer->price);
     }
@@ -106,11 +114,11 @@ class InsuranceSection extends BaseCheckoutComponent
         $iban = $this->normalizeIban($value);
         $this->insuranceIban = $iban;
 
-        if ($iban === null) {
-            $this->model->updateData(['insurance_payment' => null]);
-        } else {
-            $this->model->updateData(['insurance_payment' => ['iban' => $iban]]);
-        }
+        $checkoutArr = InsuranceCheckoutData::checkoutDataArray($this->model->data);
+        $bucket = InsuranceCheckoutData::getNormalizedInsuranceBucket($checkoutArr)
+            ?? InsuranceCheckoutData::emptyInsuranceBucket();
+        $bucket[InsuranceCheckoutData::PAYMENT] = $iban === null ? null : ['iban' => $iban];
+        $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
 
         $this->resetValidation('insuranceIban');
     }
@@ -144,7 +152,7 @@ class InsuranceSection extends BaseCheckoutComponent
     public function handleInsuranceQuote(?array $quote): void
     {
         if (is_null($quote)) {
-            $this->model->updateData(['insurance_meta' => $quote, 'insurance' => null]);
+            $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate(null));
             $this->dispatch('insurance-declined');
 
             return;
@@ -159,7 +167,10 @@ class InsuranceSection extends BaseCheckoutComponent
             coverage: []
         );
 
-        $this->model->updateData(['insurance_meta' => $quote, 'insurance' => $offer->toArray()]);
+        $bucket = InsuranceCheckoutData::emptyInsuranceBucket();
+        $bucket[InsuranceCheckoutData::META] = $quote;
+        $bucket[InsuranceCheckoutData::OFFER] = $offer->toArray();
+        $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
         $this->dispatch('insurance-selected', new InsuranceItem($offer->id, $offer->title), $offer->price);
     }
 
@@ -266,7 +277,11 @@ class InsuranceSection extends BaseCheckoutComponent
                 return;
             }
 
-            $this->model->updateData(['insurance_payment' => ['iban' => $iban]]);
+            $checkoutArr = InsuranceCheckoutData::checkoutDataArray($this->model->data);
+            $bucket = InsuranceCheckoutData::getNormalizedInsuranceBucket($checkoutArr)
+                ?? InsuranceCheckoutData::emptyInsuranceBucket();
+            $bucket[InsuranceCheckoutData::PAYMENT] = ['iban' => $iban];
+            $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
         }
 
         $this->markAsCompletedAdnCollapse(Section::Insurance);
@@ -350,6 +365,6 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->shouldInitVerticalWidget = false;
         $this->insuranceIban = null;
         $this->requiresInsuranceIban = false;
-        $this->model->updateData(['insurance_payment' => null]);
+        $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate(null));
     }
 }
