@@ -24,6 +24,12 @@ readonly class DownPaymentCallBackHandler extends PaymentCallBackHandler
 
         if ($this->handlePaymentAuthorization($gateway, $transaction)->isSuccessful) {
             $bookingResponse = $this->bookItineraryAction->run($transaction->checkout->checkout_id);
+            if ($bookingResponse === false) {
+                $this->handlePaymentAbort($gateway, $transaction);
+
+                return $this->getOutput($transaction);
+            }
+
             $bookingResult = $this->bookingResultAction->run($bookingResponse->array('summary'));
 
             if ($bookingResult->isCompleteFailed() || $bookingResult->isUnknown()) {
