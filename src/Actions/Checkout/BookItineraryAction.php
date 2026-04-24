@@ -13,7 +13,7 @@ class BookItineraryAction
     /**
      * Handle the booking of the itinerary.
      */
-    public function run(string $checkoutId): ?Response
+    public function run(string $checkoutId): false|Response
     {
         try {
             return NezasaConnector::make()->checkout()->synchronousBooking($checkoutId);
@@ -22,6 +22,5 @@ class BookItineraryAction
 
             return false;
         }
-
     }
 }
