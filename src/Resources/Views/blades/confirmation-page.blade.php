@@ -439,7 +439,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M21 12a8 8 0 01-8 8H9l-4 3v-3.5A6.5 6.5 0 013.5 12a8.5 8.5 0 018.5-8.5h1A8 8 0 0121 12Z"/>
                             </svg>
-                            Contact support
+                            {{ trans('checkout::page.trip_details.contact_support') }}
                         </button>
                     </div>
                 @endif
