@@ -876,7 +876,7 @@
                 <!-- Total paid + link -->
                 <div class="pt-1">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-lg">Total paid (EUR)</span>
+                        <span class="font-bold text-lg">{{ trans('checkout::page.booking_confirmation.total_paid_with_currency', ['currency' => strtoupper($paid->currency)]) }}</span>
                         <span
                             class="font-bold text-lg">{{ $paid->toHtml() }}</span>
                     </div>
