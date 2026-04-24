@@ -22,6 +22,14 @@ return [
         'password' => env('CHECKOUT_NEZASA_PASSWORD', 'must_be_set_in_env'),
     ],
 
+    /**
+     * Contact support mailto target. Set CHECKOUT_CONTACT_SUPPORT_EMAIL (e.g. support@example.com).
+     * Used wherever "Contact support" appears in checkout views.
+     */
+    'contact_support' => [
+        'email' => env('CHECKOUT_CONTACT_SUPPORT_EMAIL', 'contact@nezasa.com'),
+    ],
+
     'integrations' => [
         'oppwa' => [
             'active' => (bool) env('CHECKOUT_WIDGET_OPPWA_ACTIVE', false),

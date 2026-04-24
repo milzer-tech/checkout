@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Providers;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -78,6 +79,11 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(path: __DIR__.'/../Routes/web.php');
 
         $this->loadViewsFrom(path: __DIR__.'/../Resources/Views', namespace: 'checkout');
+
+        Blade::anonymousComponentPath(
+            path: __DIR__.'/../Resources/Views/components',
+            prefix: 'checkout',
+        );
 
         $this->loadTranslationsFrom(path: __DIR__.'/../../lang', namespace: 'checkout');
     }

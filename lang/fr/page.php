@@ -88,6 +88,7 @@ return [
         'your_trip_could_not_be_booked' => 'Votre voyage n’a pas pu être réservé',
         'booking_reference' => 'Référence de réservation',
         'order_date' => 'Date de commande',
+        'total_paid_with_currency' => 'Total payé (:currency)',
         'booking_status' => 'Statut de la réservation',
         'print_booking_confirmation' => 'Imprimer la confirmation de réservation',
         'print_booking_proposal' => 'Imprimer la proposition de réservation',

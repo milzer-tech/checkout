@@ -116,6 +116,7 @@ return [
         'your_trip_could_not_be_booked' => 'Your trip could not be booked',
         'booking_reference' => 'Booking reference',
         'order_date' => 'Order date',
+        'total_paid_with_currency' => 'Total paid (:currency)',
         'booking_status' => 'Booking status',
         'print_booking_confirmation' => 'Print booking confirmation',
         'print_booking_proposal' => 'Print booking proposal',

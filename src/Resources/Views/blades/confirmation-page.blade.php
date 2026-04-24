@@ -430,17 +430,15 @@
 
                         <div class="mt-6 h-px bg-gray-200"></div>
 
-                        <button
-                            type="button"
-                            wire:click="contactSupport"
-                            class="mt-5 inline-flex items-center gap-2 text-[#2681FF] font-medium text-sm hover:underline"
+                        <x-checkout::contact-support-link
+                            class="mt-5 inline-flex items-center gap-2 text-[#2681FF] font-medium text-sm hover:underline cursor-pointer"
                         >
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M21 12a8 8 0 01-8 8H9l-4 3v-3.5A6.5 6.5 0 013.5 12a8.5 8.5 0 018.5-8.5h1A8 8 0 0121 12Z"/>
                             </svg>
-                            Contact support
-                        </button>
+                            {{ trans('checkout::page.trip_details.contact_support') }}
+                        </x-checkout::contact-support-link>
                     </div>
                 @endif
 
@@ -876,7 +874,7 @@
                 <!-- Total paid + link -->
                 <div class="pt-1">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-lg">Total paid (EUR)</span>
+                        <span class="font-bold text-lg">{{ trans('checkout::page.booking_confirmation.total_paid_with_currency', ['currency' => strtoupper($paid->currency)]) }}</span>
                         <span
                             class="font-bold text-lg">{{ $paid->toHtml() }}</span>
                     </div>
@@ -915,14 +913,12 @@
                     </p>
                 </div>
 
-                <button
-                    type="button"
-                    wire:click="contactSupport"
+                <x-checkout::contact-support-link
                     class="inline-flex items-center justify-center rounded-xl border px-6 py-3 md:px-8 md:py-3 font-medium
                  bg-[#2681FF14] text-[#2681FF] border-[#2681FF]
-                 hover:bg-[#2681FF14] focus:outline-none focus:ring-2 focus:ring-[#2681FF33] focus:ring-offset-2">
-                    {{trans('checkout::page.trip_details.contact_support')}}
-                </button>
+                 hover:bg-[#2681FF14] focus:outline-none focus:ring-2 focus:ring-[#2681FF33] focus:ring-offset-2 cursor-pointer">
+                    {{ trans('checkout::page.trip_details.contact_support') }}
+                </x-checkout::contact-support-link>
             </div>
         </div>
 
