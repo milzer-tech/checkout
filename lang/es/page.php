@@ -55,6 +55,7 @@ return [
         'paid_before_departure' => 'Pagado antes de la salida',
         'paid_in_destination' => 'Pagado en destino',
         'required' => 'Requerido',
+        'you_will_pay_down_payment' => 'Pagará ahora el :percentage del importe total.',
         'insurance_not_available' => 'El proveedor de seguros no está disponible o no tiene ofertas.',
         'insurance_loading_offers' => 'Cargando ofertas de seguro...',
         'insurance_loading_widget' => 'Cargando seguro...',
