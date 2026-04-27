@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
+use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryFlight;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
@@ -85,9 +86,10 @@ class PaymentResultPage extends BaseCheckoutComponent
 
         $fallBackStatus = $this->model->rest_payment ? null : AvailabilityEnum::None;
         $callback = fn ($item) => $item->availability = $this->output->data[$item->id] ?? $fallBackStatus;
-
         $this->itinerary->stays->map($callback);
-        $this->itinerary->flights->map($callback);
+        $this->itinerary->flights->map(function (ItineraryFlight $item): void {
+            $item->availability = $this->output->data[$item->id] ?? null;
+        });
         $this->itinerary->transfers->map($callback);
         $this->itinerary->activities->map($callback);
         $this->itinerary->rentalCars->map($callback);

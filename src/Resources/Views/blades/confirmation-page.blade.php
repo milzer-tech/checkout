@@ -293,7 +293,7 @@
                                     @foreach($itinerary->getUnconfirmedStays() as $stay)
                                         <div class="flex items-start mb-1">
                                             <div class="flex items-center">
-                                                @include('checkout::components.availability-status', ['availability' => $stay->availability])
+                                                @include('checkout::components.booking-status', ['availability' => $stay->availability])
                                                 <span
                                                     class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->name }}</span>
                                             </div>
@@ -319,7 +319,7 @@
                                     @foreach($itinerary->getUnconfirmedActivities() as $activity)
                                         <div class="flex items-start">
                                             <div class="flex items-center">
-                                                @include('checkout::components.availability-status', ['availability' => $activity->availability])
+                                                @include('checkout::components.booking-status', ['availability' => $activity->availability])
                                                 <span
                                                     class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->name }}</span>
                                             </div>
@@ -344,7 +344,7 @@
                                         @foreach($itinerary->getUnconfirmedFlights() as $flight)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => $flight->availability])
+                                                    @include('checkout::components.booking-status', ['availability' => $flight->availability])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
                                                 </div>
@@ -366,7 +366,7 @@
                                         @foreach($itinerary->getUnconfirmedTransfers() as $transfer)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => $transfer->availability])
+                                                    @include('checkout::components.booking-status', ['availability' => $transfer->availability])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
                                                 </div>
@@ -389,7 +389,7 @@
                                         @foreach($itinerary->getUnconfirmedRentalCars() as $rentalCar)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => $rentalCar->availability])
+                                                    @include('checkout::components.booking-status', ['availability' => $rentalCar->availability])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
                                                 </div>
@@ -412,7 +412,7 @@
                                         @foreach($itinerary->getUnconfirmedUpsellItems() as $item)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => $item->availability])
+                                                    @include('checkout::components.booking-status', ['availability' => $item->availability])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
                                                 </div>
@@ -466,7 +466,7 @@
                                     @foreach($itinerary->stays as $stay)
                                         <div class="flex items-start">
                                             <div class="flex items-center mb-1">
-                                                @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                @include('checkout::components.booking-status', ['availability' => AvailabilityEnum::None])
                                                 <span
                                                     class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->name }}</span>
                                             </div>
@@ -493,7 +493,7 @@
                                     @foreach($itinerary->activities as $activity)
                                         <div class="flex items-start">
                                             <div class="flex items-center">
-                                                @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                @include('checkout::components.booking-status', ['availability' => AvailabilityEnum::None])
                                                 <span
                                                     class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->name }}</span>
                                             </div>
@@ -519,7 +519,7 @@
                                         @foreach($itinerary->flights as $flight)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                    @include('checkout::components.booking-status', ['availability' => AvailabilityEnum::None])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
                                                 </div>
@@ -542,7 +542,7 @@
                                         @foreach($itinerary->transfers as $transfer)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                    @include('checkout::components.booking-status', ['availability' => AvailabilityEnum::None])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
                                                 </div>
@@ -566,7 +566,7 @@
                                         @foreach($itinerary->rentalCars as $rentalCar)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                    @include('checkout::components.booking-status', ['availability' => AvailabilityEnum::None])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
                                                 </div>
@@ -590,7 +590,7 @@
                                         @foreach($itinerary->upsellItems as $item)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => AvailabilityEnum::None])
+                                                    @include('checkout::components.booking-status', ['availability' => AvailabilityEnum::None])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
                                                 </div>
@@ -701,7 +701,7 @@
                                     @foreach($itinerary->stays as $stay)
                                         <div class="flex items-start">
                                             <div class="flex items-center">
-                                                @include('checkout::components.availability-status', ['availability' => $stay->availability])
+                                                @include('checkout::components.booking-status', ['availability' => $stay->availability])
                                                 <span
                                                     class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->name }}</span>
                                             </div>
@@ -732,7 +732,7 @@
                                     @foreach($itinerary->activities as $activity)
                                         <div class="flex items-start">
                                             <div class="flex items-center">
-                                                @include('checkout::components.availability-status', ['availability' => $activity->availability])
+                                                @include('checkout::components.booking-status', ['availability' => $activity->availability])
                                                 <span
                                                     class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->name }}</span>
                                             </div>
@@ -758,7 +758,7 @@
                                         @foreach($itinerary->flights as $flight)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => $flight->availability])
+                                                    @include('checkout::components.booking-status', ['availability' => $flight->availability])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
                                                 </div>
@@ -781,7 +781,7 @@
                                         @foreach($itinerary->transfers as $transfer)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => $transfer->availability])
+                                                    @include('checkout::components.booking-status', ['availability' => $transfer->availability])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
                                                 </div>
@@ -805,7 +805,7 @@
                                         @foreach($itinerary->rentalCars as $rentalCar)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => $rentalCar->availability])
+                                                    @include('checkout::components.booking-status', ['availability' => $rentalCar->availability])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
                                                 </div>
@@ -829,7 +829,7 @@
                                         @foreach($itinerary->upsellItems as $item)
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center">
-                                                    @include('checkout::components.availability-status', ['availability' => $item->availability])
+                                                    @include('checkout::components.booking-status', ['availability' => $item->availability])
                                                     <span
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
                                                 </div>
@@ -852,7 +852,7 @@
                                             @foreach($itinerary->insurances as $item)
                                                 <div class="flex items-center justify-between">
                                                     <div class="flex items-center">
-                                                        @include('checkout::components.availability-status', ['availability' => $item->availability])
+                                                        @include('checkout::components.booking-status', ['availability' => $item->availability])
                                                         <span
                                                             class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$item->name}}</span>
                                                     </div>
