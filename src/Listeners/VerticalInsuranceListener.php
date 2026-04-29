@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Listeners;
 
 use Illuminate\Support\Facades\Config;
+use Nezasa\Checkout\Actions\Payment\CreateNezasaTransactionAction;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Integrations\Vertical\Connectors\VerticalInsuranceConnector;
 use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\PurchasePaymentMethodPayloadEntity;
 use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\VerticalCustomerPayloadEntity;
@@ -53,6 +57,8 @@ final class VerticalInsuranceListener
 
         if ($this->purchaseInsurance($verticalPaymentIntentId)) {
             $this->saveInsuranceOnNezasa();
+
+            $this->createTransactionOnNezasa($verticalPaymentIntentId);
         } else {
             // Vertical insurance will take care of it manually.
             // $this->revertVerticalInsurancePayment($verticalPaymentIntentId);
@@ -227,5 +233,22 @@ final class VerticalInsuranceListener
 
             throw $e;
         }
+    }
+
+    public function createTransactionOnNezasa(string $verticalPaymentIntentId): void
+    {
+        $checkoutData = InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data);
+        $price = Price::from(InsuranceCheckoutData::getOffer($checkoutData)['price']);
+
+        $response = resolve(CreateNezasaTransactionAction::class)->run(
+            checkoutId: $this->transaction->checkout->checkout_id,
+            payload: new CreatePaymentTransactionPayload(
+                externalRefId: $verticalPaymentIntentId,
+                amount: $price,
+                paymentMethod: NezasaPaymentMethodEnum::Other,
+                status: NezasaTransactionStatusEnum::Closed,
+                paymentMethodName: 'Stripe'
+            )
+        );
     }
 }
