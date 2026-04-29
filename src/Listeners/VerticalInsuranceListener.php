@@ -16,6 +16,7 @@ use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\PurchasePayment
 use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\VerticalCustomerPayloadEntity;
 use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\PurchaseEventPayload;
 use Nezasa\Checkout\Models\Transaction;
+use Nezasa\Checkout\Payments\Gateways\Stripe\StripeGateway;
 use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
 
@@ -62,7 +63,7 @@ final class VerticalInsuranceListener
      */
     private function shouldBeProcessed(): bool
     {
-        return $this->transaction->gateway === 'Stripe'
+        return $this->transaction->gateway === StripeGateway::name()
             && Config::boolean('checkout.insurance.vertical.active') === true
             && InsuranceCheckoutData::hasSelectedOffer(
                 InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data)
