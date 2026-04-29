@@ -7,6 +7,8 @@ namespace Nezasa\Checkout\Payments\Handlers;
 use Illuminate\Http\Request;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Models\Transaction;
+use Nezasa\Checkout\Payments\Contracts\PaymentContract;
+use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentOutput;
 
 readonly class DownPaymentCallBackHandler extends PaymentCallBackHandler
@@ -40,15 +42,29 @@ readonly class DownPaymentCallBackHandler extends PaymentCallBackHandler
                 $captureResult = $this->handlePaymentCapture($gateway, $transaction);
 
                 if ($captureResult->isSuccessful) {
+                    $this->createTransactionFromCallback($transaction, $gateway, $request, $captureResult);
                     event(new ItineraryBookingSucceededEvent($transaction));
                 }
             }
 
             $this->storeBookingSummary($transaction, $bookingResponse);
-        } else {
-            $this->deleteNezasaTransactionAction->run($transaction);
         }
 
         return $this->getOutput($transaction);
+    }
+
+    public function createTransactionFromCallback(Transaction $transaction, PaymentContract $gateway, Request $request, CaptureResult $captureResult): void
+    {
+        $result = $this->createNezasaTransactionAction->run(
+            checkoutId: $transaction->checkout->checkout_id,
+            payload: $gateway->makeNezasaTransactionPayload($request, $captureResult)
+        );
+
+        $this->updateTransactionAction->run($transaction->refresh(), [
+            'result_data' => [
+                ...$transaction->refresh()->result_data,
+                'transaction_response' => $result,
+            ],
+        ]);
     }
 }

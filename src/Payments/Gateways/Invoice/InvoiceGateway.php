@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Uri;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
+use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
 use Nezasa\Checkout\Payments\Dtos\AbortResult;
 use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
@@ -62,12 +64,16 @@ class InvoiceGateway implements RedirectPaymentContract
     /**
      * Returns the payload required for creating a transaction in Nezasa.
      */
-    public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
+    public function makeNezasaTransactionPayload(Request $request, CaptureResult $captureResult): NezasaPayload
     {
+        /** @var Transaction $transaction */
+        $transaction = $request->route('transaction');
+
         return new NezasaPayload(
-            externalRefId: $paymentInit->persistentData['id'],
-            amount: $data->price,
-            paymentMethod: NezasaPaymentMethodEnum::BankTransfer
+            externalRefId: (string) $transaction->id,
+            amount: $transaction->price,
+            paymentMethod: NezasaPaymentMethodEnum::BankTransfer,
+            status: NezasaTransactionStatusEnum::Open
         );
     }
 
