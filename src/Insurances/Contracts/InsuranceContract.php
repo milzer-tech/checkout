@@ -7,9 +7,12 @@ namespace Nezasa\Checkout\Insurances\Contracts;
 use Nezasa\Checkout\Insurances\Dtos\BookInsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
 use Nezasa\Checkout\Insurances\Dtos\InsurancePaymentFieldDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
+use Nezasa\Checkout\Models\Transaction;
 
 interface InsuranceContract
 {
@@ -30,6 +33,20 @@ interface InsuranceContract
      * @return array<int, InsurancePaymentFieldDto>
      */
     public function getPaymentFields(): array;
+
+    /**
+     * Indicates if the selected insurance offer price is paid through the main payment gateway.
+     */
+    public function shouldAddOfferPriceToPayment(): bool;
+
+    /**
+     * Builds a separate Nezasa payment transaction when the offer price is not paid through the main payment gateway.
+     */
+    public function makeNezasaPaymentTransactionPayload(
+        Transaction $transaction,
+        InsuranceOfferDto $selectedOffer,
+        InsuranceBookOfferResult $result
+    ): ?CreatePaymentTransactionPayload;
 
     /**
      * Creates insurance offers.

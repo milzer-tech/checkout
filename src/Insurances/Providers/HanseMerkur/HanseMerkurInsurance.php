@@ -31,8 +31,10 @@ use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Responses\Entities\HanseMerkur
 use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurGenderEnum;
 use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurPaymentTypeEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
+use Nezasa\Checkout\Models\Transaction;
 
 final class HanseMerkurInsurance implements InsuranceContract
 {
@@ -49,6 +51,19 @@ final class HanseMerkurInsurance implements InsuranceContract
     public function getPaymentFields(): array
     {
         return [];
+    }
+
+    public function shouldAddOfferPriceToPayment(): bool
+    {
+        return true;
+    }
+
+    public function makeNezasaPaymentTransactionPayload(
+        Transaction $transaction,
+        InsuranceOfferDto $selectedOffer,
+        InsuranceBookOfferResult $result
+    ): ?CreatePaymentTransactionPayload {
+        return null;
     }
 
     /**
