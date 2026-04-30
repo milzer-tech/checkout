@@ -14,6 +14,7 @@ use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
+use Nezasa\Checkout\Insurances\Dtos\InsurancePaymentFieldDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceTerms;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoAddressDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoAvailablePlanDto;
@@ -69,6 +70,13 @@ final class ErgoInsurance implements InsuranceContract
     public static function getName(): string
     {
         return Config::string('checkout.insurance.ergo.name');
+    }
+
+    public function getPaymentFields(): array
+    {
+        return [
+            InsurancePaymentFieldDto::iban(),
+        ];
     }
 
     public function getOffers(CreateInsuranceOffersDto $createOffersDto): InsuranceOffersResult

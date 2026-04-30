@@ -15,6 +15,7 @@ use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
+use Nezasa\Checkout\Insurances\Dtos\InsurancePaymentFieldDto;
 use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
@@ -35,6 +36,16 @@ final readonly class InsuranceHandler
     {
         return $this->getActiveInsuranceAction->run() instanceof InsuranceContract
             || Config::boolean('checkout.insurance.vertical.active');
+    }
+
+    /**
+     * Get payment data fields required by the active insurance provider.
+     *
+     * @return array<int, InsurancePaymentFieldDto>
+     */
+    public function getPaymentFields(): array
+    {
+        return $this->getActiveInsuranceAction->run()?->getPaymentFields() ?? [];
     }
 
     /**

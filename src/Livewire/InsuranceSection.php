@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Intervention\Validation\Rules\Iban;
 use Livewire\Attributes\On;
@@ -10,7 +11,9 @@ use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Facades\AvailabilityFacade;
+use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
+use Nezasa\Checkout\Insurances\Dtos\InsurancePaymentFieldDto;
 use Nezasa\Checkout\Insurances\Handlers\InsuranceHandler;
 use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
@@ -43,11 +46,18 @@ class InsuranceSection extends BaseCheckoutComponent
     public bool $shouldInitVerticalWidget = false;
 
     /**
-     * IBAN for providers that require bank details (e.g. direct debit).
+     * Payment data requested by the active insurance provider.
+     *
+     * @var array<string, string|null>
      */
-    public ?string $insuranceIban = null;
+    public array $insurancePaymentData = [];
 
-    public bool $requiresInsuranceIban = false;
+    /**
+     * @var array<int, array<string, mixed>>
+     */
+    public array $insurancePaymentFields = [];
+
+    public bool $requiresInsurancePaymentData = false;
 
     /**
      * Initialize the component with the promo code from the prices DTO.
@@ -67,9 +77,11 @@ class InsuranceSection extends BaseCheckoutComponent
             $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
         }
 
-        // Do not restore IBAN after a full page load (refresh or revisit). Payment details are
-        // re-captured in-session; clear any persisted value so the input stays empty.
-        $this->insuranceIban = null;
+        // Do not restore payment details after a full page load (refresh or revisit).
+        // They are re-captured in-session; clear any persisted value so inputs stay empty.
+        $this->insurancePaymentData = [];
+        $this->insurancePaymentFields = [];
+        $this->requiresInsurancePaymentData = false;
         $checkoutArr = InsuranceCheckoutData::checkoutDataArray($this->model->data);
         $bucket = InsuranceCheckoutData::getNormalizedInsuranceBucket($checkoutArr);
         if ($bucket !== null) {
@@ -84,8 +96,9 @@ class InsuranceSection extends BaseCheckoutComponent
 
         if (is_null($offer)) {
             $this->selectedOfferId = null;
-            $this->requiresInsuranceIban = false;
-            $this->insuranceIban = null;
+            $this->requiresInsurancePaymentData = false;
+            $this->insurancePaymentFields = [];
+            $this->insurancePaymentData = [];
             $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate(null));
             $this->dispatch('insurance-declined');
 
@@ -93,15 +106,15 @@ class InsuranceSection extends BaseCheckoutComponent
         }
 
         $this->selectedOfferId = $id;
-        $checkoutArr = InsuranceCheckoutData::checkoutDataArray($this->model->data);
-        $bucket = InsuranceCheckoutData::getNormalizedInsuranceBucket($checkoutArr)
-            ?? InsuranceCheckoutData::emptyInsuranceBucket();
+        $bucket = $this->insuranceBucketWithCreateOfferContext();
         $bucket[InsuranceCheckoutData::OFFER] = $offer->toArray();
 
-        $this->requiresInsuranceIban = Config::boolean('checkout.insurance.ergo.active');
-        if (! $this->requiresInsuranceIban) {
-            $this->insuranceIban = null;
+        $this->loadInsurancePaymentFields();
+        if (! $this->requiresInsurancePaymentData) {
+            $this->insurancePaymentData = [];
             $bucket[InsuranceCheckoutData::PAYMENT] = null;
+        } else {
+            $this->insurancePaymentData = $this->paymentDataForFields($this->insurancePaymentData);
         }
 
         $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
@@ -109,30 +122,121 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->dispatch('insurance-selected', new InsuranceItem($id, $offer->title), $offer->price);
     }
 
-    public function updatedInsuranceIban(?string $value): void
+    public function updatedInsurancePaymentData(mixed $value, string $key): void
     {
-        $iban = $this->normalizeIban($value);
-        $this->insuranceIban = $iban;
+        $this->insurancePaymentData[$key] = $this->normalizePaymentFieldValue($key, $value);
+
+        $this->storeInsurancePaymentData();
+
+        $this->resetValidation("insurancePaymentData.$key");
+    }
+
+    /**
+     * @param  array<string, mixed>  $paymentData
+     * @return array<string, string|null>
+     */
+    private function paymentDataForFields(array $paymentData): array
+    {
+        $data = [];
+
+        foreach ($this->insurancePaymentFields as $field) {
+            $key = $field['key'] ?? null;
+            if (! is_string($key) || $key === '') {
+                continue;
+            }
+
+            $data[$key] = isset($paymentData[$key]) && is_string($paymentData[$key])
+                ? $paymentData[$key]
+                : null;
+        }
+
+        return $data;
+    }
+
+    private function loadInsurancePaymentFields(): void
+    {
+        $this->insurancePaymentFields = collect(resolve(InsuranceHandler::class)->getPaymentFields())
+            ->map(fn (InsurancePaymentFieldDto $field): array => $field->toArray())
+            ->values()
+            ->all();
+
+        $this->requiresInsurancePaymentData = collect($this->insurancePaymentFields)
+            ->contains(fn (array $field): bool => (bool) ($field['required'] ?? false));
+    }
+
+    private function storeInsurancePaymentData(): void
+    {
+        $payment = collect($this->paymentDataForFields($this->insurancePaymentData))
+            ->filter(fn (?string $value): bool => $value !== null && $value !== '')
+            ->all();
+
+        $bucket = $this->insuranceBucketWithCreateOfferContext();
+        $bucket[InsuranceCheckoutData::PAYMENT] = $payment === [] ? null : $payment;
+        $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function insuranceBucketWithCreateOfferContext(): array
+    {
+        $this->model->refresh();
 
         $checkoutArr = InsuranceCheckoutData::checkoutDataArray($this->model->data);
         $bucket = InsuranceCheckoutData::getNormalizedInsuranceBucket($checkoutArr)
             ?? InsuranceCheckoutData::emptyInsuranceBucket();
-        $bucket[InsuranceCheckoutData::PAYMENT] = $iban === null ? null : ['iban' => $iban];
-        $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
 
-        $this->resetValidation('insuranceIban');
+        if (! is_array($bucket[InsuranceCheckoutData::CREATE_OFFER] ?? null)) {
+            $bucket[InsuranceCheckoutData::CREATE_OFFER] = $this->createOfferContext()->toArray();
+        }
+
+        return $bucket;
     }
 
-    private function normalizeIban(?string $iban): ?string
+    private function createOfferContext(): CreateInsuranceOffersDto
     {
-        if ($iban === null) {
+        return new CreateInsuranceOffersDto(
+            startDate: $this->itinerary->startDate->toImmutable(),
+            endDate: $this->itinerary->endDate->toImmutable(),
+            totalPrice: $this->itinerary->price->showTotalPrice,
+            contact: $this->model->getContact(),
+            paxInfo: $this->model->getPaxInfo(),
+            destinationCountries: $this->itinerary->destinationCountries instanceof Collection
+                ? $this->itinerary->destinationCountries
+                : collect($this->itinerary->destinationCountries),
+        );
+    }
+
+    private function normalizePaymentFieldValue(string $key, mixed $value): ?string
+    {
+        if (! is_string($value)) {
             return null;
         }
 
-        $clean = strtoupper(preg_replace('/\s+/', '', $iban) ?? '');
-        $clean = preg_replace('/[^A-Z0-9]/', '', $clean) ?? '';
+        $field = $this->paymentField($key);
+        $type = is_array($field) ? (string) ($field['type'] ?? 'text') : 'text';
+
+        $clean = match ($type) {
+            'iban' => preg_replace('/[^A-Z0-9]/', '', strtoupper(preg_replace('/\s+/', '', $value) ?? '')) ?? '',
+            'card_number' => preg_replace('/\D+/', '', $value) ?? '',
+            default => trim($value),
+        };
 
         return $clean !== '' ? $clean : null;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function paymentField(string $key): ?array
+    {
+        foreach ($this->insurancePaymentFields as $field) {
+            if (($field['key'] ?? null) === $key) {
+                return $field;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -260,33 +364,50 @@ class InsuranceSection extends BaseCheckoutComponent
             return;
         }
 
-        if ($this->requiresInsuranceIban && $this->selectedOfferId !== null) {
-            $iban = $this->normalizeIban($this->insuranceIban);
-            $this->insuranceIban = $iban;
-
-            if ($iban === null || $iban === '') {
-                $this->addError('insuranceIban', trans('checkout::page.trip_details.insurance_iban_validation_required'));
-
+        if ($this->requiresInsurancePaymentData && $this->selectedOfferId !== null) {
+            if (! $this->validateInsurancePaymentData()) {
                 return;
             }
 
-            $ibanRule = new Iban;
-            if (! $ibanRule->isValid($iban)) {
-                $this->addError('insuranceIban', trans('checkout::page.trip_details.insurance_iban_validation_invalid'));
-
-                return;
-            }
-
-            $checkoutArr = InsuranceCheckoutData::checkoutDataArray($this->model->data);
-            $bucket = InsuranceCheckoutData::getNormalizedInsuranceBucket($checkoutArr)
-                ?? InsuranceCheckoutData::emptyInsuranceBucket();
-            $bucket[InsuranceCheckoutData::PAYMENT] = ['iban' => $iban];
-            $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
+            $this->storeInsurancePaymentData();
         }
 
         $this->markAsCompletedAdnCollapse(Section::Insurance);
 
         $this->dispatch(Section::Insurance->value);
+    }
+
+    private function validateInsurancePaymentData(): bool
+    {
+        foreach ($this->insurancePaymentFields as $field) {
+            $key = $field['key'] ?? null;
+            if (! is_string($key) || $key === '') {
+                continue;
+            }
+
+            $value = $this->normalizePaymentFieldValue($key, $this->insurancePaymentData[$key] ?? null);
+            $this->insurancePaymentData[$key] = $value;
+
+            if (($field['required'] ?? false) && ($value === null || $value === '')) {
+                $this->addError(
+                    "insurancePaymentData.$key",
+                    (string) ($field['requiredMessage'] ?? trans('checkout::page.trip_details.insurance_booking_missing_payment_details'))
+                );
+
+                return false;
+            }
+
+            if (($field['type'] ?? null) === 'iban' && $value !== null && ! (new Iban)->isValid($value)) {
+                $this->addError(
+                    "insurancePaymentData.$key",
+                    (string) ($field['invalidMessage'] ?? trans('checkout::page.trip_details.insurance_iban_validation_invalid'))
+                );
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -363,8 +484,9 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->insuranceProviderIsAvailable = null;
         $this->isLoadingOffers = false;
         $this->shouldInitVerticalWidget = false;
-        $this->insuranceIban = null;
-        $this->requiresInsuranceIban = false;
+        $this->insurancePaymentData = [];
+        $this->insurancePaymentFields = [];
+        $this->requiresInsurancePaymentData = false;
         $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate(null));
     }
 }

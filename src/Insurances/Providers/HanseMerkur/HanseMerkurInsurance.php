@@ -46,6 +46,11 @@ final class HanseMerkurInsurance implements InsuranceContract
         return 'Hanse Merkur';
     }
 
+    public function getPaymentFields(): array
+    {
+        return [];
+    }
+
     /**
      * {@inheritDoc}
      */

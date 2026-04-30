@@ -8,6 +8,7 @@ use Nezasa\Checkout\Insurances\Dtos\BookInsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
+use Nezasa\Checkout\Insurances\Dtos\InsurancePaymentFieldDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 
 interface InsuranceContract
@@ -22,6 +23,13 @@ interface InsuranceContract
      * We use this name to populate the Nezasa payload or display it in the checkout process.
      */
     public static function getName(): string;
+
+    /**
+     * Payment data fields required before booking this provider's insurance offer.
+     *
+     * @return array<int, InsurancePaymentFieldDto>
+     */
+    public function getPaymentFields(): array;
 
     /**
      * Creates insurance offers.

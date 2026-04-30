@@ -240,7 +240,7 @@ final class VerticalInsuranceListener
         $checkoutData = InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data);
         $price = Price::from(InsuranceCheckoutData::getOffer($checkoutData)['price']);
 
-        $response = resolve(CreateNezasaTransactionAction::class)->run(
+        resolve(CreateNezasaTransactionAction::class)->run(
             checkoutId: $this->transaction->checkout->checkout_id,
             payload: new CreatePaymentTransactionPayload(
                 externalRefId: $verticalPaymentIntentId,
