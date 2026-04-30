@@ -33,9 +33,12 @@ interface PaymentContract
     public function prepare(PaymentPrepareData $data): PaymentInit;
 
     /**
-     * Returns the payload required for creating a transaction in Nezasa.
+     * Returns the payload required for creating a transaction in Nezasa after the payment and booking is completed.
+     *
+     * - When the booking call fails, no transaction is created.
+     * - When the booking call is partially or fully successful, the transaction is created as closed. If the payment is by invoice, the status must be open.
      */
-    public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload;
+    public function makeNezasaTransactionPayload(Request $request, CaptureResult $captureResult): NezasaPayload;
 
     /**
      * Handles the callback from the payment gateway to authorize the payment.

@@ -18,6 +18,8 @@ use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\OrderPayloadEnt
 use Nezasa\Checkout\Integrations\Computop\Dtos\Payloads\Entities\UrlPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
+use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
 use Nezasa\Checkout\Payments\Dtos\AbortResult;
 use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
@@ -105,12 +107,16 @@ class ComputopGateway implements RedirectPaymentContract
     /**
      * Returns the payload required for creating a transaction in Nezasa.
      */
-    public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
+    public function makeNezasaTransactionPayload(Request $request, CaptureResult $captureResult): NezasaPayload
     {
+        /** @var Transaction $transaction */
+        $transaction = $request->route('transaction');
+
         return new NezasaPayload(
-            externalRefId: $paymentInit->persistentData['response']['paymentId'].'-'.$data->transaction->id,
-            amount: $data->price,
+            externalRefId: $request->query('PayID', 'unknown'),
+            amount: $transaction->price,
             paymentMethod: NezasaPaymentMethodEnum::Other,
+            status: NezasaTransactionStatusEnum::Closed,
             paymentMethodName: 'Computop'
         );
     }

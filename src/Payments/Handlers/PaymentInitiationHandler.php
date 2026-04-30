@@ -35,12 +35,12 @@ class PaymentInitiationHandler
 
         $this->checkIfServiceAvailable($init);
 
-        $nezasa = $this->createNezasaTransaction(
-            $model->checkout_id,
-            $gateway->makeNezasaTransactionPayload($prepareData, $init)
-        );
+        //        $nezasa = $this->createNezasaTransaction(
+        //            $model->checkout_id,
+        //            $gateway->makeNezasaTransactionPayload($prepareData, $init)
+        //        );
 
-        $this->updateTransaction($transaction, $init, $nezasa);
+        $this->updateTransaction($transaction, $init);
 
         if ($gateway instanceof WidgetPaymentContract) {
             return $gateway->getAssets(paymentInit: $init);
@@ -68,28 +68,24 @@ class PaymentInitiationHandler
 
     /**
      * Update the transaction record for the payment.
-     *
-     * @param  array<string, mixed>  $nezasaTransaction
      */
-    private function updateTransaction(Transaction $transaction, PaymentInit $init, array $nezasaTransaction): void
+    private function updateTransaction(Transaction $transaction, PaymentInit $init): void
     {
         $transaction->update([
             'prepare_data' => $init->persistentData,
             'status' => TransactionStatusEnum::Pending,
-            'nezasa_transaction' => $nezasaTransaction,
-            'nezasa_transaction_ref_id' => $nezasaTransaction['transaction']['transactionRefId'] ?? null,
         ]);
     }
 
-    /**
-     * Create a payment transaction in Nezasa.
-     *
-     * @return array<string, string|array<string, mixed>>
-     */
-    private function createNezasaTransaction(string $checkoutId, CreatePaymentTransactionPayload $payload): array
-    {
-        return (array) NezasaConnector::make()->paymentTransaction()->create($checkoutId, $payload)->array();
-    }
+    //    /**
+    //     * Create a payment transaction in Nezasa.
+    //     *
+    //     * @return array<string, string|array<string, mixed>>
+    //     */
+    //    private function createNezasaTransaction(string $checkoutId, CreatePaymentTransactionPayload $payload): array
+    //    {
+    //        return (array) NezasaConnector::make()->paymentTransaction()->create($checkoutId, $payload)->array();
+    //    }
 
     /**
      * Check if the payment service is available.

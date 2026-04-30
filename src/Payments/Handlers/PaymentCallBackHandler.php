@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 use Nezasa\Checkout\Actions\Checkout\BookItineraryAction;
 use Nezasa\Checkout\Actions\Checkout\FindBookingResultAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
-use Nezasa\Checkout\Actions\Payment\CloseNezasaTransactionAction;
-use Nezasa\Checkout\Actions\Payment\DeleteNezasaTransactionAction;
+use Nezasa\Checkout\Actions\Payment\CreateNezasaTransactionAction;
 use Nezasa\Checkout\Actions\Transaction\UpdateTransactionAction;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Transaction;
@@ -29,9 +28,8 @@ abstract readonly class PaymentCallBackHandler
     public function __construct(
         protected BookItineraryAction $bookItineraryAction,
         protected UpdateTransactionAction $updateTransactionAction,
-        protected CloseNezasaTransactionAction $closeNezasaTransactionAction,
-        protected DeleteNezasaTransactionAction $deleteNezasaTransactionAction,
         protected FindBookingResultAction $bookingResultAction,
+        protected CreateNezasaTransactionAction $createNezasaTransactionAction,
     ) {}
 
     /**
@@ -66,8 +64,6 @@ abstract readonly class PaymentCallBackHandler
                 ? TransactionStatusEnum::Aborted
                 : TransactionStatusEnum::AuthorizationFailed,
         ]);
-
-        $this->deleteNezasaTransactionAction->run($transaction);
     }
 
     /**
@@ -83,8 +79,6 @@ abstract readonly class PaymentCallBackHandler
                 ? TransactionStatusEnum::Captured
                 : TransactionStatusEnum::CaptureFailed,
         ]);
-
-        $this->closeNezasaTransactionAction->run($transaction);
 
         return $captureResult;
     }
@@ -148,8 +142,23 @@ abstract readonly class PaymentCallBackHandler
     {
         $this->updateTransactionAction->run($transaction->refresh(), [
             'result_data' => [
-                ...$transaction->result_data,
+                ...$transaction->refresh()->result_data,
                 'nezasa_booking_summary' => $bookingResponse->array('summary'),
+            ],
+        ]);
+    }
+
+    public function createTransactionOnNezasa(Transaction $transaction, PaymentContract $gateway, Request $request, CaptureResult $captureResult): void
+    {
+        $result = $this->createNezasaTransactionAction->run(
+            checkoutId: $transaction->checkout->checkout_id,
+            payload: $gateway->makeNezasaTransactionPayload($request, $captureResult)
+        );
+
+        $this->updateTransactionAction->run($transaction->refresh(), [
+            'result_data' => [
+                ...$transaction->refresh()->result_data,
+                'transaction_response' => $result,
             ],
         ]);
     }

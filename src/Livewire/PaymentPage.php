@@ -3,13 +3,13 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Uri;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Insurances\Handlers\InsuranceHandler;
 use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
@@ -88,7 +88,7 @@ class PaymentPage extends BaseCheckoutComponent
             ->decryptClassName();
 
         $offer = InsuranceCheckoutData::getOffer(InsuranceCheckoutData::checkoutDataArray($this->model->data));
-        if (data_get($offer, 'price') && ! Config::boolean('checkout.insurance.vertical.active')) {
+        if (data_get($offer, 'price') && resolve(InsuranceHandler::class)->shouldAddOfferPriceToPayment()) {
             $this->itinerary->price->showPaymentPrice->amount += Price::from($offer['price'])->amount;
         }
 

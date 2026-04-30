@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Actions\Insurance\GetActiveInsuranceAction;
+use Nezasa\Checkout\Actions\Payment\CreateNezasaTransactionAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Insurances\Contracts\InsuranceContract;
 use Nezasa\Checkout\Insurances\Dtos\BookInsuranceOfferDto;
@@ -15,16 +16,21 @@ use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
+use Nezasa\Checkout\Insurances\Dtos\InsurancePaymentFieldDto;
 use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 
 final readonly class InsuranceHandler
 {
-    public function __construct(private GetActiveInsuranceAction $getActiveInsuranceAction) {}
+    public function __construct(
+        private GetActiveInsuranceAction $getActiveInsuranceAction,
+        private CreateNezasaTransactionAction $createNezasaTransactionAction,
+    ) {}
 
     /**
      * Indicate if any insurance provider is active.
@@ -35,6 +41,28 @@ final readonly class InsuranceHandler
     {
         return $this->getActiveInsuranceAction->run() instanceof InsuranceContract
             || Config::boolean('checkout.insurance.vertical.active');
+    }
+
+    /**
+     * Get payment data fields required by the active insurance provider.
+     *
+     * @return array<int, InsurancePaymentFieldDto>
+     */
+    public function getPaymentFields(): array
+    {
+        return $this->getActiveInsuranceAction->run()?->getPaymentFields() ?? [];
+    }
+
+    /**
+     * Indicates if the active provider's selected offer price is paid through the main payment gateway.
+     */
+    public function shouldAddOfferPriceToPayment(): bool
+    {
+        if (Config::boolean('checkout.insurance.vertical.active')) {
+            return false;
+        }
+
+        return $this->getActiveInsuranceAction->run()?->shouldAddOfferPriceToPayment() ?? false;
     }
 
     /**
@@ -112,15 +140,16 @@ final readonly class InsuranceHandler
     public function recordInsuranceBooking(InsuranceBookOfferResult $result, Transaction $transaction, InsuranceOfferDto $selectedOffer): void
     {
         if ($result->isSuccessful) {
+            $insurance = $this->getActiveInsuranceAction->run();
             $nezasa = NezasaConnector::make()->checkout()->addCustomInsurance(
                 checkoutId: $transaction->checkout->checkout_id,
-                payload: $this->getActiveInsuranceAction->run()->getNezasaPayload(
+                payload: $insurance->getNezasaPayload(
                     payload: new AddCustomInsurancePayload(
                         name: $selectedOffer->title,
                         netPrice: $selectedOffer->price,
                         salesPrice: $selectedOffer->price,
                         bookingStatus: AvailabilityEnum::Booked,
-                        supplierName: $this->getActiveInsuranceAction->run()->getName(),
+                        supplierName: $insurance->getName(),
                         supplierConfirmationNumber: $result->confirmationId,
                     )
                 )
@@ -130,6 +159,22 @@ final readonly class InsuranceHandler
                 'nezasa_insurance_request' => (array) $nezasa->getPendingRequest()->body()->all(),
                 'nezasa_insurance_response' => $nezasa->array(),
             ]);
+
+            if (! $insurance->shouldAddOfferPriceToPayment()) {
+                $payload = $insurance->makeNezasaPaymentTransactionPayload($transaction, $selectedOffer, $result);
+
+                if ($payload instanceof CreatePaymentTransactionPayload) {
+                    $paymentTransaction = $this->createNezasaTransactionAction->run(
+                        checkoutId: $transaction->checkout->checkout_id,
+                        payload: $payload,
+                    );
+
+                    $transaction->pushToResultData([
+                        'nezasa_insurance_payment_request' => $payload->toArray(),
+                        'nezasa_insurance_payment_response' => $paymentTransaction,
+                    ]);
+                }
+            }
         }
     }
 }

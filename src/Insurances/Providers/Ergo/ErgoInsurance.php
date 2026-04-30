@@ -14,6 +14,7 @@ use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
+use Nezasa\Checkout\Insurances\Dtos\InsurancePaymentFieldDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceTerms;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoAddressDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoAvailablePlanDto;
@@ -52,9 +53,13 @@ use Nezasa\Checkout\Integrations\Ergo\Requests\ErgoCreatePreContractualInformati
 use Nezasa\Checkout\Integrations\Ergo\Requests\ErgoInsuranceBook;
 use Nezasa\Checkout\Integrations\Ergo\Requests\ErgoPlanSearch;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
+use Nezasa\Checkout\Models\Transaction;
 use Spatie\LaravelData\Data;
 
 final class ErgoInsurance implements InsuranceContract
@@ -69,6 +74,32 @@ final class ErgoInsurance implements InsuranceContract
     public static function getName(): string
     {
         return Config::string('checkout.insurance.ergo.name');
+    }
+
+    public function getPaymentFields(): array
+    {
+        return [
+            InsurancePaymentFieldDto::iban(),
+        ];
+    }
+
+    public function shouldAddOfferPriceToPayment(): bool
+    {
+        return false;
+    }
+
+    public function makeNezasaPaymentTransactionPayload(
+        Transaction $transaction,
+        InsuranceOfferDto $selectedOffer,
+        InsuranceBookOfferResult $result
+    ): CreatePaymentTransactionPayload {
+        return new CreatePaymentTransactionPayload(
+            externalRefId: $result->confirmationId ?? 'ergo-insurance-'.$transaction->id,
+            amount: $selectedOffer->price,
+            paymentMethod: NezasaPaymentMethodEnum::Other,
+            status: NezasaTransactionStatusEnum::Open,
+            paymentMethodName: $this->getPaymentFields()[0]->label,
+        );
     }
 
     public function getOffers(CreateInsuranceOffersDto $createOffersDto): InsuranceOffersResult

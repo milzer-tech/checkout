@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Listeners;
 
 use Illuminate\Support\Facades\Config;
+use Nezasa\Checkout\Actions\Payment\CreateNezasaTransactionAction;
 use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Integrations\Vertical\Connectors\VerticalInsuranceConnector;
 use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\PurchasePaymentMethodPayloadEntity;
 use Nezasa\Checkout\Integrations\Vertical\Dtos\Payloads\Entities\VerticalCustomerPayloadEntity;
@@ -53,8 +57,11 @@ final class VerticalInsuranceListener
 
         if ($this->purchaseInsurance($verticalPaymentIntentId)) {
             $this->saveInsuranceOnNezasa();
+
+            $this->createTransactionOnNezasa($verticalPaymentIntentId);
         } else {
-            $this->revertVerticalInsurancePayment($verticalPaymentIntentId);
+            // Vertical insurance will take care of it manually.
+            // $this->revertVerticalInsurancePayment($verticalPaymentIntentId);
         }
     }
 
@@ -196,85 +203,6 @@ final class VerticalInsuranceListener
         }
     }
 
-    /**
-     * Release or refund the vertical insurance PaymentIntent on the connected account
-     * when the Vertical purchase API call did not succeed.
-     */
-    private function revertVerticalInsurancePayment(string $verticalPaymentIntentId): void
-    {
-        $connectedAccountId = Config::string('checkout.insurance.vertical.connected_account_id');
-        $requestOptions = ['stripe_account' => $connectedAccountId];
-
-        $this->transaction->refresh();
-
-        try {
-            $intent = $this->stripe->paymentIntents->retrieve($verticalPaymentIntentId, null, $requestOptions);
-
-            if (in_array($intent->status, ['requires_capture', 'requires_confirmation', 'requires_payment_method', 'requires_action'], true)) {
-                $canceledIntent = $this->stripe->paymentIntents->cancel($verticalPaymentIntentId, null, $requestOptions);
-
-                $this->transaction->update([
-                    'result_data' => $this->transaction->result_data + [
-                        'vertical_insurance_revert' => [
-                            'isSuccessful' => $canceledIntent->status === 'canceled',
-                            'payment_intent' => $canceledIntent->toArray(),
-                        ],
-                    ],
-                ]);
-
-                return;
-            }
-
-            if ($intent->status === 'canceled') {
-                $this->transaction->update([
-                    'result_data' => $this->transaction->result_data + [
-                        'vertical_insurance_revert' => [
-                            'isSuccessful' => true,
-                            'payment_intent' => $intent->toArray(),
-                        ],
-                    ],
-                ]);
-
-                return;
-            }
-
-            if (in_array($intent->status, ['succeeded', 'processing'], true)) {
-                $refund = $this->stripe->refunds->create(
-                    ['payment_intent' => $verticalPaymentIntentId],
-                    $requestOptions,
-                );
-
-                $this->transaction->update([
-                    'result_data' => $this->transaction->result_data + [
-                        'vertical_insurance_revert' => [
-                            'isSuccessful' => in_array($refund->status, ['succeeded', 'pending'], true),
-                            'refund' => $refund->toArray(),
-                        ],
-                    ],
-                ]);
-
-                return;
-            }
-
-            $this->transaction->update([
-                'result_data' => $this->transaction->result_data + [
-                    'vertical_insurance_revert' => [
-                        'isSuccessful' => false,
-                        'payment_intent' => $intent->toArray(),
-                    ],
-                ],
-            ]);
-        } catch (\Throwable $e) {
-            $this->transaction->update([
-                'result_data' => $this->transaction->result_data + [
-                    'vertical_insurance_revert' => 'could not be reverted',
-                ],
-            ]);
-
-            report($e);
-        }
-    }
-
     private function saveInsuranceOnNezasa(): void
     {
         try {
@@ -305,5 +233,22 @@ final class VerticalInsuranceListener
 
             throw $e;
         }
+    }
+
+    public function createTransactionOnNezasa(string $verticalPaymentIntentId): void
+    {
+        $checkoutData = InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data);
+        $price = Price::from(InsuranceCheckoutData::getOffer($checkoutData)['price']);
+
+        resolve(CreateNezasaTransactionAction::class)->run(
+            checkoutId: $this->transaction->checkout->checkout_id,
+            payload: new CreatePaymentTransactionPayload(
+                externalRefId: $verticalPaymentIntentId,
+                amount: $price,
+                paymentMethod: NezasaPaymentMethodEnum::Other,
+                status: NezasaTransactionStatusEnum::Closed,
+                paymentMethodName: 'Stripe'
+            )
+        );
     }
 }

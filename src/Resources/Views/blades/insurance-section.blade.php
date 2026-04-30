@@ -259,31 +259,48 @@
                         </ul>
                     @endif
 
-                    @if($requiresInsuranceIban && $selectedOfferId === $offer->id)
+                    @if($requiresInsurancePaymentData && $selectedOfferId === $offer->id)
                         <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4" wire:click.stop>
+                            @php
+                                $firstPaymentField = $insurancePaymentFields[0] ?? [];
+                                $offerIndex = $loop->index;
+                            @endphp
+
                             <div class="text-sm font-medium text-gray-900">
-                                {{ trans('checkout::page.trip_details.insurance_iban_section_title') }}
+                                {{ $firstPaymentField['sectionTitle'] ?? trans('checkout::page.trip_details.insurance_iban_section_title') }}
                             </div>
                             <div class="mt-1 text-sm text-gray-600">
-                                {{ trans('checkout::page.trip_details.insurance_iban_section_intro') }}
+                                {{ $firstPaymentField['sectionIntro'] ?? trans('checkout::page.trip_details.insurance_iban_section_intro') }}
                             </div>
 
-                            <div class="mt-3">
-                                <label class="block text-sm font-medium text-gray-700" for="insurance-iban-{{ $loop->index }}">{{ trans('checkout::page.trip_details.insurance_iban_field_label') }}</label>
-                                <input
-                                    id="insurance-iban-{{ $loop->index }}"
-                                    type="text"
-                                    inputmode="text"
-                                    autocomplete="off"
-                                    placeholder="{{ trans('checkout::page.trip_details.insurance_iban_field_placeholder') }}"
-                                    class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                                    wire:model.live.debounce.400ms="insuranceIban"
-                                />
+                            @foreach($insurancePaymentFields as $paymentField)
+                                @php
+                                    $fieldKey = $paymentField['key'] ?? null;
+                                    $fieldType = $paymentField['type'] ?? 'text';
+                                    $inputType = $fieldType === 'card_cvc' ? 'password' : 'text';
+                                @endphp
 
-                                @error('insuranceIban')
-                                    <div class="mt-2 text-sm text-red-600">{{ $message }}</div>
-                                @enderror
-                            </div>
+                                @if(is_string($fieldKey) && $fieldKey !== '')
+                                    <div class="mt-3">
+                                        <label class="block text-sm font-medium text-gray-700" for="insurance-payment-{{ $fieldKey }}-{{ $offerIndex }}">
+                                            {{ $paymentField['label'] ?? $fieldKey }}
+                                        </label>
+                                        <input
+                                            id="insurance-payment-{{ $fieldKey }}-{{ $offerIndex }}"
+                                            type="{{ $inputType }}"
+                                            inputmode="{{ $paymentField['inputMode'] ?? 'text' }}"
+                                            autocomplete="{{ $paymentField['autocomplete'] ?? 'off' }}"
+                                            placeholder="{{ $paymentField['placeholder'] ?? '' }}"
+                                            class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                            wire:model.live.debounce.400ms="insurancePaymentData.{{ $fieldKey }}"
+                                        />
+
+                                        @error("insurancePaymentData.$fieldKey")
+                                            <div class="mt-2 text-sm text-red-600">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
                     @endif
                 </label>

@@ -21,9 +21,13 @@ readonly class RestPaymentCallBackHandler extends PaymentCallBackHandler
             return $this->getOutput($transaction);
         }
 
-        $this->handlePaymentAuthorization($gateway, $transaction)->isSuccessful
-            ? $this->handlePaymentCapture($gateway, $transaction)
-            : $this->deleteNezasaTransactionAction->run($transaction);
+        if ($this->handlePaymentAuthorization($gateway, $transaction)->isSuccessful) {
+            $result = $this->handlePaymentCapture($gateway, $transaction);
+
+            if ($result->isSuccessful) {
+                $this->createTransactionOnNezasa($transaction, $gateway, $request, $result);
+            }
+        }
 
         return $this->getOutput($transaction);
     }

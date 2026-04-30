@@ -77,6 +77,13 @@ it('implements InsuranceContract static helpers', function (): void {
     expect(HanseMerkurInsurance::isActive())->toBeFalse();
 });
 
+it('does not require additional payment data', function (): void {
+    $subject = new HanseMerkurInsurance;
+
+    expect($subject->getPaymentFields())->toBe([])
+        ->and($subject->shouldAddOfferPriceToPayment())->toBeTrue();
+});
+
 it('getNezasaPayload returns the same payload unchanged', function (): void {
     $payload = new AddCustomInsurancePayload(
         name: 'Test insurance',

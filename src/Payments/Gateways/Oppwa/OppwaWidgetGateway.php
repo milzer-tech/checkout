@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Integrations\Oppwa\Connectors\OppwaConnector;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaComplationPayload;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Payloads\OppwaPreparePayload;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Responses\OppwaPrepareResponse;
+use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Contracts\WidgetPaymentContract;
 use Nezasa\Checkout\Payments\Dtos\AbortResult;
 use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
@@ -81,16 +83,16 @@ class OppwaWidgetGateway implements WidgetPaymentContract
     /**
      * Returns the payload required for creating a transaction in Nezasa.
      */
-    public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload
+    public function makeNezasaTransactionPayload(Request $request, CaptureResult $captureResult): NezasaPayload
     {
-        if (! isset($paymentInit->persistentData['prepare']) || ! $paymentInit->persistentData['prepare'] instanceof OppwaPrepareResponse) {
-            throw new Exception('The persistent data is not correct');
-        }
+        /** @var Transaction $transaction */
+        $transaction = $request->route('transaction');
 
         return new NezasaPayload(
-            externalRefId: $paymentInit->persistentData['prepare']->id,
-            amount: $data->price,
+            externalRefId: $captureResult->persistentData['capture']['referencedId'],
+            amount: $transaction->price,
             paymentMethod: NezasaPaymentMethodEnum::Other,
+            status: NezasaTransactionStatusEnum::Closed,
             paymentMethodName: 'Oppwa'
         );
     }
