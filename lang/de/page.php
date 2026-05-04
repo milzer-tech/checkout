@@ -94,7 +94,4 @@ return [
         'print_booking_proposal' => 'Buchungsvorschlag drucken',
         'traveller_information' => 'Informationen zu den Reisenden',
     ],
-    'footer' => [
-        'copyright' => 'Urheberrecht 2025 :name. Alle Rechte vorbehalten',
-    ],
 ];

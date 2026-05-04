@@ -130,8 +130,4 @@ return [
         'services_that_could_not_be_booked' => 'Services that could not be booked',
 
     ],
-    'footer' => [
-        'copyright' => 'Copyright 2025 :name. All rights reserved',
-    ],
-
 ];
