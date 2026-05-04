@@ -194,9 +194,6 @@
 
 
     </div>
-    <div class="text-center mb-10 text-gray-500 dark:text-gray-400 max-w-full md:max-w-[66.66%]">
-        {{trans('checkout::page.footer.copyright', ['name' => 'Squad Ruby Tours'])}}
-    </div>
 
     {{-- Global toast (top-right) --}}
     <div
