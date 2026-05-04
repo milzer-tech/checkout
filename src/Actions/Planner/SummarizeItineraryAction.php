@@ -117,7 +117,7 @@ class SummarizeItineraryAction
             $this->result->stays->push(
                 new ItineraryStay(
                     id: $hotel->id,
-                    name: $hotel->location->name,
+                    name: $hotel->name,
                     checkIn: $hotel->startDate,
                     nights: $hotel->nights
                 )
