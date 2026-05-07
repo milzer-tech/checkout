@@ -6,9 +6,11 @@ namespace Nezasa\Checkout\Dtos\Planner\Entities;
 
 use Carbon\CarbonImmutable;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Dtos\Contracts\NezasaComponentDtoContract;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\ComponentEnum;
 
-class ItineraryTransfer extends BaseDto
+class ItineraryTransfer extends BaseDto implements NezasaComponentDtoContract
 {
     /**
      * Create a new instance of ItineraryTransfer
@@ -32,5 +34,21 @@ class ItineraryTransfer extends BaseDto
         return filled($this->name)
             ? $this->name
             : $this->startLocationName.' to '.$this->endLocationName;
+    }
+
+    /**
+     * Get the unique identifier for the component.
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get the type of the component.
+     */
+    public function getType(): ComponentEnum
+    {
+        return ComponentEnum::Accommodation;
     }
 }
