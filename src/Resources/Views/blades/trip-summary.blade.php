@@ -21,7 +21,7 @@
                             fill="currentColor"/>
                     </svg>
                     <span><a
-                            href="{{$this->nezasaPlannerUrl}}">{{trans('checkout::page.trip_details.view_full_itinerary')}}</a></span>
+                            href="{{getUrlToTripBuilder()}}">{{trans('checkout::page.trip_details.view_full_itinerary')}}</a></span>
                 </button>
             </div>
         </div>
@@ -129,9 +129,9 @@
                                 </div>
                             </div>
                             @if($stay->availability?->isNone())
-                                <a href="{{$this->nezasaPlannerUrl}}">
+                                <a href="{{getUrlToReplaceComponent($stay)}}">
                                     <button
-                                        class="mt-4 w-full border-[1.5px] border-blue-600 text-blue-600 font-medium text-lg py-3 rounded-md hover:bg-blue-50 transition-colors">
+                                        class="mt-4 mb-2 w-full border-[1.5px] border-blue-600 text-blue-600 font-medium text-lg py-3 rounded-md hover:bg-blue-50 transition-colors">
                                         {{trans('checkout::page.trip_details.change_hotel')}}
                                     </button>
                                 </a>
@@ -163,7 +163,7 @@
                                 </div>
                             </div>
                             @if($activity->availability?->isNone())
-                                <a href="{{$this->nezasaPlannerUrl}}">
+                                <a href="{{getUrlToReplaceComponent($activity)}}">
                                     <button
                                         class="mt-4 w-full border-[1.5px] border-blue-600 text-blue-600 font-medium text-lg py-3 rounded-md hover:bg-blue-50 transition-colors">
                                         {{trans('checkout::page.trip_details.change_activity')}}
@@ -195,7 +195,7 @@
                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
                                 </div>
                                 @if($flight->availability?->isNone())
-                                    <a href="{{$this->nezasaPlannerUrl}}">
+                                    <a href="{{getUrlToReplaceComponent($flight)}}">
                                         <button
                                             class="mt-4 w-full border-[1.5px] border-blue-600 text-blue-600 font-medium text-lg py-3 rounded-md hover:bg-blue-50 transition-colors">
                                             {{trans('checkout::page.trip_details.change_flight')}}
@@ -226,7 +226,7 @@
                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
                                 </div>
                                 @if($transfer->availability?->isNone())
-                                    <a href="{{$this->nezasaPlannerUrl}}">
+                                    <a href="{{getUrlToReplaceComponent($transfer)}}">
                                         <button
                                             class="mt-4 w-full border-[1.5px] border-blue-600 text-blue-600 font-medium text-lg py-3 rounded-md hover:bg-blue-50 transition-colors">
                                             {{trans('checkout::page.trip_details.change_transfer')}}
@@ -260,7 +260,7 @@
                                         - {{$rentalCar->endDateTime->format('D, j M')}}</div>
                                 </div>
                                 @if($rentalCar->availability?->isNone())
-                                    <a href="{{$this->nezasaPlannerUrl}}">
+                                    <a href="{{getUrlToReplaceComponent($rentalCar)}}">
                                         <button
                                             class="mt-4 w-full border-[1.5px] border-blue-600 text-blue-600 font-medium text-lg py-3 rounded-md hover:bg-blue-50 transition-colors">
                                             {{trans('checkout::page.trip_details.change_rental_car')}}
@@ -291,7 +291,7 @@
                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200"></div>
                                 </div>
                                 @if($item->availability?->isNone())
-                                    <a href="{{$this->nezasaPlannerUrl}}">
+                                    <a href="{{getUrlToReplaceComponent($item)}}">
                                         <button
                                             class="mt-4 w-full border-[1.5px] border-blue-600 text-blue-600 font-medium text-lg py-3 rounded-md hover:bg-blue-50 transition-colors">
                                             {{trans('checkout::page.trip_details.change_upsell_item')}}
