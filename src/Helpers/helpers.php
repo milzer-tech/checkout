@@ -26,7 +26,10 @@ if (! function_exists('getUrlToTripBuilder')) {
      */
     function getUrlToTripBuilder(): string
     {
-        $baseUrl = config('checkout.nezasa.base_url');
+        $baseUrl = request()->query('origin') === 'IBE'
+            ? config('checkout.nezasa.ibe_base_url')
+            : config('checkout.nezasa.base_url');
+
         $itineraryId = request()->query('itineraryId');
 
         return request()->query('goto') === 'smartplanner'
