@@ -9,6 +9,7 @@ use Livewire\Component;
 use Nezasa\Checkout\Actions\Checkout\VerifyAvailabilityAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
+use Nezasa\Checkout\Dtos\Contracts\NezasaComponentDtoContract;
 use Nezasa\Checkout\Dtos\Planner\Entities\InsuranceItem;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
@@ -158,5 +159,17 @@ class TripSummary extends BaseCheckoutComponent
         if ($this->model->rest_payment) {
             $this->showPriceBreakdown = true;
         }
+    }
+
+    /**
+     * Get the URL to replace the component with.
+     */
+    public function getUrlToReplaceComponent(NezasaComponentDtoContract $componentDto): string
+    {
+        $type = $componentDto->getType()->isTransport() ? 'flight' : $componentDto->getType()->toLower();
+
+        return $this->goTo === 'smartplanner'
+            ? $this->getUrlToTripBuilder().'&openDrawer='.$type.'&componentId='.$componentDto->getId()
+            : $this->getUrlToTripBuilder();
     }
 }

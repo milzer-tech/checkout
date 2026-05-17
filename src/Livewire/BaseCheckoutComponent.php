@@ -48,6 +48,12 @@ class BaseCheckoutComponent extends Component
     public bool $restPayment = false;
 
     /**
+     * Select the section to go to.
+     */
+    #[Url(as: 'goto')]
+    public ?string $goTo = null;
+
+    /**
      * The unique identifier for the checkout process.
      */
     public Checkout $model;
@@ -276,5 +282,20 @@ class BaseCheckoutComponent extends Component
     public function nezasaPlannerUrl(): string
     {
         return config('checkout.nezasa.base_url').'/itineraries/'.$this->itineraryId;
+    }
+
+    /**
+     * Get the url to trip builder.
+     */
+    #[Computed]
+    public function getUrlToTripBuilder(): string
+    {
+        $baseUrl = $this->origin === 'IBE'
+            ? config('checkout.nezasa.ibe_base_url')
+            : config('checkout.nezasa.base_url');
+
+        return $this->goTo === 'smartplanner'
+            ? $baseUrl.'/itinerary-apps/smartplanner/'.$this->itineraryId.'?goto=smartplanner'
+            : $baseUrl.'/itineraries/'.$this->itineraryId;
     }
 }
