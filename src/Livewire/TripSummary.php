@@ -107,12 +107,22 @@ class TripSummary extends BaseCheckoutComponent
      * @param  array<string, float|string>  $price
      */
     #[On('insurance-selected')]
-    public function addInsurance(array $item, array $price): void
+    public function addInsurance(array $item, array $price, bool $shouldAddPriceToItinerary = true): void
     {
         $this->itinerary->insurances = new Collection([InsuranceItem::from($item)]);
 
-        $this->itinerary->price->showTotalPrice->amount = $this->itinerary->price->discountedPackagePrice->amount + intval($price['amount']);
-        $this->itinerary->price->showPaymentPrice->amount = $this->itinerary->price->downPayment->amount + intval($price['amount']);
+        $insurancePrice = $shouldAddPriceToItinerary ? Price::from($price)->amount : 0.0;
+        $totalPrice = $this->itinerary->price->discountedPackagePrice;
+        $paymentPrice = $this->itinerary->price->downPayment;
+
+        $this->itinerary->price->showTotalPrice = new Price(
+            amount: $totalPrice->amount + $insurancePrice,
+            currency: $totalPrice->currency,
+        );
+        $this->itinerary->price->showPaymentPrice = new Price(
+            amount: $paymentPrice->amount + $insurancePrice,
+            currency: $paymentPrice->currency,
+        );
 
         resolve(VerifyAvailabilityAction::class)->run($this->getParams(), $this->itinerary);
 
@@ -127,8 +137,17 @@ class TripSummary extends BaseCheckoutComponent
     {
         $this->itinerary->insurances = new Collection;
 
-        $this->itinerary->price->showTotalPrice = $this->itinerary->price->discountedPackagePrice;
-        $this->itinerary->price->showPaymentPrice = $this->itinerary->price->downPayment;
+        $totalPrice = $this->itinerary->price->discountedPackagePrice;
+        $paymentPrice = $this->itinerary->price->downPayment;
+
+        $this->itinerary->price->showTotalPrice = new Price(
+            amount: $totalPrice->amount,
+            currency: $totalPrice->currency,
+        );
+        $this->itinerary->price->showPaymentPrice = new Price(
+            amount: $paymentPrice->amount,
+            currency: $paymentPrice->currency,
+        );
 
         resolve(VerifyAvailabilityAction::class)->run($this->getParams(), $this->itinerary);
 

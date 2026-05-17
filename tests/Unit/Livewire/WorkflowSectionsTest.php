@@ -202,8 +202,8 @@ it('keeps trip summary pricing and insurance in sync when insurance is selected 
     );
 
     expect($component->itinerary->insurances)->toHaveCount(1)
-        ->and($component->itinerary->price->showTotalPrice->amount)->toBe(1015.0)
-        ->and($component->itinerary->price->showPaymentPrice->amount)->toBe(265.0)
+        ->and($component->itinerary->price->showTotalPrice->amount)->toBe(1015.5)
+        ->and($component->itinerary->price->showPaymentPrice->amount)->toBe(265.5)
         ->and($calls->count)->toBe(1);
 
     $component->removeInsurance();
@@ -212,6 +212,37 @@ it('keeps trip summary pricing and insurance in sync when insurance is selected 
         ->and($component->itinerary->price->showTotalPrice->amount)->toBe(1000.0)
         ->and($component->itinerary->price->showPaymentPrice->amount)->toBe(250.0)
         ->and($calls->count)->toBe(2);
+});
+
+it('keeps externally paid insurance selected without adding it to trip summary pricing', function (): void {
+    $calls = (object) ['count' => 0];
+    app()->bind(VerifyAvailabilityAction::class, fn (): VerifyAvailabilityAction => new class($calls) extends VerifyAvailabilityAction
+    {
+        public function __construct(private readonly object $calls) {}
+
+        public function run(CheckoutParamsDto $params, ItinerarySummary $itinerary): bool
+        {
+            $this->calls->count++;
+
+            return true;
+        }
+    });
+
+    $checkout = livewireWorkflowCheckout();
+    $component = new TripSummary;
+    primeBaseCheckoutComponent($component, $checkout);
+    $component->itinerary = livewireWorkflowItinerary(livewireWorkflowPrice(total: 1000.0, downPayment: 250.0));
+
+    $component->addInsurance(
+        ['id' => 'ergo-insurance-1', 'name' => 'ERGO Insurance', 'availability' => null],
+        ['amount' => 15.5, 'currency' => 'EUR'],
+        false
+    );
+
+    expect($component->itinerary->insurances)->toHaveCount(1)
+        ->and($component->itinerary->price->showTotalPrice->amount)->toBe(1000.0)
+        ->and($component->itinerary->price->showPaymentPrice->amount)->toBe(250.0)
+        ->and($calls->count)->toBe(1);
 });
 
 it('shows trip price breakdown for external charges, down payments, and rest payments', function (): void {
