@@ -32,6 +32,8 @@ class TripSummary extends BaseCheckoutComponent
      */
     public bool $hasDestinationCost = false;
 
+    public ?string $separateInsurancePaymentNotice = null;
+
     public function mount(): void
     {
         $this->determineHasExternalCharges();
@@ -107,9 +109,14 @@ class TripSummary extends BaseCheckoutComponent
      * @param  array<string, float|string>  $price
      */
     #[On('insurance-selected')]
-    public function addInsurance(array $item, array $price, bool $shouldAddPriceToItinerary = true): void
-    {
+    public function addInsurance(
+        array $item,
+        array $price,
+        bool $shouldAddPriceToItinerary = true,
+        ?string $separatePaymentNotice = null
+    ): void {
         $this->itinerary->insurances = new Collection([InsuranceItem::from($item)]);
+        $this->separateInsurancePaymentNotice = $separatePaymentNotice;
 
         $insurancePrice = $shouldAddPriceToItinerary ? Price::from($price)->amount : 0.0;
         $totalPrice = $this->itinerary->price->discountedPackagePrice;
@@ -136,6 +143,7 @@ class TripSummary extends BaseCheckoutComponent
     public function removeInsurance(): void
     {
         $this->itinerary->insurances = new Collection;
+        $this->separateInsurancePaymentNotice = null;
 
         $totalPrice = $this->itinerary->price->discountedPackagePrice;
         $paymentPrice = $this->itinerary->price->downPayment;

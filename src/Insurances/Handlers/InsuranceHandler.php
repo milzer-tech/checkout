@@ -86,6 +86,18 @@ final readonly class InsuranceHandler
     }
 
     /**
+     * Get the provider-owned notice for a selected offer paid outside the main checkout payment.
+     */
+    public function separatePaymentNoticeForSelectedOffer(InsuranceOfferDto $selectedOffer): ?string
+    {
+        if (Config::boolean('checkout.insurance.vertical.active') || $this->shouldAddOfferPriceToPayment()) {
+            return null;
+        }
+
+        return $this->getActiveInsuranceAction->run()?->getSeparatePaymentNotice($selectedOffer);
+    }
+
+    /**
      * Create insurance offers.
      */
     public function createOffers(Checkout $model, ItinerarySummary $itinerary): InsuranceOffersResult

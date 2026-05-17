@@ -54,6 +54,7 @@ return [
         'price_breakdown' => 'Détail des prix',
         'paid_before_departure' => 'Payé avant le départ',
         'paid_in_destination' => 'Payé sur place',
+        'ergo_insurance_separate_payment_notice' => 'L’assurance de :price est payée séparément par prélèvement SEPA.',
         'required' => 'Requis',
         'you_will_pay_down_payment' => 'Vous payez :percentage du montant total maintenant.',
         'insurance_not_available' => 'L’assureur n’est pas disponible ou n’a aucune offre.',

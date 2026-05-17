@@ -88,6 +88,13 @@ final class ErgoInsurance implements InsuranceContract
         return false;
     }
 
+    public function getSeparatePaymentNotice(InsuranceOfferDto $selectedOffer): string
+    {
+        return trans('checkout::page.trip_details.ergo_insurance_separate_payment_notice', [
+            'price' => $selectedOffer->price->getPaymentAmount().' '.strtoupper($selectedOffer->price->currency),
+        ]);
+    }
+
     public function makeNezasaPaymentTransactionPayload(
         Transaction $transaction,
         InsuranceOfferDto $selectedOffer,

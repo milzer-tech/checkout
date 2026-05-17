@@ -54,6 +54,7 @@ return [
         'price_breakdown' => 'Desglose de precios',
         'paid_before_departure' => 'Pagado antes de la salida',
         'paid_in_destination' => 'Pagado en destino',
+        'ergo_insurance_separate_payment_notice' => 'El seguro de :price se paga por separado mediante adeudo directo SEPA.',
         'required' => 'Requerido',
         'you_will_pay_down_payment' => 'Pagará ahora el :percentage del importe total.',
         'insurance_not_available' => 'El proveedor de seguros no está disponible o no tiene ofertas.',

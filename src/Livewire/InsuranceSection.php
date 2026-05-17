@@ -119,11 +119,14 @@ class InsuranceSection extends BaseCheckoutComponent
 
         $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
 
+        $insuranceHandler = resolve(InsuranceHandler::class);
+
         $this->dispatch(
             'insurance-selected',
             new InsuranceItem($id, $offer->title),
             $offer->price,
-            resolve(InsuranceHandler::class)->shouldAddOfferPriceToPayment()
+            $insuranceHandler->shouldAddOfferPriceToPayment(),
+            $insuranceHandler->separatePaymentNoticeForSelectedOffer($offer)
         );
     }
 

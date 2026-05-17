@@ -58,6 +58,11 @@ final class HanseMerkurInsurance implements InsuranceContract
         return true;
     }
 
+    public function getSeparatePaymentNotice(InsuranceOfferDto $selectedOffer): ?string
+    {
+        return null;
+    }
+
     public function makeNezasaPaymentTransactionPayload(
         Transaction $transaction,
         InsuranceOfferDto $selectedOffer,

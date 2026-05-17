@@ -236,12 +236,14 @@ it('keeps externally paid insurance selected without adding it to trip summary p
     $component->addInsurance(
         ['id' => 'ergo-insurance-1', 'name' => 'ERGO Insurance', 'availability' => null],
         ['amount' => 15.5, 'currency' => 'EUR'],
-        false
+        false,
+        'The insurance for 15.50 EUR is paid separately by SEPA direct debit.'
     );
 
     expect($component->itinerary->insurances)->toHaveCount(1)
         ->and($component->itinerary->price->showTotalPrice->amount)->toBe(1000.0)
         ->and($component->itinerary->price->showPaymentPrice->amount)->toBe(250.0)
+        ->and($component->separateInsurancePaymentNotice)->toBe('The insurance for 15.50 EUR is paid separately by SEPA direct debit.')
         ->and($calls->count)->toBe(1);
 });
 

@@ -56,6 +56,7 @@ return [
         'price_breakdown' => 'Price breakdown',
         'paid_before_departure' => 'Paid before departure',
         'paid_in_destination' => 'Paid in destination',
+        'ergo_insurance_separate_payment_notice' => 'The insurance for :price is paid separately by SEPA direct debit.',
         'required' => 'Required',
         'change_hotel' => 'Change hotel',
         'change_activity' => 'Change activity',

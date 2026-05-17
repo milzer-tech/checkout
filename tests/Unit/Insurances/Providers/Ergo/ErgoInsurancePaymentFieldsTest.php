@@ -34,6 +34,7 @@ it('keeps ERGO price outside the main payment and creates an open direct debit p
     $payload = $subject->makeNezasaPaymentTransactionPayload($transaction, $offer, $result);
 
     expect($subject->shouldAddOfferPriceToPayment())->toBeFalse()
+        ->and($subject->getSeparatePaymentNotice($offer))->toBe('The insurance for 25.00 EUR is paid separately by SEPA direct debit.')
         ->and($payload->externalRefId)->toBe('POL-123')
         ->and($payload->amount)->toBe($offer->price)
         ->and($payload->paymentMethod)->toBe(NezasaPaymentMethodEnum::Other)

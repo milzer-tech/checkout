@@ -398,6 +398,12 @@
             </svg>
         </div>
 
+        @if($separateInsurancePaymentNotice)
+            <p class="mt-3 text-sm leading-6 text-gray-600 md:whitespace-nowrap dark:text-blue-200">
+                {{ $separateInsurancePaymentNotice }}
+            </p>
+        @endif
+
         {{-- Price breakdown (collapsible) --}}
         @if($showPriceBreakdown && !$model->rest_payment)
             <div class="mt-4 space-y-2 text-sm">

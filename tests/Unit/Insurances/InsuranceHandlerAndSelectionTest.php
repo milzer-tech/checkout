@@ -60,6 +60,11 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
         return true;
     }
 
+    public function getSeparatePaymentNotice(InsuranceOfferDto $selectedOffer): ?string
+    {
+        return null;
+    }
+
     public function makeNezasaPaymentTransactionPayload(
         Transaction $transaction,
         InsuranceOfferDto $selectedOffer,
@@ -237,6 +242,12 @@ it('adds selected insurance to payment price only when the provider collects it 
 
     expect($handler->paymentPriceWithSelectedOffer(new Price(250.0, 'EUR'), $checkout->data)->amount)
         ->toBe(250.0);
+
+    $offer = InsuranceOfferDto::from(
+        InsuranceCheckoutData::getOffer(InsuranceCheckoutData::checkoutDataArray($checkout->data))
+    );
+    expect($handler->separatePaymentNoticeForSelectedOffer($offer))
+        ->toBe('The insurance for 12.34 EUR is paid separately by SEPA direct debit.');
 });
 
 it('books the selected provider offer using stored offer, create-offer context, meta, and payment data', function (): void {

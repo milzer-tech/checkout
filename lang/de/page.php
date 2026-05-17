@@ -54,6 +54,7 @@ return [
         'price_breakdown' => 'Preisaufschlüsselung',
         'paid_before_departure' => 'Vor der Abreise bezahlt',
         'paid_in_destination' => 'Am Reiseziel bezahlt',
+        'ergo_insurance_separate_payment_notice' => 'Die Versicherung über :price wird separat per SEPA-Lastschrift bezahlt.',
         'required' => 'Erforderlich',
         'you_will_pay_down_payment' => 'Sie zahlen jetzt :percentage des Gesamtbetrags.',
         'insurance_not_available' => 'Der Versicherungsanbieter ist nicht verfügbar oder hat keine Angebote.',
