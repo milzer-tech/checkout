@@ -215,6 +215,30 @@ it('creates provider offers and stores provider meta plus create-offer context o
         ->and((float) data_get(InsuranceCheckoutData::getCreateOffer($data), 'totalPrice.amount'))->toBe(1000.0);
 });
 
+it('adds selected insurance to payment price only when the provider collects it through checkout payment', function (): void {
+    $bucket = InsuranceCheckoutData::emptyInsuranceBucket();
+    $bucket[InsuranceCheckoutData::OFFER] = [
+        'id' => 'stub-offer',
+        'title' => 'Stub offer',
+        'price' => ['amount' => 12.34, 'currency' => 'EUR'],
+        'coverage' => [],
+    ];
+    $checkout = insuranceHandlerCheckout(
+        InsuranceCheckoutData::prepareInsuranceUpdate($bucket)['insurance']
+    );
+
+    $handler = resolve(InsuranceHandler::class);
+
+    expect($handler->paymentPriceWithSelectedOffer(new Price(250.0, 'EUR'), $checkout->data)->amount)
+        ->toBe(262.34);
+
+    Config::set('checkout.insurance_provider', [ErgoInsurance::class]);
+    Config::set('checkout.insurance.ergo.active', true);
+
+    expect($handler->paymentPriceWithSelectedOffer(new Price(250.0, 'EUR'), $checkout->data)->amount)
+        ->toBe(250.0);
+});
+
 it('books the selected provider offer using stored offer, create-offer context, meta, and payment data', function (): void {
     $createOffer = new CreateInsuranceOffersDto(
         startDate: CarbonImmutable::parse('2025-09-01'),

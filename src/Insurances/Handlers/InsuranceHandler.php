@@ -21,6 +21,7 @@ use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
@@ -63,6 +64,25 @@ final readonly class InsuranceHandler
         }
 
         return $this->getActiveInsuranceAction->run()?->shouldAddOfferPriceToPayment() ?? false;
+    }
+
+    /**
+     * Add the selected insurance offer price to a payment amount only when the active provider
+     * collects the offer through the main checkout payment.
+     *
+     * @param  Collection<string, mixed>|array<string, mixed>  $checkoutData
+     */
+    public function paymentPriceWithSelectedOffer(Price $paymentPrice, Collection|array $checkoutData): Price
+    {
+        $offer = InsuranceCheckoutData::getOffer(InsuranceCheckoutData::checkoutDataArray($checkoutData));
+        if (! data_get($offer, 'price') || ! $this->shouldAddOfferPriceToPayment()) {
+            return new Price($paymentPrice->amount, $paymentPrice->currency);
+        }
+
+        return new Price(
+            amount: $paymentPrice->amount + Price::from($offer['price'])->amount,
+            currency: $paymentPrice->currency,
+        );
     }
 
     /**

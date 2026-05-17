@@ -96,7 +96,7 @@ class PaymentResultPage extends BaseCheckoutComponent
         $this->itinerary->upsellItems->map($callback);
         $this->itinerary->insurances->map($callback);
 
-        $this->paid = $this->itinerary->price->downPayment;
+        $this->paid = $this->transaction->price;
     }
 
     protected function processInsuranceData(): void
