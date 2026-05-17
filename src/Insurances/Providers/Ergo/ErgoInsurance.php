@@ -97,7 +97,7 @@ final class ErgoInsurance implements InsuranceContract
             externalRefId: $result->confirmationId ?? 'ergo-insurance-'.$transaction->id,
             amount: $selectedOffer->price,
             paymentMethod: NezasaPaymentMethodEnum::Other,
-            status: NezasaTransactionStatusEnum::Open,
+            status: NezasaTransactionStatusEnum::Closed,
             paymentMethodName: $this->getPaymentFields()[0]->label,
         );
     }

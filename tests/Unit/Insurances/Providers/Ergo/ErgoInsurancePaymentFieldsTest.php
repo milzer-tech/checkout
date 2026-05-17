@@ -37,5 +37,5 @@ it('keeps ERGO price outside the main payment and creates an open direct debit p
         ->and($payload->externalRefId)->toBe('POL-123')
         ->and($payload->amount)->toBe($offer->price)
         ->and($payload->paymentMethod)->toBe(NezasaPaymentMethodEnum::Other)
-        ->and($payload->status)->toBe(NezasaTransactionStatusEnum::Open);
+        ->and($payload->status)->toBe(NezasaTransactionStatusEnum::Closed);
 });
