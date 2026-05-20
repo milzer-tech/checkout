@@ -295,7 +295,7 @@ class BaseCheckoutComponent extends Component
             : config('checkout.nezasa.base_url');
 
         return $this->goTo === 'smartplanner'
-            ? $baseUrl.'/itinerary-apps/smartplanner/'.$this->itineraryId.'?goto=smartplanner'
+            ? $baseUrl.'?nz-url='.urlencode("/itinerary-apps/smartplanner/{$this->itineraryId}?nz-lang={$this->lang}")
             : $baseUrl.'/itineraries/'.$this->itineraryId;
     }
 }

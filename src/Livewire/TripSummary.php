@@ -195,8 +195,12 @@ class TripSummary extends BaseCheckoutComponent
     {
         $type = $componentDto->getType()->isTransport() ? 'flight' : $componentDto->getType()->toLower();
 
+        $baseUrl = $this->origin === 'IBE'
+            ? config('checkout.nezasa.ibe_base_url')
+            : config('checkout.nezasa.base_url');
+
         return $this->goTo === 'smartplanner'
-            ? $this->getUrlToTripBuilder().'&openDrawer='.$type.'&componentId='.$componentDto->getId()
-            : $this->getUrlToTripBuilder();
+            ? $baseUrl.'?nz-url='.urlencode("/itinerary-apps/smartplanner/$this->itineraryId?nz-lang=$this->lang&openDrawer=$type&componentId=".$componentDto->getId())
+            : $baseUrl.'/itineraries/'.$this->itineraryId;
     }
 }
