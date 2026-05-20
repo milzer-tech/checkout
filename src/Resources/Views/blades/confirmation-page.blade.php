@@ -63,17 +63,24 @@
                                     fill="currentColor"/>
                             </svg>
                             <span>@php
-                                    $str = str($itinerary->adults)
+                                    $adults = (int) $itinerary->adults;
+                                    $children = (int) $itinerary->children;
+
+                                    $str = str($adults)
                                     ->append(' ')
-                                    ->append(str('Adult')->plural($itinerary->adults));
+                                    ->append(trans_choice('checkout::page.trip_details.traveller_adult', $adults));
 
                                     if($itinerary->childrenAges->isNotEmpty()){
-                                       $str = $str->append(', ' . $itinerary->children. ' ')
-                                       ->append(str('Child')->plural($itinerary->children))
+                                       $str = $str->append(', ' . $children. ' ')
+                                       ->append(trans_choice('checkout::page.trip_details.traveller_child', $children))
                                        ->append(' (')
                                        ->append(
-                                            $itinerary->childrenAges->map(function ( $age) {
-                                                return  $age . ' ' . str('year')->plural($age) . ' old';
+                                            $itinerary->childrenAges->map(function ($age) {
+                                                $age = (int) $age;
+
+                                                return $age === 0
+                                                    ? trans('checkout::page.trip_details.infant')
+                                                    : trans_choice('checkout::page.trip_details.child_age_years_old', $age, ['age' => $age]);
                                             })->implode(', ')
                                         )
                                         ->append(')');
