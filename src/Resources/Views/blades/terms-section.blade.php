@@ -6,7 +6,7 @@
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
-    class="{{$termsAndConditions->sections->isEmpty() ? 'hidden' : ''}}"
+    class="{{($termsAndConditions->sections->isEmpty() && $insuranceTerms === null) ? 'hidden' : ''}}"
     onEdit="reopen('{{Section::TermsAndConditions->value}}')"
 >
 

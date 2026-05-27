@@ -149,7 +149,7 @@ it('builds terms validation rules from itinerary and selected insurance terms', 
                 'coverage' => [],
                 'terms' => [
                     'checkboxText' => 'I accept insurance terms',
-                    'conditions' => ['<a href="https://example.test">Terms</a>'],
+                    'conditions' => [],
                 ],
             ],
         ],

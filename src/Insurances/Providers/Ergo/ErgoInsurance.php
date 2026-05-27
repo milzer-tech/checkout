@@ -24,7 +24,6 @@ use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoCoveredTravelerDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoCoveredTravelersDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoCurrencyAmountGroupDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoCustomerNameTypeDto;
-use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoDescriptionURLDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoDestinationTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoEmailsTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoErrorsTypeDto;
@@ -159,7 +158,7 @@ final class ErgoInsurance implements InsuranceContract
                 price: $price,
                 coverage: $this->coverageTitles($plan->Quote),
                 providerMeta: [self::PROVIDER_META_KEY => $plan->toArray()],
-                terms: $this->termsForPlan($plan),
+                terms: $this->termsForPlan(),
             );
         }
 
@@ -568,39 +567,12 @@ final class ErgoInsurance implements InsuranceContract
         })->filter()->values()->all();
     }
 
-    private function termsForPlan(ErgoAvailablePlanDto $plan): InsuranceTerms
+    private function termsForPlan(): InsuranceTerms
     {
-        $links = [];
-
-        foreach ($plan->PlanDetail->DescriptionURL as $url) {
-            $href = match (true) {
-                $url instanceof ErgoDescriptionURLDto => $url->href(),
-                is_string($url) => $url,
-                default => (string) $url,
-            };
-            if ($href === '' || $this->isExcludedInsuranceTermsDocumentUrl($href)) {
-                continue;
-            }
-            $safe = htmlspecialchars($href, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $links[] = '<a target="_blank" rel="noopener" href="'.$safe.'">'.$safe.'</a>';
-        }
-
         return new InsuranceTerms(
-            checkboxText: 'Ich habe die Produktinformationen und Vorschlagsinformationen zur Kenntnis genommen.',
-            conditions: $links,
+            checkboxText: 'Ich habe das Produktinformationsblatt sowie die wichtigen Informationen und Versicherungsbedingungen der ERV gelesen und zur Kenntnis genommen. Ich stimme der Zahlung per Lastschrift zu. Im Fall einer Jahres Versicherung akzeptiere ich die automatische Verlängerung des Vertrages, sofern dieser nicht spätestens einen Monat vor Ablauf von mir gekündigt wird.',
+            conditions: [],
         );
-    }
-
-    /**
-     * ERGO document portal links (e.g. doc2.ergo-reiseversicherung.de) require authentication
-     * and must not be shown as public terms links in checkout.
-     */
-    private function isExcludedInsuranceTermsDocumentUrl(string $href): bool
-    {
-        $host = parse_url($href, PHP_URL_HOST);
-
-        return is_string($host)
-            && strcasecmp($host, 'doc2.ergo-reiseversicherung.de') === 0;
     }
 
     private function offerId(ErgoAvailablePlanDto $plan): string

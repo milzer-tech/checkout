@@ -100,8 +100,10 @@ class TermsSection extends BaseCheckoutComponent
      */
     public function next(): void
     {
-        if ($this->termsAndConditions->sections->isNotEmpty()) {
-            $this->validate($this->rules());
+        $rules = $this->rules();
+
+        if ($rules !== []) {
+            $this->validate($rules);
         }
 
         $this->markAsCompletedAdnCollapse(Section::TermsAndConditions);
@@ -117,15 +119,22 @@ class TermsSection extends BaseCheckoutComponent
     {
         $this->insuranceTerms = null;
         $offer = InsuranceCheckoutData::getOffer(InsuranceCheckoutData::checkoutDataArray($this->model->data));
-        $insuranceTerms = $offer && data_get($offer, 'terms.conditions.0', false);
+        $insuranceTerms = $offer ? InsuranceOfferDto::from($offer)->terms : null;
 
-        if ($insuranceTerms) {
-            $this->insuranceTerms = InsuranceOfferDto::from($offer)->terms;
+        if ($insuranceTerms !== null && $this->hasInsuranceTermsContent($insuranceTerms)) {
+            $this->insuranceTerms = $insuranceTerms;
         }
 
-        $this->termsAndConditions->sections->isEmpty()
+        ($this->termsAndConditions->sections->isEmpty() && $this->insuranceTerms === null)
             ? $this->next()
             : $this->expand(Section::TermsAndConditions);
+    }
+
+    private function hasInsuranceTermsContent(InsuranceTerms $terms): bool
+    {
+        return $terms->text !== null
+            || $terms->checkboxText !== null
+            || $terms->conditions !== [];
     }
 
     /**
