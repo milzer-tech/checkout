@@ -54,6 +54,24 @@ final readonly class InsuranceHandler
         return $this->getActiveInsuranceAction->run()?->getPaymentFields() ?? [];
     }
 
+    public function getProviderName(): ?string
+    {
+        $insurance = $this->getActiveInsuranceAction->run();
+
+        return $insurance instanceof InsuranceContract
+            ? $insurance::getName()
+            : null;
+    }
+
+    public function getProviderLogo(): ?string
+    {
+        $insurance = $this->getActiveInsuranceAction->run();
+
+        return $insurance instanceof InsuranceContract
+            ? $insurance::getLogo()
+            : null;
+    }
+
     /**
      * Indicates if the active provider's selected offer price is paid through the main payment gateway.
      */

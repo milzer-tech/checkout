@@ -224,11 +224,20 @@
 
             @if($insuranceProviderIsAvailable)
             @foreach($offers as $offer)
-                <label class="border rounded-xl p-4 cursor-pointer hover:shadow-sm w-full block
+                <label class="relative border rounded-xl p-4 cursor-pointer hover:shadow-sm w-full block
                  {{ $selectedOfferId == $offer->id
         ? 'border-blue-500 ring-1 ring-blue-500'
         : 'border-gray-200' }}
                 ">
+                    @if($insuranceProviderLogo)
+                        <img
+                            src="{{ $insuranceProviderLogo }}"
+                            alt="{{ $insuranceProviderName ?? trans('checkout::page.trip_details.travel_insurance') }}"
+                            class="absolute right-4 top-4 max-h-9 w-28 object-contain object-right"
+                            loading="lazy"
+                        />
+                    @endif
+
                     <div class="flex items-start gap-3">
                         <input type="radio"
                                class="h-4 w-4 mt-1 text-blue-600 shrink-0"
@@ -238,12 +247,14 @@
                         >
 
                         <div class="min-w-0 flex-1">
-                            <div class="text-gray-900 font-medium break-words whitespace-normal leading-snug">
-                                {{ $offer->title }}
-                            </div>
+                            <div class="min-w-0 pr-24">
+                                <div class="text-gray-900 font-medium break-words whitespace-normal leading-snug">
+                                    {{ $offer->title }}
+                                </div>
 
-                            <div class="mt-1 text-sm">
-                                <span class="text-emerald-600 font-medium">+ {!! $offer->price->toHtml() !!}</span>
+                                <div class="mt-1 text-sm">
+                                    <span class="text-emerald-600 font-medium">+ {!! $offer->price->toHtml() !!}</span>
+                                </div>
                             </div>
                         </div>
                     </div>

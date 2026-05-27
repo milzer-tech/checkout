@@ -45,7 +45,16 @@ final class HanseMerkurInsurance implements InsuranceContract
 
     public static function getName(): string
     {
-        return 'Hanse Merkur';
+        return Config::string('checkout.insurance.hanse_merkur.name');
+    }
+
+    public static function getLogo(): ?string
+    {
+        $configuredLogo = Config::get('checkout.insurance.hanse_merkur.logo');
+
+        return is_string($configuredLogo) && $configuredLogo !== ''
+            ? $configuredLogo
+            : checkout_asset_data_uri('src/Resources/assets/images/hanse-merkur-logo.png', 'image/png');
     }
 
     public function getPaymentFields(): array

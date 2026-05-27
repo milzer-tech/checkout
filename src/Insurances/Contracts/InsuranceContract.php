@@ -28,6 +28,11 @@ interface InsuranceContract
     public static function getName(): string;
 
     /**
+     * The logo URL or data URI for the insurance provider.
+     */
+    public static function getLogo(): ?string;
+
+    /**
      * Payment data fields required before booking this provider's insurance offer.
      *
      * @return array<int, InsurancePaymentFieldDto>
