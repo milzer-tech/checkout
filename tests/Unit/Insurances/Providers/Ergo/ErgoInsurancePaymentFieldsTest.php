@@ -16,7 +16,8 @@ it('declares IBAN as required payment data', function (): void {
     expect($fields)->toHaveCount(1)
         ->and($fields[0]->key)->toBe('iban')
         ->and($fields[0]->type)->toBe('iban')
-        ->and($fields[0]->required)->toBeTrue();
+        ->and($fields[0]->required)->toBeTrue()
+        ->and($fields[0]->sectionIntro)->toBe('Bitte geben Sie für die Zahlung der Versicherungsprämie ihre IBAN an. Die Versicherungsprämie wird direkt von der ERGO Reiseversicherung eingezogen.');
 });
 
 it('provides the packaged ERGO logo', function (): void {

@@ -86,8 +86,11 @@ final class ErgoInsurance implements InsuranceContract
 
     public function getPaymentFields(): array
     {
+        $iban = InsurancePaymentFieldDto::iban();
+        $iban->sectionIntro = 'Bitte geben Sie für die Zahlung der Versicherungsprämie ihre IBAN an. Die Versicherungsprämie wird direkt von der ERGO Reiseversicherung eingezogen.';
+
         return [
-            InsurancePaymentFieldDto::iban(),
+            $iban,
         ];
     }
 
