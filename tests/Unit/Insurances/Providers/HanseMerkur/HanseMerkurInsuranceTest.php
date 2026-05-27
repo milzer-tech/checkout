@@ -24,6 +24,8 @@ uses()->group('hanse-merkur-insurance');
 
 beforeEach(function (): void {
     Config::set('checkout.insurance.hanse_merkur.active', true);
+    Config::set('checkout.insurance.hanse_merkur.name', 'Hanse Merkur');
+    Config::set('checkout.insurance.hanse_merkur.logo', null);
     Config::set('checkout.insurance.hanse_merkur.offers_base_url', 'https://hm-offers.test');
     Config::set('checkout.insurance.hanse_merkur.payment_base_url', 'https://hm-pay.test');
     Config::set('checkout.insurance.hanse_merkur.api_key', 'test-api-key');
@@ -71,7 +73,11 @@ function makeCreateInsuranceOffersDto(): CreateInsuranceOffersDto
 it('implements InsuranceContract static helpers', function (): void {
     Config::set('checkout.insurance.hanse_merkur.active', true);
     expect(HanseMerkurInsurance::isActive())->toBeTrue()
-        ->and(HanseMerkurInsurance::getName())->toBe('Hanse Merkur');
+        ->and(HanseMerkurInsurance::getName())->toBe('Hanse Merkur')
+        ->and(HanseMerkurInsurance::getLogo())->toBeNull();
+
+    Config::set('checkout.insurance.hanse_merkur.logo', 'https://example.test/hanse-merkur.svg');
+    expect(HanseMerkurInsurance::getLogo())->toBe('https://example.test/hanse-merkur.svg');
 
     Config::set('checkout.insurance.hanse_merkur.active', false);
     expect(HanseMerkurInsurance::isActive())->toBeFalse();

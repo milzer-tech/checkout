@@ -59,6 +59,10 @@ class InsuranceSection extends BaseCheckoutComponent
 
     public bool $requiresInsurancePaymentData = false;
 
+    public ?string $insuranceProviderName = null;
+
+    public ?string $insuranceProviderLogo = null;
+
     /**
      * Initialize the component with the promo code from the prices DTO.
      */
@@ -66,6 +70,8 @@ class InsuranceSection extends BaseCheckoutComponent
     {
         $this->notAvailableMessage = trans('checkout::page.trip_details.insurance_not_available');
         $this->isInsuranceAvailable = $insuranceHandler->isAvailable();
+        $this->insuranceProviderName = $insuranceHandler->getProviderName();
+        $this->insuranceProviderLogo = $insuranceHandler->getProviderLogo();
 
         if (! $this->isInsuranceAvailable) {
             $this->next();

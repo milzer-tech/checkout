@@ -19,6 +19,11 @@ it('declares IBAN as required payment data', function (): void {
         ->and($fields[0]->required)->toBeTrue();
 });
 
+it('provides the packaged ERGO logo', function (): void {
+    expect(ErgoInsurance::getLogo())
+        ->toStartWith('data:image/png;base64,');
+});
+
 it('keeps ERGO price outside the main payment and creates an open direct debit payload', function (): void {
     $subject = new ErgoInsurance;
     $transaction = new Transaction;

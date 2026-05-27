@@ -50,6 +50,11 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
         return 'Stub Insurance';
     }
 
+    public static function getLogo(): ?string
+    {
+        return 'https://example.test/stub-insurance.svg';
+    }
+
     public function getPaymentFields(): array
     {
         return [InsurancePaymentFieldDto::iban()];
@@ -200,7 +205,9 @@ it('treats Vertical as available but keeps its price out of the main payment', f
 
     expect($handler->isAvailable())->toBeTrue()
         ->and($handler->shouldAddOfferPriceToPayment())->toBeFalse()
-        ->and($handler->getPaymentFields())->toBe([]);
+        ->and($handler->getPaymentFields())->toBe([])
+        ->and($handler->getProviderName())->toBeNull()
+        ->and($handler->getProviderLogo())->toBeNull();
 });
 
 it('creates provider offers and stores provider meta plus create-offer context on checkout data', function (): void {
@@ -214,6 +221,8 @@ it('creates provider offers and stores provider meta plus create-offer context o
 
     expect($result->isSuccessful)->toBeTrue()
         ->and($result->offers)->toHaveCount(1)
+        ->and($handler->getProviderName())->toBe('Stub Insurance')
+        ->and($handler->getProviderLogo())->toBe('https://example.test/stub-insurance.svg')
         ->and(StubInsuranceProviderForHandlerTest::$lastCreateOffersDto)->toBeInstanceOf(CreateInsuranceOffersDto::class)
         ->and(InsuranceCheckoutData::getMeta($data))->toBe(['provider' => 'stub'])
         ->and(InsuranceCheckoutData::getCreateOffer($data))->toBeArray()

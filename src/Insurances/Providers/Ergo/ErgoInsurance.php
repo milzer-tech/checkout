@@ -76,6 +76,15 @@ final class ErgoInsurance implements InsuranceContract
         return Config::string('checkout.insurance.ergo.name');
     }
 
+    public static function getLogo(): ?string
+    {
+        $configuredLogo = Config::get('checkout.insurance.ergo.logo');
+
+        return is_string($configuredLogo) && $configuredLogo !== ''
+            ? $configuredLogo
+            : checkout_asset_data_uri('src/Resources/assets/images/ergo-logo.png', 'image/png');
+    }
+
     public function getPaymentFields(): array
     {
         return [

@@ -71,6 +71,7 @@ return [
         'hanse_merkur' => [
             'active' => (bool) env('CHECKOUT_HANSE_MERKUR_INSURANCE_ACTIVE', false),
             'name' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_NAME', 'Hanse Merkur'),
+            'logo' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_LOGO'),
             'offers_base_url' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_OFFERS_BASE_URL', 'https://api-fbt.hmrv.de/rest'),
             'payment_base_url' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_PAYMENT_BASE_URL', 'https://payment-test.hmrv.de/rest'),
             'username' => env('CHECKOUT_HANSE_MERKUR_INSURANCE_USERNAME', 'must_be_set_in_env'),
@@ -88,6 +89,7 @@ return [
         'ergo' => [
             'active' => (bool) env('CHECKOUT_ERGO_INSURANCE_ACTIVE', false),
             'name' => env('CHECKOUT_ERGO_INSURANCE_NAME', 'Ergo'),
+            'logo' => env('CHECKOUT_ERGO_INSURANCE_LOGO'),
             'base_url' => env('CHECKOUT_ERGO_INSURANCE_BASE_URL', 'https://egate2.erv.de/esc201909/ESCConnector'),
             'crs' => env('CHECKOUT_ERGO_INSURANCE_CRS', 'must_be_set_in_env'),
             'crs_agency' => env('CHECKOUT_ERGO_INSURANCE_CRS_AGENCY', 'must_be_set_in_env'),
