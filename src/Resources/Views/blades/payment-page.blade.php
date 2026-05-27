@@ -36,7 +36,7 @@
             </section>
         </div>
 
-        <div class="lg:col-span-1">
+        <div class="min-w-0 lg:col-span-1">
             <livewire:trip-summary
                 :$itinerary
                 :$model

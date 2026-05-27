@@ -68,7 +68,7 @@
                 <div class="mt-6"></div>
             </section>
         </div>
-        <div class="overflow-auto min-w-[300px]">
+        <div class="min-w-0">
             <livewire:trip-summary
                 :$itinerary
                 :$model

@@ -1,6 +1,6 @@
 @use(Illuminate\Support\Collection;use Illuminate\Support\Number;use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum)
 
-<div class="border border-[color:var(--border)] dark:border-gray-600 bg-transparent rounded-[12px] p-4 sm:p-6 mb-6">
+<div class="w-full min-w-0 overflow-hidden border border-[color:var(--border)] dark:border-gray-600 bg-transparent rounded-[12px] p-4 sm:p-6 mb-6">
     {{-- Header with image and title --}}
     <div class="flex items-center gap-4 mb-6">
         <div class="flex-1">
@@ -363,16 +363,16 @@
     @endif
 
 
-    <div>
+    <div class="min-w-0">
         {{-- Header --}}
-        <div class="flex justify-between items-center">
+        <div class="flex flex-wrap justify-between items-center gap-3">
             {{-- CLICKABLE: Total (EUR) + chevron --}}
             <button
                 type="button"
-                class="flex items-center gap-1 cursor-pointer"
+                class="flex min-w-0 items-center gap-1 cursor-pointer"
                 wire:click="togglePriceBreakdown" {{-- you handle this in Livewire --}}
             >
-                <h3 class="font-semibold text-xl text-blue-600">
+                <h3 class="font-semibold text-xl text-blue-600 break-words min-w-0">
                     {{ trans('checkout::page.trip_details.total') }}
                     ({{ strtoupper($itinerary->price->totalPackagePrice->currency) }})
                 </h3>
@@ -391,7 +391,7 @@
 
             </button>
 
-            <span wire:loading.remove class="text-2xl font-bold dark:text-white">
+            <span wire:loading.remove class="shrink-0 text-2xl font-bold dark:text-white">
             {{ Number::currency($itinerary->price->showTotalPrice->amount,$itinerary->price->showTotalPrice->currency) }}
         </span>
 
@@ -406,7 +406,7 @@
         </div>
 
         @if($separateInsurancePaymentNotice)
-            <p class="mt-3 text-sm leading-6 text-gray-600 md:whitespace-nowrap dark:text-blue-200">
+            <p class="mt-3 max-w-full text-sm leading-6 text-gray-600 whitespace-normal break-words dark:text-blue-200">
                 {{ $separateInsurancePaymentNotice }}
             </p>
         @endif
