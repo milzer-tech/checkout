@@ -74,7 +74,7 @@ it('implements InsuranceContract static helpers', function (): void {
     Config::set('checkout.insurance.hanse_merkur.active', true);
     expect(HanseMerkurInsurance::isActive())->toBeTrue()
         ->and(HanseMerkurInsurance::getName())->toBe('Hanse Merkur')
-        ->and(HanseMerkurInsurance::getLogo())->toBeNull();
+        ->and(HanseMerkurInsurance::getLogo())->toStartWith('data:image/png;base64,');
 
     Config::set('checkout.insurance.hanse_merkur.logo', 'https://example.test/hanse-merkur.svg');
     expect(HanseMerkurInsurance::getLogo())->toBe('https://example.test/hanse-merkur.svg');

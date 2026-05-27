@@ -54,7 +54,7 @@ final class HanseMerkurInsurance implements InsuranceContract
 
         return is_string($configuredLogo) && $configuredLogo !== ''
             ? $configuredLogo
-            : null;
+            : checkout_asset_data_uri('src/Resources/assets/images/hanse-merkur-logo.png', 'image/png');
     }
 
     public function getPaymentFields(): array
