@@ -50,7 +50,7 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
         return 'Stub Insurance';
     }
 
-    public static function getLogo(): ?string
+    public static function getLogo(): string
     {
         return 'https://example.test/stub-insurance.svg';
     }

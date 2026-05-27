@@ -121,11 +121,11 @@ class TermsSection extends BaseCheckoutComponent
         $offer = InsuranceCheckoutData::getOffer(InsuranceCheckoutData::checkoutDataArray($this->model->data));
         $insuranceTerms = $offer ? InsuranceOfferDto::from($offer)->terms : null;
 
-        if ($insuranceTerms !== null && $this->hasInsuranceTermsContent($insuranceTerms)) {
+        if ($insuranceTerms instanceof InsuranceTerms && $this->hasInsuranceTermsContent($insuranceTerms)) {
             $this->insuranceTerms = $insuranceTerms;
         }
 
-        ($this->termsAndConditions->sections->isEmpty() && $this->insuranceTerms === null)
+        ($this->termsAndConditions->sections->isEmpty() && ! $this->insuranceTerms instanceof InsuranceTerms)
             ? $this->next()
             : $this->expand(Section::TermsAndConditions);
     }
