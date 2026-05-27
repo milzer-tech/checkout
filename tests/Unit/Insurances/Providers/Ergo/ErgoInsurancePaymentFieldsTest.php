@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Providers\Ergo\ErgoInsurance;
+use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoAvailablePlanDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
@@ -28,6 +29,111 @@ it('provides ERGO-specific no selection text', function (): void {
 it('provides the packaged ERGO logo', function (): void {
     expect(ErgoInsurance::getLogo())
         ->toStartWith('data:image/png;base64,');
+});
+
+it('maps ERGO product components to coverage advantages', function (): void {
+    $plan = ErgoAvailablePlanDto::from([
+        'PlanCode' => 'VK25RSM',
+        'Ordering' => 1,
+        'PlanDetail' => [
+            'Title' => 'RundumSorglos-Schutz',
+            'DescriptionURL' => [],
+        ],
+        'Quote' => [
+            'ID' => 1,
+            'Services' => [
+                'Service' => [],
+                'TotalPremium' => ['Amount' => '5300', 'CurrencyCode' => 'EUR', 'DecimalPlaces' => 2],
+            ],
+            'InsuranceDetails' => [
+                'InsuranceDetail' => [
+                    [
+                        'Code' => 'JRV',
+                        'Title' => 'für alle Reisen im Versicherungsjahr (Mindestlaufzeit 24 Monate, danach jährlich kündbar)',
+                        'ProductComponents' => [
+                            'ProductComponent' => [
+                                ['@attributes' => ['Ordering' => 1, 'Name' => 'Stornokosten-Versicherung']],
+                                ['Name' => 'Reiseabbruch-Versicherung'],
+                            ],
+                        ],
+                    ],
+                    [
+                        'Code' => 'RK',
+                        'Title' => 'für diese eine Reise (im ausgewählten Reisezeitraum gültig)',
+                        'ProductComponents' => [
+                            'ProductComponent' => ['Name' => 'Reisekranken-Versicherung'],
+                        ],
+                    ],
+                ],
+            ],
+            'AcceptedPaymentTypes' => [],
+        ],
+    ]);
+
+    $coverageTitles = new ReflectionMethod(ErgoInsurance::class, 'coverageTitles');
+
+    expect($coverageTitles->invoke(new ErgoInsurance, $plan))->toBe([
+        'Stornokosten-Versicherung',
+        'Reiseabbruch-Versicherung',
+        'Reisekranken-Versicherung',
+        'für alle Reisen im Versicherungsjahr (Mindestlaufzeit 24 Monate, danach jährlich kündbar)',
+        'für diese eine Reise (im ausgewählten Reisezeitraum gültig)',
+    ]);
+});
+
+it('infers ERGO coverage advantages from live product descriptors when components are absent', function (): void {
+    $plan = ErgoAvailablePlanDto::from([
+        'PlanCode' => 'VK25RSM',
+        'Ordering' => 1,
+        'PlanDetail' => [
+            'Title' => 'RundumSorglos-Schutz (mit Selbstbeteiligung)',
+            'DescriptionURL' => [
+                [
+                    'DefaultInd' => true,
+                    'Type' => 'INF',
+                    '_' => 'https://www.ergo-reiseversicherung.de/de/produktinformationen/produktbeschreibungen/202504/kf/de/rs-schutz-msb',
+                ],
+            ],
+        ],
+        'Quote' => [
+            'ID' => 1,
+            'Services' => [
+                'Service' => [
+                    [
+                        'ID' => 2,
+                        'Tariff' => [
+                            'TariffCode' => 'PNM107',
+                            'TariffDescription' => [
+                                'Title' => 'RundumSorglos-Schutz (mit Selbstbeteiligung)',
+                                'DescriptionURL' => [
+                                    ['Type' => 'PID', 'DefaultInd' => true, '_' => 'https://egate2.erv.de/escWeb/pib?tc=PNM107'],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                'TotalPremium' => ['Amount' => '9000', 'CurrencyCode' => 'EUR', 'DecimalPlaces' => 2],
+            ],
+            'InsuranceDetails' => [
+                'InsuranceDetail' => [
+                    'Code' => 'SIT',
+                    'Title' => 'Einmalreise',
+                    'ProductComponents' => null,
+                ],
+            ],
+            'AcceptedPaymentTypes' => [],
+        ],
+    ]);
+
+    $coverageTitles = new ReflectionMethod(ErgoInsurance::class, 'coverageTitles');
+
+    expect($coverageTitles->invoke(new ErgoInsurance, $plan))->toBe([
+        'Stornokosten-Versicherung',
+        'Reiseabbruch-Versicherung',
+        'Reisekranken-Versicherung',
+        'Reisegepäck-Versicherung',
+        'Einmalreise',
+    ]);
 });
 
 it('keeps ERGO price outside the main payment and creates an open direct debit payload', function (): void {

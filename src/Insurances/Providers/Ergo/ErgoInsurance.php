@@ -29,7 +29,6 @@ use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoEmailsTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoErrorsTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoInsuranceCustomerPreContractualInformationDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoInsuranceCustomerTypeDto;
-use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoInsuranceDetailDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoPaymentFormTypeDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoPersonNameDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoPlanSearchInsuranceCustomerDto;
@@ -164,7 +163,7 @@ final class ErgoInsurance implements InsuranceContract
                 id: $this->offerId($plan),
                 title: $plan->PlanDetail->Title,
                 price: $price,
-                coverage: $this->coverageTitles($plan->Quote),
+                coverage: $this->coverageTitles($plan),
                 providerMeta: [self::PROVIDER_META_KEY => $plan->toArray()],
                 terms: $this->termsForPlan(),
             );
@@ -556,23 +555,161 @@ final class ErgoInsurance implements InsuranceContract
     /**
      * @return array<int, string>
      */
-    private function coverageTitles(ErgoQuoteDto $quote): array
+    private function coverageTitles(ErgoAvailablePlanDto $plan): array
     {
-        return $quote->InsuranceDetails->map(function (mixed $row): string {
-            if ($row instanceof ErgoInsuranceDetailDto) {
-                return $row->Title !== '' ? $row->Title : $row->Code;
-            }
-            if ($row instanceof Data) {
-                $t = $row->toArray();
+        $componentTitles = $plan->Quote->InsuranceDetails
+            ->flatMap(fn (mixed $row): array => $this->coverageComponentTitlesFromDetail($row));
 
-                return (string) ($t['Title'] ?? $t['Code'] ?? '');
-            }
-            if (is_array($row)) {
-                return (string) ($row['Title'] ?? $row['Code'] ?? '');
-            }
+        if ($componentTitles->isEmpty()) {
+            $componentTitles = collect($this->coverageComponentTitlesFromPlan($plan));
+        }
 
-            return (string) ($row->Title ?? $row->Code ?? '');
-        })->filter()->values()->all();
+        $detailTitles = $plan->Quote->InsuranceDetails
+            ->map(fn (mixed $row): string => $this->coverageDetailTitle($row));
+
+        return $componentTitles
+            ->merge($detailTitles)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function coverageComponentTitlesFromDetail(mixed $row): array
+    {
+        $detail = $this->arrayFromMixed($row);
+
+        return $this->productComponentNames($detail['ProductComponents'] ?? null);
+    }
+
+    private function coverageDetailTitle(mixed $row): string
+    {
+        $detail = $this->arrayFromMixed($row);
+
+        return (string) ($detail['Title'] ?? $detail['Code'] ?? '');
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function coverageComponentTitlesFromPlan(ErgoAvailablePlanDto $plan): array
+    {
+        $descriptor = Str::lower(implode(' ', array_filter([
+            $plan->PlanCode,
+            $plan->PlanDetail->Title,
+            ...$this->planDescriptionUrls($plan),
+            ...$this->tariffDescriptors($plan),
+        ])));
+
+        if (str_contains($descriptor, 'rundumsorglos') || str_contains($descriptor, 'rs-schutz')) {
+            return [
+                'Stornokosten-Versicherung',
+                'Reiseabbruch-Versicherung',
+                'Reisekranken-Versicherung',
+                'Reisegepäck-Versicherung',
+            ];
+        }
+
+        if (str_contains($descriptor, 'reiserücktritt') || str_contains($descriptor, 'rrv')) {
+            return [
+                'Stornokosten-Versicherung',
+                'Reiseabbruch-Versicherung',
+            ];
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function planDescriptionUrls(ErgoAvailablePlanDto $plan): array
+    {
+        return $plan->PlanDetail->DescriptionURL
+            ->map(fn (mixed $url): string => (string) ($this->arrayFromMixed($url)['value'] ?? ''))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function tariffDescriptors(ErgoAvailablePlanDto $plan): array
+    {
+        return $plan->Quote->Services->Service
+            ->flatMap(function (mixed $service): array {
+                $tariff = $this->arrayFromMixed($this->arrayFromMixed($service)['Tariff'] ?? null);
+                $description = $this->arrayFromMixed($tariff['TariffDescription'] ?? null);
+
+                return [
+                    (string) ($tariff['TariffCode'] ?? ''),
+                    (string) ($description['Title'] ?? ''),
+                    ...collect($description['DescriptionURL'] ?? [])
+                        ->map(fn (mixed $url): string => (string) ($this->arrayFromMixed($url)['value'] ?? $this->arrayFromMixed($url)['_'] ?? ''))
+                        ->all(),
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function productComponentNames(mixed $productComponents): array
+    {
+        if ($productComponents === null) {
+            return [];
+        }
+
+        $data = $this->arrayFromMixed($productComponents);
+        $components = $data['ProductComponent'] ?? $data;
+
+        if (! is_array($components)) {
+            return [];
+        }
+
+        if ($components !== [] && ! array_is_list($components)) {
+            $components = [$components];
+        }
+
+        return collect($components)
+            ->map(fn (mixed $component): string => $this->productComponentName($component))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function productComponentName(mixed $component): string
+    {
+        $data = $this->arrayFromMixed($component);
+
+        return (string) ($data['Name'] ?? data_get($data, '@attributes.Name') ?? '');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function arrayFromMixed(mixed $value): array
+    {
+        if ($value instanceof Data) {
+            return $value->toArray();
+        }
+
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if (is_object($value)) {
+            return get_object_vars($value);
+        }
+
+        return [];
     }
 
     private function termsForPlan(): InsuranceTerms
