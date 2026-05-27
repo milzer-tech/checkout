@@ -648,10 +648,40 @@ final class ErgoInsurance implements InsuranceContract
                 return [
                     (string) ($tariff['TariffCode'] ?? ''),
                     (string) ($description['Title'] ?? ''),
-                    ...collect($description['DescriptionURL'] ?? [])
-                        ->map(fn (mixed $url): string => (string) ($this->arrayFromMixed($url)['value'] ?? $this->arrayFromMixed($url)['_'] ?? ''))
-                        ->all(),
+                    ...$this->descriptionUrlValues($description['DescriptionURL'] ?? null),
                 ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function descriptionUrlValues(mixed $descriptionUrls): array
+    {
+        if ($descriptionUrls === null) {
+            return [];
+        }
+
+        if ($descriptionUrls instanceof Collection) {
+            $descriptionUrls = $descriptionUrls->all();
+        }
+
+        if (! is_array($descriptionUrls)) {
+            return [];
+        }
+
+        if ($descriptionUrls !== [] && ! array_is_list($descriptionUrls)) {
+            $descriptionUrls = [$descriptionUrls];
+        }
+
+        return collect($descriptionUrls)
+            ->map(function (mixed $url): string {
+                $data = $this->arrayFromMixed($url);
+
+                return (string) ($data['value'] ?? $data['_'] ?? '');
             })
             ->filter()
             ->values()
