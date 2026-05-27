@@ -87,6 +87,7 @@ it('does not require additional payment data', function (): void {
     $subject = new HanseMerkurInsurance;
 
     expect($subject->getPaymentFields())->toBe([])
+        ->and($subject->getNoSelectionText())->toBe('No insurance')
         ->and($subject->shouldAddOfferPriceToPayment())->toBeTrue();
 });
 

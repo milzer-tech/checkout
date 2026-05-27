@@ -40,6 +40,11 @@ interface InsuranceContract
     public function getPaymentFields(): array;
 
     /**
+     * Text shown when the customer declines insurance for the trip.
+     */
+    public function getNoSelectionText(): string;
+
+    /**
      * Indicates if the selected insurance offer price is paid through the main payment gateway.
      */
     public function shouldAddOfferPriceToPayment(): bool;

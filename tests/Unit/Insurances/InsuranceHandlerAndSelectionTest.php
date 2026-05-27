@@ -60,6 +60,11 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
         return [InsurancePaymentFieldDto::iban()];
     }
 
+    public function getNoSelectionText(): string
+    {
+        return 'Stub no insurance';
+    }
+
     public function shouldAddOfferPriceToPayment(): bool
     {
         return true;

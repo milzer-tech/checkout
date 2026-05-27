@@ -63,6 +63,8 @@ class InsuranceSection extends BaseCheckoutComponent
 
     public ?string $insuranceProviderLogo = null;
 
+    public string $insuranceNoSelectionText;
+
     /**
      * Initialize the component with the promo code from the prices DTO.
      */
@@ -72,6 +74,7 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->isInsuranceAvailable = $insuranceHandler->isAvailable();
         $this->insuranceProviderName = $insuranceHandler->getProviderName();
         $this->insuranceProviderLogo = $insuranceHandler->getProviderLogo();
+        $this->insuranceNoSelectionText = $insuranceHandler->getNoSelectionText();
 
         if (! $this->isInsuranceAvailable) {
             $this->next();

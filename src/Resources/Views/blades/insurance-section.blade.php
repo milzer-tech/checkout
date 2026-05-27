@@ -331,7 +331,7 @@
                     <div class="min-w-0 flex-1">
                         <div class="flex items-start justify-between gap-3">
                             <div class="text-gray-900 font-medium break-words whitespace-normal leading-snug">
-                                {{ trans('checkout::page.trip_details.insurance_no_insurance_option') }}
+                                {{ $insuranceNoSelectionText }}
                             </div>
                             <span class="shrink-0 text-gray-400" aria-hidden="true">⛨</span>
                         </div>

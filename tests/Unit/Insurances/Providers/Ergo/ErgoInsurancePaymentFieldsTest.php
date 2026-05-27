@@ -20,6 +20,11 @@ it('declares IBAN as required payment data', function (): void {
         ->and($fields[0]->sectionIntro)->toBe('Bitte geben Sie für die Zahlung der Versicherungsprämie ihre IBAN an. Die Versicherungsprämie wird direkt von der ERGO Reiseversicherung eingezogen.');
 });
 
+it('provides ERGO-specific no selection text', function (): void {
+    expect((new ErgoInsurance)->getNoSelectionText())
+        ->toBe('Ich verzichte auf einen Reiseschutz für mich und sämtliche Reiseteilnehmer. Das Risiko und die Kosten im Schadensfall trage ich selbst.');
+});
+
 it('provides the packaged ERGO logo', function (): void {
     expect(ErgoInsurance::getLogo())
         ->toStartWith('data:image/png;base64,');

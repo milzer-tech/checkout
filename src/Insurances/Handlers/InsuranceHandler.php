@@ -54,6 +54,12 @@ final readonly class InsuranceHandler
         return $this->getActiveInsuranceAction->run()?->getPaymentFields() ?? [];
     }
 
+    public function getNoSelectionText(): string
+    {
+        return $this->getActiveInsuranceAction->run()?->getNoSelectionText()
+            ?? trans('checkout::page.trip_details.insurance_no_insurance_option');
+    }
+
     public function getProviderName(): ?string
     {
         $insurance = $this->getActiveInsuranceAction->run();
