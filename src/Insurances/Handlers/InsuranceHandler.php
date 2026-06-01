@@ -207,6 +207,7 @@ final readonly class InsuranceHandler
                         bookingStatus: AvailabilityEnum::Booked,
                         supplierName: $insurance->getName(),
                         supplierConfirmationNumber: $result->confirmationId,
+                        description: $this->coverageDescription($selectedOffer),
                     )
                 )
             );
@@ -232,5 +233,20 @@ final readonly class InsuranceHandler
                 }
             }
         }
+    }
+
+    private function coverageDescription(InsuranceOfferDto $selectedOffer): ?string
+    {
+        $coverage = collect($selectedOffer->coverage)
+            ->map(fn (string $item): string => trim($item))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($coverage->isEmpty()) {
+            return null;
+        }
+
+        return $coverage->implode("\n- ");
     }
 }
