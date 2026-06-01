@@ -401,7 +401,7 @@ it('records successful insurance bookings in Nezasa with offer coverage in the d
                 'name' => 'Stub offer',
                 'supplierName' => 'Stub Insurance',
                 'supplierConfirmationNumber' => 'CONF-123',
-                'description' => "Medical assistance\n- Trip cancellation",
+                'description' => 'Medical assistance, Trip cancellation',
             ]);
 
         return true;

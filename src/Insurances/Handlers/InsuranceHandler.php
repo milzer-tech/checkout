@@ -247,6 +247,6 @@ final readonly class InsuranceHandler
             return null;
         }
 
-        return $coverage->implode("\n- ");
+        return $coverage->implode(', ');
     }
 }
