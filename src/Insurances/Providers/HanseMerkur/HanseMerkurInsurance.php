@@ -10,6 +10,7 @@ use Nezasa\Checkout\Insurances\Contracts\InsuranceContract;
 use Nezasa\Checkout\Insurances\Dtos\BookInsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDocumentLinkDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceTerms;
@@ -27,7 +28,9 @@ use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\Entities\HanseMerkurP
 use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurCreateOffersPayload;
 use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurPaymentPayload;
 use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Payloads\HanseMerkurReservePayload;
+use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Responses\Entities\HanseMerkurDocumentResponseEntity;
 use Nezasa\Checkout\Integrations\HanseMerkur\Dtos\Responses\Entities\HanseMerkurOfferProductResponseEntity;
+use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurDocumentTypeEnum;
 use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurGenderEnum;
 use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurPaymentTypeEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
@@ -112,10 +115,8 @@ final class HanseMerkurInsurance implements InsuranceContract
         foreach ($response->dto()->offers->pluck('products')->flatten()->sortBy('productTotalPremium.amount') as $product) {
             $terms = [];
             foreach ($product->documents as $document) {
-                if ($document->documentType?->mustBeDisplayed()) {
-                    $text = $document->documentType->isIpid()
-                        ? 'Informationsblatt zu den Versicherungsprodukten'
-                        : 'Allgemeine Versicherungsbedingungen';
+                if ($document->documentType?->mustBeDisplayed() && is_string($document->url) && $document->url !== '') {
+                    $text = $this->documentLabel($document->documentType);
                     $terms[] = '<a target="_blank" href="'.$document->url.'">'.$text.'</a>';
                 }
             }
@@ -130,6 +131,7 @@ final class HanseMerkurInsurance implements InsuranceContract
                     checkboxText: 'Ich habe das Informationsblatt zu den Versicherungsprodukten zur Kenntnis genommen und akzeptiere die Allgemeinen Versicherungsbedingungen sowie die Übertragung der für die Buchung notwendigen Daten an die HanseMerkur Reiseversicherung',
                     conditions: $terms
                 ),
+                documentLinks: $this->documentLinksForProduct($product),
             );
         }
 
@@ -233,5 +235,28 @@ final class HanseMerkurInsurance implements InsuranceContract
         }
 
         return collect($persons);
+    }
+
+    /**
+     * @return array<int, InsuranceOfferDocumentLinkDto>
+     */
+    private function documentLinksForProduct(HanseMerkurOfferProductResponseEntity $product): array
+    {
+        return $product->documents
+            ->filter(fn (HanseMerkurDocumentResponseEntity $document): bool => $document->documentType?->mustBeDisplayed() === true && is_string($document->url) && $document->url !== '')
+            ->map(fn (HanseMerkurDocumentResponseEntity $document): InsuranceOfferDocumentLinkDto => new InsuranceOfferDocumentLinkDto(
+                label: $this->documentLabel($document->documentType),
+                url: $document->url,
+                type: $document->documentType?->value,
+            ))
+            ->values()
+            ->all();
+    }
+
+    private function documentLabel(?HanseMerkurDocumentTypeEnum $documentType): string
+    {
+        return $documentType?->isIpid() === true
+            ? 'Informationsblatt zu den Versicherungsprodukten'
+            : 'Allgemeine Versicherungsbedingungen';
     }
 }
