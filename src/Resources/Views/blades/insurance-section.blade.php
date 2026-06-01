@@ -270,6 +270,31 @@
                         </ul>
                     @endif
 
+                    @if(!empty($offer->documentLinks))
+                        <ul class="mt-3 space-y-1 text-sm">
+                            @foreach($offer->documentLinks as $documentLink)
+                                @php
+                                    $documentLabel = data_get($documentLink, 'label');
+                                    $documentUrl = data_get($documentLink, 'url');
+                                @endphp
+
+                                @if(is_string($documentLabel) && $documentLabel !== '' && is_string($documentUrl) && $documentUrl !== '')
+                                    <li>
+                                        <a
+                                            href="{{ $documentUrl }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="text-blue-600 underline hover:text-blue-700"
+                                            onclick="event.stopPropagation()"
+                                        >
+                                            {{ $documentLabel }}
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    @endif
+
                     @if($requiresInsurancePaymentData && $selectedOfferId === $offer->id)
                         <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4" wire:click.stop>
                             @php

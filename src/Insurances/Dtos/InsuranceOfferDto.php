@@ -13,6 +13,7 @@ final class InsuranceOfferDto extends BaseDto
      * Create a new instance of InsuranceOfferDto.
      *
      * @param  array<string>  $coverage
+     * @param  array<int, InsuranceOfferDocumentLinkDto|array{label: string, url: string, type?: string|null}>  $documentLinks
      */
     public function __construct(
         public string $id,
@@ -21,7 +22,8 @@ final class InsuranceOfferDto extends BaseDto
         public array $coverage,
         /** @var array<string, mixed> */
         public array $providerMeta = [],
-        public InsuranceTerms $terms = new InsuranceTerms
+        public InsuranceTerms $terms = new InsuranceTerms,
+        public array $documentLinks = [],
     ) {}
 
 }

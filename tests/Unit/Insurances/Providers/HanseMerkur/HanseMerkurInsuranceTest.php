@@ -150,6 +150,14 @@ it('getOffers maps successful response to sorted offers, terms, and meta', funct
         ->and($offers[1]->title)->toBe('High premium')
         ->and($offers[1]->coverage)->toBe(['Medical assistance']);
 
+    expect($offers[1]->documentLinks)->toHaveCount(2)
+        ->and($offers[1]->documentLinks[0]->label)->toBe('Informationsblatt zu den Versicherungsprodukten')
+        ->and($offers[1]->documentLinks[0]->url)->toBe('https://example.test/ipid.pdf')
+        ->and($offers[1]->documentLinks[0]->type)->toBe('IPID')
+        ->and($offers[1]->documentLinks[1]->label)->toBe('Allgemeine Versicherungsbedingungen')
+        ->and($offers[1]->documentLinks[1]->url)->toBe('https://example.test/avb.pdf')
+        ->and($offers[1]->documentLinks[1]->type)->toBe('AVB');
+
     $conditions = $offers[1]->terms->conditions;
     expect($conditions)->toHaveCount(3)
         ->and($conditions[0])->toContain('Informationsblatt')

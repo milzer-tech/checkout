@@ -75,7 +75,7 @@ final class InsuranceCheckoutData
     private static function legacyFlatInsuranceRootToOfferArray(array $insuranceRoot): array
     {
         return collect($insuranceRoot)
-            ->only(['id', 'title', 'price', 'coverage', 'providerMeta', 'terms'])
+            ->only(['id', 'title', 'price', 'coverage', 'providerMeta', 'terms', 'documentLinks'])
             ->all();
     }
 
