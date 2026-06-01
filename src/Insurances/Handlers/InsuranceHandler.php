@@ -195,42 +195,40 @@ final readonly class InsuranceHandler
      */
     public function recordInsuranceBooking(InsuranceBookOfferResult $result, Transaction $transaction, InsuranceOfferDto $selectedOffer): void
     {
-        if ($result->isSuccessful) {
-            $insurance = $this->getActiveInsuranceAction->run();
-            $nezasa = NezasaConnector::make()->checkout()->addCustomInsurance(
-                checkoutId: $transaction->checkout->checkout_id,
-                payload: $insurance->getNezasaPayload(
-                    payload: new AddCustomInsurancePayload(
-                        name: $selectedOffer->title,
-                        netPrice: $selectedOffer->price,
-                        salesPrice: $selectedOffer->price,
-                        bookingStatus: AvailabilityEnum::Booked,
-                        supplierName: $insurance->getName(),
-                        supplierConfirmationNumber: $result->confirmationId,
-                        description: $this->coverageDescription($selectedOffer),
-                    )
+        $insurance = $this->getActiveInsuranceAction->run();
+        $nezasa = NezasaConnector::make()->checkout()->addCustomInsurance(
+            checkoutId: $transaction->checkout->checkout_id,
+            payload: $insurance->getNezasaPayload(
+                payload: new AddCustomInsurancePayload(
+                    name: $selectedOffer->title,
+                    netPrice: $selectedOffer->price,
+                    salesPrice: $selectedOffer->price,
+                    bookingStatus: $result->isSuccessful ? AvailabilityEnum::Booked : AvailabilityEnum::Failed,
+                    supplierName: $insurance->getName(),
+                    supplierConfirmationNumber: $result->confirmationId,
+                    description: $this->coverageDescription($selectedOffer),
                 )
-            );
+            )
+        );
 
-            $transaction->pushToResultData([
-                'nezasa_insurance_request' => (array) $nezasa->getPendingRequest()->body()->all(),
-                'nezasa_insurance_response' => $nezasa->array(),
-            ]);
+        $transaction->pushToResultData([
+            'nezasa_insurance_request' => (array) $nezasa->getPendingRequest()->body()->all(),
+            'nezasa_insurance_response' => $nezasa->array(),
+        ]);
 
-            if (! $insurance->shouldAddOfferPriceToPayment()) {
-                $payload = $insurance->makeNezasaPaymentTransactionPayload($transaction, $selectedOffer, $result);
+        if (! $insurance->shouldAddOfferPriceToPayment()) {
+            $payload = $insurance->makeNezasaPaymentTransactionPayload($transaction, $selectedOffer, $result);
 
-                if ($payload instanceof CreatePaymentTransactionPayload) {
-                    $paymentTransaction = $this->createNezasaTransactionAction->run(
-                        checkoutId: $transaction->checkout->checkout_id,
-                        payload: $payload,
-                    );
+            if ($payload instanceof CreatePaymentTransactionPayload) {
+                $paymentTransaction = $this->createNezasaTransactionAction->run(
+                    checkoutId: $transaction->checkout->checkout_id,
+                    payload: $payload,
+                );
 
-                    $transaction->pushToResultData([
-                        'nezasa_insurance_payment_request' => $payload->toArray(),
-                        'nezasa_insurance_payment_response' => $paymentTransaction,
-                    ]);
-                }
+                $transaction->pushToResultData([
+                    'nezasa_insurance_payment_request' => $payload->toArray(),
+                    'nezasa_insurance_payment_response' => $paymentTransaction,
+                ]);
             }
         }
     }

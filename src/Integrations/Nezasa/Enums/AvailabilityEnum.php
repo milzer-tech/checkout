@@ -17,6 +17,7 @@ use AzimKordpour\PowerEnum\Traits\PowerEnum;
  * @method bool isNoneBookable()
  * @method bool isCancelled()
  * @method bool isNone()
+ * @method bool isFailed()
  */
 enum AvailabilityEnum: string
 {
@@ -28,6 +29,7 @@ enum AvailabilityEnum: string
     case NoneBookable = 'NoneBookable';
     case Cancelled = 'Cancelled';
     case None = 'None';
+    case Failed = 'Failed';
 
     public function isBookable(): bool
     {

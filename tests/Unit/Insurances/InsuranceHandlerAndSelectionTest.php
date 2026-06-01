@@ -26,7 +26,10 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ExternallyPaidCh
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\AddCustomInsuranceRequest;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Payment\CreatePaymentTransactionRequest;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
@@ -42,6 +45,8 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
     public static ?BookInsuranceOfferDto $lastBookOfferDto = null;
 
     public static bool $bookResultSuccessful = true;
+
+    public static bool $shouldAddOfferPriceToPayment = true;
 
     public static function isActive(): bool
     {
@@ -70,7 +75,7 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
 
     public function shouldAddOfferPriceToPayment(): bool
     {
-        return true;
+        return self::$shouldAddOfferPriceToPayment;
     }
 
     public function getSeparatePaymentNotice(InsuranceOfferDto $selectedOffer): ?string
@@ -83,7 +88,17 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
         InsuranceOfferDto $selectedOffer,
         InsuranceBookOfferResult $result
     ): ?CreatePaymentTransactionPayload {
-        return null;
+        if ($this->shouldAddOfferPriceToPayment()) {
+            return null;
+        }
+
+        return new CreatePaymentTransactionPayload(
+            externalRefId: $result->confirmationId ?? 'stub-insurance-'.$transaction->id,
+            amount: $selectedOffer->price,
+            paymentMethod: NezasaPaymentMethodEnum::Other,
+            status: NezasaTransactionStatusEnum::Closed,
+            paymentMethodName: 'Stub payment',
+        );
     }
 
     public function getOffers(CreateInsuranceOffersDto $createOffersDto): InsuranceOffersResult
@@ -188,6 +203,7 @@ beforeEach(function (): void {
     StubInsuranceProviderForHandlerTest::$lastCreateOffersDto = null;
     StubInsuranceProviderForHandlerTest::$lastBookOfferDto = null;
     StubInsuranceProviderForHandlerTest::$bookResultSuccessful = true;
+    StubInsuranceProviderForHandlerTest::$shouldAddOfferPriceToPayment = true;
 
     Config::set('checkout.insurance_provider', [StubInsuranceProviderForHandlerTest::class]);
     Config::set('checkout.insurance.vertical.active', false);
@@ -323,6 +339,9 @@ it('books the selected provider offer using stored offer, create-offer context, 
     ]);
 
     StubInsuranceProviderForHandlerTest::$bookResultSuccessful = false;
+    $mockClient = MockClient::global([
+        AddCustomInsuranceRequest::class => MockResponse::make(['created' => true], 200),
+    ]);
 
     $handler = resolve(InsuranceHandler::class);
     $handler->bookOffer($transaction);
@@ -335,6 +354,122 @@ it('books the selected provider offer using stored offer, create-offer context, 
         ->and(StubInsuranceProviderForHandlerTest::$lastBookOfferDto->payment['iban'])->toBe('DE89370400440532013000')
         ->and($transaction->result_data['insurance']['isSuccessful'])->toBeFalse()
         ->and($transaction->result_data['insurance']['confirmationId'])->toBe('CONF-123');
+
+    $mockClient->assertSent(function (mixed $request): bool {
+        if (! $request instanceof AddCustomInsuranceRequest) {
+            return false;
+        }
+
+        expect($request->body()->all())
+            ->toMatchArray([
+                'name' => 'Stub offer',
+                'bookingStatus' => 'Failed',
+                'supplierName' => 'Stub Insurance',
+                'supplierConfirmationNumber' => 'CONF-123',
+                'description' => 'Medical',
+            ]);
+
+        return true;
+    });
+    $mockClient->assertNotSent(CreatePaymentTransactionRequest::class);
+});
+
+it('creates a closed Nezasa payment transaction for failed separate-payment insurance bookings', function (): void {
+    $mockClient = MockClient::global([
+        AddCustomInsuranceRequest::class => MockResponse::make(['created' => true], 200),
+        CreatePaymentTransactionRequest::class => MockResponse::make(['created' => true], 200),
+    ]);
+
+    $createOffer = new CreateInsuranceOffersDto(
+        startDate: CarbonImmutable::parse('2025-09-01'),
+        endDate: CarbonImmutable::parse('2025-09-10'),
+        totalPrice: new Price(1000.0, 'EUR'),
+        contact: ContactInfoPayloadEntity::from([
+            'firstName' => 'Jane',
+            'lastName' => 'Doe',
+            'gender' => GenderEnum::Female,
+            'email' => 'jane@example.test',
+            'country' => 'DE-Germany',
+            'countryCode' => 'DE',
+            'city' => 'Berlin',
+            'postalCode' => '10115',
+            'street1' => 'Main Street',
+            'street2' => '42',
+        ]),
+        paxInfo: new Collection([
+            PaxInfoPayloadEntity::from([
+                'refId' => 'pax-0',
+                'firstName' => 'Jane',
+                'lastName' => 'Doe',
+                'gender' => GenderEnum::Female,
+                'birthDate' => ['year' => 1990, 'month' => 1, 'day' => 15],
+                'country' => 'DE-Germany',
+                'countryCode' => 'DE',
+            ]),
+        ]),
+        destinationCountries: new Collection(['DE']),
+    );
+
+    $bucket = InsuranceCheckoutData::emptyInsuranceBucket();
+    $bucket[InsuranceCheckoutData::OFFER] = [
+        'id' => 'stub-offer',
+        'title' => 'Stub offer',
+        'price' => ['amount' => 12.34, 'currency' => 'EUR'],
+        'coverage' => ['Medical'],
+    ];
+    $bucket[InsuranceCheckoutData::CREATE_OFFER] = $createOffer->toArray();
+    $bucket[InsuranceCheckoutData::META] = ['provider' => 'stub'];
+
+    $checkout = insuranceHandlerCheckout(
+        InsuranceCheckoutData::prepareInsuranceUpdate($bucket)['insurance']
+    );
+    $transaction = Transaction::create([
+        'checkout_id' => $checkout->id,
+        'gateway' => 'Invoice',
+        'amount' => 1000,
+        'currency' => 'EUR',
+        'status' => TransactionStatusEnum::Captured,
+    ]);
+
+    StubInsuranceProviderForHandlerTest::$bookResultSuccessful = false;
+    StubInsuranceProviderForHandlerTest::$shouldAddOfferPriceToPayment = false;
+
+    resolve(InsuranceHandler::class)->bookOffer($transaction);
+
+    $mockClient->assertSent(function (mixed $request): bool {
+        if (! $request instanceof AddCustomInsuranceRequest) {
+            return false;
+        }
+
+        expect($request->body()->all())
+            ->toMatchArray([
+                'name' => 'Stub offer',
+                'bookingStatus' => 'Failed',
+                'description' => 'Medical',
+            ]);
+
+        return true;
+    });
+    $mockClient->assertSent(function (mixed $request): bool {
+        if (! $request instanceof CreatePaymentTransactionRequest) {
+            return false;
+        }
+
+        expect($request->body()->all())
+            ->toMatchArray([
+                'externalRefId' => 'CONF-123',
+                'status' => 'Closed',
+                'paymentMethod' => 'Other',
+                'paymentMethodName' => 'Stub payment',
+                'amount' => [
+                    'amount' => '12.34',
+                    'currency' => 'EUR',
+                    'value' => '12.34',
+                ],
+            ]);
+
+        return true;
+    });
 });
 
 it('records successful insurance bookings in Nezasa with offer coverage in the description', function (): void {
@@ -399,6 +534,7 @@ it('records successful insurance bookings in Nezasa with offer coverage in the d
         expect($request->body()->all())
             ->toMatchArray([
                 'name' => 'Stub offer',
+                'bookingStatus' => 'Booked',
                 'supplierName' => 'Stub Insurance',
                 'supplierConfirmationNumber' => 'CONF-123',
                 'description' => 'Medical assistance, Trip cancellation',
