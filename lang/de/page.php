@@ -79,6 +79,9 @@ return [
         'insurance_no_insurance_option' => 'Keine Versicherung',
         'insurance_booking_missing_payment_details' => 'Erforderliche Zahlungsangaben fehlen. Bitte schließen Sie den Versicherungsschritt erneut ab.',
         'insurance_selected_offer_unavailable' => 'Das ausgewählte Versicherungsangebot ist nicht mehr verfügbar. Bitte laden Sie die Angebote erneut und wählen Sie eine Option.',
+        'insurance_documents' => 'Versicherungsdokumente',
+        'insurance_document_ipid' => 'Informationsblatt zu Versicherungsprodukten',
+        'insurance_document_product_description' => 'Produktinformation / Produktbeschreibung',
     ],
     'payment' => [
         'payment' => 'Zahlung',

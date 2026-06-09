@@ -104,6 +104,9 @@ return [
         'insurance_no_insurance_option' => 'No insurance',
         'insurance_booking_missing_payment_details' => 'Required payment information is missing. Please complete the insurance step again.',
         'insurance_selected_offer_unavailable' => 'The selected insurance offer is no longer available. Please load the offers again and choose an option.',
+        'insurance_documents' => 'Insurance documents',
+        'insurance_document_ipid' => 'Insurance Product Information Document',
+        'insurance_document_product_description' => 'Product Information / Product Description',
     ],
 
     'payment' => [
