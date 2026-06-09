@@ -208,7 +208,7 @@
 
     @else
 
-    <div class="relative" x-data @insurance-load-offers.window="$wire.call('loadOffer')">
+    <div class="relative" x-data="{ openInsuranceInfoOfferId: null }" @insurance-load-offers.window="$wire.call('loadOffer')">
         <div wire:loading.flex wire:target="listen,loadOffer"
              class="absolute inset-0 z-10 items-center justify-center gap-3 rounded-xl bg-white/80 backdrop-blur-sm text-gray-700">
             <svg class="h-5 w-5 animate-spin text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -224,6 +224,17 @@
 
             @if($insuranceProviderIsAvailable)
             @foreach($offers as $offer)
+                @php
+                    $offerInfoLinks = collect($offer->infoLinks ?? [])
+                        ->filter(fn ($documentLink) => filled(data_get($documentLink, 'url')))
+                        ->sortBy(fn ($documentLink) => match (data_get($documentLink, 'type')) {
+                            'PID', 'IPID' => 0,
+                            'INF' => 1,
+                            default => 2,
+                        })
+                        ->values();
+                @endphp
+
                 <label class="relative border rounded-xl p-4 cursor-pointer hover:shadow-sm w-full block
                  {{ $selectedOfferId == $offer->id
         ? 'border-blue-500 ring-1 ring-blue-500'
@@ -268,6 +279,50 @@
                                 </li>
                             @endforeach
                         </ul>
+                    @endif
+
+                    @if($offerInfoLinks->isNotEmpty())
+                        <div class="relative mt-3 inline-flex" wire:ignore>
+                            <button
+                                type="button"
+                                class="rounded-full border border-blue-200 px-3 py-1 text-sm font-medium text-blue-700 hover:bg-blue-50"
+                                x-on:click.prevent.stop="openInsuranceInfoOfferId = openInsuranceInfoOfferId === @js($offer->id) ? null : @js($offer->id)"
+                                x-on:keydown.escape.window="openInsuranceInfoOfferId = null"
+                                aria-haspopup="dialog"
+                                x-bind:aria-expanded="(openInsuranceInfoOfferId === @js($offer->id)).toString()"
+                            >
+                                {{ trans('checkout::page.trip_details.info') }}
+                            </button>
+
+                            <div
+                                x-cloak
+                                x-show="openInsuranceInfoOfferId === @js($offer->id)"
+                                x-transition
+                                x-on:click.outside="if (openInsuranceInfoOfferId === @js($offer->id)) openInsuranceInfoOfferId = null"
+                                class="absolute left-0 top-9 z-20 w-80 max-w-[calc(100vw-3rem)] rounded-lg border border-gray-200 bg-white p-4 text-sm font-normal text-gray-700 shadow-lg"
+                                role="dialog"
+                            >
+                                <div class="mb-2 font-medium text-gray-900">
+                                    {{ trans('checkout::page.trip_details.insurance_documents') }}
+                                </div>
+
+                                <ul class="space-y-2">
+                                    @foreach($offerInfoLinks as $documentLink)
+                                        <li>
+                                            <a
+                                                href="{{ data_get($documentLink, 'url') }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="text-blue-600 underline hover:text-blue-700"
+                                                x-on:click.stop
+                                            >
+                                                {{ data_get($documentLink, 'label') ?: data_get($documentLink, 'url') }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
                     @endif
 
                     @if(!empty($offer->documentLinks))

@@ -79,6 +79,9 @@ return [
         'insurance_no_insurance_option' => 'Sin seguro',
         'insurance_booking_missing_payment_details' => 'Faltan datos de pago obligatorios. Complete de nuevo el paso del seguro.',
         'insurance_selected_offer_unavailable' => 'La oferta de seguro seleccionada ya no está disponible. Vuelva a cargar las ofertas y elija una opción.',
+        'insurance_documents' => 'Documentos del seguro',
+        'insurance_document_ipid' => 'Documento de información del producto de seguro',
+        'insurance_document_product_description' => 'Información del producto / Descripción del producto',
     ],
     'payment' => [
         'payment' => 'Pago',
@@ -98,5 +101,6 @@ return [
         'print_booking_confirmation' => 'Imprimir confirmación de reserva',
         'print_booking_proposal' => 'Imprimir propuesta de reserva',
         'traveller_information' => 'Información del viajero',
+        'insurance_declined' => 'El cliente rechazó el seguro',
     ],
 ];

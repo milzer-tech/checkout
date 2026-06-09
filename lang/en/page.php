@@ -104,6 +104,9 @@ return [
         'insurance_no_insurance_option' => 'No insurance',
         'insurance_booking_missing_payment_details' => 'Required payment information is missing. Please complete the insurance step again.',
         'insurance_selected_offer_unavailable' => 'The selected insurance offer is no longer available. Please load the offers again and choose an option.',
+        'insurance_documents' => 'Insurance documents',
+        'insurance_document_ipid' => 'Insurance Product Information Document',
+        'insurance_document_product_description' => 'Product Information / Product Description',
     ],
 
     'payment' => [
@@ -130,6 +133,7 @@ return [
         'services_without_confirmation' => 'Services without confirmation',
         'services_require_manual_confirmation' => 'These services require manual confirmation. Please reach out to us about the next steps.',
         'go_back_to_planner' => 'Go back to planner',
+        'insurance_declined' => 'Customer declined insurance',
         'you_have_not_been_charged_for_this_booking' => 'You have not been charged for this booking.',
         'we_recommend_try_again' => 'We recommend you trying booking again.',
         'services_that_could_not_be_booked' => 'Services that could not be booked',

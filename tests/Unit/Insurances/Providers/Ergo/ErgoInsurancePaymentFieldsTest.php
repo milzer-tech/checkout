@@ -136,6 +136,53 @@ it('infers ERGO coverage advantages from live product descriptors when component
     ]);
 });
 
+it('maps ERGO PlanSearch PID and INF description URLs to offer info links', function (): void {
+    $plan = ErgoAvailablePlanDto::from([
+        'PlanCode' => 'JPV180',
+        'Ordering' => 1,
+        'PlanDetail' => [
+            'Title' => 'Jahresschutz',
+            'DescriptionURL' => [
+                [
+                    'DefaultInd' => true,
+                    'Type' => 'INF',
+                    '_' => 'https://www.ergo-reiseversicherung.de/de/produktinformationen/produktbeschreibungen/202504/jv/de/jahresschutz-mkv-alle-varianten-msb',
+                ],
+                [
+                    'DefaultInd' => true,
+                    'Type' => 'PID',
+                    '_' => 'https://egate2.erv.de/escWeb/pib?lc=de_DE&appl=ESC&date=1778665814175&tc=JPV180&rc=ERVDE&mc=DE',
+                ],
+                [
+                    'DefaultInd' => false,
+                    'Type' => 'TAC',
+                    '_' => 'https://example.test/terms',
+                ],
+            ],
+        ],
+        'Quote' => [
+            'ID' => 1,
+            'Services' => [
+                'Service' => [],
+                'TotalPremium' => ['Amount' => '5300', 'CurrencyCode' => 'EUR', 'DecimalPlaces' => 2],
+            ],
+            'InsuranceDetails' => [],
+            'AcceptedPaymentTypes' => [],
+        ],
+    ]);
+
+    $infoLinksForPlan = new ReflectionMethod(ErgoInsurance::class, 'infoLinksForPlan');
+    $infoLinks = $infoLinksForPlan->invoke(new ErgoInsurance, $plan);
+
+    expect($infoLinks)->toHaveCount(2)
+        ->and($infoLinks[0]->label)->toBe('Product Information / Product Description')
+        ->and($infoLinks[0]->url)->toBe('https://www.ergo-reiseversicherung.de/de/produktinformationen/produktbeschreibungen/202504/jv/de/jahresschutz-mkv-alle-varianten-msb')
+        ->and($infoLinks[0]->type)->toBe('INF')
+        ->and($infoLinks[1]->label)->toBe('Insurance Product Information Document')
+        ->and($infoLinks[1]->url)->toBe('https://egate2.erv.de/escWeb/pib?lc=de_DE&appl=ESC&date=1778665814175&tc=JPV180&rc=ERVDE&mc=DE')
+        ->and($infoLinks[1]->type)->toBe('PID');
+});
+
 it('keeps ERGO price outside the main payment and creates an open direct debit payload', function (): void {
     $subject = new ErgoInsurance;
     $transaction = new Transaction;

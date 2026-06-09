@@ -14,6 +14,7 @@ final class InsuranceOfferDto extends BaseDto
      *
      * @param  array<string>  $coverage
      * @param  array<int, InsuranceOfferDocumentLinkDto|array{label: string, url: string, type?: string|null}>  $documentLinks
+     * @param  array<int, InsuranceOfferDocumentLinkDto|array{label: string, url: string, type?: string|null}>  $infoLinks
      */
     public function __construct(
         public string $id,
@@ -24,6 +25,7 @@ final class InsuranceOfferDto extends BaseDto
         public array $providerMeta = [],
         public InsuranceTerms $terms = new InsuranceTerms,
         public array $documentLinks = [],
+        public array $infoLinks = [],
     ) {}
 
 }

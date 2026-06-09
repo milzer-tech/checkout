@@ -12,6 +12,7 @@ use Nezasa\Checkout\Insurances\Contracts\InsuranceContract;
 use Nezasa\Checkout\Insurances\Dtos\BookInsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\CreateInsuranceOffersDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceBookOfferResult;
+use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDocumentLinkDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
 use Nezasa\Checkout\Insurances\Dtos\InsurancePaymentFieldDto;
@@ -166,6 +167,7 @@ final class ErgoInsurance implements InsuranceContract
                 coverage: $this->coverageTitles($plan),
                 providerMeta: [self::PROVIDER_META_KEY => $plan->toArray()],
                 terms: $this->termsForPlan(),
+                infoLinks: $this->infoLinksForPlan($plan),
             );
         }
 
@@ -633,6 +635,41 @@ final class ErgoInsurance implements InsuranceContract
             ->filter()
             ->values()
             ->all();
+    }
+
+    /**
+     * @return array<int, InsuranceOfferDocumentLinkDto>
+     */
+    private function infoLinksForPlan(ErgoAvailablePlanDto $plan): array
+    {
+        return $plan->PlanDetail->DescriptionURL
+            ->map(function (mixed $descriptionUrl): ?InsuranceOfferDocumentLinkDto {
+                $data = $this->arrayFromMixed($descriptionUrl);
+                $type = (string) ($data['Type'] ?? '');
+                $url = (string) ($data['value'] ?? $data['_'] ?? '');
+
+                if ($url === '' || ! in_array($type, ['PID', 'INF'], true)) {
+                    return null;
+                }
+
+                return new InsuranceOfferDocumentLinkDto(
+                    label: $this->documentLabel($type),
+                    url: $url,
+                    type: $type,
+                );
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function documentLabel(string $type): string
+    {
+        return match ($type) {
+            'PID' => trans('checkout::page.trip_details.insurance_document_ipid'),
+            'INF' => trans('checkout::page.trip_details.insurance_document_product_description'),
+            default => $type,
+        };
     }
 
     /**

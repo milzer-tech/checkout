@@ -104,9 +104,8 @@ class PaymentResultPage extends BaseCheckoutComponent
         try {
             $this->transaction->refresh();
 
-            $offerRaw = InsuranceCheckoutData::getOffer(
-                InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data)
-            );
+            $checkoutData = InsuranceCheckoutData::checkoutDataArray($this->transaction->checkout->data);
+            $offerRaw = InsuranceCheckoutData::getOffer($checkoutData);
             $insurance = $offerRaw ? InsuranceOfferDto::from($offerRaw) : null;
             if ($insurance instanceof InsuranceOfferDto) {
                 $availability = data_get($this->transaction->result_data, 'insurance.isSuccessful', false)
@@ -115,6 +114,18 @@ class PaymentResultPage extends BaseCheckoutComponent
 
                 $this->itinerary->insurances = collect([
                     new InsuranceItem(id: $insurance->id, name: $insurance->title, availability: $availability),
+                ]);
+
+                return;
+            }
+
+            if (InsuranceCheckoutData::isDeclined($checkoutData)) {
+                $this->itinerary->insurances = collect([
+                    new InsuranceItem(
+                        id: 'insurance-declined',
+                        name: trans('checkout::page.booking_confirmation.insurance_declined'),
+                        availability: AvailabilityEnum::None
+                    ),
                 ]);
             }
         } catch (\Throwable $e) {
