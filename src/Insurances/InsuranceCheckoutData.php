@@ -31,6 +31,10 @@ final class InsuranceCheckoutData
 
     public const string PAYMENT = 'payment';
 
+    public const string DECLINED = 'declined';
+
+    public const string PROVIDER = 'provider';
+
     /**
      * Persisted-only key wrapping the encrypted JSON of the in-memory payment map.
      * Do not use this key in application-level payment DTOs.
@@ -75,7 +79,7 @@ final class InsuranceCheckoutData
     private static function legacyFlatInsuranceRootToOfferArray(array $insuranceRoot): array
     {
         return collect($insuranceRoot)
-            ->only(['id', 'title', 'price', 'coverage', 'providerMeta', 'terms', 'documentLinks'])
+            ->only(['id', 'title', 'price', 'coverage', 'providerMeta', 'terms', 'documentLinks', 'infoLinks'])
             ->all();
     }
 
@@ -135,6 +139,16 @@ final class InsuranceCheckoutData
     }
 
     /**
+     * @param  array<string, mixed>  $checkoutData
+     */
+    public static function isDeclined(array $checkoutData): bool
+    {
+        $ins = $checkoutData['insurance'] ?? null;
+
+        return is_array($ins) && ($ins[self::DECLINED] ?? false) === true;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public static function emptyInsuranceBucket(): array
@@ -144,6 +158,23 @@ final class InsuranceCheckoutData
             self::META => null,
             self::CREATE_OFFER => null,
             self::PAYMENT => null,
+            self::DECLINED => false,
+            self::PROVIDER => null,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function declinedInsuranceBucket(?string $provider = null): array
+    {
+        return [
+            self::OFFER => null,
+            self::META => null,
+            self::CREATE_OFFER => null,
+            self::PAYMENT => null,
+            self::DECLINED => true,
+            self::PROVIDER => $provider,
         ];
     }
 
@@ -159,8 +190,9 @@ final class InsuranceCheckoutData
         $meta = self::getMeta($checkoutData);
         $createOffer = self::getCreateOffer($checkoutData);
         $payment = self::getPayment($checkoutData);
+        $declined = self::isDeclined($checkoutData);
 
-        if ($offer === null && $meta === null && $createOffer === null && $payment === []) {
+        if ($offer === null && $meta === null && $createOffer === null && $payment === [] && ! $declined) {
             return null;
         }
 
@@ -169,6 +201,10 @@ final class InsuranceCheckoutData
             self::META => $meta,
             self::CREATE_OFFER => $createOffer,
             self::PAYMENT => $payment === [] ? null : $payment,
+            self::DECLINED => $declined,
+            self::PROVIDER => is_array($checkoutData['insurance'] ?? null)
+                ? ($checkoutData['insurance'][self::PROVIDER] ?? null)
+                : null,
         ];
     }
 

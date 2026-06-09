@@ -108,7 +108,7 @@ class InsuranceSection extends BaseCheckoutComponent
             $this->requiresInsurancePaymentData = false;
             $this->insurancePaymentFields = [];
             $this->insurancePaymentData = [];
-            $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate(null));
+            $this->persistDeclinedInsuranceSelection();
             $this->dispatch('insurance-declined');
 
             return;
@@ -117,6 +117,8 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->selectedOfferId = $id;
         $bucket = $this->insuranceBucketWithCreateOfferContext();
         $bucket[InsuranceCheckoutData::OFFER] = $offer->toArray();
+        $bucket[InsuranceCheckoutData::DECLINED] = false;
+        $bucket[InsuranceCheckoutData::PROVIDER] = resolve(InsuranceHandler::class)->getProviderName();
 
         $this->loadInsurancePaymentFields();
         if (! $this->requiresInsurancePaymentData) {
@@ -208,6 +210,17 @@ class InsuranceSection extends BaseCheckoutComponent
         }
 
         return $bucket;
+    }
+
+    private function persistDeclinedInsuranceSelection(): void
+    {
+        $providerName = resolve(InsuranceHandler::class)->getProviderName();
+
+        $this->model->updateData(
+            InsuranceCheckoutData::prepareInsuranceUpdate(
+                InsuranceCheckoutData::declinedInsuranceBucket($providerName)
+            )
+        );
     }
 
     private function createOfferContext(): CreateInsuranceOffersDto
@@ -387,6 +400,10 @@ class InsuranceSection extends BaseCheckoutComponent
             }
 
             $this->storeInsurancePaymentData();
+        }
+
+        if ($this->selectedOfferId === null && $this->offers !== []) {
+            $this->persistDeclinedInsuranceSelection();
         }
 
         $this->markAsCompletedAdnCollapse(Section::Insurance);

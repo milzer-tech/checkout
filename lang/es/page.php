@@ -101,5 +101,6 @@ return [
         'print_booking_confirmation' => 'Imprimir confirmación de reserva',
         'print_booking_proposal' => 'Imprimir propuesta de reserva',
         'traveller_information' => 'Información del viajero',
+        'insurance_declined' => 'El cliente rechazó el seguro',
     ],
 ];
