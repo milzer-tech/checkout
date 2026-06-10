@@ -40,7 +40,9 @@ readonly class DownPaymentCallBackHandler extends PaymentCallBackHandler
                 $captureResult = $this->handlePaymentCapture($gateway, $transaction);
 
                 if ($captureResult->isSuccessful) {
-                    $this->createTransactionOnNezasa($transaction, $gateway, $request, $captureResult);
+                    if (! $gateway::isTokenized()) {
+                        $this->createTransactionOnNezasa($transaction, $gateway, $request, $captureResult);
+                    }
 
                     event(new ItineraryBookingSucceededEvent($transaction));
                 }

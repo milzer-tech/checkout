@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Connectors;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Integrations\Nezasa\Resources\CheckoutResource;
 use Nezasa\Checkout\Integrations\Nezasa\Resources\LocationResource;
+use Nezasa\Checkout\Integrations\Nezasa\Resources\PaymentAuthorizationResource;
 use Nezasa\Checkout\Integrations\Nezasa\Resources\PaymentTransactionResource;
 use Nezasa\Checkout\Integrations\Nezasa\Resources\PlannerResource;
 use Saloon\Http\Auth\BasicAuthenticator;
@@ -99,5 +100,13 @@ class NezasaConnector extends Connector
     public function paymentTransaction(): PaymentTransactionResource
     {
         return new PaymentTransactionResource($this);
+    }
+
+    /**
+     * Get the payment authorization resource.
+     */
+    public function paymentAuthorization(): PaymentAuthorizationResource
+    {
+        return new PaymentAuthorizationResource($this);
     }
 }

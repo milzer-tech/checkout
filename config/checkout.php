@@ -3,6 +3,7 @@
 use Nezasa\Checkout\Insurances\Providers\Ergo\ErgoInsurance;
 use Nezasa\Checkout\Insurances\Providers\HanseMerkur\HanseMerkurInsurance;
 use Nezasa\Checkout\Payments\Gateways\Computop\ComputopGateway;
+use Nezasa\Checkout\Payments\Gateways\Computop\ComputopTokenGateway;
 use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceGateway;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaWidgetGateway;
 use Nezasa\Checkout\Payments\Gateways\Stripe\StripeGateway;
@@ -57,6 +58,10 @@ return [
             'username' => env('CHECKOUT_COMPUTOP_USERNAME', 'must_be_set_in_env'),
             'password' => env('CHECKOUT_COMPUTOP_PASSWORD', 'must_be_set_in_env'),
         ],
+        'computop_token' => [
+            'active' => (bool) env('CHECKOUT_COMPUTOP_TOKEN_ACTIVE', false),
+            'name' => env('CHECKOUT_COMPUTOP_TOKEN_NAME', 'Computop - Token'),
+        ],
     ],
 
     'insurance' => [
@@ -110,6 +115,7 @@ return [
         InvoiceGateway::class,
         StripeGateway::class,
         ComputopGateway::class,
+        ComputopTokenGateway::class,
     ],
 
     'insurance_provider' => [
