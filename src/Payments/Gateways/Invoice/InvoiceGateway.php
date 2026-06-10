@@ -40,6 +40,14 @@ class InvoiceGateway implements RedirectPaymentContract
     }
 
     /**
+     * Returns whether the payment gateway is tokenized.
+     */
+    public static function isTokenized(): bool
+    {
+        return false;
+    }
+
+    /**
      * Prepares the payment initiation process.
      */
     public function prepare(PaymentPrepareData $data): PaymentInit

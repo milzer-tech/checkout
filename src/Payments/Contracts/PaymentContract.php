@@ -28,6 +28,15 @@ interface PaymentContract
     public static function name(): string;
 
     /**
+     * Returns whether the payment gateway is tokenized.
+     *
+     * Tokenized gateways only authorize the payment and hand the card token over to Nezasa,
+     * so Nezasa captures the money on their side. For these gateways the capture method must
+     * not capture at the payment provider and no payment transaction is created in Nezasa.
+     */
+    public static function isTokenized(): bool;
+
+    /**
      * Prepares the payment initiation process.
      */
     public function prepare(PaymentPrepareData $data): PaymentInit;

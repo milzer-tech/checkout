@@ -49,6 +49,14 @@ class ComputopGateway implements RedirectPaymentContract
     }
 
     /**
+     * Returns whether the payment gateway is tokenized.
+     */
+    public static function isTokenized(): bool
+    {
+        return false;
+    }
+
+    /**
      * Prepares the payment initiation process.
      * // 5232125125401459
      */
