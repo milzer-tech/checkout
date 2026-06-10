@@ -37,6 +37,11 @@ class ActivePaymentProviderForActionTest implements PaymentContract
         return 'Active Test Gateway';
     }
 
+    public static function isTokenized(): bool
+    {
+        return false;
+    }
+
     public function prepare(PaymentPrepareData $data): PaymentInit
     {
         throw new RuntimeException('Not used by this test.');

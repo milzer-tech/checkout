@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Event;
 use Nezasa\Checkout\Actions\Checkout\BookItineraryAction;
 use Nezasa\Checkout\Actions\Checkout\FindBookingResultAction;
 use Nezasa\Checkout\Actions\Payment\CreateNezasaTransactionAction;
 use Nezasa\Checkout\Actions\Transaction\UpdateTransactionAction;
+use Nezasa\Checkout\Events\ItineraryBookingSucceededEvent;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
@@ -31,6 +33,8 @@ final class CallbackGatewayForHandlerTest implements PaymentContract
 
     public static bool $abortSuccessful = true;
 
+    public static bool $tokenized = false;
+
     public static function isActive(): bool
     {
         return true;
@@ -39,6 +43,11 @@ final class CallbackGatewayForHandlerTest implements PaymentContract
     public static function name(): string
     {
         return 'Callback Gateway';
+    }
+
+    public static function isTokenized(): bool
+    {
+        return self::$tokenized;
     }
 
     public function prepare(PaymentPrepareData $data): PaymentInit
@@ -84,6 +93,21 @@ final class FailedBookingActionForHandlerTest extends BookItineraryAction
     }
 }
 
+final class SuccessfulBookingActionForHandlerTest extends BookItineraryAction
+{
+    public function run(string $checkoutId): false|Response
+    {
+        $response = Mockery::mock(Response::class);
+        $response->shouldReceive('array')->with('summary')->andReturn([
+            'components' => [
+                ['id' => 'hotel-1', 'isPlaceholder' => false, 'isBooked' => true, 'status' => 'BOOKED'],
+            ],
+        ]);
+
+        return $response;
+    }
+}
+
 function callbackHandlerTransaction(): Transaction
 {
     $checkout = Checkout::factory()->create([
@@ -110,6 +134,7 @@ beforeEach(function (): void {
     CallbackGatewayForHandlerTest::$authorizeSuccessful = true;
     CallbackGatewayForHandlerTest::$captureSuccessful = true;
     CallbackGatewayForHandlerTest::$abortSuccessful = true;
+    CallbackGatewayForHandlerTest::$tokenized = false;
 
     Config::set('checkout.payment', [CallbackGatewayForHandlerTest::class]);
 });
@@ -155,6 +180,31 @@ it('marks rest-payment callback as capture failed when gateway capture fails', f
         ])
         ->and($output->bookingStatusEnum)->toBe(BookingStatusEnum::Unknown)
         ->and($output->isPaymentSuccessful)->toBeFalse();
+});
+
+it('captures tokenized gateways without creating a Nezasa transaction and still fires the booking event', function (): void {
+    Event::fake();
+    CallbackGatewayForHandlerTest::$tokenized = true;
+
+    $transaction = callbackHandlerTransaction();
+    $handler = new DownPaymentCallBackHandler(
+        new SuccessfulBookingActionForHandlerTest,
+        resolve(UpdateTransactionAction::class),
+        resolve(FindBookingResultAction::class),
+        resolve(CreateNezasaTransactionAction::class),
+    );
+
+    $output = $handler->run($transaction, Request::create('/callback'));
+    $transaction->refresh();
+
+    // makeNezasaTransactionPayload throws in the fake gateway, so reaching here proves it was skipped.
+    expect($transaction->status)->toBe(TransactionStatusEnum::Captured)
+        ->and($transaction->result_data['captured'])->toBeTrue()
+        ->and($transaction->result_data)->not->toHaveKey('transaction_response')
+        ->and($output->bookingStatusEnum)->toBe(BookingStatusEnum::CompleteSuccess)
+        ->and($output->isPaymentSuccessful)->toBeTrue();
+
+    Event::assertDispatched(ItineraryBookingSucceededEvent::class);
 });
 
 it('returns stored callback output without re-authorizing an already processed transaction', function (): void {

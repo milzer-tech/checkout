@@ -13,6 +13,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloa
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Requests\Payment\CreatePaymentAuthorizationRequest;
 use Nezasa\Checkout\Integrations\Oppwa\Dtos\Responses\OppwaPrepareResponse;
 use Nezasa\Checkout\Integrations\Oppwa\Requests\OppwaComplationRequest;
 use Nezasa\Checkout\Integrations\Oppwa\Requests\OppwaPrepareRequest;
@@ -23,6 +24,7 @@ use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 use Nezasa\Checkout\Payments\Gateways\Computop\ComputopGateway;
+use Nezasa\Checkout\Payments\Gateways\Computop\ComputopTokenGateway;
 use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceGateway;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaWidgetGateway;
 use Nezasa\Checkout\Payments\Gateways\Stripe\StripeGateway;
@@ -250,6 +252,116 @@ it('runs Computop prepare, authorization, capture, abort, redirect, and Nezasa p
         ->and($payload->paymentMethod)->toBe(NezasaPaymentMethodEnum::Other)
         ->and($payload->status)->toBe(NezasaTransactionStatusEnum::Closed)
         ->and($payload->paymentMethodName)->toBe('Computop');
+});
+
+it('runs Computop token flow with CoF setup and sends card token details to Nezasa', function (): void {
+    Config::set('checkout.integrations.computop.active', true);
+    Config::set('checkout.integrations.computop.name', 'Computop');
+    Config::set('checkout.integrations.computop.base_url', 'https://computop.example.test');
+    Config::set('checkout.integrations.computop.test_mode', true);
+    Config::set('checkout.integrations.computop.username', 'user');
+    Config::set('checkout.integrations.computop.password', 'pass');
+    Config::set('checkout.integrations.computop_token.active', true);
+    Config::set('checkout.integrations.computop_token.name', 'Computop - Token');
+    Config::set('checkout.nezasa.base_url', 'https://nezasa.example.test');
+    Config::set('checkout.nezasa.username', 'nezasa-user');
+    Config::set('checkout.nezasa.password', 'nezasa-pass');
+
+    $mockClient = MockClient::global([
+        ComputopCreatePaymentRequest::class => MockResponse::make([
+            'paymentId' => 'pay-token-123',
+            'transactionId' => 'transaction-token-123',
+            'status' => 'OK',
+            '_Links' => [
+                'redirect' => ['href' => 'https://pay.example.test/token-redirect'],
+            ],
+        ], 201),
+        GetComputopPaymentRequest::class => MockResponse::make([
+            'paymentId' => 'pay-token-123',
+            'transactionId' => 'transaction-token-123',
+            'status' => 'CAPTURE_REQUEST',
+            'paymentMethods' => [
+                'type' => 'CARD',
+                'card' => [
+                    'cardholderName' => 'John Doe',
+                    'pseudoCardNumber' => '0111111111111111',
+                    'brand' => 'VISA',
+                    'issuer' => 'COMMERZBANK',
+                    'expiryDate' => '01.01.2028',
+                    'schemeReferenceId' => 'VISA-SCHEME-REF-456',
+                ],
+            ],
+        ]),
+        CreatePaymentAuthorizationRequest::class => MockResponse::make([
+            'id' => 'authorization-123',
+        ]),
+        ComputopReversePaymentRequest::class => MockResponse::make([
+            'paymentId' => 'pay-token-123',
+            'transactionId' => 'transaction-token-123',
+            'status' => 'OK',
+        ]),
+    ]);
+
+    $transaction = paymentGatewayTransaction(gateway: 'Computop - Token');
+    $gateway = new ComputopTokenGateway;
+    $init = $gateway->prepare(paymentGatewayPrepareData($transaction));
+    $request = requestWithTransaction($transaction, ['PayID' => 'pay-token-123']);
+    $authorized = $gateway->authorize($request, $init->persistentData);
+    $captured = $gateway->capture($request, $init->persistentData, $authorized->resultData);
+    $aborted = $gateway->abort($request, $init->persistentData, $authorized->resultData);
+
+    $mockClient->assertSent(function (mixed $request): bool {
+        if (! $request instanceof ComputopCreatePaymentRequest) {
+            return false;
+        }
+
+        expect($request->body()->all())->toHaveKey('credentialOnFile')
+            ->and($request->body()->all()['credentialOnFile'])->toBe([
+                'type' => [
+                    'unscheduled' => 'CIT',
+                ],
+                'initialPayment' => true,
+            ]);
+
+        return true;
+    });
+
+    $mockClient->assertSent(function (mixed $request): bool {
+        if (! $request instanceof CreatePaymentAuthorizationRequest) {
+            return false;
+        }
+
+        expect($request->resolveEndpoint())->toBe('payment-authorization/v1.13/'.$request->checkoutRefId)
+            ->and($request->body()->all())->toBe([
+                'aliasProvider' => 'COMPUTOP',
+                'schemeReferenceId' => 'VISA-SCHEME-REF-456',
+                'card' => [
+                    'alias' => '0111111111111111',
+                    'brand' => 'VISA',
+                    'issuer' => 'COMMERZBANK',
+                    'cardHolderName' => 'John Doe',
+                    'expiryMonth' => 1,
+                    'expiryYear' => 2028,
+                ],
+            ]);
+
+        return true;
+    });
+
+    // The tokenized gateway must never capture at Computop; Nezasa captures on their side.
+    $mockClient->assertNotSent(ComputopCapturePaymentRequest::class);
+
+    expect(ComputopTokenGateway::isActive())->toBeTrue()
+        ->and(ComputopTokenGateway::name())->toBe('Computop - Token')
+        ->and(ComputopTokenGateway::isTokenized())->toBeTrue()
+        ->and($init->isAvailable)->toBeTrue()
+        ->and($init->persistentData['paylaod']['credentialOnFile']['type']['unscheduled'])->toBe('CIT')
+        ->and($gateway->getRedirectUrl($init)->toStringable()->toString())->toBe('https://pay.example.test/token-redirect')
+        ->and($authorized->isSuccessful)->toBeTrue()
+        ->and($authorized->resultData)->not->toHaveKey('payment_authorization')
+        ->and($captured->isSuccessful)->toBeTrue()
+        ->and($captured->persistentData['payment_authorization'])->toBe(['id' => 'authorization-123'])
+        ->and($aborted->isSuccessful)->toBeTrue();
 });
 
 it('builds Stripe Nezasa payload and adds vertical insurance submit text only when a quote is selected', function (): void {
