@@ -220,14 +220,30 @@ class ComputopTokenGateway implements RedirectPaymentContract
     }
 
     /**
+     * Build the Nezasa payment authorization payload from the Computop payment details.
+     *
+     * The live "get payment" response keeps the card under "payment.card" with the pseudo
+     * card number in "number"/"PCNr" and the scheme reference in "payment.schemeReferenceID",
+     * while the documented response uses "paymentMethods.card" with "pseudoCardNumber" and
+     * "schemeReferenceId". Both shapes are supported.
+     *
      * @param  array<string, mixed>  $payment
      */
     private function makePaymentAuthorizationPayload(array $payment): ?CreatePaymentAuthorizationPayload
     {
-        $card = (array) data_get($payment, 'paymentMethods.card', []);
-        [$expiryMonth, $expiryYear] = $this->parseExpiryDate((string) data_get($card, 'expiryDate', ''));
-        $schemeReferenceId = (string) data_get($card, 'schemeReferenceId', '');
-        $alias = (string) data_get($card, 'pseudoCardNumber', '');
+        $card = (array) (data_get($payment, 'payment.card') ?? data_get($payment, 'paymentMethods.card', []));
+
+        $alias = (string) (data_get($card, 'number')
+            ?? data_get($payment, 'payment.PCNr')
+            ?? data_get($card, 'pseudoCardNumber', ''));
+
+        $schemeReferenceId = (string) (data_get($payment, 'payment.schemeReferenceID')
+            ?? data_get($card, 'schemeReferenceId')
+            ?? data_get($card, 'schemeReferenceID', ''));
+
+        [$expiryMonth, $expiryYear] = $this->parseExpiryDate(
+            (string) (data_get($card, 'expiryDate') ?? data_get($payment, 'payment.CCExpiry', ''))
+        );
 
         if (blank($schemeReferenceId) || blank($alias) || $expiryMonth < 1 || $expiryYear < 1) {
             report(new RuntimeException('Computop token response is missing required card token fields.'));
@@ -240,9 +256,9 @@ class ComputopTokenGateway implements RedirectPaymentContract
             schemeReferenceId: $schemeReferenceId,
             card: new PaymentAuthorizationCardPayloadEntity(
                 alias: $alias,
-                brand: (string) data_get($card, 'brand', data_get($card, 'cardBrand', '')),
+                brand: (string) (data_get($card, 'brand') ?? data_get($payment, 'payment.CCBrand', '')),
                 issuer: (string) data_get($card, 'issuer', ''),
-                cardHolderName: (string) data_get($card, 'cardholderName', ''),
+                cardHolderName: (string) (data_get($card, 'cardholderName') ?? data_get($payment, 'payment.CardHolder', '')),
                 expiryMonth: $expiryMonth,
                 expiryYear: $expiryYear,
             )
@@ -250,6 +266,8 @@ class ComputopTokenGateway implements RedirectPaymentContract
     }
 
     /**
+     * Parse the expiry date in "MM.DD.YYYY", "YYYY-MM" or Computop's "YYYYMM" format.
+     *
      * @return array{0: int, 1: int}
      */
     private function parseExpiryDate(string $expiryDate): array
@@ -259,6 +277,10 @@ class ComputopTokenGateway implements RedirectPaymentContract
         }
 
         if (preg_match('/^(?<year>\d{4})-(?<month>\d{1,2})/', $expiryDate, $matches) === 1) {
+            return [(int) $matches['month'], (int) $matches['year']];
+        }
+
+        if (preg_match('/^(?<year>\d{4})(?<month>\d{2})$/', $expiryDate, $matches) === 1) {
             return [(int) $matches['month'], (int) $matches['year']];
         }
 

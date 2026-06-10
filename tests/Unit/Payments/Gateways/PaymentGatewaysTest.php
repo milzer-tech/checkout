@@ -276,20 +276,25 @@ it('runs Computop token flow with CoF setup and sends card token details to Neza
                 'redirect' => ['href' => 'https://pay.example.test/token-redirect'],
             ],
         ], 201),
+        // The shape below mirrors the live Computop "get payment" response.
         GetComputopPaymentRequest::class => MockResponse::make([
             'paymentId' => 'pay-token-123',
             'transactionId' => 'transaction-token-123',
-            'status' => 'CAPTURE_REQUEST',
-            'paymentMethods' => [
-                'type' => 'CARD',
+            'status' => 'OK',
+            'payment' => [
+                'category' => 'CC',
                 'card' => [
                     'cardholderName' => 'John Doe',
-                    'pseudoCardNumber' => '0111111111111111',
-                    'brand' => 'VISA',
-                    'issuer' => 'COMMERZBANK',
-                    'expiryDate' => '01.01.2028',
-                    'schemeReferenceId' => 'VISA-SCHEME-REF-456',
+                    'number' => '0355203877628444',
+                    'expiryDate' => '202804',
+                    'brand' => 'MasterCard',
+                    'issuer' => '',
                 ],
+                'PCNr' => '0355203877628444',
+                'CCExpiry' => '202804',
+                'CCBrand' => 'MasterCard',
+                'CardHolder' => 'John Doe',
+                'schemeReferenceID' => '84ae0857d',
             ],
         ]),
         CreatePaymentAuthorizationRequest::class => MockResponse::make([
@@ -334,13 +339,13 @@ it('runs Computop token flow with CoF setup and sends card token details to Neza
         expect($request->resolveEndpoint())->toBe('payment-authorization/v1.13/'.$request->checkoutRefId)
             ->and($request->body()->all())->toBe([
                 'aliasProvider' => 'COMPUTOP',
-                'schemeReferenceId' => 'VISA-SCHEME-REF-456',
+                'schemeReferenceId' => '84ae0857d',
                 'card' => [
-                    'alias' => '0111111111111111',
-                    'brand' => 'VISA',
-                    'issuer' => 'COMMERZBANK',
+                    'alias' => '0355203877628444',
+                    'brand' => 'MasterCard',
+                    'issuer' => '',
                     'cardHolderName' => 'John Doe',
-                    'expiryMonth' => 1,
+                    'expiryMonth' => 4,
                     'expiryYear' => 2028,
                 ],
             ]);
