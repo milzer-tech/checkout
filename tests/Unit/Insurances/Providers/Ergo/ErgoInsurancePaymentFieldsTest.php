@@ -33,6 +33,15 @@ it('declares ERGO contact requirements', function (): void {
     ]);
 });
 
+it('declares ERGO passenger requirements', function (): void {
+    expect((new ErgoInsurance)->getPassengerRequirements())->toBe([
+        'firstName' => TravelerRequirementFieldEnum::Required,
+        'lastName' => TravelerRequirementFieldEnum::Required,
+        'gender' => TravelerRequirementFieldEnum::Required,
+        'birthDate' => TravelerRequirementFieldEnum::Required,
+    ]);
+});
+
 it('provides ERGO-specific no selection text', function (): void {
     expect((new ErgoInsurance)->getNoSelectionText())
         ->toBe('Ich verzichte auf einen Reiseschutz für mich und sämtliche Reiseteilnehmer. Das Risiko und die Kosten im Schadensfall trage ich selbst.');

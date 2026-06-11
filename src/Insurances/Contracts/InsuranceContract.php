@@ -48,6 +48,13 @@ interface InsuranceContract
     public function getContactRequirements(): array;
 
     /**
+     * Passenger fields required before creating this provider's insurance offers.
+     *
+     * @return array<string, TravelerRequirementFieldEnum>
+     */
+    public function getPassengerRequirements(): array;
+
+    /**
      * Text shown when the customer declines insurance for the trip.
      */
     public function getNoSelectionText(): string;

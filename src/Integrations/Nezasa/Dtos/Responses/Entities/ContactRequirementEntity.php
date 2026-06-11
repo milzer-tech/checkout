@@ -6,14 +6,17 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
-use Nezasa\Checkout\Actions\Insurance\GetActiveInsuranceAction;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Insurances\Contracts\InsuranceContract;
 use Nezasa\Checkout\Integrations\Nezasa\Contracts\HasVisibleFieldsContract;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Concerns\AppliesActiveInsuranceTravelerRequirements;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Spatie\LaravelData\Attributes\MapInputName;
 
 class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContract
 {
+    use AppliesActiveInsuranceTravelerRequirements;
+
     /**
      * Create a new instance of the ContactRequirementEntity
      *
@@ -47,7 +50,9 @@ class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContra
             $this->country = TravelerRequirementFieldEnum::Required;
         }
 
-        $this->applyActiveInsuranceContactRequirements();
+        $this->applyActiveInsuranceTravelerRequirements(
+            fn (InsuranceContract $insurance): array => $insurance->getContactRequirements()
+        );
     }
 
     /**
@@ -59,39 +64,5 @@ class ContactRequirementEntity extends BaseDto implements HasVisibleFieldsContra
     {
         return collect($this->except('mobilePhoneDefaultCountryCode')->all())
             ->reject(fn (TravelerRequirementFieldEnum $value) => $value->isHidden());
-    }
-
-    private function applyActiveInsuranceContactRequirements(): void
-    {
-        $insurance = app(GetActiveInsuranceAction::class)->run();
-
-        if ($insurance === null) {
-            return;
-        }
-
-        foreach ($insurance->getContactRequirements() as $field => $requirement) {
-            $this->applyContactRequirement($field, $requirement);
-        }
-    }
-
-    private function applyContactRequirement(string $field, TravelerRequirementFieldEnum $requirement): void
-    {
-        match ($field) {
-            'firstName' => $this->firstName = $requirement,
-            'lastName' => $this->lastName = $requirement,
-            'companyName' => $this->companyName = $requirement,
-            'email' => $this->email = $requirement,
-            'mobilePhone' => $this->mobilePhone = $requirement,
-            'street1' => $this->street1 = $requirement,
-            'street2' => $this->street2 = $requirement,
-            'postalCode' => $this->postalCode = $requirement,
-            'city' => $this->city = $requirement,
-            'country' => $this->country = $requirement,
-            'state' => $this->state = $requirement,
-            'gender' => $this->gender = $requirement,
-            'taxNumber' => $this->taxNumber = $requirement,
-            'localIdNumber' => $this->localIdNumber = $requirement,
-            default => null,
-        };
     }
 }
