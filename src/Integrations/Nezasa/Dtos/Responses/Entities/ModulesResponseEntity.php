@@ -20,9 +20,9 @@ class ModulesResponseEntity extends Data
      * @note There are other properties in the response, but we are only interested in the modules for now.
      */
     public function __construct(
-        public Collection $legs,
         public LocationResponseEntity $startLocation,
         public LocationResponseEntity $endLocation,
+        public Collection $legs = new Collection,
         public Collection $returnConnections = new Collection,
     ) {}
 }
