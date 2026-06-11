@@ -12,6 +12,7 @@ use Nezasa\Checkout\Insurances\Dtos\InsuranceOffersResult;
 use Nezasa\Checkout\Insurances\Dtos\InsurancePaymentFieldDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Nezasa\Checkout\Models\Transaction;
 
 interface InsuranceContract
@@ -38,6 +39,13 @@ interface InsuranceContract
      * @return array<int, InsurancePaymentFieldDto>
      */
     public function getPaymentFields(): array;
+
+    /**
+     * Contact fields required before creating this provider's insurance offers.
+     *
+     * @return array<string, TravelerRequirementFieldEnum>
+     */
+    public function getContactRequirements(): array;
 
     /**
      * Text shown when the customer declines insurance for the trip.

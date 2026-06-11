@@ -9,6 +9,7 @@ use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoAvailablePlanDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Nezasa\Checkout\Models\Transaction;
 
 it('declares IBAN as required payment data', function (): void {
@@ -19,6 +20,17 @@ it('declares IBAN as required payment data', function (): void {
         ->and($fields[0]->type)->toBe('iban')
         ->and($fields[0]->required)->toBeTrue()
         ->and($fields[0]->sectionIntro)->toBe('Bitte geben Sie für die Zahlung der Versicherungsprämie ihre IBAN an. Die Versicherungsprämie wird direkt von der ERGO Reiseversicherung eingezogen.');
+});
+
+it('declares ERGO contact requirements', function (): void {
+    expect((new ErgoInsurance)->getContactRequirements())->toBe([
+        'firstName' => TravelerRequirementFieldEnum::Required,
+        'lastName' => TravelerRequirementFieldEnum::Required,
+        'email' => TravelerRequirementFieldEnum::Required,
+        'street1' => TravelerRequirementFieldEnum::Required,
+        'postalCode' => TravelerRequirementFieldEnum::Required,
+        'country' => TravelerRequirementFieldEnum::Required,
+    ]);
 });
 
 it('provides ERGO-specific no selection text', function (): void {

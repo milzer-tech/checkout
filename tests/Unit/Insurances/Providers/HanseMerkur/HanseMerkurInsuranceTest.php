@@ -17,6 +17,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEnt
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -89,6 +90,18 @@ it('does not require additional payment data', function (): void {
     expect($subject->getPaymentFields())->toBe([])
         ->and($subject->getNoSelectionText())->toBe('No insurance')
         ->and($subject->shouldAddOfferPriceToPayment())->toBeTrue();
+});
+
+it('declares HanseMerkur contact requirements', function (): void {
+    expect((new HanseMerkurInsurance)->getContactRequirements())->toBe([
+        'firstName' => TravelerRequirementFieldEnum::Required,
+        'lastName' => TravelerRequirementFieldEnum::Required,
+        'email' => TravelerRequirementFieldEnum::Required,
+        'street1' => TravelerRequirementFieldEnum::Required,
+        'postalCode' => TravelerRequirementFieldEnum::Required,
+        'country' => TravelerRequirementFieldEnum::Required,
+        'gender' => TravelerRequirementFieldEnum::Required,
+    ]);
 });
 
 it('getNezasaPayload returns the same payload unchanged', function (): void {

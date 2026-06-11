@@ -28,6 +28,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\AddCustomInsuranceRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Payment\CreatePaymentTransactionRequest;
 use Nezasa\Checkout\Models\Checkout;
@@ -66,6 +67,13 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
     public function getPaymentFields(): array
     {
         return [InsurancePaymentFieldDto::iban()];
+    }
+
+    public function getContactRequirements(): array
+    {
+        return [
+            'email' => TravelerRequirementFieldEnum::Required,
+        ];
     }
 
     public function getNoSelectionText(): string

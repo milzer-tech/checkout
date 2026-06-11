@@ -37,6 +37,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Nezasa\Checkout\Models\Transaction;
 
 final class HanseMerkurInsurance implements InsuranceContract
@@ -63,6 +64,19 @@ final class HanseMerkurInsurance implements InsuranceContract
     public function getPaymentFields(): array
     {
         return [];
+    }
+
+    public function getContactRequirements(): array
+    {
+        return [
+            'firstName' => TravelerRequirementFieldEnum::Required,
+            'lastName' => TravelerRequirementFieldEnum::Required,
+            'email' => TravelerRequirementFieldEnum::Required,
+            'street1' => TravelerRequirementFieldEnum::Required,
+            'postalCode' => TravelerRequirementFieldEnum::Required,
+            'country' => TravelerRequirementFieldEnum::Required,
+            'gender' => TravelerRequirementFieldEnum::Required,
+        ];
     }
 
     public function getNoSelectionText(): string

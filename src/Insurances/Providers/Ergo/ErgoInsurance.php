@@ -58,6 +58,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEnt
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Nezasa\Checkout\Models\Transaction;
 use Spatie\LaravelData\Data;
 
@@ -91,6 +92,18 @@ final class ErgoInsurance implements InsuranceContract
 
         return [
             $iban,
+        ];
+    }
+
+    public function getContactRequirements(): array
+    {
+        return [
+            'firstName' => TravelerRequirementFieldEnum::Required,
+            'lastName' => TravelerRequirementFieldEnum::Required,
+            'email' => TravelerRequirementFieldEnum::Required,
+            'street1' => TravelerRequirementFieldEnum::Required,
+            'postalCode' => TravelerRequirementFieldEnum::Required,
+            'country' => TravelerRequirementFieldEnum::Required,
         ];
     }
 
