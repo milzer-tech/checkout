@@ -116,6 +116,7 @@ This a test card number:
 //Mastercard
 5555555555554444
 ```
+For payment confirmation, use the challenge code `1234`.
 Enter the remaining data as you wish. You will find the other card number for different situations in this link: https://developer.computop.com/display/EN/Test+credit+card
 
 
