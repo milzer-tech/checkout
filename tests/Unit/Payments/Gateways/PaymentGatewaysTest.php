@@ -343,10 +343,10 @@ it('runs Computop token flow with CoF setup and sends card token details to Neza
                 'card' => [
                     'alias' => '0355203877628444',
                     'brand' => 'MasterCard',
-                    'issuer' => '',
-                    'cardHolderName' => 'John Doe',
                     'expiryMonth' => 4,
                     'expiryYear' => 2028,
+                    'cardHolderName' => 'John Doe',
+                    'issuer' => '',
                 ],
             ]);
 

@@ -257,10 +257,10 @@ class ComputopTokenGateway implements RedirectPaymentContract
             card: new PaymentAuthorizationCardPayloadEntity(
                 alias: $alias,
                 brand: (string) (data_get($card, 'brand') ?? data_get($payment, 'payment.CCBrand', '')),
-                issuer: (string) data_get($card, 'issuer', ''),
-                cardHolderName: (string) (data_get($card, 'cardholderName') ?? data_get($payment, 'payment.CardHolder', '')),
                 expiryMonth: $expiryMonth,
                 expiryYear: $expiryYear,
+                cardHolderName: (string) (data_get($card, 'cardholderName') ?? data_get($payment, 'payment.CardHolder', '')),
+                issuer: (string) data_get($card, 'issuer', ''),
             )
         );
     }
