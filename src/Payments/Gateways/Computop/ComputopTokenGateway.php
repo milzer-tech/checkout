@@ -231,18 +231,12 @@ class ComputopTokenGateway implements RedirectPaymentContract
      */
     private function makePaymentAuthorizationPayload(array $payment): ?CreatePaymentAuthorizationPayload
     {
-        $card = (array) (data_get($payment, 'payment.card') ?? data_get($payment, 'paymentMethods.card', []));
-
-        $alias = (string) (data_get($card, 'number')
-            ?? data_get($payment, 'payment.PCNr')
-            ?? data_get($card, 'pseudoCardNumber', ''));
-
-        $schemeReferenceId = (string) (data_get($payment, 'payment.schemeReferenceID')
-            ?? data_get($card, 'schemeReferenceId')
-            ?? data_get($card, 'schemeReferenceID', ''));
+        $card = (array) data_get($payment, 'payment.card');
+        $alias = (string) data_get($card, 'number');
+        $schemeReferenceId = (string) data_get($payment, 'payment.schemeReferenceID');
 
         [$expiryMonth, $expiryYear] = $this->parseExpiryDate(
-            (string) (data_get($card, 'expiryDate') ?? data_get($payment, 'payment.CCExpiry', ''))
+            (string) data_get($card, 'expiryDate')
         );
 
         if (blank($schemeReferenceId) || blank($alias) || $expiryMonth < 1 || $expiryYear < 1) {
