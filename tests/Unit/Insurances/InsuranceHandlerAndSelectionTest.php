@@ -76,6 +76,13 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
         ];
     }
 
+    public function getPassengerRequirements(): array
+    {
+        return [
+            'birthDate' => TravelerRequirementFieldEnum::Required,
+        ];
+    }
+
     public function getNoSelectionText(): string
     {
         return 'Stub no insurance';

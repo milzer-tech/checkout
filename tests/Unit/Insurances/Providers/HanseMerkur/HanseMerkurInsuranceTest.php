@@ -104,6 +104,15 @@ it('declares HanseMerkur contact requirements', function (): void {
     ]);
 });
 
+it('declares HanseMerkur passenger requirements', function (): void {
+    expect((new HanseMerkurInsurance)->getPassengerRequirements())->toBe([
+        'firstName' => TravelerRequirementFieldEnum::Required,
+        'lastName' => TravelerRequirementFieldEnum::Required,
+        'gender' => TravelerRequirementFieldEnum::Required,
+        'birthDate' => TravelerRequirementFieldEnum::Required,
+    ]);
+});
+
 it('getNezasaPayload returns the same payload unchanged', function (): void {
     $payload = new AddCustomInsurancePayload(
         name: 'Test insurance',

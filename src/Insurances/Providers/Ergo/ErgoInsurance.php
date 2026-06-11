@@ -107,6 +107,16 @@ final class ErgoInsurance implements InsuranceContract
         ];
     }
 
+    public function getPassengerRequirements(): array
+    {
+        return [
+            'firstName' => TravelerRequirementFieldEnum::Required,
+            'lastName' => TravelerRequirementFieldEnum::Required,
+            'gender' => TravelerRequirementFieldEnum::Required,
+            'birthDate' => TravelerRequirementFieldEnum::Required,
+        ];
+    }
+
     public function getNoSelectionText(): string
     {
         return 'Ich verzichte auf einen Reiseschutz für mich und sämtliche Reiseteilnehmer. Das Risiko und die Kosten im Schadensfall trage ich selbst.';

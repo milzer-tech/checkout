@@ -79,6 +79,16 @@ final class HanseMerkurInsurance implements InsuranceContract
         ];
     }
 
+    public function getPassengerRequirements(): array
+    {
+        return [
+            'firstName' => TravelerRequirementFieldEnum::Required,
+            'lastName' => TravelerRequirementFieldEnum::Required,
+            'gender' => TravelerRequirementFieldEnum::Required,
+            'birthDate' => TravelerRequirementFieldEnum::Required,
+        ];
+    }
+
     public function getNoSelectionText(): string
     {
         return trans('checkout::page.trip_details.insurance_no_insurance_option');

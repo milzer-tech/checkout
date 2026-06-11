@@ -7,12 +7,16 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Insurances\Contracts\InsuranceContract;
 use Nezasa\Checkout\Integrations\Nezasa\Contracts\HasVisibleFieldsContract;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Concerns\AppliesActiveInsuranceTravelerRequirements;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Spatie\LaravelData\Attributes\MapInputName;
 
 class PassengerRequirementEntity extends BaseDto implements HasVisibleFieldsContract
 {
+    use AppliesActiveInsuranceTravelerRequirements;
+
     /**
      * Create a new instance of the PassengerRequirementEntity
      *
@@ -41,6 +45,10 @@ class PassengerRequirementEntity extends BaseDto implements HasVisibleFieldsCont
         if (Config::boolean('checkout.insurance.vertical.active')) {
             $this->birthDate = TravelerRequirementFieldEnum::Required;
         }
+
+        $this->applyActiveInsuranceTravelerRequirements(
+            fn (InsuranceContract $insurance): array => $insurance->getPassengerRequirements()
+        );
     }
 
     /**
