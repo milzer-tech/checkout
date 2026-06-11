@@ -14,9 +14,9 @@ class PaymentAuthorizationCardPayloadEntity extends BaseDto
     public function __construct(
         public string $alias,
         public string $brand,
-        public string $issuer,
-        public string $cardHolderName,
         public int $expiryMonth,
         public int $expiryYear,
+        public ?string $cardHolderName,
+        public ?string $issuer,
     ) {}
 }
