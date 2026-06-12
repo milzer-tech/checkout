@@ -32,6 +32,11 @@ return [
         'email' => env('CHECKOUT_CONTACT_SUPPORT_EMAIL', 'contact@nezasa.com'),
     ],
 
+    'countries' => [
+        'prioritized_iso_codes' => explode(',', env('CHECKOUT_PRIORITIZED_COUNTRY_CODES', '')),
+        'prioritized_fields' => explode(',', env('CHECKOUT_PRIORITIZED_COUNTRY_FIELDS', '')),
+    ],
+
     'integrations' => [
         'oppwa' => [
             'active' => (bool) env('CHECKOUT_WIDGET_OPPWA_ACTIVE', false),

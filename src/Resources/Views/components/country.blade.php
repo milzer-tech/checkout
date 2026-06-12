@@ -1,4 +1,7 @@
-@php use Nezasa\Checkout\Supporters\AutoCompleteSupporter; @endphp
+@php
+    use Nezasa\Checkout\Supporters\AutoCompleteSupporter;
+    use Nezasa\Checkout\Supporters\CountryOptionsSupporter;
+@endphp
 <div class="space-y-2 w-full min-w-0">
     <label
         class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
@@ -6,7 +9,7 @@
     </label>
     <select  name="{{$wireModel}}" wire:model.change="{{$wireModel}}" {{AutoCompleteSupporter::get('gender')}} class="form-select pr-8 w-full">
         <option value="" >{{ trans('checkout::input.placeholders.select') }}</option>
-        @foreach($countriesResponse->countries as $country)
+        @foreach(CountryOptionsSupporter::orderedForSelect($countriesResponse->countries, $name) as $country)
             <option value="{{$country->iso_code}}-{{$country->name}}"  wire:ignore>{{$country->name}}</option>
         @endforeach
     </select>
