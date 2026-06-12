@@ -22,7 +22,7 @@
         x-data="{
             open: false,
             search: '',
-            selectedValue: @js($selectedValue),
+            selectedValue: @entangle($wireModel).live,
             options: @js($countryOptions->all()),
             placeholder: @js(trans('checkout::input.placeholders.select')),
             get selectedOption() {
@@ -48,13 +48,15 @@
                 this.search = '';
                 this.open = false;
                 this.$refs.select.value = option.value;
-                this.$refs.select.dispatchEvent(new Event('change', { bubbles: true }));
             },
             init() {
                 this.$nextTick(() => {
                     if (this.$refs.select.value) {
                         this.selectedValue = this.$refs.select.value;
                     }
+                });
+                this.$watch('selectedValue', (value) => {
+                    this.$refs.select.value = value ?? '';
                 });
             }
         }"
