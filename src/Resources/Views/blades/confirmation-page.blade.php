@@ -1,4 +1,4 @@
-@php use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum; @endphp
+@php use Nezasa\Checkout\Dtos\Planner\Entities\ItineraryStay;use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;use Nezasa\Checkout\Supporters\LocalizedDateFormatter; @endphp
 <div class="flex flex-col min-h-screen">
     <div class="flex-grow space-y-6">
         <!-- Page header - removed the image from here -->
@@ -106,7 +106,7 @@
                                 <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                       stroke-linejoin="round"/>
                             </svg>
-                            <span>{{$itinerary->startDate->format('D, j M Y')}} - {{$itinerary->endDate->format('D, j M Y')}}</span>
+                            <span>{{ LocalizedDateFormatter::short($itinerary->startDate, true) }} - {{ LocalizedDateFormatter::short($itinerary->endDate, true) }}</span>
                         </div>
                     </div>
                 </div>
@@ -169,7 +169,7 @@
                             <span
                                 class="font-medium text-gray-900"><b>{{trans('checkout::page.booking_confirmation.order_date')}}</b></span>
                         </div>
-                        <span class="text-gray-900">{{$output->orderDate?->format('D, j M Y')}}</span>
+                        <span class="text-gray-900">{{ $output->orderDate ? LocalizedDateFormatter::short($output->orderDate, true) : null }}</span>
                     </div>
 
                     @if(! $output->isPaymentSuccessful)
@@ -306,8 +306,8 @@
                                             </div>
                                             <div class="ml-auto text-right">
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->checkIn->format('D, j M') }}
-                                                    - {{$stay->checkOut->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($stay->checkIn) }}
+                                                    - {{ LocalizedDateFormatter::short($stay->checkOut) }}</div>
                                             </div>
                                         </div>
                                     @endforeach
@@ -332,7 +332,7 @@
                                             </div>
                                             <div class="ml-auto text-right">
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($activity->startDateTime) }}</div>
                                             </div>
                                         </div>
                                     @endforeach
@@ -356,7 +356,7 @@
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
                                                 </div>
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($flight->startDateTime) }}</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -378,7 +378,7 @@
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
                                                 </div>
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($transfer->startDateTime) }}</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -401,8 +401,8 @@
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
                                                 </div>
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}}
-                                                    - {{$rentalCar->endDateTime->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($rentalCar->startDateTime) }}
+                                                    - {{ LocalizedDateFormatter::short($rentalCar->endDateTime) }}</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -479,8 +479,8 @@
                                             </div>
                                             <div class="ml-auto text-right">
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->checkIn->format('D, j M') }}
-                                                    - {{$stay->checkOut->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($stay->checkIn) }}
+                                                    - {{ LocalizedDateFormatter::short($stay->checkOut) }}</div>
                                             </div>
                                         </div>
                                     @endforeach
@@ -506,7 +506,7 @@
                                             </div>
                                             <div class="ml-auto text-right">
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($activity->startDateTime) }}</div>
                                             </div>
                                         </div>
                                     @endforeach
@@ -531,7 +531,7 @@
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
                                                 </div>
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($flight->startDateTime) }}</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -554,7 +554,7 @@
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
                                                 </div>
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($transfer->startDateTime) }}</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -578,8 +578,8 @@
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
                                                 </div>
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}}
-                                                    - {{$rentalCar->endDateTime->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($rentalCar->startDateTime) }}
+                                                    - {{ LocalizedDateFormatter::short($rentalCar->endDateTime) }}</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -655,9 +655,9 @@
                             class="font-medium text-gray-700 dark:text-gray-200"><b>{{trans('checkout::page.trip_details.travel_date')}}</b></span>
                     </div>
                     <div class="pl-7 space-y-1">
-                        <p class="text-gray-700 dark:text-gray-200">{{$itinerary->startDate->format('D, j M Y')}}
-                            - {{$itinerary->endDate->format('D, j M Y')}}</p>
-                        <p class="text-gray-700 dark:text-gray-200">{{$itinerary->nights}} nights</p>
+                        <p class="text-gray-700 dark:text-gray-200">{{ LocalizedDateFormatter::short($itinerary->startDate, true) }}
+                            - {{ LocalizedDateFormatter::short($itinerary->endDate, true) }}</p>
+                        <p class="text-gray-700 dark:text-gray-200">{{$itinerary->nights}} {{ trans_choice('checkout::page.trip_details.night', $itinerary->nights) }}</p>
                     </div>
                 </div>
 
@@ -714,11 +714,11 @@
                                             </div>
                                             <div class="ml-auto text-right">
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->checkIn->format('D, j M') }}
-                                                    - {{$stay->checkOut->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($stay->checkIn) }}
+                                                    - {{ LocalizedDateFormatter::short($stay->checkOut) }}</div>
                                                 <div
                                                     class="text-base font-normal leading-6 text-[rgba(128,128,128,1)] dark:text-gray-400">{{ $stay->nights }}
-                                                    {{trans('checkout::page.trip_details.night')}}
+                                                    {{ trans_choice('checkout::page.trip_details.night', $stay->nights) }}
                                                 </div>
                                             </div>
                                         </div>
@@ -745,7 +745,7 @@
                                             </div>
                                             <div class="ml-auto text-right">
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($activity->startDateTime) }}</div>
                                             </div>
                                         </div>
                                     @endforeach
@@ -770,7 +770,7 @@
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
                                                 </div>
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($flight->startDateTime) }}</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -793,7 +793,7 @@
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
                                                 </div>
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($transfer->startDateTime) }}</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -817,8 +817,8 @@
                                                         class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
                                                 </div>
                                                 <div
-                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}}
-                                                    - {{$rentalCar->endDateTime->format('D, j M')}}</div>
+                                                    class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($rentalCar->startDateTime) }}
+                                                    - {{ LocalizedDateFormatter::short($rentalCar->endDateTime) }}</div>
                                             </div>
                                         @endforeach
                                     </div>

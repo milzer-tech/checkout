@@ -1,4 +1,4 @@
-@use(Illuminate\Support\Collection;use Illuminate\Support\Number;use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum)
+@use(Illuminate\Support\Collection;use Illuminate\Support\Number;use Nezasa\Checkout\Integrations\Nezasa\Enums\AvailabilityEnum;use Nezasa\Checkout\Supporters\LocalizedDateFormatter)
 
 <div class="w-full min-w-0 overflow-hidden border border-[color:var(--border)] dark:border-gray-600 bg-transparent rounded-[12px] p-4 sm:p-6 mb-6">
     {{-- Header with image and title --}}
@@ -46,10 +46,10 @@
             <h3 class="text-base font-bold text-[rgba(37,42,49,1)] dark:text-white leading-6">{{trans('checkout::page.trip_details.travel_date')}}</h3>
         </div>
         <div class="ml-7">
-            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->startDate->format('D, j M Y')}}
-                - {{$itinerary->endDate->format('D, j M Y')}}</p>
+            <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($itinerary->startDate, true) }}
+                - {{ LocalizedDateFormatter::short($itinerary->endDate, true) }}</p>
             <p class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$itinerary->nights}}
-                {{str(trans('checkout::page.trip_details.night'))->plural($itinerary->nights)}}</p>
+                {{ trans_choice('checkout::page.trip_details.night', $itinerary->nights) }}</p>
         </div>
     </div>
 
@@ -127,11 +127,11 @@
                                 </div>
                                 <div class="ml-auto text-right">
                                     <div
-                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $stay->checkIn->format('D, j M') }}
-                                        - {{$stay->checkOut->format('D, j M')}}</div>
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($stay->checkIn) }}
+                                        - {{ LocalizedDateFormatter::short($stay->checkOut) }}</div>
                                     <div
                                         class="text-base font-normal leading-6 text-[rgba(128,128,128,1)] dark:text-gray-400">{{$stay->nights}}
-                                        {{str(trans('checkout::page.trip_details.night'))->plural($stay->nights)}}
+                                        {{ trans_choice('checkout::page.trip_details.night', $stay->nights) }}
                                     </div>
                                 </div>
                             </div>
@@ -166,7 +166,7 @@
                                 </div>
                                 <div class="ml-auto text-right">
                                     <div
-                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ $activity->startDateTime->format('D, j M') }}</div>
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($activity->startDateTime) }}</div>
                                 </div>
                             </div>
                             @if($activity->availability?->isNone())
@@ -199,7 +199,7 @@
                                             class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->getTitle()}}</span>
                                     </div>
                                     <div
-                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$flight->startDateTime->format('D, j M')}}</div>
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($flight->startDateTime) }}</div>
                                 </div>
                                 @if($flight->availability?->isNone())
                                     <a href="{{$this->getUrlToReplaceComponent($flight)}}">
@@ -230,7 +230,7 @@
                                             class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->getTitle()}}</span>
                                     </div>
                                     <div
-                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$transfer->startDateTime->format('D, j M')}}</div>
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($transfer->startDateTime) }}</div>
                                 </div>
                                 @if($transfer->availability?->isNone())
                                     <a href="{{$this->getUrlToReplaceComponent($transfer)}}">
@@ -263,8 +263,8 @@
                                             class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->name}}</span>
                                     </div>
                                     <div
-                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{$rentalCar->startDateTime->format('D, j M')}}
-                                        - {{$rentalCar->endDateTime->format('D, j M')}}</div>
+                                        class="text-base font-normal leading-6 text-[rgba(51,55,67,1)] dark:text-gray-200">{{ LocalizedDateFormatter::short($rentalCar->startDateTime) }}
+                                        - {{ LocalizedDateFormatter::short($rentalCar->endDateTime) }}</div>
                                 </div>
                                 @if($rentalCar->availability?->isNone())
                                     <a href="{{$this->getUrlToReplaceComponent($rentalCar)}}">

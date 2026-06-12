@@ -35,7 +35,7 @@ return [
         'no_need' => 'No need',
         'payment_options' => 'Payment options',
         'travel_date' => 'Travel date',
-        'night' => 'night',
+        'night' => '{1} night|[2,*] nights',
         'travellers' => 'Travellers',
         'booking_details' => 'Booking details',
         'stay' => 'Stay',
@@ -68,13 +68,14 @@ return [
         'change_transfer' => 'Change transfer',
         'change_rental_car' => 'Change rental car',
         'change_upsell_item' => 'Change item',
-        'change',
         'important_information' => 'Important information',
         'learn_more' => 'Learn more',
         'travel_reason' => 'Travel reason',
         'error' => 'Error',
         'info' => 'Info',
         'success' => 'Success',
+        'close' => 'Close',
+        'loading' => 'Loading...',
         'trip_summary' => 'Trip summary',
         'agree_to_statement' => 'I agree to the Terms and Conditions stated above',
         'price_for_all_travellers' => 'Price for all travellers',
@@ -109,10 +110,20 @@ return [
         'insurance_document_product_description' => 'Product Information / Product Description',
     ],
 
+    'dates' => [
+        'select' => 'Select',
+        'formats' => [
+            'short' => 'ddd, D MMM',
+            'short_with_year' => 'ddd, D MMM YYYY',
+        ],
+    ],
+
     'payment' => [
         'payment' => 'Payment',
         'not_available_service' => 'The selected payment method is not available.',
         'additional_insurance_cost' => 'An additional %s will be charged later for travel insurance using the same card.',
+        'copyright' => 'Copyright 2025 Squad Ruby Tours. All rights reserved',
+        'all_rights_reserved' => ':app - All rights reserved.',
     ],
     'booking_confirmation' => [
         'booking_confirmation' => 'Booking confirmation',

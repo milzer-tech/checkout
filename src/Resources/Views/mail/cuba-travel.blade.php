@@ -102,7 +102,7 @@
                 <!-- FOOTER -->
                 <tr>
                     <td style="padding-top:25px; font-size:12px; color:#9ca3af; text-align:center;">
-                        {{ config('app.name') }} — All rights reserved.
+                        {{ trans('checkout::page.payment.all_rights_reserved', ['app' => config('app.name')]) }}
                     </td>
                 </tr>
 

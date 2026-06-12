@@ -5,7 +5,7 @@
         {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif
     </label>
     <select  name="{{$wireModel}}" wire:model.change="{{$wireModel}}" {{AutoCompleteSupporter::get('gender')}} class="form-select pr-8 w-full">
-        <option value="" >Select</option>
+        <option value="" >{{ trans('checkout::input.placeholders.select') }}</option>
         @foreach($countriesResponse->countries as $country)
             <option value="{{$country->iso_code}}-{{$country->name}}"  wire:ignore>{{$country->name}}</option>
         @endforeach

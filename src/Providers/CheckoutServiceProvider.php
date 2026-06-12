@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Providers;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -95,7 +96,24 @@ class CheckoutServiceProvider extends ServiceProvider
     {
         Config::set(key: 'data.date_format', value: [DATE_ATOM, 'Y-m-d', 'Y-m-d\TH:i:s.uP', 'Y-m-d H:i:sO']);
 
-        Config::set(key: 'app.locale', value: request()->input('lang', 'en'));
+        $locale = $this->resolveLocale();
+
+        App::setLocale($locale);
+        Config::set(key: 'app.locale', value: $locale);
+    }
+
+    private function resolveLocale(): string
+    {
+        $locale = request()->input('lang') ?? session()->get('checkout.locale') ?? 'en';
+        $locale = str($locale)->lower()->before('_')->before('-')->toString();
+
+        if (! in_array($locale, ['de', 'en', 'es', 'fr'], true)) {
+            return 'en';
+        }
+
+        session()->put('checkout.locale', $locale);
+
+        return $locale;
     }
 
     /**

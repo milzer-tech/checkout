@@ -32,6 +32,7 @@ return [
         'address' => 'Address',
     ],
     'placeholders' => [
+        'select' => 'Select',
         'firstName' => 'e.g. John',
         'lastName' => 'e.g. Doe',
         'companyName' => 'e.g. Google',

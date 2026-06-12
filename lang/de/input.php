@@ -28,8 +28,11 @@ return [
         'month' => 'Monat',
         'day' => 'Tag',
         'phoneNumber' => 'Telefonnummer',
+        'travel_reason' => 'Reisegrund',
+        'address' => 'Adresse',
     ],
     'placeholders' => [
+        'select' => 'Auswählen',
         'firstName' => 'z. B. John',
         'lastName' => 'z. B. Doe',
         'companyName' => 'z. B. Google',
@@ -49,11 +52,14 @@ return [
         'secondOrAdditionalName' => 'z. B. Schmidt',
         'taxNumber' => 'Ihre Steuernummer',
         'localIdNumber' => 'Lokale Ausweisnummer',
+        'is_main_contact' => 'Dieser Reisende ist der Hauptkontakt',
     ],
     'validations' => [
         'passportExpirationDate' => 'Dieses Datum muss nach dem Enddatum der Reise liegen.',
         'child_age' => 'Das Kind muss zu Beginn der Reise jünger als :age sein.',
         'adult_age' => 'Der Erwachsene muss zu Beginn der Reise älter als :age sein.',
         'child_age_diff' => 'Dieser Reisende muss ein :age-jähriges Kind sein.',
+        'agree_to_continue' => 'Sie müssen zustimmen, um fortzufahren.',
+        'must_be_selected' => 'Eine Option muss ausgewählt werden.',
     ],
 ];
