@@ -11,8 +11,9 @@
         ->values();
 
     $selectedValue = data_get($this, $wireModel, '');
+    $componentKey = 'country-select-'.md5($wireModel);
 @endphp
-<div class="space-y-2 w-full min-w-0">
+<div class="space-y-2 w-full min-w-0" wire:key="{{$componentKey}}">
     <label
         class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
         {{trans("checkout::input.attributes.$name")}}@if($isRequired)*@endif
@@ -22,7 +23,7 @@
         x-data="{
             open: false,
             search: '',
-            selectedValue: @entangle($wireModel).live,
+            selectedValue: $wire.entangle(@js($wireModel)).live,
             options: @js($countryOptions->all()),
             placeholder: @js(trans('checkout::input.placeholders.select')),
             get selectedOption() {
@@ -48,6 +49,8 @@
                 this.search = '';
                 this.open = false;
                 this.$refs.select.value = option.value;
+                this.$refs.select.dispatchEvent(new Event('input', { bubbles: true }));
+                this.$refs.select.dispatchEvent(new Event('change', { bubbles: true }));
             },
             init() {
                 this.$nextTick(() => {
