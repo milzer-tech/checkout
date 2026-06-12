@@ -9,7 +9,7 @@
             <input  type="text"
                     inputmode="numeric"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                    wire:model.live="{{$wireModel}}.day" placeholder="DD"
+                    wire:model.live="{{$wireModel}}.day" placeholder="D"
                    @if($name === 'birthDate')
                        {{AutocompleteSupporter::get('day')}}
                    @else
