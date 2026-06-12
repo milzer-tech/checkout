@@ -4,7 +4,7 @@
     <div class="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
             <section>
-                <h1 class="text-2xl font-bold mb-6">Payment</h1>
+                <h1 class="text-2xl font-bold mb-6">{{ trans('checkout::page.payment.payment') }}</h1>
 
                 <div class="p-8 border border-gray-200 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
                     <div class="items-center justify-center">
@@ -56,12 +56,12 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
-                Back
+                {{ trans('checkout::page.trip_details.back') }}
             </button>
         </div>
 
         <div class="text-center mt-10 text-gray-500 dark:text-gray-400">
-            Copyright 2025 Squad Ruby Tours. All rights reserved
+            {{ trans('checkout::page.payment.copyright') }}
         </div>
     </div>
 

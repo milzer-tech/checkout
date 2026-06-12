@@ -186,7 +186,7 @@
                             type="button"
                             wire:click="closeTermsModal"
                             class="text-gray-400 hover:text-gray-600 text-xl"
-                            aria-label="Close"
+                            aria-label="{{ trans('checkout::page.trip_details.close') }}"
                         >
                             &times;
                         </button>

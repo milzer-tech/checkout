@@ -27,7 +27,7 @@
 
 
                     <div class="mb-3">
-                        <div role="tablist" aria-label="Travellers"
+                        <div role="tablist" aria-label="{{ trans('checkout::page.trip_details.travellers') }}"
                              class="relative flex gap-6 border-b border-gray-200">
                             @foreach($room as $i => ['showTraveller' => $trav])
                                 <button
@@ -133,7 +133,7 @@
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                 </svg>
                                 <span wire:loading.remove wire:target="showNextTraveller('{{$roomNumber}}-{{$i}}')">{{$label}}</span>
-                                <span wire:loading wire:target="showNextTraveller('{{$roomNumber}}-{{$i}}')" class="text-sm">{{ __('Loading...') }}</span>
+                                <span wire:loading wire:target="showNextTraveller('{{$roomNumber}}-{{$i}}')" class="text-sm">{{ trans('checkout::page.trip_details.loading') }}</span>
                             </button>
                         </div>
                     </div>

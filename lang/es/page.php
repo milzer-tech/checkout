@@ -74,6 +74,8 @@ return [
         'error' => 'Error',
         'info' => 'Información',
         'success' => 'Correcto',
+        'close' => 'Cerrar',
+        'loading' => 'Cargando...',
         'trip_summary' => 'Resumen del viaje',
         'agree_to_statement' => 'Acepto los términos y condiciones indicados arriba',
         'price_for_all_travellers' => 'Precio para todos los viajeros',
@@ -118,6 +120,8 @@ return [
         'payment' => 'Pago',
         'not_available_service' => 'El método de pago seleccionado no está disponible.',
         'additional_insurance_cost' => 'Una adicional %s será cobrada más tarde para la aseguradora de viaje usando la misma tarjeta de crédito.',
+        'copyright' => 'Copyright 2025 Squad Ruby Tours. Todos los derechos reservados',
+        'all_rights_reserved' => ':app - Todos los derechos reservados.',
     ],
     'booking_confirmation' => [
         'booking_confirmation' => 'Confirmación de reserva',

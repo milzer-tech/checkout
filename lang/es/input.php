@@ -28,6 +28,8 @@ return [
         'month' => 'Mes',
         'day' => 'Día',
         'phoneNumber' => 'Número de teléfono',
+        'travel_reason' => 'Motivo del viaje',
+        'address' => 'Dirección',
     ],
     'placeholders' => [
         'select' => 'Seleccionar',
@@ -50,11 +52,14 @@ return [
         'secondOrAdditionalName' => 'p. ej. Smith',
         'taxNumber' => 'tu número de identificación fiscal',
         'localIdNumber' => 'número de identificación local',
+        'is_main_contact' => 'Este viajero es el contacto principal',
     ],
     'validations' => [
         'passportExpirationDate' => 'Esta fecha debe ser posterior a la fecha de finalización del viaje.',
         'child_age' => 'La edad del niño debe ser menor de :age al comienzo del viaje.',
         'adult_age' => 'La edad del adulto debe ser mayor de :age al comienzo del viaje.',
         'child_age_diff' => 'Este viajero debe ser un niño de :age años.',
+        'agree_to_continue' => 'Debe aceptar para continuar.',
+        'must_be_selected' => 'Debe seleccionarse una opción.',
     ],
 ];
