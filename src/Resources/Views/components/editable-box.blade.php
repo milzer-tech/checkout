@@ -27,7 +27,7 @@
     } elseif ($state === 'editing') {
         $boxClasses = [
             'rounded-lg', 'transition-all', 'duration-300',
-            'overflow-hidden', 'mb-6',
+            'overflow-visible', 'mb-6',
             'bg-white', 'dark:bg-gray-800',
         ];
     } elseif ($state === 'collapsed') {

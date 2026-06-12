@@ -78,7 +78,7 @@
 
                 @case('passportIssuingCountry')
                     @include('checkout::components.country', [
-                            'label' => $name,
+                            'name' => $name,
                             'wireModel' => "$saveTo.$name",
                             'countriesResponse' => $countriesResponse,
                             'isRequired' => $value->isRequired()
