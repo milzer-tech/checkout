@@ -58,6 +58,72 @@ it('validates adult and child birth dates against allocation ages', function ():
     expect($collector->failures)->toBe([]);
 });
 
+it('allows a child who is exactly the configured max child age at trip start', function (): void {
+    Config::set('checkout.distribution.max_child_age', 17);
+    $rule = new BirthDateRule(
+        startDate: CarbonImmutable::parse('2026-07-18'),
+        allocatedPax: [
+            'rooms' => [
+                ['adults' => 2, 'childAges' => [17]],
+            ],
+        ]
+    );
+    $rule->setData([
+        'paxInfo' => [
+            [
+                [
+                    'showTraveller' => new ShowTraveller(isAdult: true),
+                    'birthDate' => ['year' => 1990, 'month' => 1, 'day' => 1],
+                ],
+                [
+                    'showTraveller' => new ShowTraveller(isAdult: true),
+                    'birthDate' => ['year' => 1990, 'month' => 1, 'day' => 1],
+                ],
+                [
+                    'showTraveller' => new ShowTraveller(isAdult: false, age: 17),
+                    'birthDate' => ['year' => 2009, 'month' => 5, 'day' => 8],
+                ],
+            ],
+        ],
+    ]);
+    [$collector, $fail] = collectRuleFailures();
+
+    $rule->validate('paxInfo.0.2.birthDate.year', 2009, $fail);
+
+    expect($collector->failures)->toBe([]);
+});
+
+it('shows the booked child age error when a child birth date resolves to an adult age', function (): void {
+    Config::set('checkout.distribution.max_child_age', 17);
+    $rule = new BirthDateRule(
+        startDate: CarbonImmutable::parse('2027-03-17'),
+        allocatedPax: [
+            'rooms' => [
+                ['adults' => 1, 'childAges' => [10]],
+            ],
+        ]
+    );
+    $rule->setData([
+        'paxInfo' => [
+            [
+                [
+                    'showTraveller' => new ShowTraveller(isAdult: true),
+                    'birthDate' => ['year' => 1990, 'month' => 1, 'day' => 1],
+                ],
+                [
+                    'showTraveller' => new ShowTraveller(isAdult: false, age: 10),
+                    'birthDate' => ['year' => 2000, 'month' => 6, 'day' => 11],
+                ],
+            ],
+        ],
+    ]);
+    [$collector, $fail] = collectRuleFailures();
+
+    $rule->validate('paxInfo.0.1.birthDate.year', 2000, $fail);
+
+    expect($collector->failures)->toBe(['checkout::input.validations.child_age_diff']);
+});
+
 it('fails birth date validation for adults who are too young and children with wrong age', function (): void {
     Config::set('checkout.distribution.max_child_age', 17);
     $rule = new BirthDateRule(

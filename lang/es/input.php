@@ -56,7 +56,7 @@ return [
     ],
     'validations' => [
         'passportExpirationDate' => 'Esta fecha debe ser posterior a la fecha de finalización del viaje.',
-        'child_age' => 'La edad del niño debe ser menor de :age al comienzo del viaje.',
+        'child_age' => 'La edad del niño debe ser como máximo :age al comienzo del viaje.',
         'adult_age' => 'La edad del adulto debe ser mayor de :age al comienzo del viaje.',
         'child_age_diff' => 'Este viajero debe ser un niño de :age años.',
         'agree_to_continue' => 'Debe aceptar para continuar.',
