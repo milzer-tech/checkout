@@ -12,17 +12,19 @@ final class LocalizedDateFormatter
     public static function short(DateTimeInterface $date, bool $withYear = false): string
     {
         $format = $withYear ? 'short_with_year' : 'short';
-        $locale = app()->getLocale();
+        $date = Carbon::instance($date);
 
-        return Carbon::instance($date)
-            ->locale($locale)
-            ->isoFormat(trans("checkout::page.dates.formats.$format"));
+        $date->locale(app()->getLocale());
+
+        return $date->isoFormat((string) trans("checkout::page.dates.formats.$format"));
     }
 
     public static function monthName(int $month): string
     {
-        return Carbon::create(null, $month, 1)
-            ->locale(app()->getLocale())
-            ->monthName;
+        $date = Carbon::create(year: 2000, month: $month, day: 1);
+
+        $date->locale(app()->getLocale());
+
+        return $date->monthName;
     }
 }
