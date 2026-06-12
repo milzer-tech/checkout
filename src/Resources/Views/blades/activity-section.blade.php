@@ -37,7 +37,7 @@
                                         <select name="result.{{$component->componentId}}.{{$question->refId}}"
                                                 wire:model.change="result.{{$component->componentId}}.{{$question->refId}}"
                                                 class="form-select pr-8 w-full">
-                                            <option>Select</option>
+                                            <option>{{ trans('checkout::input.placeholders.select') }}</option>
                                             @foreach($question->answerOptions as $option)
                                                 <option value="{{$option->refId}}">{{$option->displayName}}</option>
                                             @endforeach

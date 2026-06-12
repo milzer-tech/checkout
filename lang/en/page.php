@@ -35,7 +35,7 @@ return [
         'no_need' => 'No need',
         'payment_options' => 'Payment options',
         'travel_date' => 'Travel date',
-        'night' => 'night',
+        'night' => '{1} night|[2,*] nights',
         'travellers' => 'Travellers',
         'booking_details' => 'Booking details',
         'stay' => 'Stay',
@@ -107,6 +107,14 @@ return [
         'insurance_documents' => 'Insurance documents',
         'insurance_document_ipid' => 'Insurance Product Information Document',
         'insurance_document_product_description' => 'Product Information / Product Description',
+    ],
+
+    'dates' => [
+        'select' => 'Select',
+        'formats' => [
+            'short' => 'ddd, D MMM',
+            'short_with_year' => 'ddd, D MMM YYYY',
+        ],
     ],
 
     'payment' => [

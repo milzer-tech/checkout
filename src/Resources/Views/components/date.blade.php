@@ -1,4 +1,4 @@
-@php use Nezasa\Checkout\Supporters\AutoCompleteSupporter; @endphp
+@php use Nezasa\Checkout\Supporters\AutoCompleteSupporter;use Nezasa\Checkout\Supporters\LocalizedDateFormatter; @endphp
 <div class="space-y-2 w-full min-w-0">
     <label
         class="block text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden"> {{trans("checkout::input.attributes.$name")}}@if($isRequired)
@@ -25,19 +25,10 @@
                             autocomplete="off"
                         @endif
                         class="form-input custom-select w-full appearance-none px-2 pr-8">
-                    <option value="">Select</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
+                    <option value="">{{ trans('checkout::page.dates.select') }}</option>
+                    @foreach(range(1, 12) as $month)
+                        <option value="{{ $month }}">{{ LocalizedDateFormatter::monthName($month) }}</option>
+                    @endforeach
                 </select>
                 <span class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
                 <svg class="h-4 w-4 text-gray-400 dark:text-gray-400" fill="none" stroke="currentColor" stroke-width="2"

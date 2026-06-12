@@ -6,7 +6,7 @@
         </label>
         <select name="test" wire:model.change="paxInfo.{{$roomNumber}}.{{$i}}.travel_reason"
                 class="form-select pr-8 w-full">
-            <option value="">Select</option>
+            <option value="">{{ trans('checkout::input.placeholders.select') }}</option>
             @foreach(config()->array('checkout::cuba-travel.reasons') as $index => $option)
                 <option value="{{$option}}">{{$option}}</option>
             @endforeach

@@ -30,6 +30,7 @@ return [
         'phoneNumber' => 'Número de teléfono',
     ],
     'placeholders' => [
+        'select' => 'Seleccionar',
         'firstName' => 'p. ej. John',
         'lastName' => 'p. ej. Doe',
         'companyName' => 'p. ej. Google',
