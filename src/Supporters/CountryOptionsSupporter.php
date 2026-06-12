@@ -53,26 +53,28 @@ class CountryOptionsSupporter
     }
 
     /**
-     * @return Collection<int, string>
+     * @return Collection<int, non-empty-string>
      */
     private static function prioritizedIsoCodes(): Collection
     {
         return collect(config()->array('checkout.countries.prioritized_iso_codes'))
             ->map(fn (mixed $isoCode): string => self::normalizeIsoCode((string) $isoCode))
-            ->filter()
+            ->filter(fn (string $isoCode): bool => $isoCode !== '')
             ->unique()
+            ->map(fn (string $isoCode): string => $isoCode)
             ->values();
     }
 
     /**
-     * @return Collection<int, string>
+     * @return Collection<int, non-empty-string>
      */
     private static function prioritizedFields(): Collection
     {
         return collect(config()->array('checkout.countries.prioritized_fields'))
             ->map(fn (mixed $fieldName): string => self::normalizeFieldName((string) $fieldName))
-            ->filter()
+            ->filter(fn (string $fieldName): bool => $fieldName !== '')
             ->unique()
+            ->map(fn (string $fieldName): string => $fieldName)
             ->values();
     }
 
