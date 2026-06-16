@@ -805,7 +805,7 @@ final class ErgoInsurance implements InsuranceContract
     private function termsForPlan(): InsuranceTerms
     {
         return new InsuranceTerms(
-            checkboxText: 'Ich habe das Produktinformationsblatt sowie die wichtigen Informationen und Versicherungsbedingungen der ERV gelesen und zur Kenntnis genommen. Ich stimme der Zahlung per Lastschrift zu. Im Fall einer Jahres Versicherung akzeptiere ich die automatische Verlängerung des Vertrages, sofern dieser nicht spätestens einen Monat vor Ablauf von mir gekündigt wird.',
+            checkboxText: 'Ich habe das Produktinformationsblatt sowie die wichtigen Informationen und Versicherungsbedingungen der ERV gelesen und zur Kenntnis genommen. Ich stimme der Zahlung per Lastschrift zu. Im Fall einer Jahres Versicherung akzeptiere ich die automatische Verlängerung des Vertrages, sofern dieser nicht spätestens einen Monat vor Ablauf von mir gekündigt wird. Ich bin damit einverstanden, dass der Versicherungsschutz vor Ende der Widerrufsfrist beginnt.',
             conditions: [],
         );
     }
