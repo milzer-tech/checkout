@@ -60,7 +60,7 @@
     </div>
 
 
-    <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8"></div>
+    <div class="h-px bg-gray-200 dark:bg-gray-700"></div>
 
     <div class="px-8 py-6 bg-white dark:bg-gray-800 @if($state !== 'editing') hidden @endif">
         {{ $slot }}
