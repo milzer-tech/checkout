@@ -43,14 +43,7 @@ it('applies HanseMerkur contact requirements from the active insurance contract'
 
     $requirements = hiddenContactRequirementEntity();
 
-    expect($requirements->firstName)->toBe(TravelerRequirementFieldEnum::Required)
-        ->and($requirements->lastName)->toBe(TravelerRequirementFieldEnum::Required)
-        ->and($requirements->email)->toBe(TravelerRequirementFieldEnum::Required)
-        ->and($requirements->street1)->toBe(TravelerRequirementFieldEnum::Required)
-        ->and($requirements->postalCode)->toBe(TravelerRequirementFieldEnum::Required)
-        ->and($requirements->country)->toBe(TravelerRequirementFieldEnum::Required)
-        ->and($requirements->gender)->toBe(TravelerRequirementFieldEnum::Required)
-        ->and($requirements->city)->toBe(TravelerRequirementFieldEnum::Hidden);
+    expect($requirements->email)->toBe(TravelerRequirementFieldEnum::Required);
 });
 
 it('applies Ergo contact requirements from the active insurance contract', function (): void {

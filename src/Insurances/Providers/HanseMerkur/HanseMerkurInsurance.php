@@ -36,6 +36,7 @@ use Nezasa\Checkout\Integrations\HanseMerkur\Enums\HanseMerkurPaymentTypeEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\AddCustomInsurancePayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\AddressEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\TravelerRequirementFieldEnum;
 use Nezasa\Checkout\Models\Transaction;
@@ -69,13 +70,13 @@ final class HanseMerkurInsurance implements InsuranceContract
     public function getContactRequirements(): array
     {
         return [
-            'firstName' => TravelerRequirementFieldEnum::Required,
-            'lastName' => TravelerRequirementFieldEnum::Required,
+            //            'firstName' => TravelerRequirementFieldEnum::Required,
+            //            'lastName' => TravelerRequirementFieldEnum::Required,
             'email' => TravelerRequirementFieldEnum::Required,
-            'street1' => TravelerRequirementFieldEnum::Required,
-            'postalCode' => TravelerRequirementFieldEnum::Required,
-            'country' => TravelerRequirementFieldEnum::Required,
-            'gender' => TravelerRequirementFieldEnum::Required,
+            //            'street1' => TravelerRequirementFieldEnum::Required,
+            //            'postalCode' => TravelerRequirementFieldEnum::Required,
+            //            'country' => TravelerRequirementFieldEnum::Required,
+            //            'gender' => TravelerRequirementFieldEnum::Required,
         ];
     }
 
@@ -86,6 +87,10 @@ final class HanseMerkurInsurance implements InsuranceContract
             'lastName' => TravelerRequirementFieldEnum::Required,
             'gender' => TravelerRequirementFieldEnum::Required,
             'birthDate' => TravelerRequirementFieldEnum::Required,
+            'street1' => TravelerRequirementFieldEnum::Required,
+            'postalCode' => TravelerRequirementFieldEnum::Required,
+            'city' => TravelerRequirementFieldEnum::Required,
+            'country' => TravelerRequirementFieldEnum::Required,
         ];
     }
 
@@ -169,23 +174,7 @@ final class HanseMerkurInsurance implements InsuranceContract
         $payload = new HanseMerkurReservePayload(
             coveredEvent: $this->createCoveredEvent($bookOfferDto->createdOfferDto),
             insuredPersons: $insuredPersons,
-            insuranceCustomer: new HanseMerkurCustomerPayloadEntity(
-                contactData: new HanseMerkurContactDataPayloadEntity(
-                    email: $bookOfferDto->createdOfferDto->contact->email,
-                    address: new HanseMerkurAddressPayloadEntity(
-                        countryIsoCode: $bookOfferDto->createdOfferDto->contact->address->getCountryCode() ?? 'DE',
-                        postalCode: $bookOfferDto->createdOfferDto->contact->address->postalCode,
-                        cityName: $bookOfferDto->createdOfferDto->contact->address->city,
-                        streetName: $bookOfferDto->createdOfferDto->contact->address->street1,
-                        streetNumber: $bookOfferDto->createdOfferDto->contact->address->street2 ?? 'Unknown'
-                    ),
-                    telephone: $bookOfferDto->createdOfferDto->contact->mobilePhone,
-                ),
-                countryOfResidence: $bookOfferDto->createdOfferDto->contact->address->getCountryCode() ?? 'DE',
-                gender: $bookOfferDto->createdOfferDto->contact->gender->isFemale() ? HanseMerkurGenderEnum::Female : HanseMerkurGenderEnum::Male,
-                givenName: $bookOfferDto->createdOfferDto->contact->firstName,
-                surname: $bookOfferDto->createdOfferDto->contact->lastName,
-            ),
+            insuranceCustomer: $this->createInsuranceCustomer($bookOfferDto->createdOfferDto),
             products: collect([
                 new HanseMerkurProductPayloadEntity(
                     productInstanceId: $bookOfferDto->selectedOffer->id,
@@ -259,6 +248,43 @@ final class HanseMerkurInsurance implements InsuranceContract
         }
 
         return collect($persons);
+    }
+
+    private function createInsuranceCustomer(CreateInsuranceOffersDto $createOffersDto): HanseMerkurCustomerPayloadEntity
+    {
+        /** @var PaxInfoPayloadEntity $firstTraveller */
+        $firstTraveller = $createOffersDto->paxInfo->values()->first();
+        /** @var AddressEntity $address */
+        $address = $firstTraveller->address;
+
+        return new HanseMerkurCustomerPayloadEntity(
+            contactData: new HanseMerkurContactDataPayloadEntity(
+                email: $createOffersDto->contact->email,
+                address: $this->createAddress($address),
+                telephone: $createOffersDto->contact->mobilePhone,
+            ),
+            countryOfResidence: $this->countryCode($address),
+            gender: $firstTraveller->gender->isFemale() ? HanseMerkurGenderEnum::Female : HanseMerkurGenderEnum::Male,
+            birthDate: $firstTraveller->birthDate->toImmutable(),
+            givenName: $firstTraveller->firstName,
+            surname: $firstTraveller->lastName,
+        );
+    }
+
+    private function createAddress(AddressEntity $address): HanseMerkurAddressPayloadEntity
+    {
+        return new HanseMerkurAddressPayloadEntity(
+            countryIsoCode: $this->countryCode($address),
+            postalCode: $address->postalCode,
+            cityName: $address->city,
+            streetName: $address->street1,
+            streetNumber: $address->street2 ?? 'Unknown',
+        );
+    }
+
+    private function countryCode(AddressEntity $address): string
+    {
+        return $address->getCountryCode() ?: $address->countryCode ?: 'DE';
     }
 
     /**
