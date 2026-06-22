@@ -46,6 +46,10 @@ function makeCreateInsuranceOffersDto(): CreateInsuranceOffersDto
         'birthDate' => ['day' => 15, 'month' => 3, 'year' => 1991],
         'country' => 'DE-Germany',
         'countryCode' => 'DE',
+        'postalCode' => '20095',
+        'city' => 'Hamburg',
+        'street1' => 'Traveller Street',
+        'street2' => '7',
     ]);
 
     $contact = ContactInfoPayloadEntity::from([
@@ -94,13 +98,7 @@ it('does not require additional payment data', function (): void {
 
 it('declares HanseMerkur contact requirements', function (): void {
     expect((new HanseMerkurInsurance)->getContactRequirements())->toBe([
-        'firstName' => TravelerRequirementFieldEnum::Required,
-        'lastName' => TravelerRequirementFieldEnum::Required,
         'email' => TravelerRequirementFieldEnum::Required,
-        'street1' => TravelerRequirementFieldEnum::Required,
-        'postalCode' => TravelerRequirementFieldEnum::Required,
-        'country' => TravelerRequirementFieldEnum::Required,
-        'gender' => TravelerRequirementFieldEnum::Required,
     ]);
 });
 
@@ -110,6 +108,10 @@ it('declares HanseMerkur passenger requirements', function (): void {
         'lastName' => TravelerRequirementFieldEnum::Required,
         'gender' => TravelerRequirementFieldEnum::Required,
         'birthDate' => TravelerRequirementFieldEnum::Required,
+        'street1' => TravelerRequirementFieldEnum::Required,
+        'postalCode' => TravelerRequirementFieldEnum::Required,
+        'city' => TravelerRequirementFieldEnum::Required,
+        'country' => TravelerRequirementFieldEnum::Required,
     ]);
 });
 
@@ -234,7 +236,7 @@ it('bookOffer returns failure when reserve fails and does not call payment', fun
 it('bookOffer returns success when reserve and payment succeed', function (): void {
     fakeCarbon();
 
-    MockClient::global([
+    $mockClient = MockClient::global([
         HanseMerkurReserveRequest::class => MockResponse::make([
             'coveredEvent' => [
                 'bookingConfirmationDate' => '2025-08-27T11:20:19+00:00',
@@ -271,6 +273,36 @@ it('bookOffer returns success when reserve and payment succeed', function (): vo
         ->and($result->data)->toHaveKeys(['reserve_response', 'payment_response'])
         ->and($result->data['reserve_response'])->toBeArray()
         ->and($result->data['payment_response'])->toBeArray();
+
+    $mockClient->assertSent(function (mixed $request): bool {
+        if (! $request instanceof HanseMerkurReserveRequest) {
+            return false;
+        }
+
+        expect($request->body()->all())
+            ->toMatchArray([
+                'insuranceCustomer' => [
+                    'contactData' => [
+                        'email' => 'john@example.com',
+                        'address' => [
+                            'countryIsoCode' => 'DE',
+                            'postalCode' => '20095',
+                            'cityName' => 'Hamburg',
+                            'streetName' => 'Traveller Street',
+                            'streetNumber' => '7',
+                        ],
+                        'telephone' => null,
+                    ],
+                    'countryOfResidence' => 'DE',
+                    'gender' => 'FEMALE',
+                    'birthDate' => '1991-03-15T11:20:19+00:00',
+                    'givenName' => 'Jane',
+                    'surname' => 'Roe',
+                ],
+            ]);
+
+        return true;
+    });
 });
 
 it('bookOffer sets isSuccessful false when payment fails but still exposes confirmationId', function (): void {
