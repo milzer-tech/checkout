@@ -3,7 +3,6 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Email;
 use Illuminate\Validation\Rules\Enum;
@@ -105,10 +104,6 @@ class ContactDetails extends BaseCheckoutComponent
      */
     protected function rules(): array
     {
-        $postalCodeRules = Config::boolean('checkout.insurance.vertical.active')
-            ? ['string', 'max:20']
-            : ['numeric'];
-
         $rules = [
             'firstName' => ['string', 'max:255'],
             'lastName' => ['string', 'max:255'],
@@ -122,7 +117,7 @@ class ContactDetails extends BaseCheckoutComponent
 
             ],
             'mobilePhone.phoneNumber' => ['numeric'],
-            'postalCode' => $postalCodeRules,
+            'postalCode' => ['string', 'max:100'],
             'city' => ['string', 'max:255'],
             'state' => ['string', 'max:255'],
             'country' => ['string', 'max:255'],

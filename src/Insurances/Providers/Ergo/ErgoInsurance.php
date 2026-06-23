@@ -413,7 +413,6 @@ final class ErgoInsurance implements InsuranceContract
         if ($sepaIban !== null && $sepaIban !== '') {
             $paymentForm = new ErgoPaymentFormTypeDto(
                 BankAcct: new ErgoBankAcctTypeDto(
-                    BankID: null,
                     BankAcctNumber: $sepaIban,
                 )
             );
@@ -428,7 +427,6 @@ final class ErgoInsurance implements InsuranceContract
             Email: $contact->email ?? '',
             Address: $this->buildAddress($contact),
             PaymentForm: $paymentForm,
-            Telephone: null,
             Mobile: $contact->mobilePhone,
         );
     }

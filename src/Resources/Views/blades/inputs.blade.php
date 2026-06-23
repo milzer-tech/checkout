@@ -8,7 +8,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0 mb-4">
             @endif
 
-            @if(! in_array($name, ['passportExpirationDate','birthDate', 'gender', 'mobilePhone', 'country', 'nationality', 'passportIssuingCountry', 'localIdNumber', 'postalCode']))
+            @if(! in_array($name, ['passportExpirationDate','birthDate', 'gender', 'mobilePhone', 'country', 'nationality', 'passportIssuingCountry', 'localIdNumber']))
                 @include('checkout::components.input', [
                     'label' => $name,
                     'wireModel' => "$saveTo.$name",
@@ -18,22 +18,13 @@
                 @php($inputs++)
             @endif
 
-            @if(in_array($name, ['localIdNumber', 'postalCode']))
-                @if($name === 'postalCode' && config()->boolean('checkout.insurance.vertical.active'))
-                    @include('checkout::components.input', [
-                        'label' => $name,
-                        'wireModel' => "$saveTo.$name",
-                        'placeholder' => $name,
-                        'isRequired' => $value->isRequired()
-                    ])
-                @else
-                    @include('checkout::components.numeric_input', [
-                       'label' => $name,
-                       'wireModel' => "$saveTo.$name",
-                       'placeholder' => $name,
-                       'isRequired' => $value->isRequired()
-                   ])
-                @endif
+            @if($name === 'localIdNumber')
+                @include('checkout::components.numeric_input', [
+                   'label' => $name,
+                   'wireModel' => "$saveTo.$name",
+                   'placeholder' => $name,
+                   'isRequired' => $value->isRequired()
+               ])
                 @php($inputs++)
             @endif
 
