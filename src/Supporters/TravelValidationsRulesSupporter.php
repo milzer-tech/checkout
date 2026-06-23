@@ -57,7 +57,7 @@ final readonly class TravelValidationsRulesSupporter
             ->map(fn (CountryResponseEntity $item): string => $item->iso_code.'-'.$item->name)
             ->all();
 
-        return [
+        $rules = [
             'isMainContact' => ['boolean'],
             'firstName' => ['string', 'max:255'],
             'lastName' => ['string', 'max:255'],
@@ -91,6 +91,8 @@ final readonly class TravelValidationsRulesSupporter
             'street1' => ['string', 'max:255'],
             'street2' => ['string', 'max:255'],
         ];
+
+        return array_replace($rules, app(InsuranceValidationRulesSupporter::class)->passengerRules());
     }
 
     /**

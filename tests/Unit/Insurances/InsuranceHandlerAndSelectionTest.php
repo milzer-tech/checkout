@@ -83,6 +83,16 @@ final class StubInsuranceProviderForHandlerTest implements InsuranceContract
         ];
     }
 
+    public function getContactValidationRules(): array
+    {
+        return [];
+    }
+
+    public function getPassengerValidationRules(): array
+    {
+        return [];
+    }
+
     public function getNoSelectionText(): string
     {
         return 'Stub no insurance';

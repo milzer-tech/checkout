@@ -94,6 +94,16 @@ final class HanseMerkurInsurance implements InsuranceContract
         ];
     }
 
+    public function getContactValidationRules(): array
+    {
+        return [];
+    }
+
+    public function getPassengerValidationRules(): array
+    {
+        return [];
+    }
+
     public function getNoSelectionText(): string
     {
         return trans('checkout::page.trip_details.insurance_no_insurance_option');

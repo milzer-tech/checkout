@@ -55,6 +55,28 @@ interface InsuranceContract
     public function getPassengerRequirements(): array;
 
     /**
+     * Provider-specific contact validation rules.
+     *
+     * Return an empty array to use the checkout default rules.
+     * Field presence is controlled by getContactRequirements(); do not use
+     * required, nullable, present, prohibited, or similar presence rules here.
+     *
+     * @return array<string, array<int, string>>
+     */
+    public function getContactValidationRules(): array;
+
+    /**
+     * Provider-specific passenger validation rules.
+     *
+     * Return an empty array to use the checkout default rules.
+     * Field presence is controlled by getPassengerRequirements(); do not use
+     * required, nullable, present, prohibited, or similar presence rules here.
+     *
+     * @return array<string, array<int, string>>
+     */
+    public function getPassengerValidationRules(): array;
+
+    /**
      * Text shown when the customer declines insurance for the trip.
      */
     public function getNoSelectionText(): string;

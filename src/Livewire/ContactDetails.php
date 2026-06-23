@@ -14,6 +14,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\CountryCallingCo
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Jobs\SaveTraverDetailsJob;
 use Nezasa\Checkout\Models\Checkout;
+use Nezasa\Checkout\Supporters\InsuranceValidationRulesSupporter;
 
 class ContactDetails extends BaseCheckoutComponent
 {
@@ -127,6 +128,8 @@ class ContactDetails extends BaseCheckoutComponent
             'street2' => ['string', 'max:255'],
             'countryCode' => ['string', 'max:10'],
         ];
+
+        $rules = array_replace($rules, app(InsuranceValidationRulesSupporter::class)->contactRules());
 
         foreach ($this->contactRequirements->getVisibleFields() as $name => $item) {
             if ($item->isRequired()) {
