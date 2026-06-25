@@ -15,12 +15,7 @@ class OnRequestResponseEntity extends BaseDto
         public bool $confirmationEnabled = false,
         public ?string $confirmationText = null,
         public ?string $remarks = null,
-    ) {
-
-        $this->confirmationEnabled = true;
-        $this->confirmationText = 'This is the text of confirmation.';
-        $this->remarks = 'This is the text of remarks.';
-    }
+    ) {}
 
     /**
      * Get a stable key for the on-request acceptance based on displayed content.

@@ -27,7 +27,5 @@ class AvailabilitySummaryResponseEntity extends BaseDto
         public PriceResponse $prices,
         public array $remarks = [],
         public bool $isOnRequest = false,
-    ) {
-        $this->isOnRequest = true;
-    }
+    ) {}
 }
