@@ -266,15 +266,15 @@ it('loads Passolution travel information for every destination and nationality c
 
     $mockClient = MockClient::global([
         GetContentRequest::class => MockResponse::make([
-            'items' => [
+            'records' => [
                 [
-                    'destinationCountryCode' => 'DE',
-                    'nationalityCountryCode' => 'IR',
+                    'destination' => 'DE',
+                    'nationality' => 'IR',
                     'title' => 'Destination Germany / Nationality Iran',
-                    'health' => ['text' => 'No vaccinations are required.'],
-                    'entryRequirements' => ['text' => 'A passport is required.'],
-                    'visaRequirements' => ['text' => 'No visa is required.'],
-                    'transitVisaRequirements' => ['text' => 'Transit visa is not required.'],
+                    'entry' => ['content' => 'A passport is required.'],
+                    'visa' => ['content' => 'No visa is required.'],
+                    'transit_visa' => ['content' => 'Transit visa is not required.'],
+                    'health' => ['content' => 'No vaccinations are required.'],
                 ],
             ],
         ]),

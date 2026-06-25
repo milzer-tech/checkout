@@ -109,10 +109,10 @@ class TravelInformationSection extends BaseCheckoutComponent
             ->run($this->model, $this->itinerary->destinationCountries, $this->lang ?? 'en')
             ->map(fn (TravelInformationCombination $combination): array => [
                 'title' => $combination->title(),
-                'health' => $combination->content->health(),
-                'entry' => $combination->content->entryRequirements(),
-                'visa' => $combination->content->visaRequirements(),
-                'transit_visa' => $combination->content->transitVisaRequirements(),
+                'health' => $combination->health(),
+                'entry' => $combination->entry(),
+                'visa' => $combination->visa(),
+                'transit_visa' => $combination->transitVisa(),
             ])
             ->values()
             ->all();

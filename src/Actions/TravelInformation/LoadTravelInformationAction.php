@@ -44,7 +44,7 @@ class LoadTravelInformationAction
             ->map(fn (array $pair): TravelInformationCombination => new TravelInformationCombination(
                 destinationCountryCode: $pair[0],
                 nationalityCountryCode: $pair[1],
-                content: $content->forCombination($pair[0], $pair[1]),
+                record: $content->recordForCombination($pair[0], $pair[1]),
             ));
     }
 
