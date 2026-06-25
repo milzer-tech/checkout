@@ -25,6 +25,9 @@ class AvailabilitySummaryResponseEntity extends BaseDto
         public bool $nonBookable,
         public bool $bookingWindowEnd,
         public PriceResponse $prices,
-        public array $remarks = []
-    ) {}
+        public array $remarks = [],
+        public bool $isOnRequest = false,
+    ) {
+        $this->isOnRequest = true;
+    }
 }

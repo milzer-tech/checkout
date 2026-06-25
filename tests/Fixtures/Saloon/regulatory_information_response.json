@@ -9,6 +9,11 @@
         "compliant": true,
         "reasons": []
       }
+    },
+    "onRequest": {
+      "confirmationEnabled": false,
+      "confirmationText": null,
+      "remarks": null
     }
   }
 }

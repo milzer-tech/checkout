@@ -63,6 +63,7 @@
                     :$model
                     :price="$itinerary->price"
                     :$regulatoryInformation
+                    :is-on-request="$isOnRequest"
                     :is-completed="$model->isCompleted(Section::PaymentOptions)"
                     :is-expanded="$model->isExpanded(Section::PaymentOptions)"
                 />

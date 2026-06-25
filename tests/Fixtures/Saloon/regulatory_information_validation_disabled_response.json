@@ -11,6 +11,11 @@
           "prrl.requirementsNotFulfilled.generic"
         ]
       }
+    },
+    "onRequest": {
+      "confirmationEnabled": false,
+      "confirmationText": null,
+      "remarks": null
     }
   }
 }

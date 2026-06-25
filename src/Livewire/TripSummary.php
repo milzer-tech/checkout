@@ -96,9 +96,12 @@ class TripSummary extends BaseCheckoutComponent
     #[On('payment-selected')]
     public function verifyAvailability(): void
     {
+        $availability = resolve(VerifyAvailabilityAction::class)->runWithSummary($this->getParams(), $this->itinerary);
+
         $this->dispatch(
             event: 'availability-verified',
-            result: resolve(VerifyAvailabilityAction::class)->run($this->getParams(), $this->itinerary),
+            result: $availability['bookable'],
+            isOnRequest: $availability['isOnRequest'],
         );
     }
 
