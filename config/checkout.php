@@ -67,6 +67,11 @@ return [
             'active' => (bool) env('CHECKOUT_COMPUTOP_TOKEN_ACTIVE', false),
             'name' => env('CHECKOUT_COMPUTOP_TOKEN_NAME', 'Computop - Token'),
         ],
+        'passolution' => [
+            'active' => (bool) env('CHECKOUT_PASSOLUTION_ACTIVE', false),
+            'base_url' => env('CHECKOUT_PASSOLUTION_BASE_URL', 'https://api.passolution.eu/api/v2'),
+            'token' => env('CHECKOUT_PASSOLUTION_TOKEN', ''),
+        ],
     ],
 
     'insurance' => [

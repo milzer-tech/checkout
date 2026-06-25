@@ -58,6 +58,13 @@
                         :is-completed="$model->isCompleted(Section::TermsAndConditions)"
                         :is-expanded="$model->isExpanded(Section::TermsAndConditions)"
                     />
+                    <livewire:travel-information-section
+                        :$itinerary
+                        :$regulatoryInformation
+                        :$model
+                        :is-completed="$model->isCompleted(Section::TravelInformation)"
+                        :is-expanded="$model->isExpanded(Section::TravelInformation)"
+                    />
                 @endif
                 <livewire:payment-options-section
                     :$model

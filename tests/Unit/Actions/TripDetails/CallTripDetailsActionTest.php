@@ -4,7 +4,6 @@ use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlLinkResponseEntity;
-use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\OnRequestResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RegulatoryInformationResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetRequlatoryInformationRequest;
@@ -76,8 +75,6 @@ it('maps EU-PRRL general terms confirmation fields from regulatory information',
 });
 
 it('maps on-request confirmation fields from regulatory information', function (): void {
-    $expected = new OnRequestResponseEntity;
-
     $response = RegulatoryInformationResponse::from([
         'paymentExplainer' => 'Payments are handled securely.',
         'onRequest' => [
@@ -87,11 +84,27 @@ it('maps on-request confirmation fields from regulatory information', function (
         ],
     ]);
 
-    expect($response->onRequest?->confirmationEnabled)->toBeFalse()
-        ->and($response->onRequest?->confirmationText)->toBe($expected->confirmationText)
-        ->and($response->onRequest?->remarks)->toBe($expected->remarks)
+    expect($response->onRequest?->confirmationEnabled)->toBeTrue()
+        ->and($response->onRequest?->confirmationText)->toBe('I understand this booking is on request.')
+        ->and($response->onRequest?->remarks)->toBe('<p>This booking requires manual confirmation.</p>')
         ->and($response->onRequest?->getConfirmationKey())->toBe(md5(json_encode([
-            'confirmationText' => $expected->confirmationText,
-            'remarks' => $expected->remarks,
+            'confirmationText' => 'I understand this booking is on request.',
+            'remarks' => '<p>This booking requires manual confirmation.</p>',
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)));
+});
+
+it('maps travel information confirmation content from regulatory information', function (): void {
+    $response = RegulatoryInformationResponse::from([
+        'travelInformation' => [
+            'confirmationEnabled' => true,
+            'title' => 'General entry requirements',
+            'intro' => '<p>Please check below Entry and Health Regulations that apply for the chosen destinations.</p>',
+            'checkboxText' => 'I confirm that I read Entry and Health Regulations above',
+        ],
+    ]);
+
+    expect($response->travelInformation?->confirmationEnabled)->toBeTrue()
+        ->and($response->travelInformation?->title)->toBe('General entry requirements')
+        ->and($response->travelInformation?->intro)->toBe('<p>Please check below Entry and Health Regulations that apply for the chosen destinations.</p>')
+        ->and($response->travelInformation?->checkboxText)->toBe('I confirm that I read Entry and Health Regulations above');
 });

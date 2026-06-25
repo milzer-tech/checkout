@@ -218,6 +218,7 @@ class BaseCheckoutComponent extends Component
             Section::AdditionalService,
             Section::Insurance,
             Section::TermsAndConditions,
+            Section::TravelInformation,
             Section::PaymentOptions,
         ];
     }

@@ -110,6 +110,15 @@ return [
         'insurance_document_product_description' => 'Product Information / Product Description',
         'prrl_compliance_error_title' => 'Package tour guidelines not fulfilled',
         'prrl_compliance_error_message' => 'Please be aware that we do not offer individual travel components on this deal. Your selected travel services cannot be purchased individually in this package. Please re-search to book the full package, or alternatively use the contact us feature to get in touch with our excellent team.',
+        'general_entry_requirements' => 'General entry requirements',
+        'travel_information_intro' => 'Please check below Entry and Health Regulations that apply for the chosen destinations.',
+        'travel_information_health' => 'Health',
+        'travel_information_entry_requirements' => 'Entry Requirements',
+        'travel_information_visa_requirements' => 'Visa Requirements',
+        'travel_information_transit_visa_requirements' => 'Transit Visa Requirements',
+        'travel_information_confirmation' => 'I confirm that I read Entry and Health Regulations above',
+        'travel_information_data_not_found' => 'Data not found',
+        'travel_information_combination_title' => 'Destination :destination / Nationality :nationality',
     ],
 
     'dates' => [
