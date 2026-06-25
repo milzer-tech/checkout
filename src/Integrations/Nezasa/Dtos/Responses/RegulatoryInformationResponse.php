@@ -7,6 +7,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\OnRequestResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TravelInformationResponseEntity;
 
 class RegulatoryInformationResponse extends BaseDto
 {
@@ -19,9 +20,10 @@ class RegulatoryInformationResponse extends BaseDto
         public ?string $paymentExplainer = null,
         public ?EuPrrlResponseEntity $euPrrl = null,
         public ?OnRequestResponseEntity $onRequest = null,
-
+        public ?TravelInformationResponseEntity $travelInformation = null,
     ) {
-        $this->onRequest = new OnRequestResponseEntity;
+        $this->onRequest ??= new OnRequestResponseEntity;
+        $this->travelInformation ??= new TravelInformationResponseEntity;
     }
 
     /**

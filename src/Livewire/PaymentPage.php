@@ -3,6 +3,7 @@
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Uri;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
@@ -10,6 +11,7 @@ use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Insurances\Handlers\InsuranceHandler;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RegulatoryInformationResponse;
 use Nezasa\Checkout\Payments\Contracts\PaymentContract;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Handlers\PaymentInitiationHandler;
@@ -72,6 +74,13 @@ class PaymentPage extends BaseCheckoutComponent
             return false;
         }
 
+        if ($this->requiresTravelInformationConfirmation($result->regulatoryInformation)
+            && data_get($this->model->data, 'travel_information_confirmed') !== true) {
+            $this->redirect(route('traveler-details', $this->getParams()->toArray()));
+
+            return false;
+        }
+
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
             itineraryResponse: $result->itinerary,
             checkoutResponse: $result->checkout,
@@ -81,6 +90,13 @@ class PaymentPage extends BaseCheckoutComponent
         );
 
         return true;
+    }
+
+    private function requiresTravelInformationConfirmation(RegulatoryInformationResponse $regulatoryInformation): bool
+    {
+        return $regulatoryInformation->travelInformation?->confirmationEnabled === true
+            && Config::boolean('checkout.integrations.passolution.active')
+            && filled(Config::string('checkout.integrations.passolution.token'));
     }
 
     /**

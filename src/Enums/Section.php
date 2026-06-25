@@ -18,6 +18,7 @@ use AzimKordpour\PowerEnum\Traits\PowerEnum;
  * @method bool isInsurance()
  * @method bool isActivity()
  * @method bool isTermsAndConditions()
+ * @method bool isTravelInformation()
  */
 enum Section: string
 {
@@ -32,6 +33,7 @@ enum Section: string
     case Insurance = 'insurance';
     case Activity = 'activity';
     case TermsAndConditions = 'terms-and-conditions';
+    case TravelInformation = 'travel-information';
 
     /**
      * Customize the labels of the enum values.
@@ -50,6 +52,7 @@ enum Section: string
             self::Insurance->value => trans('checkout::page.trip_details.Insurance'),
             self::Activity->value => trans('checkout::page.trip_details.activities'),
             self::TermsAndConditions->value => trans('checkout::page.trip_details.important_information'),
+            self::TravelInformation->value => trans('checkout::page.trip_details.general_entry_requirements'),
         ];
     }
 }
