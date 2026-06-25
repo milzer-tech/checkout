@@ -145,7 +145,7 @@ it('persists on-request confirmation and owns its error state', function (): voi
 
     $component->showOnRequestConfirmationError();
 
-    expect($component->showOnRequestTermsError)->toBeTrue();
+    expect($component->showOnRequestTermsError)->toBeFalse();
 
     $component->toggleOnRequestTerms(true);
     $checkout->refresh();

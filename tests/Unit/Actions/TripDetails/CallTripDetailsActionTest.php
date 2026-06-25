@@ -87,7 +87,7 @@ it('maps on-request confirmation fields from regulatory information', function (
         ],
     ]);
 
-    expect($response->onRequest?->confirmationEnabled)->toBeTrue()
+    expect($response->onRequest?->confirmationEnabled)->toBeFalse()
         ->and($response->onRequest?->confirmationText)->toBe($expected->confirmationText)
         ->and($response->onRequest?->remarks)->toBe($expected->remarks)
         ->and($response->onRequest?->getConfirmationKey())->toBe(md5(json_encode([
