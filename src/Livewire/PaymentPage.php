@@ -8,6 +8,7 @@ use Illuminate\Support\Uri;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
+use Nezasa\Checkout\Actions\TravelInformation\LoadTravelInformationAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Insurances\Handlers\InsuranceHandler;
@@ -74,13 +75,6 @@ class PaymentPage extends BaseCheckoutComponent
             return false;
         }
 
-        if ($this->requiresTravelInformationConfirmation($result->regulatoryInformation)
-            && data_get($this->model->data, 'travel_information_confirmed') !== true) {
-            $this->redirect(route('traveler-details', $this->getParams()->toArray()));
-
-            return false;
-        }
-
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
             itineraryResponse: $result->itinerary,
             checkoutResponse: $result->checkout,
@@ -88,6 +82,13 @@ class PaymentPage extends BaseCheckoutComponent
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
             checkout: $this->model
         );
+
+        if ($this->requiresTravelInformationConfirmation($result->regulatoryInformation)
+            && ! $this->hasValidTravelInformationConfirmation()) {
+            $this->redirect(route('traveler-details', $this->getParams()->toArray()));
+
+            return false;
+        }
 
         return true;
     }
@@ -97,6 +98,18 @@ class PaymentPage extends BaseCheckoutComponent
         return $regulatoryInformation->travelInformation?->confirmationEnabled === true
             && Config::boolean('checkout.integrations.passolution.active')
             && filled(Config::string('checkout.integrations.passolution.token'));
+    }
+
+    private function hasValidTravelInformationConfirmation(): bool
+    {
+        if (data_get($this->model->data, 'travel_information_confirmed') !== true) {
+            return false;
+        }
+
+        $currentHash = resolve(LoadTravelInformationAction::class)
+            ->confirmationHash($this->model, $this->itinerary->destinationCountries);
+
+        return data_get($this->model->data, 'travel_information_confirmation_hash') === $currentHash;
     }
 
     /**

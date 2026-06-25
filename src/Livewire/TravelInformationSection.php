@@ -28,7 +28,9 @@ class TravelInformationSection extends BaseCheckoutComponent
 
     public function mount(LoadTravelInformationAction $loadTravelInformationAction): void
     {
-        $this->travelInformationConfirmed = (bool) data_get($this->model->data, 'travel_information_confirmed', false);
+        if ($this->shouldRender()) {
+            $this->syncTravelInformationConfirmation($loadTravelInformationAction);
+        }
 
         if ($this->shouldRender() && ($this->isExpanded || $this->isCompleted || $this->model->isCompleted(Section::TermsAndConditions))) {
             $this->loadCombinations($loadTravelInformationAction);
@@ -51,7 +53,12 @@ class TravelInformationSection extends BaseCheckoutComponent
     public function toggleTravelInformationConfirmation(bool $value): void
     {
         $this->travelInformationConfirmed = $value;
-        $this->model->updateData(['travel_information_confirmed' => $value]);
+        $this->model->updateData([
+            'travel_information_confirmed' => $value,
+            'travel_information_confirmation_hash' => $value
+                ? resolve(LoadTravelInformationAction::class)->confirmationHash($this->model, $this->itinerary->destinationCountries)
+                : null,
+        ]);
 
         if ($value) {
             $this->resetValidation('travelInformationConfirmed');
@@ -71,7 +78,11 @@ class TravelInformationSection extends BaseCheckoutComponent
             'travelInformationConfirmed' => ['required', 'accepted'],
         ]);
 
-        $this->model->updateData(['travel_information_confirmed' => true]);
+        $this->model->updateData([
+            'travel_information_confirmed' => true,
+            'travel_information_confirmation_hash' => resolve(LoadTravelInformationAction::class)
+                ->confirmationHash($this->model, $this->itinerary->destinationCountries),
+        ]);
         $this->markAsCompletedAdnCollapse(Section::TravelInformation);
         $this->dispatch(Section::TravelInformation->value);
     }
@@ -85,6 +96,7 @@ class TravelInformationSection extends BaseCheckoutComponent
             return;
         }
 
+        $this->syncTravelInformationConfirmation($loadTravelInformationAction);
         $this->loadCombinations($loadTravelInformationAction);
         $this->expand(Section::TravelInformation);
     }
@@ -116,5 +128,22 @@ class TravelInformationSection extends BaseCheckoutComponent
             ])
             ->values()
             ->all();
+    }
+
+    private function syncTravelInformationConfirmation(LoadTravelInformationAction $loadTravelInformationAction): void
+    {
+        $confirmationHash = $loadTravelInformationAction->confirmationHash($this->model, $this->itinerary->destinationCountries);
+        $storedConfirmationHash = data_get($this->model->data, 'travel_information_confirmation_hash');
+
+        if ($storedConfirmationHash !== $confirmationHash) {
+            $this->model->updateData([
+                'travel_information_confirmed' => false,
+                'travel_information_confirmation_hash' => null,
+                'status.'.Section::TravelInformation->value.'.isCompleted' => false,
+            ]);
+            $this->isCompleted = false;
+        }
+
+        $this->travelInformationConfirmed = (bool) data_get($this->model->refresh()->data, 'travel_information_confirmed', false);
     }
 }

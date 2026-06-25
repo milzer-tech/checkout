@@ -20,18 +20,8 @@ class LoadTravelInformationAction
      */
     public function run(Checkout $checkout, Collection|array $destinationCountries, string $language): Collection
     {
-        $destinations = collect($destinationCountries)
-            ->filter(fn (mixed $country): bool => is_string($country) && trim($country) !== '')
-            ->map(fn (string $country): string => $this->normalizeCountryCode($country))
-            ->unique()
-            ->values();
-
-        $nationalities = $checkout->getPaxInfo()
-            ->map(fn ($pax): ?string => $pax->nationalityCountryCode ?: $pax->nationality)
-            ->filter(fn (mixed $country): bool => is_string($country) && trim($country) !== '')
-            ->map(fn (string $country): string => $this->normalizeCountryCode($country))
-            ->unique()
-            ->values();
+        $destinations = $this->destinationCodes($destinationCountries);
+        $nationalities = $this->nationalityCodes($checkout);
 
         if ($destinations->isEmpty() || $nationalities->isEmpty()) {
             return new Collection;
@@ -46,6 +36,17 @@ class LoadTravelInformationAction
                 nationalityCountryCode: $pair[1],
                 record: $content->recordForCombination($pair[0], $pair[1]),
             ));
+    }
+
+    /**
+     * @param  Collection<int, string>|array<int, string>  $destinationCountries
+     */
+    public function confirmationHash(Checkout $checkout, Collection|array $destinationCountries): string
+    {
+        return md5(json_encode([
+            'destinations' => $this->destinationCodes($destinationCountries)->sort()->values()->all(),
+            'nationalities' => $this->nationalityCodes($checkout)->sort()->values()->all(),
+        ], JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -72,5 +73,31 @@ class LoadTravelInformationAction
             ->before('-')
             ->upper()
             ->toString();
+    }
+
+    /**
+     * @param  Collection<int, string>|array<int, string>  $destinationCountries
+     * @return Collection<int, string>
+     */
+    private function destinationCodes(Collection|array $destinationCountries): Collection
+    {
+        return collect($destinationCountries)
+            ->filter(fn (mixed $country): bool => is_string($country) && trim($country) !== '')
+            ->map(fn (string $country): string => $this->normalizeCountryCode($country))
+            ->unique()
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, string>
+     */
+    private function nationalityCodes(Checkout $checkout): Collection
+    {
+        return $checkout->getPaxInfo()
+            ->map(fn ($pax): ?string => $pax->nationalityCountryCode ?: $pax->nationality)
+            ->filter(fn (mixed $country): bool => is_string($country) && trim($country) !== '')
+            ->map(fn (string $country): string => $this->normalizeCountryCode($country))
+            ->unique()
+            ->values();
     }
 }

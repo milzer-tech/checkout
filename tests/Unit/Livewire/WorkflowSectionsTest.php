@@ -348,8 +348,89 @@ it('requires and persists travel information confirmation before continuing', fu
     $checkout->refresh();
 
     expect(data_get($checkout->data, 'travel_information_confirmed'))->toBeTrue()
+        ->and(data_get($checkout->data, 'travel_information_confirmation_hash'))->not->toBeNull()
         ->and($component->isCompleted)->toBeTrue()
         ->and($component->isExpanded)->toBeFalse();
+});
+
+it('resets travel information confirmation when destinations or nationalities change', function (): void {
+    config()->set('checkout.integrations.passolution.active', true);
+    config()->set('checkout.integrations.passolution.token', 'test-token');
+
+    $checkout = livewireWorkflowCheckout([
+        'paxInfo' => [
+            [
+                ['nationalityCountryCode' => 'EG'],
+            ],
+        ],
+        'travel_information_confirmed' => true,
+        'travel_information_confirmation_hash' => 'stale-hash',
+        'status' => array_replace_recursive(Checkout::buildSectionStatus(), [
+            Section::TravelInformation->value => ['isCompleted' => true],
+        ]),
+    ]);
+    $component = new TravelInformationSection;
+    primeBaseCheckoutComponent($component, $checkout);
+    $component->itinerary = livewireWorkflowItinerary();
+    $component->regulatoryInformation = new RegulatoryInformationResponse(
+        travelInformation: new TravelInformationResponseEntity(confirmationEnabled: true)
+    );
+    $component->isCompleted = true;
+
+    $component->mount(new LoadTravelInformationAction);
+    $checkout->refresh();
+
+    expect($component->travelInformationConfirmed)->toBeFalse()
+        ->and($component->isCompleted)->toBeFalse()
+        ->and(data_get($checkout->data, 'travel_information_confirmed'))->toBeFalse()
+        ->and(data_get($checkout->data, 'travel_information_confirmation_hash'))->toBeNull()
+        ->and(data_get($checkout->data, 'status.'.Section::TravelInformation->value.'.isCompleted'))->toBeFalse();
+});
+
+it('resets stale travel information confirmation when traveller nationality changes before continuing again', function (): void {
+    config()->set('checkout.integrations.passolution.active', true);
+    config()->set('checkout.integrations.passolution.token', 'test-token');
+
+    MockClient::global([
+        GetContentRequest::class => MockResponse::make([
+            'records' => [],
+        ]),
+    ]);
+
+    $checkout = livewireWorkflowCheckout([
+        'paxInfo' => [
+            [
+                ['nationalityCountryCode' => 'EG'],
+            ],
+        ],
+    ]);
+    $component = new TravelInformationSection;
+    primeBaseCheckoutComponent($component, $checkout);
+    $component->itinerary = livewireWorkflowItinerary();
+    $component->regulatoryInformation = new RegulatoryInformationResponse(
+        travelInformation: new TravelInformationResponseEntity(confirmationEnabled: true)
+    );
+
+    $component->toggleTravelInformationConfirmation(true);
+    $component->next();
+    $checkout->refresh();
+
+    expect(data_get($checkout->data, 'travel_information_confirmed'))->toBeTrue();
+
+    $checkout->updateData([
+        'paxInfo.0.0.nationalityCountryCode' => 'FR',
+        'status.'.Section::TravelInformation->value.'.isCompleted' => false,
+    ]);
+    $component->isCompleted = true;
+    $component->travelInformationConfirmed = true;
+
+    $component->listen(new LoadTravelInformationAction);
+    $checkout->refresh();
+
+    expect($component->travelInformationConfirmed)->toBeFalse()
+        ->and($component->isCompleted)->toBeFalse()
+        ->and(data_get($checkout->data, 'travel_information_confirmed'))->toBeFalse()
+        ->and(data_get($checkout->data, 'travel_information_confirmation_hash'))->toBeNull();
 });
 
 it('loads EU-PRRL terms acceptance only for the current content hash', function (): void {
