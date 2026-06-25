@@ -165,7 +165,7 @@ class TermsSection extends BaseCheckoutComponent
 
     public function requiresEuPrrlGeneralTermsConfirmation(): bool
     {
-        return $this->euPrrl?->requiresGeneralTermsConfirmation() === true;
+        return $this->euPrrl?->generalTermsConfirmationEnabled === true;
     }
 
     private function hasInsuranceTermsContent(InsuranceTerms $terms): bool

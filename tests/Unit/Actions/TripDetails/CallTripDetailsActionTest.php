@@ -65,7 +65,7 @@ it('maps EU-PRRL general terms confirmation fields from regulatory information',
         ],
     ]);
 
-    expect($response->euPrrl?->requiresGeneralTermsConfirmation())->toBeTrue()
+    expect($response->euPrrl?->generalTermsConfirmationEnabled)->toBeTrue()
         ->and($response->euPrrl?->title)->toBe('EU package travel terms')
         ->and($response->euPrrl?->intro)->toBe('<p>Confirm these terms before booking.</p>')
         ->and($response->euPrrl?->checkboxText)->toBe('I accept the EU package travel terms')

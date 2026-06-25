@@ -23,12 +23,4 @@ class EuPrrlResponseEntity extends BaseDto
         public Collection $links = new Collection,
         public ?EuPrrlComplianceResponseEntity $compliance = null,
     ) {}
-
-    /**
-     * Determine whether EU-PRRL general terms should be shown and accepted.
-     */
-    public function requiresGeneralTermsConfirmation(): bool
-    {
-        return $this->generalTermsConfirmationEnabled;
-    }
 }
