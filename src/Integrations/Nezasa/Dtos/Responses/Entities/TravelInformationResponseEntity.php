@@ -16,5 +16,11 @@ class TravelInformationResponseEntity extends BaseDto
         public ?string $title = null,
         public ?string $intro = null,
         public ?string $checkboxText = null,
-    ) {}
+    ) {
+        // todo: remove this after testing
+        $this->confirmationEnabled = true;
+        $this->title = 'Test: Travel Information';
+        $this->intro = 'Test: Please confirm your travel information.';
+        $this->checkboxText = 'Test: I confirm that the travel information provided is correct.';
+    }
 }

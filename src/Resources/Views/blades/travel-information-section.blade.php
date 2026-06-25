@@ -16,7 +16,7 @@
     class="{{ $this->shouldRender() ? '' : 'hidden' }}"
     onEdit="reopen('{{ Section::TravelInformation->value }}')"
 >
-    <div class="space-y-6">
+    <div class="space-y-6" x-data="{ openSection: null }">
         <p class="text-sm leading-relaxed text-gray-600">
             @if(filled($travelInformation?->intro))
                 {!! $travelInformation->intro !!}
@@ -27,8 +27,11 @@
 
         <div class="divide-y divide-gray-200 border-y border-gray-200">
             @foreach($sections as $key => $label)
-                <details class="group py-1" @if($loop->first) open @endif>
-                    <summary class="flex cursor-pointer list-none items-center justify-between py-4 text-sm font-medium text-gray-900">
+                <details class="group py-1" x-bind:open="openSection === '{{ $key }}'">
+                    <summary
+                        class="flex cursor-pointer list-none items-center justify-between py-4 text-sm font-medium text-gray-900"
+                        x-on:click.prevent="openSection = openSection === '{{ $key }}' ? null : '{{ $key }}'"
+                    >
                         <span>{{ $label }}</span>
                         <svg
                             class="h-5 w-5 text-gray-600 transition-transform group-open:rotate-180"
@@ -69,6 +72,7 @@
             <label class="flex items-center space-x-3 cursor-pointer">
                 <input
                     type="checkbox"
+                    x-ref="travelInformationConfirmation"
                     wire:model="travelInformationConfirmed"
                     wire:change="toggleTravelInformationConfirmation($event.target.checked)"
                     class="h-5 w-5 text-blue-600 border-gray-300 rounded">
@@ -93,6 +97,7 @@
             <div class="flex justify-between items-center">
                 <div></div>
                 <button type="button"
+                        x-on:click="if (!$refs.travelInformationConfirmation.checked) openSection = null"
                         wire:click="next"
                         class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
                     {{ trans('checkout::page.trip_details.next') }}
