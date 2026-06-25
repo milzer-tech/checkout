@@ -108,6 +108,8 @@ return [
         'insurance_documents' => 'Documents d’assurance',
         'insurance_document_ipid' => 'Document d’information sur le produit d’assurance',
         'insurance_document_product_description' => 'Information produit / Description du produit',
+        'prrl_compliance_error_title' => 'Les règles de voyages à forfait ne sont pas remplies',
+        'prrl_compliance_error_message' => 'Veuillez noter que nous ne proposons pas d’éléments de voyage individuels dans le cadre de cette offre. Les services de voyage que vous avez sélectionnés ne peuvent pas être achetés individuellement dans le cadre de ce forfait. Veuillez effectuer une nouvelle recherche pour réserver le forfait complet, ou utilisez la fonction « contactez-nous » pour prendre contact avec notre excellente équipe.',
     ],
     'dates' => [
         'select' => 'Sélectionner',

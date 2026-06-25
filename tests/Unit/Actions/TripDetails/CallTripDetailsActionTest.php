@@ -35,5 +35,8 @@ it('can retrieve a trip details', function (): void {
 
     expect($result)
         ->toBeObject()
-        ->toBeInstanceOf(RequiredResponses::class);
+        ->toBeInstanceOf(RequiredResponses::class)
+        ->and($result->regulatoryInformation->euPrrl?->itineraryContentValidationEnabled)->toBeTrue()
+        ->and($result->regulatoryInformation->euPrrl?->compliance?->compliant)->toBeTrue()
+        ->and($result->regulatoryInformation->blocksCheckout())->toBeFalse();
 });

@@ -108,6 +108,8 @@ return [
         'insurance_documents' => 'Versicherungsdokumente',
         'insurance_document_ipid' => 'Informationsblatt zu Versicherungsprodukten',
         'insurance_document_product_description' => 'Produktinformation / Produktbeschreibung',
+        'prrl_compliance_error_title' => 'Richtlinien der Pauschalreise nicht erfüllt',
+        'prrl_compliance_error_message' => 'Wir sind ein Reiseveranstalter für Pauschalreisen, daher haben Sie bitte Verständnis, dass wir keine einzelnen Reisebausteine anbieten. Ihre ausgewählten Reiseleistungen entsprechen leider nicht der Richtlinien einer Pauschalreise. Bitte buchen Sie mindestens zwei Reiseleistungen (z.B. Hotel und Mietwagen, Hotel und Flug oder Mietwagen und Flug)',
     ],
     'dates' => [
         'select' => 'Auswählen',

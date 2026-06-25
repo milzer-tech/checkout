@@ -1,0 +1,15 @@
+{
+  "statusCode": 200,
+  "data": {
+    "paymentExplainer": "Payments are handled securely.",
+    "euPrrl": {
+      "itineraryContentValidationEnabled": false,
+      "compliance": {
+        "compliant": false,
+        "reasons": [
+          "prrl.requirementsNotFulfilled.generic"
+        ]
+      }
+    }
+  }
+}

@@ -63,6 +63,36 @@ function fakeInitialNezasaCalls(): void
     ]);
 }
 
+function fakeInitialNonCompliantNezasaCalls(): void
+{
+    MockClient::global([
+        GetItineraryRequest::class => mockFixture('get_itinerary_response'),
+        RetrieveCheckoutRequest::class => mockFixture('retrieve_checkout_response'),
+        AddedRentalCarsRequest::class => mockFixture('added_rental_cars_response'),
+        TravelerRequirementsRequest::class => mockFixture('traveller_requirements_response'),
+        GetAvailableUpsellItemsRequest::class => mockFixture('get_available_upsell_items_response'),
+        RetrieveCheckoutUpsellItemsRequest::class => mockFixture('retrieve_checkout_upsell_items_response'),
+        CountryCodesRequest::class => mockFixture('country_codes_response'),
+        CountriesRequest::class => mockFixture('countries_response'),
+        GetRequlatoryInformationRequest::class => mockFixture('regulatory_information_non_compliant_response'),
+    ]);
+}
+
+function fakeInitialContentValidationDisabledNezasaCalls(): void
+{
+    MockClient::global([
+        GetItineraryRequest::class => mockFixture('get_itinerary_response'),
+        RetrieveCheckoutRequest::class => mockFixture('retrieve_checkout_response'),
+        AddedRentalCarsRequest::class => mockFixture('added_rental_cars_response'),
+        TravelerRequirementsRequest::class => mockFixture('traveller_requirements_response'),
+        GetAvailableUpsellItemsRequest::class => mockFixture('get_available_upsell_items_response'),
+        RetrieveCheckoutUpsellItemsRequest::class => mockFixture('retrieve_checkout_upsell_items_response'),
+        CountryCodesRequest::class => mockFixture('country_codes_response'),
+        CountriesRequest::class => mockFixture('countries_response'),
+        GetRequlatoryInformationRequest::class => mockFixture('regulatory_information_validation_disabled_response'),
+    ]);
+}
+
 function fakeInitialNotFoundNezasaCalls(): void
 {
     MockClient::global([

@@ -108,6 +108,8 @@ return [
         'insurance_documents' => 'Insurance documents',
         'insurance_document_ipid' => 'Insurance Product Information Document',
         'insurance_document_product_description' => 'Product Information / Product Description',
+        'prrl_compliance_error_title' => 'Package tour guidelines not fulfilled',
+        'prrl_compliance_error_message' => 'Please be aware that we do not offer individual travel components on this deal. Your selected travel services cannot be purchased individually in this package. Please re-search to book the full package, or alternatively use the contact us feature to get in touch with our excellent team.',
     ],
 
     'dates' => [

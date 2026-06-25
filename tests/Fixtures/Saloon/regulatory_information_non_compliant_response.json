@@ -5,8 +5,10 @@
     "euPrrl": {
       "itineraryContentValidationEnabled": true,
       "compliance": {
-        "compliant": true,
-        "reasons": []
+        "compliant": false,
+        "reasons": [
+          "prrl.requirementsNotFulfilled.generic"
+        ]
       }
     }
   }
