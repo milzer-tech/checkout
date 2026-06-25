@@ -23,4 +23,23 @@ class EuPrrlResponseEntity extends BaseDto
         public Collection $links = new Collection,
         public ?EuPrrlComplianceResponseEntity $compliance = null,
     ) {}
+
+    /**
+     * Get a stable key for the EU-PRRL acceptance based on displayed terms content.
+     */
+    public function getGeneralTermsKey(): string
+    {
+        return md5(json_encode([
+            'title' => $this->title,
+            'intro' => $this->intro,
+            'checkboxText' => $this->checkboxText,
+            'links' => $this->links
+                ->map(fn (EuPrrlLinkResponseEntity $link): array => [
+                    'url' => $link->url,
+                    'linkText' => $link->linkText,
+                ])
+                ->values()
+                ->all(),
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
+    }
 }

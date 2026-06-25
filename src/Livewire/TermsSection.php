@@ -64,6 +64,14 @@ class TermsSection extends BaseCheckoutComponent
                 $this->acceptedTerms[$key] = $value;
             }
         }
+
+        if ($this->requiresEuPrrlGeneralTermsConfirmation()) {
+            $this->acceptedEuPrrlTerms = (bool) data_get(
+                target: $this->model->data,
+                key: 'acceptedTerms.'.$this->euPrrl?->getGeneralTermsKey(),
+                default: false
+            );
+        }
     }
 
     /**
@@ -107,6 +115,12 @@ class TermsSection extends BaseCheckoutComponent
     public function toggleEuPrrlTerms(bool $value): void
     {
         $this->acceptedEuPrrlTerms = $value;
+
+        if ($this->euPrrl instanceof EuPrrlResponseEntity) {
+            $this->model->updateData([
+                'acceptedTerms.'.$this->euPrrl->getGeneralTermsKey() => $value,
+            ]);
+        }
 
         if ($value) {
             $this->resetValidation('acceptedEuPrrlTerms');

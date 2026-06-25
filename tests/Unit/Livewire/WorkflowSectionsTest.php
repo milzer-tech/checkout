@@ -208,9 +208,11 @@ it('requires EU-PRRL general terms confirmation when enabled', function (): void
 
     $component->toggleEuPrrlTerms(true);
     $component->next();
+    $checkout->refresh();
 
     expect($component->isCompleted)->toBeTrue()
-        ->and($component->isExpanded)->toBeFalse();
+        ->and($component->isExpanded)->toBeFalse()
+        ->and(data_get($checkout->data, 'acceptedTerms.'.$component->euPrrl->getGeneralTermsKey()))->toBeTrue();
 });
 
 it('does not require EU-PRRL general terms confirmation when disabled', function (): void {
@@ -227,6 +229,58 @@ it('does not require EU-PRRL general terms confirmation when disabled', function
 
     expect($component->requiresEuPrrlGeneralTermsConfirmation())->toBeFalse()
         ->and($component->exposedRules())->not->toHaveKey('acceptedEuPrrlTerms');
+});
+
+it('loads EU-PRRL terms acceptance only for the current content hash', function (): void {
+    $acceptedEuPrrl = new EuPrrlResponseEntity(
+        generalTermsConfirmationEnabled: true,
+        itineraryContentValidationEnabled: true,
+        title: 'Accepted EU package travel',
+        intro: '<p>Accepted terms.</p>',
+        checkboxText: 'I accept accepted terms',
+        links: new Collection([
+            new EuPrrlLinkResponseEntity(
+                url: 'https://example.com/accepted',
+                linkText: 'Accepted link'
+            ),
+        ])
+    );
+
+    $changedEuPrrl = new EuPrrlResponseEntity(
+        generalTermsConfirmationEnabled: true,
+        itineraryContentValidationEnabled: true,
+        title: 'Changed EU package travel',
+        intro: '<p>Accepted terms.</p>',
+        checkboxText: 'I accept accepted terms',
+        links: new Collection([
+            new EuPrrlLinkResponseEntity(
+                url: 'https://example.com/accepted',
+                linkText: 'Accepted link'
+            ),
+        ])
+    );
+
+    $checkout = livewireWorkflowCheckout([
+        'acceptedTerms' => [
+            $acceptedEuPrrl->getGeneralTermsKey() => true,
+        ],
+    ]);
+
+    $component = new ExposedTermsSectionForWorkflowTest;
+    primeBaseCheckoutComponent($component, $checkout);
+    $component->termsAndConditions = new TermsAndConditionsResponseEntity;
+    $component->euPrrl = $acceptedEuPrrl;
+    $component->mount();
+
+    expect($component->acceptedEuPrrlTerms)->toBeTrue();
+
+    $component = new ExposedTermsSectionForWorkflowTest;
+    primeBaseCheckoutComponent($component, $checkout);
+    $component->termsAndConditions = new TermsAndConditionsResponseEntity;
+    $component->euPrrl = $changedEuPrrl;
+    $component->mount();
+
+    expect($component->acceptedEuPrrlTerms)->toBeFalse();
 });
 
 it('keeps trip summary pricing and insurance in sync when insurance is selected or declined', function (): void {
