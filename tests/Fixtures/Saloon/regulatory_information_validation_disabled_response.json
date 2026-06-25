@@ -4,10 +4,12 @@
     "paymentExplainer": "Payments are handled securely.",
     "euPrrl": {
       "generalTermsConfirmationEnabled": false,
-      "itineraryContentValidationEnabled": true,
+      "itineraryContentValidationEnabled": false,
       "compliance": {
-        "compliant": true,
-        "reasons": []
+        "compliant": false,
+        "reasons": [
+          "prrl.requirementsNotFulfilled.generic"
+        ]
       }
     }
   }

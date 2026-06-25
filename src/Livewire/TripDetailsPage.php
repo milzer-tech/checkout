@@ -75,6 +75,13 @@ class TripDetailsPage extends BaseCheckoutComponent
      */
     public function render(): View
     {
+        if ($this->result->regulatoryInformation->blocksCheckout()) {
+            /** @phpstan-ignore-next-line */
+            return view('checkout::blades.prrl-compliance-error', [
+                'itinerary' => $this->itinerary,
+            ]);
+        }
+
         /** @phpstan-ignore-next-line */
         return view('checkout::blades.index', [
             'contactRequirements' => $this->result->travelerRequirements->contact,

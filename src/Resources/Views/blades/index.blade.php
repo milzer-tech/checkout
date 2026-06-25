@@ -53,6 +53,7 @@
 
                     <livewire:terms-section
                         :termsAndConditions="$itinerary->termsAndConditions"
+                        :eu-prrl="$regulatoryInformation->euPrrl"
                         :$model
                         :is-completed="$model->isCompleted(Section::TermsAndConditions)"
                         :is-expanded="$model->isExpanded(Section::TermsAndConditions)"

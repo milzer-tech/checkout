@@ -8,6 +8,7 @@ use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceOfferDto;
 use Nezasa\Checkout\Insurances\Dtos\InsuranceTerms;
 use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TermsAndConditionsResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TextSectionResponseEntity;
 use Nezasa\Checkout\Jobs\SaveTermAgreementJob;
@@ -20,11 +21,21 @@ class TermsSection extends BaseCheckoutComponent
     public TermsAndConditionsResponseEntity $termsAndConditions;
 
     /**
+     * EU-PRRL terms and compliance information.
+     */
+    public ?EuPrrlResponseEntity $euPrrl = null;
+
+    /**
      * The accepted terms and conditions.
      *
      * @var array<string, bool>
      */
     public array $acceptedTerms = [];
+
+    /**
+     * Whether the EU-PRRL general terms were accepted.
+     */
+    public bool $acceptedEuPrrlTerms = false;
 
     /**
      * Whether to show the terms modal.
@@ -53,6 +64,14 @@ class TermsSection extends BaseCheckoutComponent
                 $this->acceptedTerms[$key] = $value;
             }
         }
+
+        if ($this->requiresEuPrrlGeneralTermsConfirmation()) {
+            $this->acceptedEuPrrlTerms = (bool) data_get(
+                target: $this->model->data,
+                key: 'acceptedTerms.'.$this->euPrrl?->getGeneralTermsKey(),
+                default: false
+            );
+        }
     }
 
     /**
@@ -73,7 +92,11 @@ class TermsSection extends BaseCheckoutComponent
             $insurances = ['acceptedInsurance.'.$this->insuranceTerms->getKey() => ['required', 'accepted']];
         }
 
-        return array_merge($rules, $insurances ?? []);
+        if ($this->requiresEuPrrlGeneralTermsConfirmation()) {
+            $euPrrlTerms = ['acceptedEuPrrlTerms' => ['required', 'accepted']];
+        }
+
+        return array_merge($rules, $insurances ?? [], $euPrrlTerms ?? []);
     }
 
     /**
@@ -84,6 +107,28 @@ class TermsSection extends BaseCheckoutComponent
         dispatch(new SaveTermAgreementJob($this->checkoutId, $name, $value));
 
         $this->validate([$name => $this->rules()[$name]]);
+    }
+
+    /**
+     * Validate the EU-PRRL checkbox and clear its inline error once accepted.
+     */
+    public function toggleEuPrrlTerms(bool $value): void
+    {
+        $this->acceptedEuPrrlTerms = $value;
+
+        if ($this->euPrrl instanceof EuPrrlResponseEntity) {
+            $this->model->updateData([
+                'acceptedTerms.'.$this->euPrrl->getGeneralTermsKey() => $value,
+            ]);
+        }
+
+        if ($value) {
+            $this->resetValidation('acceptedEuPrrlTerms');
+
+            return;
+        }
+
+        $this->validateOnly('acceptedEuPrrlTerms');
     }
 
     /**
@@ -125,9 +170,16 @@ class TermsSection extends BaseCheckoutComponent
             $this->insuranceTerms = $insuranceTerms;
         }
 
-        ($this->termsAndConditions->sections->isEmpty() && ! $this->insuranceTerms instanceof InsuranceTerms)
+        ($this->termsAndConditions->sections->isEmpty()
+            && ! $this->insuranceTerms instanceof InsuranceTerms
+            && ! $this->requiresEuPrrlGeneralTermsConfirmation())
             ? $this->next()
             : $this->expand(Section::TermsAndConditions);
+    }
+
+    public function requiresEuPrrlGeneralTermsConfirmation(): bool
+    {
+        return $this->euPrrl?->generalTermsConfirmationEnabled === true;
     }
 
     private function hasInsuranceTermsContent(InsuranceTerms $terms): bool

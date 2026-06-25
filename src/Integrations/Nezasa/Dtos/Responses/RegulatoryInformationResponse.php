@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 
 use Nezasa\Checkout\Dtos\BaseDto;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlResponseEntity;
 
 class RegulatoryInformationResponse extends BaseDto
 {
@@ -14,7 +15,21 @@ class RegulatoryInformationResponse extends BaseDto
      * @link https://docs.tripbuilder.app/Mo9reezaehiengah/checkout-api-v1.html#tag/Checkout/paths/~1checkout~1v1~1checkouts~1%7BcheckoutId%7D~1regulatory-information/get
      */
     public function __construct(
-        public ?string $paymentExplainer,
+        public ?string $paymentExplainer = null,
+        public ?EuPrrlResponseEntity $euPrrl = null,
 
     ) {}
+
+    /**
+     * Determine whether EU-PRRL package compliance should block checkout.
+     */
+    public function blocksCheckout(): bool
+    {
+        if (! $this->euPrrl instanceof EuPrrlResponseEntity) {
+            return false;
+        }
+
+        return $this->euPrrl->itineraryContentValidationEnabled
+            && $this->euPrrl->compliance?->compliant === false;
+    }
 }

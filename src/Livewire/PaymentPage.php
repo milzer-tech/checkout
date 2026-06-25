@@ -31,7 +31,9 @@ class PaymentPage extends BaseCheckoutComponent
      */
     public function mount(): void
     {
-        $this->initializeRequirements();
+        if (! $this->initializeRequirements()) {
+            return;
+        }
 
         $this->handlePayment();
     }
@@ -58,11 +60,17 @@ class PaymentPage extends BaseCheckoutComponent
     /**
      * Initialize the requirements for the payment page.
      */
-    protected function initializeRequirements(): void
+    protected function initializeRequirements(): bool
     {
         $this->model = resolve(FindCheckoutModelAction::class)->run($this->getParams());
 
         $result = resolve(CallTripDetailsAction::class)->run($this->getParams());
+
+        if ($result->regulatoryInformation->blocksCheckout()) {
+            $this->redirect(route('traveler-details', $this->getParams()->toArray()));
+
+            return false;
+        }
 
         $this->itinerary = resolve(SummarizeItineraryAction::class)->run(
             itineraryResponse: $result->itinerary,
@@ -71,6 +79,8 @@ class PaymentPage extends BaseCheckoutComponent
             addedUpsellItemsResponse: collect($result->addedUpsellItems),
             checkout: $this->model
         );
+
+        return true;
     }
 
     /**
