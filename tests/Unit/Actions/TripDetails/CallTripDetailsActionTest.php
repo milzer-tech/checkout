@@ -3,6 +3,8 @@
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlLinkResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RegulatoryInformationResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetRequlatoryInformationRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
@@ -39,4 +41,35 @@ it('can retrieve a trip details', function (): void {
         ->and($result->regulatoryInformation->euPrrl?->itineraryContentValidationEnabled)->toBeTrue()
         ->and($result->regulatoryInformation->euPrrl?->compliance?->compliant)->toBeTrue()
         ->and($result->regulatoryInformation->blocksCheckout())->toBeFalse();
+});
+
+it('maps EU-PRRL general terms confirmation fields from regulatory information', function (): void {
+    $response = RegulatoryInformationResponse::from([
+        'paymentExplainer' => 'Payments are handled securely.',
+        'euPrrl' => [
+            'generalTermsConfirmationEnabled' => true,
+            'itineraryContentValidationEnabled' => true,
+            'title' => 'EU package travel terms',
+            'intro' => '<p>Confirm these terms before booking.</p>',
+            'checkboxText' => 'I accept the EU package travel terms',
+            'links' => [
+                [
+                    'url' => 'https://example.com/eu-prrl',
+                    'linkText' => 'Read EU-PRRL information',
+                ],
+            ],
+            'compliance' => [
+                'compliant' => true,
+                'reasons' => [],
+            ],
+        ],
+    ]);
+
+    expect($response->euPrrl?->requiresGeneralTermsConfirmation())->toBeTrue()
+        ->and($response->euPrrl?->title)->toBe('EU package travel terms')
+        ->and($response->euPrrl?->intro)->toBe('<p>Confirm these terms before booking.</p>')
+        ->and($response->euPrrl?->checkboxText)->toBe('I accept the EU package travel terms')
+        ->and($response->euPrrl?->links)->toHaveCount(1)
+        ->and($response->euPrrl?->links->first())->toBeInstanceOf(EuPrrlLinkResponseEntity::class)
+        ->and($response->euPrrl?->links->first()?->url)->toBe('https://example.com/eu-prrl');
 });

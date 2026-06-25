@@ -40,10 +40,6 @@ class GetRequlatoryInformationRequest extends Request
     {
         throw_unless(condition: $response->ok(), exception: NotFoundException::class);
 
-        //        dd(
-        //            RegulatoryInformationResponse::from($response->array())->toArray(),
-        //            $response->array()
-        //        );
         return RegulatoryInformationResponse::from($response->array());
     }
 }

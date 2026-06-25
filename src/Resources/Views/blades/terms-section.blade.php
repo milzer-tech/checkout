@@ -6,7 +6,7 @@
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
-    class="{{($termsAndConditions->sections->isEmpty() && $insuranceTerms === null) ? 'hidden' : ''}}"
+    class="{{($termsAndConditions->sections->isEmpty() && $insuranceTerms === null && ! $this->requiresEuPrrlGeneralTermsConfirmation()) ? 'hidden' : ''}}"
     onEdit="reopen('{{Section::TermsAndConditions->value}}')"
 >
 
@@ -139,6 +139,66 @@
                 @endif
             </div>
         @endif
+
+    @if($this->requiresEuPrrlGeneralTermsConfirmation() && $euPrrl !== null)
+        <div class="space-y-3 mb-10">
+            @if(filled($euPrrl->title))
+                <h3 class="text-lg font-semibold text-gray-900">{{ $euPrrl->title }}</h3>
+            @endif
+
+            @if(filled($euPrrl->intro))
+                <div class="text-sm leading-relaxed text-gray-600
+                    [&_a]:text-blue-600
+                    [&_a]:underline
+                    [&_a:hover]:text-blue-700">
+                    {!! $euPrrl->intro !!}
+                </div>
+            @endif
+
+            @if($euPrrl->links->isNotEmpty())
+                <div class="space-y-2">
+                    @foreach($euPrrl->links as $link)
+                        <a
+                            href="{{ $link->url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="block text-sm text-blue-600 underline hover:text-blue-700"
+                        >
+                            {{ $link->linkText }}
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+
+            <div class="rounded-md p-6 mt-4 border
+                @error('acceptedEuPrrlTerms')
+                border-red-500 @else border-gray-300 @enderror">
+
+                <label class="flex items-center space-x-3 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        wire:model="acceptedEuPrrlTerms"
+                        wire:change="toggleEuPrrlTerms($event.target.checked)"
+                        class="h-5 w-5 text-blue-600 border-gray-300 rounded">
+
+                    <span class="text-sm inline text-gray-600
+                        [&_a]:text-blue-600
+                        [&_a]:underline
+                        [&_a:hover]:text-blue-700">
+                        @if(filled($euPrrl->checkboxText))
+                            {!! $euPrrl->checkboxText !!}
+                        @else
+                            {{ trans('checkout::page.trip_details.agree_to_statement') }}
+                        @endif
+                    </span>
+                </label>
+
+                @error('acceptedEuPrrlTerms')
+                <p class="text-red-600 text-sm mt-2">{{ trans('checkout::input.validations.agree_to_continue') }}</p>
+                @enderror
+            </div>
+        </div>
+    @endif
 
 
 

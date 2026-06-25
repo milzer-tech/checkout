@@ -3,6 +3,7 @@
   "data": {
     "paymentExplainer": "Payments are handled securely.",
     "euPrrl": {
+      "generalTermsConfirmationEnabled": false,
       "itineraryContentValidationEnabled": true,
       "compliance": {
         "compliant": false,

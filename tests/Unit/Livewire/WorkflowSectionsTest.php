@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Actions\Checkout\VerifyAvailabilityAction;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Dtos\View\PaymentOption;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlLinkResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ExternallyPaidChargeResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ExternallyPaidChargesResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TermsAndConditionsResponseEntity;
@@ -175,6 +178,55 @@ it('builds terms validation rules from itinerary and selected insurance terms', 
     $component->closeTermsModal();
     expect($component->showTermsModal)->toBeFalse()
         ->and($component->modalTermIndex)->toBeNull();
+});
+
+it('requires EU-PRRL general terms confirmation when enabled', function (): void {
+    $checkout = livewireWorkflowCheckout();
+    $component = new ExposedTermsSectionForWorkflowTest;
+    primeBaseCheckoutComponent($component, $checkout);
+    $component->termsAndConditions = new TermsAndConditionsResponseEntity;
+    $component->euPrrl = new EuPrrlResponseEntity(
+        generalTermsConfirmationEnabled: true,
+        itineraryContentValidationEnabled: true,
+        title: 'EU package travel',
+        intro: '<p>Please confirm the package travel terms.</p>',
+        checkboxText: 'I accept the EU package travel terms',
+        links: new Collection([
+            new EuPrrlLinkResponseEntity(
+                url: 'https://example.com/eu-prrl',
+                linkText: 'EU-PRRL information'
+            ),
+        ])
+    );
+
+    $component->mount();
+
+    expect($component->requiresEuPrrlGeneralTermsConfirmation())->toBeTrue()
+        ->and($component->exposedRules())->toHaveKey('acceptedEuPrrlTerms');
+
+    expect(fn () => $component->next())->toThrow(ValidationException::class);
+
+    $component->toggleEuPrrlTerms(true);
+    $component->next();
+
+    expect($component->isCompleted)->toBeTrue()
+        ->and($component->isExpanded)->toBeFalse();
+});
+
+it('does not require EU-PRRL general terms confirmation when disabled', function (): void {
+    $checkout = livewireWorkflowCheckout();
+    $component = new ExposedTermsSectionForWorkflowTest;
+    primeBaseCheckoutComponent($component, $checkout);
+    $component->termsAndConditions = new TermsAndConditionsResponseEntity;
+    $component->euPrrl = new EuPrrlResponseEntity(
+        generalTermsConfirmationEnabled: false,
+        itineraryContentValidationEnabled: true,
+    );
+
+    $component->mount();
+
+    expect($component->requiresEuPrrlGeneralTermsConfirmation())->toBeFalse()
+        ->and($component->exposedRules())->not->toHaveKey('acceptedEuPrrlTerms');
 });
 
 it('keeps trip summary pricing and insurance in sync when insurance is selected or declined', function (): void {
