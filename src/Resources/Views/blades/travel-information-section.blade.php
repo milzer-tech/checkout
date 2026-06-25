@@ -6,9 +6,10 @@
     'visa' => trans('checkout::page.trip_details.travel_information_visa_requirements'),
     'transit_visa' => trans('checkout::page.trip_details.travel_information_transit_visa_requirements'),
 ])
+@php($travelInformation = $regulatoryInformation->travelInformation)
 
 <x-checkout::editable-box
-    title="{{ trans('checkout::page.trip_details.general_entry_requirements') }}"
+    title="{{ filled($travelInformation?->title) ? $travelInformation->title : trans('checkout::page.trip_details.general_entry_requirements') }}"
     :state="$state"
     :showEdit="true"
     :showCheck="$isCompleted"
@@ -17,7 +18,11 @@
 >
     <div class="space-y-6">
         <p class="text-sm leading-relaxed text-gray-600">
-            {{ trans('checkout::page.trip_details.travel_information_intro') }}
+            @if(filled($travelInformation?->intro))
+                {!! $travelInformation->intro !!}
+            @else
+                {{ trans('checkout::page.trip_details.travel_information_intro') }}
+            @endif
         </p>
 
         <div class="divide-y divide-gray-200 border-y border-gray-200">
@@ -69,7 +74,11 @@
                     class="h-5 w-5 text-blue-600 border-gray-300 rounded">
 
                 <span class="text-sm inline text-gray-600">
-                    {{ trans('checkout::page.trip_details.travel_information_confirmation') }}
+                    @if(filled($travelInformation?->checkboxText))
+                        {!! $travelInformation->checkboxText !!}
+                    @else
+                        {{ trans('checkout::page.trip_details.travel_information_confirmation') }}
+                    @endif
                 </span>
             </label>
 
