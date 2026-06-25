@@ -20,6 +20,26 @@ class VerifyAvailabilityAction
     {
         $dto = $this->getVerifyAvailabilityResponse($params);
 
+        return $this->applyAvailabilityResponse($dto, $itinerary);
+    }
+
+    /**
+     * Verify availability and return both the bookable result and on-request status.
+     *
+     * @return array{bookable: bool, isOnRequest: bool}
+     */
+    public function runWithSummary(CheckoutParamsDto $params, ItinerarySummary $itinerary): array
+    {
+        $dto = $this->getVerifyAvailabilityResponse($params);
+
+        return [
+            'bookable' => $this->applyAvailabilityResponse($dto, $itinerary),
+            'isOnRequest' => $dto->summary->isOnRequest,
+        ];
+    }
+
+    private function applyAvailabilityResponse(VerifyAvailabilityResponse $dto, ItinerarySummary $itinerary): bool
+    {
         /** @var Collection<int, bool> $statuses */
         $statuses = new Collection;
 

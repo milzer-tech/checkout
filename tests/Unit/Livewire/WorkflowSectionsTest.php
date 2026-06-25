@@ -15,9 +15,11 @@ use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlLinkRespon
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ExternallyPaidChargeResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\ExternallyPaidChargesResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\OnRequestResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TermsAndConditionsResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\TextSectionResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\RegulatoryInformationResponse;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Livewire\PaymentOptionsSection;
 use Nezasa\Checkout\Livewire\Stepper;
@@ -130,6 +132,27 @@ it('loads available payment options and expands rest-payment checkout options im
 
     expect($component->isCompleted)->toBeFalse()
         ->and($component->isExpanded)->toBeFalse();
+});
+
+it('persists on-request confirmation and owns its error state', function (): void {
+    $onRequest = new OnRequestResponseEntity;
+    $checkout = livewireWorkflowCheckout();
+    $component = new PaymentOptionsSection;
+    primeBaseCheckoutComponent($component, $checkout);
+    $component->regulatoryInformation = new RegulatoryInformationResponse(onRequest: $onRequest);
+    $component->isOnRequest = true;
+    $component->mount(new PaymentProviderActionForWorkflowTest);
+
+    $component->showOnRequestConfirmationError();
+
+    expect($component->showOnRequestTermsError)->toBeFalse();
+
+    $component->toggleOnRequestTerms(true);
+    $checkout->refresh();
+
+    expect(data_get($checkout->data, 'acceptedTerms.'.$onRequest->getConfirmationKey()))->toBeTrue()
+        ->and($component->acceptedOnRequestTerms)->toBeTrue()
+        ->and($component->showOnRequestTermsError)->toBeFalse();
 });
 
 it('builds terms validation rules from itinerary and selected insurance terms', function (): void {

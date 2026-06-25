@@ -14,6 +14,7 @@ use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
 use Nezasa\Checkout\Dtos\Planner\RequiredResponses;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\OnRequestResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\PriceResponse;
 use Throwable;
 use URL;
@@ -44,6 +45,11 @@ class TripDetailsPage extends BaseCheckoutComponent
      * The object containing the checkout data.
      */
     public RequiredResponses $result;
+
+    /**
+     * Indicates whether the latest availability check marked the itinerary as on-request.
+     */
+    public bool $isOnRequest = false;
 
     public function mount(
         CallTripDetailsAction $callTripDetails,
@@ -99,6 +105,7 @@ class TripDetailsPage extends BaseCheckoutComponent
     public function createPaymentPageUrl(string $gateway): void
     {
         $this->gateway = $gateway;
+        $this->paymentPageUrl = null;
 
         if ($this->model->rest_payment) {
             $this->generatePaymentPageUrl(result: true);
@@ -127,8 +134,18 @@ class TripDetailsPage extends BaseCheckoutComponent
     }
 
     #[On('availability-verified')]
-    public function generatePaymentPageUrl(bool $result): void
+    public function generatePaymentPageUrl(bool $result, bool $isOnRequest = false): void
     {
+        $this->isOnRequest = $isOnRequest;
+
+        if ($result && $this->requiresOnRequestConfirmation() && ! $this->hasAcceptedOnRequestTerms()) {
+            $this->checkingAvailability = false;
+            $this->paymentPageUrl = null;
+            $this->dispatch('on-request-confirmation-required');
+
+            return;
+        }
+
         if ($result) {
             $this->paymentPageUrl = URL::temporarySignedRoute(
                 name: 'payment',
@@ -141,6 +158,40 @@ class TripDetailsPage extends BaseCheckoutComponent
         }
 
         $this->checkingAvailability = false;
+    }
+
+    #[On('on-request-confirmation-updated')]
+    public function onRequestConfirmationUpdated(bool $accepted): void
+    {
+        if ($accepted) {
+            if ($this->gateway !== null && $this->isOnRequest) {
+                $this->generatePaymentPageUrl(result: true, isOnRequest: true);
+            }
+
+            return;
+        }
+
+        $this->paymentPageUrl = null;
+    }
+
+    public function requiresOnRequestConfirmation(): bool
+    {
+        return $this->isOnRequest
+            && $this->result->regulatoryInformation->onRequest?->confirmationEnabled === true;
+    }
+
+    private function hasAcceptedOnRequestTerms(): bool
+    {
+        if (! $this->result->regulatoryInformation->onRequest instanceof OnRequestResponseEntity) {
+            return false;
+        }
+
+        $this->model->refresh();
+
+        $data = json_decode(json_encode($this->model->data, JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR);
+        $acceptedTerms = is_array($data) ? data_get($data, 'acceptedTerms', []) : [];
+
+        return ($acceptedTerms[$this->result->regulatoryInformation->onRequest->getConfirmationKey()] ?? false) === true;
     }
 
     /**

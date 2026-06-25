@@ -113,6 +113,43 @@
             </div>
         </div>
 
+        @if($this->requiresOnRequestConfirmation() && $regulatoryInformation->onRequest !== null)
+            <div class="space-y-3">
+                @if(filled($regulatoryInformation->onRequest->remarks))
+                    <div class="text-sm leading-relaxed text-gray-600
+                        [&_a]:text-blue-600
+                        [&_a]:underline
+                        [&_a:hover]:text-blue-700">
+                        {!! $regulatoryInformation->onRequest->remarks !!}
+                    </div>
+                @endif
+
+                <div class="rounded-md p-6 mt-4 border
+                    @if($showOnRequestTermsError)
+                    border-red-500 @else border-gray-300 @endif">
+
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            @checked($acceptedOnRequestTerms)
+                            wire:change="toggleOnRequestTerms($event.target.checked)"
+                            class="h-5 w-5 text-blue-600 border-gray-300 rounded">
+
+                        <span class="text-sm inline text-gray-600
+                            [&_a]:text-blue-600
+                            [&_a]:underline
+                            [&_a:hover]:text-blue-700">
+                            {!! $regulatoryInformation->onRequest->confirmationText !!}
+                        </span>
+                    </label>
+
+                    @if($showOnRequestTermsError)
+                        <p class="text-red-600 text-sm mt-2">{{ trans('checkout::input.validations.agree_to_continue') }}</p>
+                    @endif
+                </div>
+            </div>
+        @endif
+
     </div>
 
 

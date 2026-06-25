@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses;
 
 use Nezasa\Checkout\Dtos\BaseDto;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\EuPrrlResponseEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\OnRequestResponseEntity;
 
 class RegulatoryInformationResponse extends BaseDto
 {
@@ -17,8 +18,11 @@ class RegulatoryInformationResponse extends BaseDto
     public function __construct(
         public ?string $paymentExplainer = null,
         public ?EuPrrlResponseEntity $euPrrl = null,
+        public ?OnRequestResponseEntity $onRequest = null,
 
-    ) {}
+    ) {
+        $this->onRequest = new OnRequestResponseEntity;
+    }
 
     /**
      * Determine whether EU-PRRL package compliance should block checkout.

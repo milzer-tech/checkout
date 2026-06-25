@@ -7,6 +7,7 @@ use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
 use Nezasa\Checkout\Actions\TripDetails\CallTripDetailsAction;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Dtos\Planner\ItinerarySummary;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\OnRequestResponseEntity;
 use Nezasa\Checkout\Livewire\TripDetailsPage;
 use Nezasa\Checkout\Models\Checkout;
 
@@ -333,4 +334,44 @@ it('generatePaymentPageUrl(false) leaves URL null and sets checkingAvailability=
 
     expect($component->checkingAvailability)->toBeFalse()
         ->and($component->paymentPageUrl)->toBeNull();
+});
+
+it('blocks payment URL generation until on-request confirmation is accepted', function (): void {
+    $params = new CheckoutParamsDto('co-td-7', 'it-td-7', 'app', 'en');
+    $responses = (new CallTripDetailsAction)->run($params);
+    $responses->regulatoryInformation->onRequest = new OnRequestResponseEntity(
+        confirmationEnabled: true,
+        confirmationText: 'I understand this booking is on request.',
+        remarks: '<p>This booking requires manual confirmation.</p>',
+    );
+    $model = Checkout::create([
+        'checkout_id' => 'co-td-7',
+        'itinerary_id' => 'it-td-7',
+        'origin' => 'app',
+        'lang' => 'en',
+        'data' => [
+            'acceptedTerms' => [],
+        ],
+    ]);
+
+    $component = new TripDetailsPage;
+    $component->checkoutId = 'co-td-7';
+    $component->itineraryId = 'it-td-7';
+    $component->origin = 'app';
+    $component->lang = 'en';
+    $component->model = $model;
+    $component->result = $responses;
+    $component->gateway = 'enc-gw';
+
+    $component->generatePaymentPageUrl(true, true);
+
+    expect($component->paymentPageUrl)->toBeNull()
+        ->and($component->requiresOnRequestConfirmation())->toBeTrue();
+
+    $model->updateData([
+        'acceptedTerms.'.$responses->regulatoryInformation->onRequest->getConfirmationKey() => true,
+    ]);
+    $component->onRequestConfirmationUpdated(true);
+
+    expect($component->paymentPageUrl)->not->toBeNull();
 });
