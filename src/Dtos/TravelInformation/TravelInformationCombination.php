@@ -16,7 +16,7 @@ class TravelInformationCombination
 
     public function title(): string
     {
-        if ($this->record !== null && $this->record->title !== null) {
+        if ($this->record instanceof PassolutionRecordResponse && $this->record->title !== null) {
             return $this->record->title;
         }
 
