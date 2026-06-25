@@ -8,5 +8,4 @@
 *.swp
 *.swo
 /.idea
-# macOS
 .DS_Store
