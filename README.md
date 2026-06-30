@@ -73,6 +73,38 @@ CHECKOUT_NEZASA_BASE_URL="nezasa trip builder api url"
 CHECKOUT_NEZASA_USERNAME="username"
 CHECKOUT_NEZASA_PASSWORD="password"
 ```
+
+### Passolution travel information
+Passolution travel information is shown only when all required conditions are met:
+
+1. Passolution is enabled in the checkout configuration.
+2. A valid Passolution token is configured.
+3. The Nezasa regulatory information response has travel information confirmation enabled for the checkout.
+
+Add the following variables to the `.env` file of your Laravel application:
+
+```dotenv
+# Passolution Travel Information
+CHECKOUT_PASSOLUTION_ACTIVE=true
+CHECKOUT_PASSOLUTION_BASE_URL="https://api.passolution.eu/api/v2"
+CHECKOUT_PASSOLUTION_TOKEN="your passolution token"
+```
+
+The checkout will not show the travel information confirmation step if Nezasa does not return `travelInformation.confirmationEnabled = true`, even when Passolution is active and a token is configured.
+
+### Country priority options
+You can pin selected countries to the top of country dropdowns. The order of `CHECKOUT_PRIORITIZED_COUNTRY_CODES` controls the order shown to the user.
+
+```dotenv
+# Country Dropdown Priorities
+CHECKOUT_PRIORITIZED_COUNTRY_CODES="DE,AT,CH"
+CHECKOUT_PRIORITIZED_COUNTRY_FIELDS="nationality,country"
+```
+
+`CHECKOUT_PRIORITIZED_COUNTRY_CODES` accepts comma-separated ISO 3166-1 alpha-2 country codes. Missing or duplicate country codes are ignored.
+
+`CHECKOUT_PRIORITIZED_COUNTRY_FIELDS` accepts comma-separated field names. Country priority ordering is applied only to these fields.
+
 ### Oppwaa payment provide
 You need set up theses variables in the `.env` file of your Laravel application:
 ```dotenv
