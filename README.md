@@ -3,12 +3,6 @@
 This Laravel package provides a **complete checkout process** for the Nezasa web application.  
 It integrates with **Nezasa’s APIs** to handle all the necessary steps for booking an itinerary, ensuring a smooth and reliable booking experience.
 
-## Branch Policy
-The **`production` branch is the official production branch** and must be used for production deployments.
-
-The **`main` branch is used for staging**. Although it is not the production branch, we always try to keep it stable, reliable, and ready for release.
-
-
 ## Requirements
 Make sure your environment meets the following requirements:
 
