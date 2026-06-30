@@ -198,12 +198,19 @@ class TripSummary extends BaseCheckoutComponent
     {
         $type = $componentDto->getType()->isTransport() ? 'flight' : $componentDto->getType()->toLower();
 
-        $baseUrl = $this->origin === 'IBE'
-            ? config('checkout.nezasa.ibe_base_url')
-            : config('checkout.nezasa.base_url');
+        if (strtolower($this->origin) === 'ibe') {
+            $baseUrl = config('checkout.nezasa.ibe_base_url');
 
-        return $this->goTo === 'smartplanner'
-            ? $baseUrl.'?nz-url='.urlencode("/itinerary-apps/smartplanner/$this->itineraryId?nz-lang=$this->lang&openDrawer=$type&componentId=".$componentDto->getId())
-            : $baseUrl.'/itineraries/'.$this->itineraryId;
+            return $this->goTo === 'smartplanner'
+                ? $baseUrl.'?nz-url='.urlencode("/itinerary-apps/smartplanner/{$this->itineraryId}?nz-lang=$this->lang&openDrawer=$type&componentId=".$componentDto->getId())
+                : $baseUrl.'?nz-url='.urlencode("/itineraries/$this->itineraryId?nz-lang=$this->lang&openDrawer=$type&componentId=".$componentDto->getId());
+
+        } else {
+            $baseUrl = config('checkout.nezasa.base_url');
+
+            return $this->goTo === 'smartplanner'
+                ? $baseUrl.'/itinerary-apps/smartplanner/'.$this->itineraryId
+                : $baseUrl.'/itineraries/'.$this->itineraryId;
+        }
     }
 }
