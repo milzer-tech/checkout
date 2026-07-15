@@ -5,11 +5,13 @@ declare(strict_types=1);
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Uri;
+use Nezasa\Checkout\Actions\Checkout\GetPaymentProviderAction;
 use Nezasa\Checkout\Integrations\Computop\Requests\ComputopCapturePaymentRequest;
 use Nezasa\Checkout\Integrations\Computop\Requests\ComputopCreatePaymentRequest;
 use Nezasa\Checkout\Integrations\Computop\Requests\ComputopReversePaymentRequest;
 use Nezasa\Checkout\Integrations\Computop\Requests\GetComputopPaymentRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
+use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\GenderEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
 use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
@@ -20,7 +22,11 @@ use Nezasa\Checkout\Integrations\Oppwa\Requests\OppwaPrepareRequest;
 use Nezasa\Checkout\Integrations\Oppwa\Requests\OppwaStatusRequest;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Models\Transaction;
+use Nezasa\Checkout\Payments\Contracts\PaymentContract;
+use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
+use Nezasa\Checkout\Payments\Contracts\WidgetPaymentContract;
 use Nezasa\Checkout\Payments\Dtos\CaptureResult;
+use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
 use Nezasa\Checkout\Payments\Gateways\Computop\ComputopGateway;
@@ -28,6 +34,7 @@ use Nezasa\Checkout\Payments\Gateways\Computop\ComputopTokenGateway;
 use Nezasa\Checkout\Payments\Gateways\Invoice\InvoiceGateway;
 use Nezasa\Checkout\Payments\Gateways\Oppwa\OppwaWidgetGateway;
 use Nezasa\Checkout\Payments\Gateways\Stripe\StripeGateway;
+use Nezasa\Checkout\Payments\Handlers\PaymentInitiationHandler;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -109,6 +116,142 @@ function requestWithTransaction(Transaction $transaction, array $query = []): Re
 
     return $request;
 }
+
+it('keeps the registered existing payment gateway contract surface unchanged', function (): void {
+    Config::set('checkout.integrations.oppwa.active', true);
+    Config::set('checkout.integrations.oppwa.name', 'oppwa');
+    Config::set('checkout.integrations.invoice.active', true);
+    Config::set('checkout.integrations.invoice.name', 'Invoice');
+    Config::set('checkout.integrations.stripe.active', true);
+    Config::set('checkout.integrations.stripe.name', 'Credit Card');
+    Config::set('checkout.integrations.computop.active', true);
+    Config::set('checkout.integrations.computop.name', 'Computop');
+    Config::set('checkout.integrations.computop_token.active', true);
+    Config::set('checkout.integrations.computop_token.name', 'Computop - Token');
+
+    $registeredGateways = Config::array('checkout.payment');
+
+    expect($registeredGateways)->toBe([
+        OppwaWidgetGateway::class,
+        InvoiceGateway::class,
+        StripeGateway::class,
+        ComputopGateway::class,
+        ComputopTokenGateway::class,
+    ]);
+
+    foreach ($registeredGateways as $gateway) {
+        expect(is_subclass_of($gateway, PaymentContract::class))->toBeTrue();
+    }
+
+    expect($registeredGateways)->each->not->toBeEmpty()
+        ->and(collect($registeredGateways)->map(fn (string $gateway): string => $gateway::name())->all())->toBe([
+            'oppwa',
+            'Invoice',
+            'Credit Card',
+            'Computop',
+            'Computop - Token',
+        ])
+        ->and(collect($registeredGateways)->map(fn (string $gateway): bool => $gateway::isTokenized())->all())->toBe([
+            false,
+            false,
+            false,
+            false,
+            true,
+        ])
+        ->and(is_subclass_of(OppwaWidgetGateway::class, WidgetPaymentContract::class))->toBeTrue()
+        ->and(is_subclass_of(InvoiceGateway::class, RedirectPaymentContract::class))->toBeTrue()
+        ->and(is_subclass_of(StripeGateway::class, RedirectPaymentContract::class))->toBeTrue()
+        ->and(is_subclass_of(ComputopGateway::class, RedirectPaymentContract::class))->toBeTrue()
+        ->and(is_subclass_of(ComputopTokenGateway::class, RedirectPaymentContract::class))->toBeTrue();
+});
+
+it('only exposes active existing payment providers with decryptable gateway names and classes', function (): void {
+    Config::set('checkout.integrations.oppwa.active', false);
+    Config::set('checkout.integrations.invoice.active', true);
+    Config::set('checkout.integrations.invoice.name', 'Invoice');
+    Config::set('checkout.integrations.stripe.active', false);
+    Config::set('checkout.integrations.computop.active', false);
+    Config::set('checkout.integrations.computop_token.active', true);
+    Config::set('checkout.integrations.computop_token.name', 'Computop - Token');
+
+    $options = (new GetPaymentProviderAction)->run();
+
+    expect($options)->toHaveCount(2)
+        ->and(collect($options)->map->decryptGateway()->all())->toBe(['Invoice', 'Computop - Token'])
+        ->and(collect($options)->map->decryptClassName()->all())->toBe([
+            InvoiceGateway::class,
+            ComputopTokenGateway::class,
+        ]);
+});
+
+it('keeps invoice payment initiation behavior as the existing redirect baseline', function (): void {
+    Config::set('checkout.integrations.invoice.name', 'Invoice');
+
+    $checkout = paymentGatewayCheckout();
+    $price = new Price(199.9, 'EUR');
+
+    $redirect = (new PaymentInitiationHandler)->run(
+        model: $checkout,
+        price: $price,
+        gateway: new InvoiceGateway
+    );
+
+    $transaction = $checkout->transactions()->sole();
+
+    expect($redirect)->toBeInstanceOf(Uri::class)
+        ->and($redirect->toStringable()->toString())->toContain(route('payment-result', [
+            'transaction' => $transaction,
+            'checkoutId' => $checkout->checkout_id,
+            'itineraryId' => $checkout->itinerary_id,
+            'origin' => $checkout->origin,
+            'lang' => $checkout->lang,
+            'rest-payment' => $checkout->rest_payment,
+        ], false))
+        ->and($transaction->gateway)->toBe('Invoice')
+        ->and($transaction->status)->toBe(TransactionStatusEnum::Pending)
+        ->and((float) $transaction->amount)->toBe(199.9)
+        ->and($transaction->currency)->toBe('EUR')
+        ->and($transaction->prepare_data)->toBe(['id' => $transaction->id]);
+});
+
+it('keeps oppwa payment initiation behavior as the existing widget baseline', function (): void {
+    Config::set('checkout.integrations.oppwa.name', 'oppwa');
+    Config::set('checkout.integrations.oppwa.base_url', 'https://oppwa.example.test');
+    Config::set('checkout.integrations.oppwa.entity_id', 'entity-123');
+    Config::set('checkout.integrations.oppwa.token', 'token-123');
+
+    MockClient::global([
+        OppwaPrepareRequest::class => MockResponse::make([
+            'id' => 'checkout-id',
+            'ndc' => 'checkout-id',
+            'integrity' => 'sha384-test',
+            'result' => ['code' => '000.200.100', 'description' => 'successfully created checkout'],
+            'buildNumber' => 'build-1',
+            'timestamp' => '2025-08-26T14:17:40+00:00',
+        ]),
+    ]);
+
+    $checkout = paymentGatewayCheckout();
+    $price = new Price(199.9, 'EUR');
+
+    $asset = (new PaymentInitiationHandler)->run(
+        model: $checkout,
+        price: $price,
+        gateway: new OppwaWidgetGateway
+    );
+
+    $transaction = $checkout->transactions()->sole();
+
+    expect($asset)->toBeInstanceOf(PaymentAsset::class)
+        ->and($asset->isAvailable)->toBeTrue()
+        ->and($asset->html)->toContain('paymentWidgets')
+        ->and($asset->scripts->implode(''))->toContain('checkoutId=checkout-id')
+        ->and($transaction->gateway)->toBe('oppwa')
+        ->and($transaction->status)->toBe(TransactionStatusEnum::Pending)
+        ->and((float) $transaction->amount)->toBe(199.9)
+        ->and($transaction->currency)->toBe('EUR')
+        ->and($transaction->prepare_data)->toHaveKeys(['prepare', 'prepare_payload', 'contact']);
+});
 
 it('runs the full invoice gateway lifecycle without external calls', function (): void {
     Config::set('checkout.integrations.invoice.active', true);
