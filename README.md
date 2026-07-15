@@ -151,131 +151,200 @@ For payment confirmation, use the challenge code `1234`.
 Enter the remaining data as you wish. You will find the other card number for different situations in this link: https://developer.computop.com/display/EN/Test+credit+card
 
 
-## New payment method
-One of the main goal of this package is to make it easy to add new payment methods. You need to create a class that implements the related interfaces for a new payment method. All payment classes must implement the `PaymentContract` interface. 
+## Adding a new payment method
+Payment methods are intentionally pluggable. A new provider should be added as a new gateway class without changing the existing production gateways. The checkout discovers providers from the `payment` array in `config/checkout.php`, filters them by `isActive()`, and then uses the implemented contract type to decide whether to redirect the customer or render an embedded widget.
+
+Before adding a provider, choose the integration type:
+
+- Use `RedirectPaymentContract` when the customer leaves the checkout and completes payment on a hosted provider page.
+- Use `WidgetPaymentContract` when the provider renders a widget, iframe, script, or form inside the checkout page.
+
+Both contracts extend `PaymentContract`, so every gateway must implement the shared payment lifecycle.
+
+### 1. Create the gateway class
+Create a dedicated class under `src/Payments/Gateways/{ProviderName}`. Use the existing gateways as references:
+
+- `src/Payments/Gateways/Invoice/InvoiceGateway.php` for a simple redirect flow.
+- `src/Payments/Gateways/Oppwa/OppwaWidgetGateway.php` for a widget flow.
+- `src/Payments/Gateways/Computop/ComputopTokenGateway.php` for a tokenized flow.
+
+Example redirect gateway skeleton:
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace Nezasa\Checkout\Payments\Contracts;
+namespace Nezasa\Checkout\Payments\Gateways\AcmePay;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Uri;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\CreatePaymentTransactionPayload as NezasaPayload;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaPaymentMethodEnum;
+use Nezasa\Checkout\Integrations\Nezasa\Enums\NezasaTransactionStatusEnum;
+use Nezasa\Checkout\Models\Transaction;
+use Nezasa\Checkout\Payments\Contracts\RedirectPaymentContract;
 use Nezasa\Checkout\Payments\Dtos\AbortResult;
 use Nezasa\Checkout\Payments\Dtos\AuthorizationResult;
 use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 
-interface PaymentContract
+final class AcmePayGateway implements RedirectPaymentContract
 {
-    /**
-     * Returns whether the payment gateway is active.
-     */
-    public static function isActive(): bool;
+    public static function isActive(): bool
+    {
+        return Config::boolean('checkout.integrations.acme_pay.active');
+    }
 
-    /**
-     * Returns the name of the payment gateway.
-     *
-     * Important: This name will be used to identify the payment gateway in the checkout process
-     * and it has to be unique, please check the previous gateways' names,
-     */
-    public static function name(): string;
+    public static function name(): string
+    {
+        return Config::string('checkout.integrations.acme_pay.name');
+    }
 
-    /**
-     * Prepares the payment initiation process.
-     */
-    public function prepare(PaymentPrepareData $data): PaymentInit;
+    public static function isTokenized(): bool
+    {
+        return false;
+    }
 
-    /**
-     * Returns the payload required for creating a transaction in Nezasa.
-     */
-    public function makeNezasaTransactionPayload(PaymentPrepareData $data, PaymentInit $paymentInit): NezasaPayload;
+    public function prepare(PaymentPrepareData $data): PaymentInit
+    {
+        // Create the payment/session at the provider and store only the data needed later.
+        return new PaymentInit(
+            isAvailable: true,
+            returnUrl: $data->returnUrl,
+            persistentData: [
+                'provider_payment_id' => 'provider-id',
+                'redirect_url' => 'https://provider.example.test/pay',
+            ],
+        );
+    }
 
-    /**
-     * Handles the callback from the payment gateway to authorize the payment.
-     *
-     * Persistent data is the data that is returned from paymentInit in the prepare method.
-     *
-     * @param  array<string, mixed>  $persistentData
-     */
-    public function authorize(Request $request, array $persistentData): AuthorizationResult;
+    public function getRedirectUrl(PaymentInit $init): Uri
+    {
+        return Uri::of($init->persistentData['redirect_url']);
+    }
 
-    /**
-     * Capture the authorized payment. This method is called after the payment is authorized
-     * and booking itinerary call is successful.
-     *
-     * Persistent data is the data returned from paymentInit in the prepare method.
-     *
-     * @param  array<string, mixed>  $persistentData
-     *
-     * Result data is the data returned from AuthorizationResult's resultData property.
-     * @param  array<string, mixed>  $resultData
-     */
-    public function capture(Request $request, array $persistentData, array $resultData): CaptureResult;
+    public function authorize(Request $request, array $persistentData): AuthorizationResult
+    {
+        // Verify the callback/status with the provider.
+        return new AuthorizationResult(isSuccessful: true, resultData: $persistentData);
+    }
 
-    /**
-     * Abort the payment process. This method is called when the booking itinerary call fails.
-     *
-     * Persistent data is the data returned from paymentInit in the prepare method.
-     *
-     * @param  array<string, mixed>  $persistentData
-     *
-     * Result data is the data returned from AuthorizationResult's resultData property.
-     * @param  array<string, mixed>  $resultData
-     */
-    public function abort(Request $request, array $persistentData, array $resultData): AbortResult;
+    public function capture(Request $request, array $persistentData, array $resultData): CaptureResult
+    {
+        // Capture the authorized amount after the booking succeeds.
+        return new CaptureResult(isSuccessful: true, persistentData: $resultData);
+    }
+
+    public function abort(Request $request, array $persistentData, array $resultData): AbortResult
+    {
+        // Cancel, void, or reverse the authorization when the booking fails.
+        return new AbortResult(isSuccessful: true, persistentData: $resultData);
+    }
+
+    public function makeNezasaTransactionPayload(Request $request, CaptureResult $captureResult): NezasaPayload
+    {
+        /** @var Transaction $transaction */
+        $transaction = $request->route('transaction');
+
+        return new NezasaPayload(
+            externalRefId: $captureResult->persistentData['provider_payment_id'],
+            amount: $transaction->price,
+            paymentMethod: NezasaPaymentMethodEnum::Other,
+            status: NezasaTransactionStatusEnum::Closed,
+            paymentMethodName: self::name(),
+        );
+    }
 }
 ```
-If your payment is a redirect payment, you have to implement the `RedirectPaymentContract` interface. RedirectPaymentContract inherits from PaymentContract.So you have to implement all methods of PaymentContract and RedirectPaymentContract.
+
+For widget payments, implement `WidgetPaymentContract` instead and return a `PaymentAsset` from `getAssets()`:
+
 ```php
-<?php
-
-declare(strict_types=1);
-
-namespace Nezasa\Checkout\Payments\Contracts;
-
-use Illuminate\Support\Uri;
-use Nezasa\Checkout\Payments\Dtos\PaymentInit;
-
-interface RedirectPaymentContract extends PaymentContract
-{
-    /**
-     * The url to the payment gateway.
-     */
-    public function getRedirectUrl(PaymentInit $init): Uri;
-}
-
-```
-if your payment is an iframe or widget,... etc that loads inside the application, you have to implement the `WidgetPaymentContract` interface. WidgetPaymentContract inherits from PaymentContract.So you have to implement all methods of PaymentContract and WidgetPaymentContract.
-```php
-<?php
-
-declare(strict_types=1);
-
-namespace Nezasa\Checkout\Payments\Contracts;
-
+use Nezasa\Checkout\Payments\Contracts\WidgetPaymentContract;
 use Nezasa\Checkout\Payments\Dtos\PaymentAsset;
 use Nezasa\Checkout\Payments\Dtos\PaymentInit;
 
-interface WidgetPaymentContract extends PaymentContract
+final class AcmePayWidgetGateway implements WidgetPaymentContract
 {
-    /**
-     * Returns the assets required for the payment initiation process.
-     */
-    public function getAssets(PaymentInit $paymentInit): PaymentAsset;
+    // Implement all PaymentContract methods...
+
+    public function getAssets(PaymentInit $paymentInit): PaymentAsset
+    {
+        return new PaymentAsset(
+            isAvailable: true,
+            scripts: [
+                '<script src="https://provider.example.test/widget.js"></script>',
+            ],
+            html: '<form class="provider-widget"></form>',
+        );
+    }
 }
-
 ```
 
-After defining the class, you need to add them to the `config/checkout.php` file:
-```bash
-   'payment' => [
-        StripeGateway::class,
+### 2. Implement the lifecycle correctly
+The lifecycle is called by the checkout in this order:
+
+1. `prepare(PaymentPrepareData $data)` creates the provider-side checkout/session and returns a `PaymentInit`.
+2. `getRedirectUrl()` or `getAssets()` starts the customer-facing payment step.
+3. `authorize(Request $request, array $persistentData)` verifies the provider callback/status.
+4. `capture(Request $request, array $persistentData, array $resultData)` captures the payment after booking succeeds.
+5. `abort(Request $request, array $persistentData, array $resultData)` reverses or cancels the authorization when booking fails.
+6. `makeNezasaTransactionPayload(Request $request, CaptureResult $captureResult)` maps the successful payment into a Nezasa transaction payload.
+
+Keep `persistentData` small and stable because it is stored on the transaction and used later by callback handlers. Store provider identifiers, redirect URLs, amounts, and any token/reference needed for authorization, capture, or abort. Do not store secrets.
+
+### 3. Decide whether the gateway is tokenized
+Return `true` from `isTokenized()` only when the provider authorizes the card and sends a reusable token or alias to Nezasa, while Nezasa captures the money later. Tokenized gateways must not capture money at the payment provider during `capture()`. See `ComputopTokenGateway` for the current tokenized behavior.
+
+For normal redirect or widget payment methods, return `false`.
+
+### 4. Add configuration
+Add provider configuration under `integrations` in `config/checkout.php` and read it through Laravel config helpers inside the gateway:
+
+```php
+'integrations' => [
+    'acme_pay' => [
+        'active' => (bool) env('CHECKOUT_ACME_PAY_ACTIVE', false),
+        'name' => env('CHECKOUT_ACME_PAY_NAME', 'Acme Pay'),
+        'base_url' => env('CHECKOUT_ACME_PAY_BASE_URL', 'https://api.provider.example.test'),
+        'username' => env('CHECKOUT_ACME_PAY_USERNAME', 'must_be_set_in_env'),
+        'password' => env('CHECKOUT_ACME_PAY_PASSWORD', 'must_be_set_in_env'),
     ],
+],
 ```
+
+Then add the gateway class to the `payment` list:
+
+```php
+'payment' => [
+    OppwaWidgetGateway::class,
+    InvoiceGateway::class,
+    StripeGateway::class,
+    ComputopGateway::class,
+    ComputopTokenGateway::class,
+    AcmePayGateway::class,
+],
+```
+
+The value returned by `name()` is displayed to the customer and encrypted into the payment selection URL. It must be unique across all payment methods.
+
+### 5. Add tests before enabling the provider
+Every new payment method must have tests. At minimum, cover:
+
+- Contract type: the class implements `RedirectPaymentContract` or `WidgetPaymentContract`.
+- Activation and naming: `isActive()` and `name()` read the expected config keys.
+- Tokenization: `isTokenized()` returns the correct value.
+- Preparation: `prepare()` returns an available `PaymentInit` and stores the expected `persistentData`.
+- Customer entry point: redirects return the expected `Uri`; widgets return the expected `PaymentAsset`.
+- Callback lifecycle: `authorize()`, `capture()`, and `abort()` behave correctly for successful and failed provider responses.
+- Nezasa mapping: `makeNezasaTransactionPayload()` maps amount, external reference, payment method, status, and payment method name correctly.
+- Provider discovery: the gateway appears through `GetPaymentProviderAction` only when active.
+
+Use Saloon `MockClient` for provider HTTP calls so tests never call real payment services. The existing tests in `tests/Unit/Payments/Gateways/PaymentGatewaysTest.php` are the baseline for current payment behavior and should remain green when a new gateway is added.
+
 ### Other configuration options
 You can also configure other options like max child age:
 ```dotenv
