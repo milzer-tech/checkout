@@ -28,7 +28,8 @@ use Throwable;
  *
  * Lifecycle aligned with Nezasa authorize → book → capture/abort:
  * 1. prepare: SendParamToCredit2000 (default action_Type=5 approval-only) → redirect URL
- * 2. authorize: callback uid + getTokenAndApprovePro(uid) with provider field verification
+ * 2. authorize: callback uid + getTokenAndApprovePro(uid) — live-verified Pro fields
+ *    (binding + return_Code=000 + non-placeholder Approve + ValidDate + token)
  * 3. capture: CreditXML actionType=4 with token (or no-op if prepare already charged)
  * 4. abort: CreditXML actionType=7 refund when a charge exists; otherwise leave the
  *    uncaptured ActionType 5 approval to expire (Credit2000 has no release API)
@@ -46,6 +47,9 @@ class Credit2000Gateway implements RedirectPaymentContract
     private const string ACTION_APPROVAL = '5';
 
     private const string ACTION_REFUND = '7';
+
+    /** SendParam placeholder echoed by Pro until a real approval overwrites it. */
+    private const string APPROVE_PLACEHOLDER = '0000000';
 
     /**
      * Checkout-local abort marker when no capture occurred and no provider void exists.
@@ -194,7 +198,6 @@ class Credit2000Gateway implements RedirectPaymentContract
 
             $verificationFailure = $this->providerAuthorizationMismatch(
                 $persistentData,
-                $uid,
                 $tokenResponse
             );
 
@@ -217,6 +220,7 @@ class Credit2000Gateway implements RedirectPaymentContract
                         'validDate' => $tokenResponse['validDate'] ?? '',
                         'cardType' => $tokenResponse['cardType'] ?? '1',
                         'customerId' => '000000001',
+                        'return_Code' => $tokenResponse['return_Code'] ?? '',
                         'charged_on_page' => (bool) ($persistentData['charged_on_page'] ?? false),
                     ],
                 ]
@@ -400,12 +404,17 @@ class Credit2000Gateway implements RedirectPaymentContract
     }
 
     /**
+     * Live-verified Pro authorization checks (ActionType 5).
+     *
+     * Pro provides binding fields and, on success, overwrites return_Code / Approve /
+     * ValidDate and returns a token. Pro uID is not required — live success left it empty;
+     * the callback UID is only the server-to-server lookup key.
+     *
      * @param  array<string, mixed>  $persistentData
      * @param  array<string, string>  $tokenResponse
      */
     private function providerAuthorizationMismatch(
         array $persistentData,
-        string $callbackUid,
         array $tokenResponse
     ): ?string {
         if (($tokenResponse['token'] ?? '') === '') {
@@ -440,10 +449,31 @@ class Credit2000Gateway implements RedirectPaymentContract
             return 'action_type_mismatch';
         }
 
-        $providerUid = (string) ($tokenResponse['uID'] ?? '');
+        if ($providerAction !== self::ACTION_APPROVAL) {
+            return 'action_type_not_approval';
+        }
 
-        if ($providerUid === '' || $providerUid !== $callbackUid) {
-            return 'uid_mismatch';
+        $returnCode = (string) ($tokenResponse['return_Code'] ?? '');
+
+        if ($returnCode !== self::RETURN_OK) {
+            return 'return_code_not_approved';
+        }
+
+        $approveNum = (string) ($tokenResponse['approveNum'] ?? '');
+
+        if ($approveNum === '') {
+            return 'approve_missing';
+        }
+
+        if ($approveNum === self::APPROVE_PLACEHOLDER) {
+            return 'approve_placeholder';
+        }
+
+        $validDate = (string) ($tokenResponse['validDate'] ?? '');
+        [$month, $year] = $this->parseValidDate($validDate);
+
+        if ($month === null || $year === null) {
+            return 'valid_date_missing';
         }
 
         return null;
@@ -462,8 +492,9 @@ class Credit2000Gateway implements RedirectPaymentContract
             'total_Pyment' => (string) ($tokenResponse['total_Pyment'] ?? ''),
             'currency' => (string) ($tokenResponse['currency'] ?? ''),
             'action_Type' => (string) ($tokenResponse['action_Type'] ?? ''),
-            'uID' => (string) ($tokenResponse['uID'] ?? ''),
             'return_Code' => (string) ($tokenResponse['return_Code'] ?? ''),
+            'Approve' => (string) ($tokenResponse['approveNum'] ?? ''),
+            'ValidDate' => (string) ($tokenResponse['validDate'] ?? ''),
             'http_status' => (string) ($tokenResponse['http_status'] ?? ''),
         ], static fn (string $value): bool => $value !== '');
     }

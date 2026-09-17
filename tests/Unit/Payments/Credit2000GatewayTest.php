@@ -14,7 +14,6 @@ use Nezasa\Checkout\Models\Transaction;
 use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Gateways\Credit2000\Credit2000Gateway;
-use ReflectionClass;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -90,18 +89,27 @@ function c2kConfig(): void
 
 function c2kProSoapBody(array $overrides = []): string
 {
+    // Successful live-shaped Pro baseline (ActionType 5): return_Code=000, real Approve,
+    // populated ValidDate, token present. Pro uID is often empty on the live terminal.
     $defaults = [
         'product_Id' => Credit2000Xml::productId('01C2KOK'),
         'total_Pyment' => '1000',
         'currency' => '1',
         'action_Type' => '5',
-        'uID' => 'e14643ab-562a-4a64-a59a-49a9efa978e9',
-        'Approve' => '1234567',
-        'ValidDate' => '0729',
+        'uID' => '',
+        'return_Code' => '000',
+        'Approve' => '7899627',
+        'ValidDate' => '0632',
         'token' => '9101111111116951',
-        'cardType' => '1',
+        'cardType' => '4',
+        'mutag' => '4',
+        'include_token' => true,
     ];
     $data = array_merge($defaults, $overrides);
+
+    $tokenXml = ($data['include_token'] ?? true)
+        ? '<token>'.$data['token'].'</token>'
+        : '<token />';
 
     return '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body>'
         .'<getTokenAndApproveProResponse xmlns="http://tempuri.org/">'
@@ -111,13 +119,29 @@ function c2kProSoapBody(array $overrides = []): string
         .'<currency>'.$data['currency'].'</currency>'
         .'<action_Type>'.$data['action_Type'].'</action_Type>'
         .'<uID>'.$data['uID'].'</uID>'
+        .'<return_Code>'.$data['return_Code'].'</return_Code>'
         .'<Approve>'.$data['Approve'].'</Approve>'
         .'<ValidDate>'.$data['ValidDate'].'</ValidDate>'
         .'</getTokenAndApproveProResult>'
-        .'<token>'.$data['token'].'</token>'
+        .$tokenXml
         .'<cardType>'.$data['cardType'].'</cardType>'
+        .'<mutag>'.$data['mutag'].'</mutag>'
         .'</getTokenAndApproveProResponse>'
         .'</soap:Body></soap:Envelope>';
+}
+
+/** Failed live baseline: binding echo with SendParam placeholders and no token. */
+function c2kProFailedSoapBody(array $overrides = []): string
+{
+    return c2kProSoapBody(array_merge([
+        'return_Code' => '123',
+        'Approve' => '0000000',
+        'ValidDate' => '',
+        'include_token' => false,
+        'token' => '',
+        'cardType' => '',
+        'mutag' => '0',
+    ], $overrides));
 }
 
 it('reports inactive by default', function (): void {
@@ -158,7 +182,32 @@ it('prepares a hosted payment redirect url', function (): void {
         ->and($init->persistentData['total_pyment'])->toBe('1000')
         ->and($init->persistentData['prepare_action_type'])->toBe('5');
 
-    $mock->assertSent(Credit2000SoapRequest::class);
+    $mock->assertSent(function (Credit2000SoapRequest $request): bool {
+        $bodyXml = (new ReflectionClass($request))->getProperty('bodyXml');
+
+        return str_contains((string) $bodyXml->getValue($request), '<club>0</club>');
+    });
+});
+
+it('serializes SendParam club as numeric zero', function (): void {
+    c2kConfig();
+
+    $mock = MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><SendParamToCredit2000Response xmlns="http://tempuri.org/"><SendParamToCredit2000Result>https://www.credit2000.co.il/pay/abc123</SendParamToCredit2000Result></SendParamToCredit2000Response></soap:Body></soap:Envelope>',
+            status: 200,
+        ),
+    ]);
+
+    (new Credit2000Gateway)->prepare(c2kPrepareData(c2kTransaction()));
+
+    $mock->assertSent(function (Credit2000SoapRequest $request): bool {
+        $bodyXml = (new ReflectionClass($request))->getProperty('bodyXml');
+        $body = (string) $bodyXml->getValue($request);
+
+        return str_contains($body, '<club>0</club>')
+            && ! str_contains($body, '<club></club>');
+    });
 });
 
 it('marks prepare unavailable for unsupported currency', function (): void {
@@ -233,7 +282,9 @@ it('authorizes with callback uid and matching getTokenAndApprovePro data', funct
 
     expect($result->isSuccessful)->toBeTrue()
         ->and(data_get($result->resultData, 'credit2000.token'))->toBe('9101111111116951')
-        ->and(data_get($result->resultData, 'credit2000.approveNum'))->toBe('1234567');
+        ->and(data_get($result->resultData, 'credit2000.approveNum'))->toBe('7899627')
+        ->and(data_get($result->resultData, 'credit2000.validDate'))->toBe('0632')
+        ->and(data_get($result->resultData, 'credit2000.return_Code'))->toBe('000');
 });
 
 it('rejects authorize when provider product_Id mismatches prepare data', function (): void {
@@ -320,25 +371,146 @@ it('rejects authorize when provider action_Type mismatches prepare data', functi
         ->and(data_get($result->resultData, 'reason'))->toBe('action_type_mismatch');
 });
 
-it('rejects authorize when provider uID mismatches callback uid', function (): void {
+it('rejects authorize when Pro return_Code is not 000', function (): void {
     c2kConfig();
 
     MockClient::global([
         Credit2000SoapRequest::class => MockResponse::make(
-            body: c2kProSoapBody(['uID' => 'other-uid-00000000-0000-0000-0000']),
+            body: c2kProFailedSoapBody(),
             status: 200,
         ),
     ]);
 
-    $transaction = c2kTransaction('01C2KOK');
-    $request = c2kRequest($transaction, [
-        'params' => 'e14643ab-562a-4a64-a59a-49a9efa978e9',
-    ]);
-
-    $result = (new Credit2000Gateway)->authorize($request, c2kPersistent());
+    $result = (new Credit2000Gateway)->authorize(
+        c2kRequest(c2kTransaction('01C2KOK'), ['params' => 'e14643ab-562a-4a64-a59a-49a9efa978e9']),
+        c2kPersistent()
+    );
 
     expect($result->isSuccessful)->toBeFalse()
-        ->and(data_get($result->resultData, 'reason'))->toBe('uid_mismatch');
+        ->and(data_get($result->resultData, 'reason'))->toBeIn(['token_missing', 'return_code_not_approved']);
+});
+
+it('rejects authorize when Pro return_Code is non-000 even with a token', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: c2kProSoapBody(['return_Code' => '123']),
+            status: 200,
+        ),
+    ]);
+
+    $result = (new Credit2000Gateway)->authorize(
+        c2kRequest(c2kTransaction('01C2KOK'), ['params' => 'uid-1']),
+        c2kPersistent()
+    );
+
+    expect($result->isSuccessful)->toBeFalse()
+        ->and(data_get($result->resultData, 'reason'))->toBe('return_code_not_approved');
+});
+
+it('rejects authorize when Approve is the SendParam placeholder', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: c2kProSoapBody(['Approve' => '0000000']),
+            status: 200,
+        ),
+    ]);
+
+    $result = (new Credit2000Gateway)->authorize(
+        c2kRequest(c2kTransaction('01C2KOK'), ['params' => 'uid-1']),
+        c2kPersistent()
+    );
+
+    expect($result->isSuccessful)->toBeFalse()
+        ->and(data_get($result->resultData, 'reason'))->toBe('approve_placeholder');
+});
+
+it('rejects authorize when Approve is missing', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: c2kProSoapBody(['Approve' => '']),
+            status: 200,
+        ),
+    ]);
+
+    $result = (new Credit2000Gateway)->authorize(
+        c2kRequest(c2kTransaction('01C2KOK'), ['params' => 'uid-1']),
+        c2kPersistent()
+    );
+
+    expect($result->isSuccessful)->toBeFalse()
+        ->and(data_get($result->resultData, 'reason'))->toBe('approve_missing');
+});
+
+it('rejects authorize when ValidDate is missing or invalid for capture', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: c2kProSoapBody(['ValidDate' => '']),
+            status: 200,
+        ),
+    ]);
+
+    $result = (new Credit2000Gateway)->authorize(
+        c2kRequest(c2kTransaction('01C2KOK'), ['params' => 'uid-1']),
+        c2kPersistent()
+    );
+
+    expect($result->isSuccessful)->toBeFalse()
+        ->and(data_get($result->resultData, 'reason'))->toBe('valid_date_missing');
+});
+
+it('rejects authorize when Pro token is missing', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: c2kProSoapBody(['include_token' => false, 'token' => '']),
+            status: 200,
+        ),
+    ]);
+
+    $result = (new Credit2000Gateway)->authorize(
+        c2kRequest(c2kTransaction('01C2KOK'), ['params' => 'uid-1']),
+        c2kPersistent()
+    );
+
+    expect($result->isSuccessful)->toBeFalse()
+        ->and(data_get($result->resultData, 'reason'))->toBe('token_missing');
+});
+
+it('accepts a successful live-shaped Pro response without requiring Pro uID', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: c2kProSoapBody([
+                'uID' => '',
+                'return_Code' => '000',
+                'Approve' => '7899627',
+                'ValidDate' => '0632',
+                'cardType' => '4',
+                'mutag' => '4',
+            ]),
+            status: 200,
+        ),
+    ]);
+
+    $result = (new Credit2000Gateway)->authorize(
+        c2kRequest(c2kTransaction('01C2KOK'), ['params' => '2746a108-9caf-4cb2-b33c-2a36c912e59e']),
+        c2kPersistent()
+    );
+
+    expect($result->isSuccessful)->toBeTrue()
+        ->and(data_get($result->resultData, 'credit2000.uid'))->toBe('2746a108-9caf-4cb2-b33c-2a36c912e59e')
+        ->and(data_get($result->resultData, 'credit2000.approveNum'))->toBe('7899627')
+        ->and(data_get($result->resultData, 'credit2000.validDate'))->toBe('0632');
 });
 
 it('rejects authorize when uid is missing', function (): void {

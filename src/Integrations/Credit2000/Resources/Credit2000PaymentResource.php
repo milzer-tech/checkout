@@ -26,7 +26,7 @@ class Credit2000PaymentResource extends BaseResource
             'Lang' => Config::string('checkout.integrations.credit2000.lang'),
             'card_Reader' => '0',
             'stars' => '0',
-            'club' => '',
+            'club' => '0',
             'confirmation_Source' => '0',
             'purchase_Type' => '1',
             'return_Code' => '123',
