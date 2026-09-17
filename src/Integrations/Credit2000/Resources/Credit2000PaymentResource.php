@@ -15,7 +15,7 @@ class Credit2000PaymentResource extends BaseResource
      * Create a hosted payment page and return its URL (return_Code=123).
      *
      * @param  array<string, string|null>  $params
-     * @return array{payment_url: ?string, raw: string, http_status: int}
+     * @return array{payment_url: ?string, http_status: int}
      */
     public function sendParams(array $params): array
     {
@@ -63,11 +63,8 @@ class Credit2000PaymentResource extends BaseResource
             $body
         ));
 
-        $raw = $response->body();
-
         return [
-            'payment_url' => Credit2000Xml::extractPaymentUrl($raw),
-            'raw' => $raw,
+            'payment_url' => Credit2000Xml::extractPaymentUrl($response->body()),
             'http_status' => $response->status(),
         ];
     }
@@ -94,8 +91,7 @@ class Credit2000PaymentResource extends BaseResource
             $body
         ));
 
-        $raw = $response->body();
-        $parsed = Credit2000Xml::parseTaggedValues($raw, [
+        $parsed = Credit2000Xml::parseTaggedValues($response->body(), [
             'getTokenAndApproveResult',
             'approveNum',
             'returnCode',
@@ -111,7 +107,6 @@ class Credit2000PaymentResource extends BaseResource
             'customerId' => (string) ($parsed['customerId'] ?? ''),
             'validDate' => (string) ($parsed['validDate'] ?? ''),
             'cardType' => (string) ($parsed['cardType'] ?? ''),
-            'raw' => $raw,
             'http_status' => (string) $response->status(),
         ];
     }
@@ -133,8 +128,8 @@ class Credit2000PaymentResource extends BaseResource
             $body
         ));
 
-        $raw = $response->body();
-        $params = Credit2000Xml::parseTaggedValues($raw, [
+        $body = $response->body();
+        $params = Credit2000Xml::parseTaggedValues($body, [
             'tz_Number',
             'club',
             'confirmation_Source',
@@ -160,7 +155,7 @@ class Credit2000PaymentResource extends BaseResource
             'StyleSheet',
             'Lang',
         ]);
-        $parsed = Credit2000Xml::parseTaggedValues($raw, [
+        $parsed = Credit2000Xml::parseTaggedValues($body, [
             'token',
             'cardType',
             'mutag',
@@ -178,7 +173,6 @@ class Credit2000PaymentResource extends BaseResource
             'approveNum' => (string) ($params['Approve'] ?? ''),
             'validDate' => (string) ($params['ValidDate'] ?? ''),
             'return_Code' => (string) ($params['return_Code'] ?? ''),
-            'raw' => $raw,
             'http_status' => (string) $response->status(),
         ];
     }
@@ -229,8 +223,7 @@ class Credit2000PaymentResource extends BaseResource
             $body
         ));
 
-        $raw = $response->body();
-        $parsed = Credit2000Xml::parseTaggedValues($raw, [
+        $parsed = Credit2000Xml::parseTaggedValues($response->body(), [
             'CreditXMLResult',
             'returnCode',
             'ReturnCode',
@@ -251,7 +244,6 @@ class Credit2000PaymentResource extends BaseResource
             'returnCode' => $returnCode,
             'approveNum' => (string) ($parsed['approveNum'] ?? $parsed['ApproveNum'] ?? ''),
             'confirmationNumber' => (string) ($parsed['confirmationNumber'] ?? $parsed['ConfirmationNumber'] ?? ''),
-            'raw' => $raw,
             'http_status' => (string) $response->status(),
         ];
     }

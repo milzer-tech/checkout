@@ -11,8 +11,10 @@ use Nezasa\Checkout\Integrations\Credit2000\Support\Credit2000Xml;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Shared\Price;
 use Nezasa\Checkout\Models\Transaction;
+use Nezasa\Checkout\Payments\Dtos\CaptureResult;
 use Nezasa\Checkout\Payments\Dtos\PaymentPrepareData;
 use Nezasa\Checkout\Payments\Gateways\Credit2000\Credit2000Gateway;
+use ReflectionClass;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -36,7 +38,7 @@ function c2kRequest(Transaction $transaction, array $query): Request
     $route = new Route(['GET'], '/checkout/result/{transaction}', []);
     $route->bind($request);
     $route->setParameter('transaction', $transaction);
-    $request->setRouteResolver(fn () => $route);
+    $request->setRouteResolver(fn (): Route => $route);
 
     return $request;
 }
@@ -456,4 +458,215 @@ it('blocks capture after uncaptured approval was left to expire on abort', funct
 
     expect($capture->isSuccessful)->toBeFalse()
         ->and(data_get($capture->persistentData, 'capture_error'))->toBe('already_aborted');
+});
+
+it('extracts payment url only from the SendParam result element', function (): void {
+    $ok = '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body>'
+        .'<SendParamToCredit2000Response xmlns="http://tempuri.org/">'
+        .'<SendParamToCredit2000Result>https://www.credit2000.co.il/pay/ok</SendParamToCredit2000Result>'
+        .'</SendParamToCredit2000Response></soap:Body></soap:Envelope>';
+
+    $fault = '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body>'
+        .'<soap:Fault><faultcode>soap:Server</faultcode><faultstring>boom</faultstring>'
+        .'<detail>https://evil.example/phish</detail></soap:Fault></soap:Body></soap:Envelope>';
+
+    $unrelated = '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body>'
+        .'<OtherResponse xmlns="http://tempuri.org/"><note>see https://www.credit2000.co.il/unrelated</note></OtherResponse>'
+        .'</soap:Body></soap:Envelope>';
+
+    expect(Credit2000Xml::extractPaymentUrl($ok))->toBe('https://www.credit2000.co.il/pay/ok')
+        ->and(Credit2000Xml::extractPaymentUrl($fault))->toBeNull()
+        ->and(Credit2000Xml::extractPaymentUrl($unrelated))->toBeNull();
+});
+
+it('marks prepare unavailable when Credit2000 returns no payment url', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body>'
+                .'<soap:Fault><faultcode>soap:Server</faultcode><faultstring>error</faultstring>'
+                .'<detail>https://evil.example/phish</detail></soap:Fault></soap:Body></soap:Envelope>',
+            status: 500,
+        ),
+    ]);
+
+    $init = (new Credit2000Gateway)->prepare(c2kPrepareData(c2kTransaction()));
+
+    expect($init->isAvailable)->toBeFalse();
+});
+
+it('rejects SOAP Fault and unrelated urls as prepare payment redirects', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body>'
+                .'<OtherResponse xmlns="http://tempuri.org/"><url>https://www.credit2000.co.il/not-the-result</url></OtherResponse>'
+                .'</soap:Body></soap:Envelope>',
+            status: 200,
+        ),
+    ]);
+
+    $init = (new Credit2000Gateway)->prepare(c2kPrepareData(c2kTransaction()));
+
+    expect($init->isAvailable)->toBeFalse();
+});
+
+it('does not persist raw SOAP bodies in authorize result data', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: c2kProSoapBody(),
+            status: 200,
+        ),
+    ]);
+
+    $transaction = c2kTransaction('01C2KOK');
+    $request = c2kRequest($transaction, [
+        'params' => 'e14643ab-562a-4a64-a59a-49a9efa978e9',
+    ]);
+
+    $result = (new Credit2000Gateway)->authorize($request, c2kPersistent());
+
+    expect($result->isSuccessful)->toBeTrue()
+        ->and($result->resultData)->not->toHaveKey('token')
+        ->and(data_get($result->resultData, 'credit2000.token'))->toBe('9101111111116951')
+        ->and(json_encode($result->resultData))->not->toContain('getTokenAndApproveProResponse')
+        ->and(json_encode($result->resultData))->not->toContain('<soap');
+});
+
+it('does not persist raw SOAP bodies in capture result data', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><CreditXMLResponse xmlns="http://tempuri.org/"><CreditXMLResult>000</CreditXMLResult><returnCode>000</returnCode><confirmationNumber>998877</confirmationNumber></CreditXMLResponse></soap:Body></soap:Envelope>',
+            status: 200,
+        ),
+    ]);
+
+    $resultData = [
+        'credit2000' => [
+            'uid' => 'e14643ab-562a-4a64-a59a-49a9efa978e9',
+            'token' => '9101111111116951',
+            'approveNum' => '1234567',
+            'validDate' => '0729',
+            'cardType' => '1',
+            'customerId' => '9999',
+            'charged_on_page' => false,
+        ],
+    ];
+
+    $capture = (new Credit2000Gateway)->capture(
+        c2kRequest(c2kTransaction('01C2KOK'), []),
+        c2kPersistent(),
+        $resultData
+    );
+
+    expect($capture->isSuccessful)->toBeTrue()
+        ->and(data_get($capture->persistentData, 'capture'))->not->toHaveKey('raw')
+        ->and(json_encode($capture->persistentData))->not->toContain('<soap')
+        ->and(json_encode($capture->persistentData))->not->toContain('CreditXMLResponse');
+});
+
+it('fails capture when CreditXML returnCode is not successful', function (): void {
+    c2kConfig();
+
+    MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><CreditXMLResponse xmlns="http://tempuri.org/"><CreditXMLResult>051</CreditXMLResult><returnCode>051</returnCode></CreditXMLResponse></soap:Body></soap:Envelope>',
+            status: 200,
+        ),
+    ]);
+
+    $resultData = [
+        'credit2000' => [
+            'uid' => 'uid-1',
+            'token' => '9101111111116951',
+            'approveNum' => '1234567',
+            'validDate' => '0729',
+            'cardType' => '1',
+            'customerId' => '9999',
+            'charged_on_page' => false,
+        ],
+    ];
+
+    $capture = (new Credit2000Gateway)->capture(
+        c2kRequest(c2kTransaction('01C2KOK'), []),
+        c2kPersistent(),
+        $resultData
+    );
+
+    expect($capture->isSuccessful)->toBeFalse()
+        ->and(data_get($capture->persistentData, 'capture.returnCode'))->toBe('051')
+        ->and(data_get($capture->persistentData, 'capture'))->not->toHaveKey('raw');
+});
+
+it('refunds via CreditXML actionType 7 when aborting a charged payment', function (): void {
+    c2kConfig();
+
+    $mock = MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><CreditXMLResponse xmlns="http://tempuri.org/"><CreditXMLResult>000</CreditXMLResult><returnCode>000</returnCode><confirmationNumber>refund-1</confirmationNumber></CreditXMLResponse></soap:Body></soap:Envelope>',
+            status: 200,
+        ),
+    ]);
+
+    $resultData = [
+        'credit2000' => [
+            'uid' => 'uid-1',
+            'token' => '9101111111116951',
+            'approveNum' => '1234567',
+            'validDate' => '0729',
+            'cardType' => '1',
+            'customerId' => '9999',
+            'charged_on_page' => true,
+        ],
+        'capture' => [
+            'returnCode' => '000',
+            'mode' => 'charged_on_payment_page',
+            'confirmationNumber' => '1234567',
+        ],
+    ];
+
+    $abort = (new Credit2000Gateway)->abort(
+        c2kRequest(c2kTransaction('01C2KOK'), []),
+        c2kPersistent(),
+        $resultData
+    );
+
+    expect($abort->isSuccessful)->toBeTrue()
+        ->and(data_get($abort->persistentData, 'cancel.returnCode'))->toBe('000')
+        ->and(data_get($abort->persistentData, 'cancel'))->not->toHaveKey('raw');
+
+    $mock->assertSent(function (Credit2000SoapRequest $request): bool {
+        $bodyXml = (new ReflectionClass($request))->getProperty('bodyXml');
+
+        return str_contains((string) $bodyXml->getValue($request), '<actionType>7</actionType>');
+    });
+});
+
+it('builds a Nezasa transaction payload from capture result data', function (): void {
+    c2kConfig();
+
+    $transaction = c2kTransaction('01C2KOK');
+    $request = c2kRequest($transaction, []);
+    $capture = new CaptureResult(
+        isSuccessful: true,
+        persistentData: [
+            'capture' => [
+                'returnCode' => '000',
+                'confirmationNumber' => 'conf-42',
+            ],
+        ]
+    );
+
+    $payload = (new Credit2000Gateway)->makeNezasaTransactionPayload($request, $capture);
+
+    expect($payload->externalRefId)->toBe('conf-42')
+        ->and($payload->paymentMethodName)->toBe('Credit2000')
+        ->and($payload->amount->amount)->toBe(10.0)
+        ->and($payload->amount->currency)->toBe('ILS');
 });

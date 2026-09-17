@@ -37,22 +37,22 @@ use Throwable;
  */
 class Credit2000Gateway implements RedirectPaymentContract
 {
-    private const RETURN_OK = '000';
+    private const string RETURN_OK = '000';
 
-    private const ACTION_TEST = '2';
+    private const string ACTION_TEST = '2';
 
-    private const ACTION_CHARGE = '4';
+    private const string ACTION_CHARGE = '4';
 
-    private const ACTION_APPROVAL = '5';
+    private const string ACTION_APPROVAL = '5';
 
-    private const ACTION_REFUND = '7';
+    private const string ACTION_REFUND = '7';
 
     /**
      * Checkout-local abort marker when no capture occurred and no provider void exists.
      * Credit2000 confirmed uncaptured ActionType 5 approvals expire automatically
      * (~3 business days); there is no documented release/cancel API for them.
      */
-    private const CANCEL_MODE_LEFT_TO_EXPIRE = 'uncaptured_approval_left_to_expire';
+    private const string CANCEL_MODE_LEFT_TO_EXPIRE = 'uncaptured_approval_left_to_expire';
 
     public static function isActive(): bool
     {
@@ -74,7 +74,7 @@ class Credit2000Gateway implements RedirectPaymentContract
         try {
             $currency = Credit2000CurrencyEnum::tryFromCurrencyCode($data->price->currency);
 
-            if ($currency === null) {
+            if (! $currency instanceof Credit2000CurrencyEnum) {
                 return new PaymentInit(isAvailable: false, returnUrl: $data->returnUrl);
             }
 
@@ -201,8 +201,8 @@ class Credit2000Gateway implements RedirectPaymentContract
             if ($verificationFailure !== null) {
                 return new AuthorizationResult(isSuccessful: false, resultData: [
                     'reason' => $verificationFailure,
-                    'token' => $tokenResponse,
                     'callback' => $callback,
+                    'provider' => $this->sanitizeProviderFields($tokenResponse),
                 ]);
             }
 
@@ -210,7 +210,6 @@ class Credit2000Gateway implements RedirectPaymentContract
                 isSuccessful: true,
                 resultData: [
                     'callback' => $callback,
-                    'token' => $tokenResponse,
                     'credit2000' => [
                         'uid' => $uid,
                         'token' => $tokenResponse['token'],
@@ -448,6 +447,25 @@ class Credit2000Gateway implements RedirectPaymentContract
         }
 
         return null;
+    }
+
+    /**
+     * Persist only non-sensitive provider echo fields used for mismatch diagnostics.
+     *
+     * @param  array<string, string>  $tokenResponse
+     * @return array<string, string>
+     */
+    private function sanitizeProviderFields(array $tokenResponse): array
+    {
+        return array_filter([
+            'product_Id' => (string) ($tokenResponse['product_Id'] ?? ''),
+            'total_Pyment' => (string) ($tokenResponse['total_Pyment'] ?? ''),
+            'currency' => (string) ($tokenResponse['currency'] ?? ''),
+            'action_Type' => (string) ($tokenResponse['action_Type'] ?? ''),
+            'uID' => (string) ($tokenResponse['uID'] ?? ''),
+            'return_Code' => (string) ($tokenResponse['return_Code'] ?? ''),
+            'http_status' => (string) ($tokenResponse['http_status'] ?? ''),
+        ], static fn (string $value): bool => $value !== '');
     }
 
     /**
