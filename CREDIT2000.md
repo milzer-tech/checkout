@@ -25,9 +25,9 @@ CHECKOUT_CREDIT2000_ACTIVE=true
 
 | Package step | Credit2000 action | Success |
 |--------------|-------------------|---------|
-| `prepare()` | `SendParamToCredit2000` (`return_Code=123`) | hosted payment URL |
+| `prepare()` | `SendParamToCredit2000` (`action_Type=5`, `return_Code=123`) | hosted payment URL |
 | `authorize()` | callback `params` (uid) + **`getTokenAndApprovePro(uid)` only** | live-verified Pro success checks (below) |
-| `capture()` | `CreditXML` `actionType=4` (or no-op if page already charged) | `returnCode=000` |
+| `capture()` | `CreditXML` `actionType=4` after Nezasa booking | `returnCode=000` |
 | `abort()` | if charged: `CreditXML` `actionType=7` refund; if uncaptured ActionType `5`: **no provider call** — checkout marks abort successful and leaves the approval to expire | refund: `returnCode=000`; uncaptured: `cancel.mode=uncaptured_approval_left_to_expire` |
 
 ### `authorize()` — live-verified Pro rules (ActionType 5)
@@ -51,11 +51,11 @@ All of the following must hold:
 
 ### `prepare_action_type`
 
-| Value | Meaning |
-|-------|---------|
-| `5` | Approval only (preferred). Capture charges later via CreditXML. |
-| `4` | Charge on payment page. Capture is treated as already done. |
-| `2` | SendParams Test mode — **rejected by checkout**. Not safe: capture would still call CreditXML `actionType=4` (charge). Use a Credit2000 test terminal with `5` or `4` instead. |
+Only **`5` (approval)** is supported for prepare. Direct page charge (`4`) and SendParams test mode (`2`) are rejected.
+
+Two-phase flow only: **ActionType 5 approval → Nezasa booking → CreditXML ActionType 4 capture**.
+
+`CHECKOUT_CREDIT2000_PREPARE_ACTION_TYPE` must remain `5` (the package default).
 
 ## Amounts
 

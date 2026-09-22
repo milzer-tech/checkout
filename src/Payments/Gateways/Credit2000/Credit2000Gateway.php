@@ -27,12 +27,14 @@ use Throwable;
  * Credit2000 hosted payment page gateway (SOAP ASMX).
  *
  * Lifecycle aligned with Nezasa authorize → book → capture/abort:
- * 1. prepare: SendParamToCredit2000 (default action_Type=5 approval-only) → redirect URL
+ * 1. prepare: SendParamToCredit2000 (action_Type=5 approval-only) → redirect URL
  * 2. authorize: callback uid + getTokenAndApprovePro(uid) — live-verified Pro fields
  *    (binding + return_Code=000 + non-placeholder Approve + ValidDate + token)
- * 3. capture: CreditXML actionType=4 with token (or no-op if prepare already charged)
+ * 3. capture: CreditXML actionType=4 with token after Nezasa booking
  * 4. abort: CreditXML actionType=7 refund when a charge exists; otherwise leave the
  *    uncaptured ActionType 5 approval to expire (Credit2000 has no release API)
+ *
+ * prepare_action_type=4 (charge on payment page) is not supported.
  *
  * @see Credit2000 API PDF (SendParamToCredit2000 / getTokenAndApprove / CreditXML)
  */
@@ -42,6 +44,7 @@ class Credit2000Gateway implements RedirectPaymentContract
 
     private const string ACTION_TEST = '2';
 
+    /** CreditXML capture / charge action — not a supported SendParams prepare mode. */
     private const string ACTION_CHARGE = '4';
 
     private const string ACTION_APPROVAL = '5';
@@ -92,20 +95,15 @@ class Credit2000Gateway implements RedirectPaymentContract
 
             $prepareAction = Config::string('checkout.integrations.credit2000.prepare_action_type');
 
-            // SendParams action_Type=2 is provider "Test" mode. Checkout capture always
-            // uses CreditXML actionType=4 (Charge), so test prepare must not be allowed
-            // to reach a live charge path.
-            if ($prepareAction === self::ACTION_TEST) {
-                return new PaymentInit(isAvailable: false, returnUrl: $data->returnUrl);
-            }
-
-            if (! in_array($prepareAction, [self::ACTION_APPROVAL, self::ACTION_CHARGE], true)) {
+            // Only ActionType 5 (approval) is supported for prepare. Reject test mode (2),
+            // page charge (4), and any other value.
+            if ($prepareAction !== self::ACTION_APPROVAL) {
                 return new PaymentInit(isAvailable: false, returnUrl: $data->returnUrl);
             }
 
             $response = Credit2000Connector::make()->payment()->sendParams([
                 'host' => (string) $data->returnUrl,
-                'action_Type' => $prepareAction,
+                'action_Type' => self::ACTION_APPROVAL,
                 'total_Pyment' => $total,
                 'first_Payment' => $total,
                 'currency' => $currency->value,
@@ -135,8 +133,7 @@ class Credit2000Gateway implements RedirectPaymentContract
                     'checkout_id' => $data->checkoutId,
                     'client_name' => $clientName,
                     'tz_number' => $tz,
-                    'prepare_action_type' => $prepareAction,
-                    'charged_on_page' => $prepareAction === self::ACTION_CHARGE,
+                    'prepare_action_type' => self::ACTION_APPROVAL,
                 ]
             );
         } catch (Throwable $exception) {
@@ -221,7 +218,6 @@ class Credit2000Gateway implements RedirectPaymentContract
                         'cardType' => $tokenResponse['cardType'] ?? '1',
                         'customerId' => '000000001',
                         'return_Code' => $tokenResponse['return_Code'] ?? '',
-                        'charged_on_page' => (bool) ($persistentData['charged_on_page'] ?? false),
                     ],
                 ]
             );
@@ -261,7 +257,7 @@ class Credit2000Gateway implements RedirectPaymentContract
 
             $prepareAction = (string) ($persistentData['prepare_action_type'] ?? '');
 
-            // Defense in depth: never CreditXML-charge a Test (action_Type=2) prepare.
+            // Defense in depth: only ActionType 5 prepares may proceed to CreditXML charge.
             if ($prepareAction === self::ACTION_TEST) {
                 return new CaptureResult(isSuccessful: false, persistentData: [
                     ...$resultData,
@@ -269,16 +265,11 @@ class Credit2000Gateway implements RedirectPaymentContract
                 ]);
             }
 
-            // Payment page already charged (prepare_action_type=4).
-            if ((bool) data_get($resultData, 'credit2000.charged_on_page', false)
-                || $prepareAction === self::ACTION_CHARGE) {
-                $resultData['capture'] = [
-                    'returnCode' => self::RETURN_OK,
-                    'mode' => 'charged_on_payment_page',
-                    'confirmationNumber' => (string) data_get($resultData, 'credit2000.approveNum', ''),
-                ];
-
-                return new CaptureResult(isSuccessful: true, persistentData: $resultData);
+            if ($prepareAction !== self::ACTION_APPROVAL) {
+                return new CaptureResult(isSuccessful: false, persistentData: [
+                    ...$resultData,
+                    'capture_error' => 'unsupported_prepare_action_type',
+                ]);
             }
 
             [$month, $year] = $this->parseValidDate((string) data_get($resultData, 'credit2000.validDate', ''));
@@ -328,11 +319,10 @@ class Credit2000Gateway implements RedirectPaymentContract
 
             $token = (string) data_get($resultData, 'credit2000.token', '');
             $alreadyCaptured = $this->wasCaptured($resultData);
-            $chargedOnPage = (bool) data_get($resultData, 'credit2000.charged_on_page', false);
 
             // No capture occurred: do not invent a provider release. Credit2000 has no
             // API to void uncaptured ActionType 5 approvals; they expire automatically.
-            if ($token === '' || (! $alreadyCaptured && ! $chargedOnPage)) {
+            if ($token === '' || ! $alreadyCaptured) {
                 $resultData['cancel'] = [
                     'mode' => self::CANCEL_MODE_LEFT_TO_EXPIRE,
                 ];

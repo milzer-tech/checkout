@@ -69,7 +69,6 @@ function c2kPersistent(string $order = '01C2KOK'): array
         'client_name' => 'Cohen/Dana',
         'tz_number' => '203269535',
         'prepare_action_type' => '5',
-        'charged_on_page' => false,
     ];
 }
 
@@ -233,6 +232,46 @@ it('rejects prepare when prepare_action_type is test mode 2', function (): void 
     $mock->assertNothingSent();
 });
 
+it('rejects prepare when prepare_action_type is page charge 4', function (): void {
+    c2kConfig();
+    Config::set('checkout.integrations.credit2000.prepare_action_type', '4');
+
+    $mock = MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(body: 'should-not-be-called', status: 500),
+    ]);
+
+    $init = (new Credit2000Gateway)->prepare(c2kPrepareData(c2kTransaction()));
+
+    expect($init->isAvailable)->toBeFalse();
+    $mock->assertNothingSent();
+});
+
+it('prepares successfully when prepare_action_type is approval 5', function (): void {
+    c2kConfig();
+    Config::set('checkout.integrations.credit2000.prepare_action_type', '5');
+
+    $mock = MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(
+            body: '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><SendParamToCredit2000Response xmlns="http://tempuri.org/"><SendParamToCredit2000Result>https://www.credit2000.co.il/pay/at5</SendParamToCredit2000Result></SendParamToCredit2000Response></soap:Body></soap:Envelope>',
+            status: 200,
+        ),
+    ]);
+
+    $init = (new Credit2000Gateway)->prepare(c2kPrepareData(c2kTransaction()));
+
+    expect($init->isAvailable)->toBeTrue()
+        ->and($init->persistentData['prepare_action_type'])->toBe('5')
+        ->and($init->persistentData)->not->toHaveKey('charged_on_page');
+
+    $mock->assertSent(function (Credit2000SoapRequest $request): bool {
+        $bodyXml = (new ReflectionClass($request))->getProperty('bodyXml');
+        $body = (string) $bodyXml->getValue($request);
+
+        return str_contains($body, '<action_Type>5</action_Type>')
+            && ! str_contains($body, '<action_Type>4</action_Type>');
+    });
+});
+
 it('refuses capture when prepare_action_type was test mode 2', function (): void {
     c2kConfig();
 
@@ -251,7 +290,6 @@ it('refuses capture when prepare_action_type was test mode 2', function (): void
             'validDate' => '0729',
             'cardType' => '1',
             'customerId' => '9999',
-            'charged_on_page' => false,
         ],
     ];
 
@@ -259,6 +297,34 @@ it('refuses capture when prepare_action_type was test mode 2', function (): void
 
     expect($capture->isSuccessful)->toBeFalse()
         ->and(data_get($capture->persistentData, 'capture_error'))->toBe('test_mode_prepare_cannot_charge');
+    $mock->assertNothingSent();
+});
+
+it('refuses capture when prepare_action_type was page charge 4', function (): void {
+    c2kConfig();
+
+    $mock = MockClient::global([
+        Credit2000SoapRequest::class => MockResponse::make(body: 'should-not-be-called', status: 500),
+    ]);
+
+    $persistent = c2kPersistent();
+    $persistent['prepare_action_type'] = '4';
+
+    $resultData = [
+        'credit2000' => [
+            'uid' => 'uid-1',
+            'token' => '9101111111116951',
+            'approveNum' => '1234567',
+            'validDate' => '0729',
+            'cardType' => '1',
+            'customerId' => '9999',
+        ],
+    ];
+
+    $capture = (new Credit2000Gateway)->capture(c2kRequest(c2kTransaction('01C2KOK'), []), $persistent, $resultData);
+
+    expect($capture->isSuccessful)->toBeFalse()
+        ->and(data_get($capture->persistentData, 'capture_error'))->toBe('unsupported_prepare_action_type');
     $mock->assertNothingSent();
 });
 
@@ -545,7 +611,6 @@ it('captures via CreditXML charge', function (): void {
             'validDate' => '0729',
             'cardType' => '1',
             'customerId' => '9999',
-            'charged_on_page' => false,
         ],
     ];
 
@@ -555,31 +620,52 @@ it('captures via CreditXML charge', function (): void {
         ->and(data_get($capture->persistentData, 'capture.returnCode'))->toBe('000');
 });
 
-it('treats page charge as already captured', function (): void {
+it('authorizes ActionType 5 then captures via CreditXML actionType 4', function (): void {
     c2kConfig();
 
-    $transaction = c2kTransaction('01C2KOK');
-    $request = c2kRequest($transaction, []);
-    $persistent = c2kPersistent();
-    $persistent['prepare_action_type'] = '4';
-    $persistent['charged_on_page'] = true;
+    $uid = 'e14643ab-562a-4a64-a59a-49a9efa978e9';
+    $soapCall = 0;
 
-    $resultData = [
-        'credit2000' => [
-            'uid' => 'uid-1',
-            'token' => '9101111111116951',
-            'approveNum' => '1234567',
-            'validDate' => '0729',
-            'cardType' => '1',
-            'customerId' => '9999',
-            'charged_on_page' => true,
-        ],
-    ];
+    $mock = MockClient::global([
+        Credit2000SoapRequest::class => function () use (&$soapCall): MockResponse {
+            $soapCall++;
 
-    $capture = (new Credit2000Gateway)->capture($request, $persistent, $resultData);
+            if ($soapCall === 1) {
+                return MockResponse::make(body: c2kProSoapBody(), status: 200);
+            }
 
-    expect($capture->isSuccessful)->toBeTrue()
-        ->and(data_get($capture->persistentData, 'capture.mode'))->toBe('charged_on_payment_page');
+            return MockResponse::make(
+                body: '<?xml version="1.0"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><CreditXMLResponse xmlns="http://tempuri.org/"><CreditXMLResult>000</CreditXMLResult><returnCode>000</returnCode><confirmationNumber>998877</confirmationNumber></CreditXMLResponse></soap:Body></soap:Envelope>',
+                status: 200,
+            );
+        },
+    ]);
+
+    $gateway = new Credit2000Gateway;
+    $authorized = $gateway->authorize(
+        c2kRequest(c2kTransaction('01C2KOK'), ['params' => $uid]),
+        c2kPersistent()
+    );
+
+    expect($authorized->isSuccessful)->toBeTrue()
+        ->and(data_get($authorized->resultData, 'credit2000.token'))->toBe('9101111111116951');
+
+    $captured = $gateway->capture(
+        c2kRequest(c2kTransaction('01C2KOK'), []),
+        c2kPersistent(),
+        $authorized->resultData
+    );
+
+    expect($captured->isSuccessful)->toBeTrue()
+        ->and(data_get($captured->persistentData, 'capture.returnCode'))->toBe('000')
+        ->and($soapCall)->toBe(2);
+
+    $mock->assertSent(function (Credit2000SoapRequest $request): bool {
+        $bodyXml = (new ReflectionClass($request))->getProperty('bodyXml');
+        $body = (string) $bodyXml->getValue($request);
+
+        return str_contains($body, '<actionType>4</actionType>');
+    });
 });
 
 it('leaves uncaptured approval to expire on abort without inventing a provider release', function (): void {
@@ -595,7 +681,6 @@ it('leaves uncaptured approval to expire on abort without inventing a provider r
             'validDate' => '0729',
             'cardType' => '1',
             'customerId' => '9999',
-            'charged_on_page' => false,
         ],
     ];
 
@@ -619,7 +704,6 @@ it('blocks capture after uncaptured approval was left to expire on abort', funct
             'validDate' => '0729',
             'cardType' => '1',
             'customerId' => '9999',
-            'charged_on_page' => false,
         ],
         'cancel' => [
             'mode' => 'uncaptured_approval_left_to_expire',
@@ -727,7 +811,6 @@ it('does not persist raw SOAP bodies in capture result data', function (): void 
             'validDate' => '0729',
             'cardType' => '1',
             'customerId' => '9999',
-            'charged_on_page' => false,
         ],
     ];
 
@@ -761,7 +844,6 @@ it('fails capture when CreditXML returnCode is not successful', function (): voi
             'validDate' => '0729',
             'cardType' => '1',
             'customerId' => '9999',
-            'charged_on_page' => false,
         ],
     ];
 
@@ -794,11 +876,10 @@ it('refunds via CreditXML actionType 7 when aborting a charged payment', functio
             'validDate' => '0729',
             'cardType' => '1',
             'customerId' => '9999',
-            'charged_on_page' => true,
         ],
         'capture' => [
             'returnCode' => '000',
-            'mode' => 'charged_on_payment_page',
+            'mode' => 'creditxml_charge',
             'confirmationNumber' => '1234567',
         ],
     ];

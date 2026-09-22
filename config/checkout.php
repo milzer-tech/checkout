@@ -75,10 +75,8 @@ return [
          * and an end-to-end booking has been verified on staging.
          *
          * prepare_action_type:
-         * - "5" = approval only (preferred for authorize → book → capture)
-         * - "4" = charge on payment page (capture becomes a no-op)
-         * - "2" = SendParams Test mode — NOT supported in checkout (rejected;
-         *         would otherwise be followed by a live CreditXML charge=4)
+         * - "5" = approval only (required: authorize → book → CreditXML capture)
+         * - any other value (including "4" page charge and "2" test) is rejected
          */
         'credit2000' => [
             'active' => (bool) env('CHECKOUT_CREDIT2000_ACTIVE', false),
