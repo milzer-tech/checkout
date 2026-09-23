@@ -27,7 +27,9 @@ final class Credit2000SoapRequest extends Request implements HasBody
 
     public function resolveEndpoint(): string
     {
-        return '/';
+        // Empty path: Saloon joins baseUrl + endpoint. Returning '/' produces
+        // ".../wscredit2000.asmx/" which Credit2000 rejects (HTTP 500).
+        return '';
     }
 
     public function boot(PendingRequest $pendingRequest): void
