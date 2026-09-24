@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\HanseMerkur\Connectors;
 
 use Illuminate\Support\Facades\Config;
+use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Nezasa\Checkout\Integrations\HanseMerkur\Resources\HanseMerkurPaymentResource;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Http\Auth\BasicAuthenticator;
@@ -23,6 +24,7 @@ use Saloon\Traits\Makeable;
 class HanseMerkurPaymentConnector extends Connector implements HasBody
 {
     use HasJsonBody;
+    use HasLogging;
     use Makeable;
 
     /**

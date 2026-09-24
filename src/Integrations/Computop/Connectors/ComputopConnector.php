@@ -6,6 +6,7 @@ namespace Nezasa\Checkout\Integrations\Computop\Connectors;
 
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Integrations\Computop\Resources\ComputopPaymentResource;
+use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Traits\Makeable;
@@ -21,6 +22,7 @@ use Saloon\Traits\Plugins\HasTimeout;
  */
 class ComputopConnector extends Connector
 {
+    use HasLogging;
     use HasTimeout;
     use Makeable;
 

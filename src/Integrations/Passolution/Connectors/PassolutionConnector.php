@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Passolution\Connectors;
 
 use Illuminate\Support\Facades\Config;
+use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Traits\Makeable;
@@ -12,6 +13,7 @@ use Saloon\Traits\Plugins\HasTimeout;
 
 class PassolutionConnector extends Connector
 {
+    use HasLogging;
     use HasTimeout;
     use Makeable;
 
