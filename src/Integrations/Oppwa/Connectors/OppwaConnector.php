@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Oppwa\Connectors;
 
 use Illuminate\Support\Facades\Config;
+use Milzer\HttpLogger\Core\LoggingOptions;
+use Milzer\HttpLogger\Saloon\Contracts\ConfiguresLogging;
 use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Nezasa\Checkout\Integrations\Oppwa\Resources\OppwaResource;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
+use Saloon\Http\PendingRequest;
 use Saloon\Traits\Makeable;
 use Saloon\Traits\Plugins\HasTimeout;
 
@@ -20,7 +23,7 @@ use Saloon\Traits\Plugins\HasTimeout;
  *
  * @see https://axcessms.docs.oppwa.com/integrations/widget
  */
-class OppwaConnector extends Connector
+class OppwaConnector extends Connector implements ConfiguresLogging
 {
     use HasLogging;
     use HasTimeout;
@@ -35,6 +38,18 @@ class OppwaConnector extends Connector
      * The timeout in seconds for the request according to the Nezasa API.
      */
     protected int $requestTimeout = 60;
+
+    /**
+     * Name the log entries of this connector so they are easy to find.
+     */
+    public function configureLogging(LoggingOptions $options, PendingRequest $pendingRequest): LoggingOptions
+    {
+        return $options->withOutgoingMessages(
+            request: 'checkout-to-oppwa',
+            response: 'oppwa-to-checkout',
+            failure: 'oppwa-failed',
+        );
+    }
 
     /**
      * Define the base URL of the API.
