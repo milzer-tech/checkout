@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\HanseMerkur\Connectors;
 
 use Illuminate\Support\Facades\Config;
+use Milzer\HttpLogger\Core\LoggingOptions;
+use Milzer\HttpLogger\Saloon\Contracts\ConfiguresLogging;
 use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Nezasa\Checkout\Integrations\HanseMerkur\Resources\HanseMerkurOfferResource;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
+use Saloon\Http\PendingRequest;
 use Saloon\Traits\Body\HasJsonBody;
 use Saloon\Traits\Makeable;
 
@@ -21,11 +24,23 @@ use Saloon\Traits\Makeable;
  *
  * @link https://api-fbt.hmrv.de/rest/swagger-ui/index.html#/
  */
-class HanseMerkurConnector extends Connector implements HasBody
+class HanseMerkurConnector extends Connector implements ConfiguresLogging, HasBody
 {
     use HasJsonBody;
     use HasLogging;
     use Makeable;
+
+    /**
+     * Name the log entries of this connector so they are easy to find.
+     */
+    public function configureLogging(LoggingOptions $options, PendingRequest $pendingRequest): LoggingOptions
+    {
+        return $options->withOutgoingMessages(
+            request: 'checkout-to-hansemerkur',
+            response: 'hansemerkur-to-checkout',
+            failure: 'hansemerkur-failed',
+        );
+    }
 
     /**
      * Define the base URL of the API.

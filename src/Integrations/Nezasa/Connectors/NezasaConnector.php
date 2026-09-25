@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Nezasa\Connectors;
 
 use Illuminate\Support\Facades\Config;
+use Milzer\HttpLogger\Core\LoggingOptions;
+use Milzer\HttpLogger\Saloon\Contracts\ConfiguresLogging;
 use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Nezasa\Checkout\Integrations\Nezasa\Resources\CheckoutResource;
 use Nezasa\Checkout\Integrations\Nezasa\Resources\LocationResource;
@@ -13,6 +15,7 @@ use Nezasa\Checkout\Integrations\Nezasa\Resources\PaymentTransactionResource;
 use Nezasa\Checkout\Integrations\Nezasa\Resources\PlannerResource;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
+use Saloon\Http\PendingRequest;
 use Saloon\Traits\Makeable;
 use Saloon\Traits\Plugins\HasTimeout;
 
@@ -24,7 +27,7 @@ use Saloon\Traits\Plugins\HasTimeout;
  *
  * @link https://support.nezasa.com/hc/en-gb/articles/29588280597265-Checkout-API
  */
-class NezasaConnector extends Connector
+class NezasaConnector extends Connector implements ConfiguresLogging
 {
     use HasLogging;
     use HasTimeout;
@@ -39,6 +42,18 @@ class NezasaConnector extends Connector
      * The timeout in seconds for the request according to the Nezasa API.
      */
     protected int $requestTimeout = 30;
+
+    /**
+     * Name the log entries of this connector so they are easy to find.
+     */
+    public function configureLogging(LoggingOptions $options, PendingRequest $pendingRequest): LoggingOptions
+    {
+        return $options->withOutgoingMessages(
+            request: 'checkout-to-nezasa',
+            response: 'nezasa-to-checkout',
+            failure: 'nezasa-failed',
+        );
+    }
 
     /**
      * Define the base URL of the API.

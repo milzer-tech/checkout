@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Ergo;
 
 use Illuminate\Support\Facades\Config;
+use Milzer\HttpLogger\Core\LoggingOptions;
+use Milzer\HttpLogger\Saloon\Contracts\ConfiguresLogging;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoLocalisationDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoRequestorDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\Enum\ErgoNamePrefixEnum;
@@ -13,16 +15,29 @@ use Nezasa\Checkout\Integrations\Foundation\Contracts\SoapConnector;
 use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\SoapConnectorTrait;
 use Saloon\Http\Connector;
+use Saloon\Http\PendingRequest;
 use Saloon\Traits\Makeable;
 use Soap\Encoding\EncoderRegistry;
 
-class ErgoConnector extends Connector implements SoapConnector
+class ErgoConnector extends Connector implements ConfiguresLogging, SoapConnector
 {
     use HasLogging;
     use Makeable;
     use SoapConnectorTrait;
 
     public string $wsdlPath = 'wsdl/eSoap.wsdl';
+
+    /**
+     * Name the log entries of this connector so they are easy to find.
+     */
+    public function configureLogging(LoggingOptions $options, PendingRequest $pendingRequest): LoggingOptions
+    {
+        return $options->withOutgoingMessages(
+            request: 'checkout-to-ergo',
+            response: 'ergo-to-checkout',
+            failure: 'ergo-failed',
+        );
+    }
 
     public function resolveBaseUrl(): string
     {

@@ -12,8 +12,10 @@ use Monolog\Logger;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Support\CheckoutLogContext;
 use Saloon\Enums\Method;
+use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
+use Saloon\Http\PendingRequest;
 use Saloon\Http\Request;
 
 beforeEach(function (): void {
@@ -60,7 +62,7 @@ it('adds the checkout query parameters to every outgoing log entry', function ()
     $records = $this->logs->getRecords();
 
     expect($records)->toHaveCount(2)
-        ->and(array_map(fn ($record): string => $record->message, $records))->toBe(['outgoing-request', 'outgoing-response']);
+        ->and(array_map(fn ($record): string => $record->message, $records))->toBe(['checkout-to-nezasa', 'nezasa-to-checkout']);
 
     foreach ($records as $record) {
         expect($record->context)->toMatchArray([
@@ -117,4 +119,16 @@ it('logs without checkout parameters outside a checkout request', function (): v
     sendPing();
 
     expect($this->logs->getRecords()[0]->context)->not->toHaveKey('checkoutId');
+});
+
+it('uses the connector specific message when the request fails', function (): void {
+    MockClient::destroyGlobal();
+    MockClient::global(['*' => MockResponse::make()->throw(
+        fn (PendingRequest $pendingRequest): FatalRequestException => new FatalRequestException(new Exception('Connection refused'), $pendingRequest)
+    )]);
+
+    expect(fn () => sendPing())->toThrow(FatalRequestException::class);
+
+    expect(array_map(fn ($record): string => $record->message, $this->logs->getRecords()))
+        ->toBe(['checkout-to-nezasa', 'nezasa-failed']);
 });
