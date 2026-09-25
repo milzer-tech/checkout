@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Integrations\Oppwa\Connectors;
 
 use Illuminate\Support\Facades\Config;
+use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Nezasa\Checkout\Integrations\Oppwa\Resources\OppwaResource;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
@@ -21,6 +22,7 @@ use Saloon\Traits\Plugins\HasTimeout;
  */
 class OppwaConnector extends Connector
 {
+    use HasLogging;
     use HasTimeout;
     use Makeable;
 

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Nezasa\Checkout\Providers;
 
+use Illuminate\Log\Context\Repository;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Nezasa\Checkout\Livewire\ActivitySection;
@@ -24,6 +26,7 @@ use Nezasa\Checkout\Livewire\TravelerDetails;
 use Nezasa\Checkout\Livewire\TravelInformationSection;
 use Nezasa\Checkout\Livewire\TripDetailsPage;
 use Nezasa\Checkout\Livewire\TripSummary;
+use Nezasa\Checkout\Support\CheckoutLogContext;
 
 class CheckoutServiceProvider extends ServiceProvider
 {
@@ -50,6 +53,8 @@ class CheckoutServiceProvider extends ServiceProvider
         $this->setUpConfigurations();
 
         $this->publishAssets();
+
+        $this->shareLogContextWithQueuedJobs();
     }
 
     /**
@@ -89,6 +94,24 @@ class CheckoutServiceProvider extends ServiceProvider
         );
 
         $this->loadTranslationsFrom(path: __DIR__.'/../../lang', namespace: 'checkout');
+    }
+
+    /**
+     * Carry the checkout query parameters into queued jobs, so their outgoing HTTP logs include them too.
+     */
+    private function shareLogContextWithQueuedJobs(): void
+    {
+        Context::dehydrating(static function (Repository $context): void {
+            if ($context->hasHidden(CheckoutLogContext::CONTEXT_KEY)) {
+                return;
+            }
+
+            $params = CheckoutLogContext::fromRequest(request());
+
+            if ($params !== []) {
+                $context->addHidden(CheckoutLogContext::CONTEXT_KEY, $params);
+            }
+        });
     }
 
     /**

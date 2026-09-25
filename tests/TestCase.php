@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Livewire\LivewireServiceProvider;
+use Milzer\HttpLogger\Laravel\HttpLoggerServiceProvider;
 use Nezasa\Checkout\Providers\CheckoutServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Saloon\Http\Faking\MockClient;
@@ -31,6 +32,7 @@ abstract class TestCase extends OrchestraTestCase
     {
         return [
             LivewireServiceProvider::class,
+            HttpLoggerServiceProvider::class,
             LaravelDataServiceProvider::class,
             CheckoutServiceProvider::class,
             NoViteServiceProvider::class,

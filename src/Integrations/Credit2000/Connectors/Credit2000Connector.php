@@ -6,12 +6,14 @@ namespace Nezasa\Checkout\Integrations\Credit2000\Connectors;
 
 use Illuminate\Support\Facades\Config;
 use Nezasa\Checkout\Integrations\Credit2000\Resources\Credit2000PaymentResource;
+use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Saloon\Http\Connector;
 use Saloon\Traits\Makeable;
 use Saloon\Traits\Plugins\HasTimeout;
 
 class Credit2000Connector extends Connector
 {
+    use HasLogging;
     use HasTimeout;
     use Makeable;
 

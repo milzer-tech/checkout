@@ -10,6 +10,7 @@ use Nezasa\Checkout\Integrations\Ergo\Dtos\CommonTypes\ErgoRequestorDto;
 use Nezasa\Checkout\Integrations\Ergo\Dtos\Enum\ErgoNamePrefixEnum;
 use Nezasa\Checkout\Integrations\Ergo\Resources\ErgoInsurance;
 use Nezasa\Checkout\Integrations\Foundation\Contracts\SoapConnector;
+use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\HasLogging;
 use Nezasa\Checkout\Integrations\Foundation\Traits\Connector\SoapConnectorTrait;
 use Saloon\Http\Connector;
 use Saloon\Traits\Makeable;
@@ -17,6 +18,7 @@ use Soap\Encoding\EncoderRegistry;
 
 class ErgoConnector extends Connector implements SoapConnector
 {
+    use HasLogging;
     use Makeable;
     use SoapConnectorTrait;
 
