@@ -157,5 +157,7 @@ return [
         'you_have_not_been_charged_for_this_booking' => 'Vous n’avez pas été débité pour cette réservation.',
         'we_recommend_try_again' => 'Nous vous recommandons de réessayer la réservation.',
         'services_that_could_not_be_booked' => 'Services qui n’ont pas pu être réservés',
+        'result_expired_title' => 'Cette page a expiré',
+        'result_expired_message' => 'Pour votre sécurité, les détails de la réservation ne sont affichés que pendant une durée limitée après le paiement. Veuillez contacter le support si vous avez des questions sur votre réservation.',
     ],
 ];

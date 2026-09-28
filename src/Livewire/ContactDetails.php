@@ -45,12 +45,18 @@ class ContactDetails extends BaseCheckoutComponent
      */
     public function mount(): void
     {
+        $isOwner = $this->ownsCustomerData();
+
         /** @phpstan-ignore-next-line */
-        $loaded = $this->model->data->get('contact');
+        $loaded = $isOwner ? $this->model->data->get('contact') : [];
         $this->contact = is_array($loaded) ? $loaded : [];
 
         $this->defineDefaultValues();
-        $this->model->updateData(['contact' => $this->contact]);
+
+        // The stored data belongs to another browser, so it is left untouched until this one changes it.
+        if ($isOwner) {
+            $this->model->updateData(['contact' => $this->contact]);
+        }
     }
 
     /**
@@ -70,6 +76,8 @@ class ContactDetails extends BaseCheckoutComponent
         $this->validate([
             $name => $this->rules()[$name],
         ]);
+
+        $this->claimContact();
 
         if (str_starts_with($name, 'contact.mobilePhone.')) {
             dispatch(new SaveTraverDetailsJob(
@@ -91,11 +99,27 @@ class ContactDetails extends BaseCheckoutComponent
     {
         $validatedData = $this->validate();
 
+        $this->claimCustomerData();
         $this->model->updateData(['contact' => $validatedData['contact']]);
 
         $this->markAsCompletedAdnCollapse(Section::Contact);
 
         $this->dispatch(Section::Contact->value);
+    }
+
+    /**
+     * Make the current browser the owner of the contact details before a field is stored.
+     * A new owner starts with empty data, so the whole form is stored, including its default values.
+     */
+    private function claimContact(): void
+    {
+        $isNewOwner = ! $this->ownsCustomerData();
+
+        $this->claimCustomerData();
+
+        if ($isNewOwner) {
+            $this->model->updateData(['contact' => $this->contact]);
+        }
     }
 
     /**

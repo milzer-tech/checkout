@@ -50,7 +50,7 @@ Below is a list of the key features included in this package:
 9. **Transaction Handling** – Initiates and stores transaction data via the Nezasa API.
 10. **Booking Confirmation** – Manages booking confirmation and displays the booking reference.
 11. **Error & Exception Handling** – Handles errors gracefully, with user-friendly messages and fallback options.
-12. **Save Booking State** – Preserves the current state of the booking process. For example, if a user leaves the page while entering traveler details, all entered data is stored and restored the next time they return.
+12. **Save Booking State** – Preserves the current state of the booking process. If a user leaves the page, cancels the payment or reloads it, the entered data is restored in the same browser for a limited time (see [Customer data ownership](#customer-data-ownership)).
 13. **Multi-language Support** – Includes localization for English, German, French, and Spanish, with easy extensibility for additional languages.
 14. **Configuration Options** – Offers flexible configuration to adapt the package to project needs, such as updating payment provider credentials.
 15. **Best Practices** – Follows industry best practices for security, performance, and code quality, ensuring a robust and maintainable package.
@@ -66,6 +66,32 @@ Add the following variables to the `.env` file of your Laravel application:
 CHECKOUT_NEZASA_BASE_URL="nezasa trip builder api url"
 CHECKOUT_NEZASA_USERNAME="username"
 CHECKOUT_NEZASA_PASSWORD="password"
+```
+
+### Customer data ownership
+A checkout is bound to the browser that uses it, as checkout users are not authenticated and anyone may hold the checkout link.
+
+- The browser that opens the checkout while nobody else uses it becomes its owner and receives a random key in an HTTP-only cookie. Only the hash of the key and its expiry are stored, under `owner` in the checkout data, so no migration is needed.
+- While the owner is active, any other browser that opens the checkout or its payment result gets a "This checkout is open in another browser. Please try again later." page, so it can neither see nor change the data.
+- The payment result is only shown to the owner. Once the owner is no longer active, other browsers get a "This page has expired" page without any booking details. The payment itself is always processed.
+- The key is valid for `CHECKOUT_CUSTOMER_DATA_TTL` minutes and is extended by every activity, so the owner can leave the page or cancel the payment and continue. Once the owner has been inactive for that time, the next browser becomes the owner and starts with empty contact, traveller and activity data.
+- When the user cancels at the payment provider and returns, the pending transaction is marked as canceled.
+- The rest payment is not bound to a browser, as it does not show these sections.
+- `CHECKOUT_PAYMENT_TTL` is the time a payment may take. It is used for:
+  - the payment page link and the Stripe Checkout Session (Stripe accepts 30 to 1440 minutes),
+  - the rest payment result page, which is only shown for this time after the transaction was created, as the rest payment is not bound to a browser,
+  - keeping other browsers out while a payment started within this time is still pending, even if the owner's key has expired.
+- Keep `CHECKOUT_CUSTOMER_DATA_TTL` longer than `CHECKOUT_PAYMENT_TTL`, so the owner's key does not expire while paying.
+
+```dotenv
+CHECKOUT_CUSTOMER_DATA_TTL=120
+CHECKOUT_PAYMENT_TTL=60
+```
+
+Once checkout users are authenticated, the data can be shown to everyone who opens the checkout link again:
+
+```dotenv
+CHECKOUT_RESTORE_CUSTOMER_DATA=true
 ```
 
 ### Passolution travel information

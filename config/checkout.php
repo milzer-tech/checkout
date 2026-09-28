@@ -33,6 +33,28 @@ return [
         'email' => env('CHECKOUT_CONTACT_SUPPORT_EMAIL', 'contact@nezasa.com'),
     ],
 
+    /**
+     * A checkout is bound to the browser that uses it. The browser holds a key in a cookie, and its
+     * hash is stored in the checkout data. While the key is valid, every other browser is kept out.
+     * The key expires after "ttl" minutes without any activity and is extended by every activity,
+     * after which the next browser may start the checkout over with empty customer data.
+     *
+     * Enable "restore_always" to show the data to everyone who opens the checkout link,
+     * which is only safe once checkout users are authenticated.
+     */
+    'customer_data' => [
+        'restore_always' => (bool) env('CHECKOUT_RESTORE_CUSTOMER_DATA', false),
+        'ttl' => (int) env('CHECKOUT_CUSTOMER_DATA_TTL', 120),
+    ],
+
+    /**
+     * The minutes a payment may take, used for the payment page link, the Stripe Checkout Session
+     * (Stripe accepts 30 to 1440), how long the rest payment result is shown, and how long other
+     * browsers are kept out of a checkout after a payment started.
+     * Keep it shorter than "customer_data.ttl", so the owner is never kept out of its own payment.
+     */
+    'payment_ttl' => (int) env('CHECKOUT_PAYMENT_TTL', 60),
+
     'countries' => [
         'prioritized_iso_codes' => explode(',', env('CHECKOUT_PRIORITIZED_COUNTRY_CODES', '')),
         'prioritized_fields' => explode(',', env('CHECKOUT_PRIORITIZED_COUNTRY_FIELDS', '')),

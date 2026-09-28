@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Config;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Nezasa\Checkout\Actions\Checkout\CancelReturnedTransactionAction;
 use Nezasa\Checkout\Actions\Checkout\FindCheckoutModelAction;
 use Nezasa\Checkout\Actions\Checkout\InitializeCheckoutDataAction;
 use Nezasa\Checkout\Actions\Planner\SummarizeItineraryAction;
@@ -64,6 +66,9 @@ class TripDetailsPage extends BaseCheckoutComponent
             params: $this->getParams(),
             allocatedPax: $this->result->itinerary->allocatedPax
         );
+
+        // The cancel url of the payment providers returns here with the transaction.
+        resolve(CancelReturnedTransactionAction::class)->run($this->model, request()->query('transaction'));
 
         $this->itinerary = $summerizeItinerary->run(
             itineraryResponse: $this->result->itinerary,
@@ -149,7 +154,7 @@ class TripDetailsPage extends BaseCheckoutComponent
         if ($result) {
             $this->paymentPageUrl = URL::temporarySignedRoute(
                 name: 'payment',
-                expiration: now()->addMinutes(30),
+                expiration: now()->addMinutes(Config::integer('checkout.payment_ttl')),
                 parameters: array_merge(
                     $this->getParams()->toArray(),
                     ['payment_method' => $this->gateway]

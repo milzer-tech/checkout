@@ -12,6 +12,7 @@ use Nezasa\Checkout\Actions\Operation\SaveSectionStatusAction;
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Models\Checkout;
+use Nezasa\Checkout\Support\CheckoutOwnership;
 
 #[Layout('checkout::layouts.layout')]
 class BaseCheckoutComponent extends Component
@@ -159,6 +160,22 @@ class BaseCheckoutComponent extends Component
 
         resolve(SaveSectionStatusAction::class)
             ->run($this->model, $section, $this->isCompleted, $this->isExpanded);
+    }
+
+    /**
+     * Determine if the current browser may see the contact, traveller and activity data.
+     */
+    protected function ownsCustomerData(): bool
+    {
+        return resolve(CheckoutOwnership::class)->isOwner($this->model);
+    }
+
+    /**
+     * Make the current browser the owner of the customer data before it is changed.
+     */
+    protected function claimCustomerData(): void
+    {
+        resolve(CheckoutOwnership::class)->claim($this->model);
     }
 
     /**

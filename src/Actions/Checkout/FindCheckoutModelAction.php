@@ -6,15 +6,22 @@ namespace Nezasa\Checkout\Actions\Checkout;
 
 use Nezasa\Checkout\Dtos\Checkout\CheckoutParamsDto;
 use Nezasa\Checkout\Exceptions\AlreadyPaidException;
+use Nezasa\Checkout\Exceptions\CheckoutInUseException;
 use Nezasa\Checkout\Models\Checkout;
 use Nezasa\Checkout\Payments\Enums\TransactionStatusEnum;
+use Nezasa\Checkout\Support\CheckoutOwnership;
 
 class FindCheckoutModelAction
 {
     /**
-     * Find existing checkout model or throw exception if already paid
+     * Create a new instance of FindCheckoutModelAction.
+     */
+    public function __construct(private readonly CheckoutOwnership $ownership) {}
+
+    /**
+     * Find existing checkout model or throw exception if already paid or open in another browser
      *
-     * @throws AlreadyPaidException|\Throwable
+     * @throws AlreadyPaidException|CheckoutInUseException|\Throwable
      */
     public function run(CheckoutParamsDto $params): ?Checkout
     {
@@ -28,6 +35,11 @@ class FindCheckoutModelAction
             throw_if(
                 condition: $model->transactions()->whereStatus(TransactionStatusEnum::Captured)->exists(),
                 exception: AlreadyPaidException::class
+            );
+
+            throw_if(
+                condition: $this->ownership->isInUseElsewhere($model),
+                exception: CheckoutInUseException::class
             );
         }
 

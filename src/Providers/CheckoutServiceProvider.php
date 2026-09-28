@@ -27,6 +27,7 @@ use Nezasa\Checkout\Livewire\TravelInformationSection;
 use Nezasa\Checkout\Livewire\TripDetailsPage;
 use Nezasa\Checkout\Livewire\TripSummary;
 use Nezasa\Checkout\Support\CheckoutLogContext;
+use Nezasa\Checkout\Support\CheckoutOwnership;
 
 class CheckoutServiceProvider extends ServiceProvider
 {
@@ -39,6 +40,8 @@ class CheckoutServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(path: __DIR__.'/../../config/checkout.php', key: 'checkout');
         $this->mergeConfigFrom(path: __DIR__.'/../../config/cuba-travel.php', key: 'checkout::cuba-travel');
+
+        $this->app->scoped(CheckoutOwnership::class);
     }
 
     /**

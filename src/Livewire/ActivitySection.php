@@ -82,6 +82,8 @@ class ActivitySection extends BaseCheckoutComponent
     #[On(Section::Traveller->value)]
     public function listen(): void
     {
+        $this->claimCustomerData();
+
         $verifyAvailability = new VerifyAvailabilityJob($this->getParams());
 
         if (! $this->shouldRender) {
@@ -115,6 +117,8 @@ class ActivitySection extends BaseCheckoutComponent
             rules: [$property => $this->rules()['result'][$componentId][$questionId]],
             attributes: [$property => str($property)->afterLast('.')->toString()]
         );
+
+        $this->claimCustomerData();
 
         dispatch(
             new SaveAnswerActivityQuestionJob($this->checkoutId, new AnswerActivity($componentId, $questionId, $value))
@@ -205,7 +209,9 @@ class ActivitySection extends BaseCheckoutComponent
     {
         foreach ($this->activityQuestions as $component) {
             foreach ($component->questions as $question) {
-                $answer = $this->model->getAnswer($component->componentId, $question->refId);
+                $answer = $this->ownsCustomerData()
+                    ? $this->model->getAnswer($component->componentId, $question->refId)
+                    : null;
 
                 if (is_null($answer) && $question->required) {
                     $this->markAsNotCompletedAndExpand(Section::Activity);
