@@ -82,9 +82,7 @@ class InsuranceSection extends BaseCheckoutComponent
             return;
         }
 
-        if (isset($this->model->data['contact'])) {
-            $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
-        }
+        $this->loadContact();
 
         // Do not restore payment details after a full page load (refresh or revisit).
         // They are re-captured in-session; clear any persisted value so inputs stay empty.
@@ -96,6 +94,16 @@ class InsuranceSection extends BaseCheckoutComponent
         if ($bucket !== null) {
             $bucket[InsuranceCheckoutData::PAYMENT] = null;
             $this->model->updateData(InsuranceCheckoutData::prepareInsuranceUpdate($bucket));
+        }
+    }
+
+    /**
+     * Load the contact details, unless they belong to another browser.
+     */
+    private function loadContact(): void
+    {
+        if ($this->ownsCustomerData() && isset($this->model->data['contact'])) {
+            $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
         }
     }
 
@@ -323,7 +331,7 @@ class InsuranceSection extends BaseCheckoutComponent
         $this->expand(Section::Insurance);
 
         if (Config::boolean('checkout.insurance.vertical.active')) {
-            $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
+            $this->loadContact();
 
             $this->dispatch('insurance-reset-ui');
             $this->shouldInitVerticalWidget = true;
@@ -350,8 +358,8 @@ class InsuranceSection extends BaseCheckoutComponent
             return;
         }
 
-        if (! $this->contact && isset($this->model->data['contact'])) {
-            $this->contact = ContactInfoPayloadEntity::from($this->model->data['contact']);
+        if (! $this->contact instanceof ContactInfoPayloadEntity) {
+            $this->loadContact();
         }
 
         $this->updateAvailability();

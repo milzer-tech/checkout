@@ -155,5 +155,7 @@ return [
         'you_have_not_been_charged_for_this_booking' => 'No se le ha cobrado esta reserva.',
         'we_recommend_try_again' => 'Le recomendamos que intente reservar de nuevo.',
         'services_that_could_not_be_booked' => 'Servicios que no se pudieron reservar',
+        'result_expired_title' => 'Esta página ha caducado',
+        'result_expired_message' => 'Por su seguridad, los detalles de la reserva solo se muestran durante un tiempo limitado después del pago. Póngase en contacto con el soporte si tiene alguna pregunta sobre su reserva.',
     ],
 ];

@@ -159,6 +159,8 @@ return [
         'you_have_not_been_charged_for_this_booking' => 'You have not been charged for this booking.',
         'we_recommend_try_again' => 'We recommend you trying booking again.',
         'services_that_could_not_be_booked' => 'Services that could not be booked',
+        'result_expired_title' => 'This page has expired',
+        'result_expired_message' => 'For your security, the booking details are only shown for a limited time after the payment. Please contact support if you have any questions about your booking.',
 
     ],
 ];

@@ -157,5 +157,7 @@ return [
         'you_have_not_been_charged_for_this_booking' => 'Diese Buchung wurde Ihnen nicht belastet.',
         'we_recommend_try_again' => 'Wir empfehlen, die Buchung erneut zu versuchen.',
         'services_that_could_not_be_booked' => 'Leistungen, die nicht gebucht werden konnten',
+        'result_expired_title' => 'Diese Seite ist abgelaufen',
+        'result_expired_message' => 'Zu Ihrer Sicherheit werden die Buchungsdetails nach der Zahlung nur für eine begrenzte Zeit angezeigt. Bitte wenden Sie sich an den Support, wenn Sie Fragen zu Ihrer Buchung haben.',
     ],
 ];

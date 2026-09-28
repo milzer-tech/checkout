@@ -12,13 +12,17 @@ use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\PaxAllocationResponseEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\Entities\RoomAllocationResponseEntity;
 use Nezasa\Checkout\Models\Checkout;
+use Nezasa\Checkout\Support\CheckoutOwnership;
 
 class InitializeCheckoutDataAction
 {
     /**
      * Create a new instance of InitializeCheckoutDataAction.
      */
-    public function __construct(private readonly SaveSectionStatusAction $saveSectionStatusAction) {}
+    public function __construct(
+        private readonly SaveSectionStatusAction $saveSectionStatusAction,
+        private readonly CheckoutOwnership $ownership
+    ) {}
 
     /**
      * Create or find existing checkout model and initialize the data if created.
@@ -32,6 +36,9 @@ class InitializeCheckoutDataAction
         } else {
             $this->visitedConfiguration($model);
         }
+
+        // Nobody else is using the checkout at this point, so the visiting browser becomes or stays its owner.
+        $this->ownership->claim($model);
 
         AvailabilityFacade::clearCache(params: $params);
 
@@ -65,6 +72,8 @@ class InitializeCheckoutDataAction
             $data = InsuranceCheckoutData::stripLegacyInsuranceKeys(
                 InsuranceCheckoutData::checkoutDataArray($downCheckout->data ?? [])
             );
+            // The rest payment is not bound to a browser, so the owner of the down payment is not taken over.
+            unset($data[CheckoutOwnership::OWNER_KEY]);
             $checkout->update(['data' => $data]);
             $this->saveSectionStatusAction->run($checkout, Section::PaymentOptions, true, true);
 

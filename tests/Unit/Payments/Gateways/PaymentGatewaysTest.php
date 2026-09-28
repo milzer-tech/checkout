@@ -51,6 +51,27 @@ final class TestableStripeGatewayForPaymentGatewayTest extends StripeGateway
     }
 }
 
+final class PayloadCapturingStripeGatewayForPaymentGatewayTest extends StripeGateway
+{
+    /**
+     * @var array<string, mixed>
+     */
+    public array $payload = [];
+
+    /**
+     * Capture the payload and stop before Stripe is called.
+     *
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    protected function customizeSessionPayload(array $payload, Transaction $transaction): array
+    {
+        $this->payload = $payload;
+
+        throw new RuntimeException('Stripe is not called in tests.');
+    }
+}
+
 function paymentGatewayCheckout(array $data = []): Checkout
 {
     return Checkout::factory()->create([
@@ -554,4 +575,15 @@ it('builds Stripe Nezasa payload and adds vertical insurance submit text only wh
     $plainCheckout = paymentGatewayCheckout();
     $plainTransaction = paymentGatewayTransaction($plainCheckout, 'Credit Card');
     expect($gateway->exposeCustomizeSessionPayload($basePayload, $plainTransaction))->toBe($basePayload);
+});
+
+it('lets the Stripe Checkout Session expire after the configured payment minutes', function (): void {
+    Config::set('checkout.payment_ttl', 45);
+    $this->freezeTime();
+
+    $gateway = new PayloadCapturingStripeGatewayForPaymentGatewayTest;
+    $init = $gateway->prepare(paymentGatewayPrepareData(paymentGatewayTransaction(paymentGatewayCheckout(), 'Credit Card')));
+
+    expect($init->isAvailable)->toBeFalse()
+        ->and($gateway->payload['expires_at'])->toBe(now()->addMinutes(45)->getTimestamp());
 });

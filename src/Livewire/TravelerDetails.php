@@ -69,6 +69,8 @@ class TravelerDetails extends BaseCheckoutComponent
     #[On(Section::Contact->value)]
     public function listen(): void
     {
+        $this->claimCustomerData();
+
         /** @phpstan-ignore-next-line */
         $paxInfo = $this->model->data->get('paxInfo');
 
@@ -132,6 +134,7 @@ class TravelerDetails extends BaseCheckoutComponent
     {
         [$room, $traveler] = $this->getRoomAndTravellerNumber($item);
         $this->validateTravellerData($room, $traveler);
+        $this->claimCustomerData();
         $this->paxInfo = TravellerSupporter::saveActiveTraveller($this->paxInfo, $this->checkoutId, $room, $traveler);
         $this->model->refresh();
 
@@ -177,6 +180,8 @@ class TravelerDetails extends BaseCheckoutComponent
      */
     public function updated(string $name, mixed $value): void
     {
+        $this->claimCustomerData();
+
         if (preg_match('/^paxInfo\.(\d+)\.(\d+)\.(birthDate|passportExpirationDate)\.(day|month|year)$/', $name, $m)
             === 1) {
             $ruleKey = 'paxInfo.*.*.'.$m[3].'.'.$m[4];

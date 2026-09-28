@@ -14,11 +14,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Nezasa\Checkout\Dtos\Checkout\CheckoutOwnerDto;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Factories\CheckoutFactory;
 use Nezasa\Checkout\Insurances\InsuranceCheckoutData;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\ContactInfoPayloadEntity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\PaxInfoPayloadEntity;
+use Throwable;
 
 /**
  * Eloquent model for checkout state.
@@ -169,6 +171,24 @@ class Checkout extends Model
         return collect($this->data['paxInfo'] ?? [])->flatten(1)->mapWithKeys(
             fn ($pax, $index): array => [$index => PaxInfoPayloadEntity::from(['refId' => "pax-$index", ...$pax])]
         );
+    }
+
+    /**
+     * Get the owner of the customer data, if the checkout has a valid one stored.
+     */
+    public function getOwner(): ?CheckoutOwnerDto
+    {
+        $owner = data_get($this->data, 'owner');
+
+        if (! is_array($owner) || ! is_string($owner['token'] ?? null) || ! is_string($owner['expiresAt'] ?? null)) {
+            return null;
+        }
+
+        try {
+            return CheckoutOwnerDto::from($owner);
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**
