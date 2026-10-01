@@ -294,15 +294,6 @@ class BaseCheckoutComponent extends Component
     }
 
     /**
-     * Get the planner url.
-     */
-    #[Computed]
-    public function nezasaPlannerUrl(): string
-    {
-        return config('checkout.nezasa.base_url').'/itineraries/'.$this->itineraryId;
-    }
-
-    /**
      * Get the url to trip builder.
      */
     #[Computed]

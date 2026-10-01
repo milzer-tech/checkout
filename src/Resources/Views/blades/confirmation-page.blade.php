@@ -618,7 +618,7 @@
                         </p>
 
                         <div class="mt-6">
-                            <a href="{{$this->nezasaPlannerUrl}}">
+                            <a href="{{$this->getUrlToTripBuilder}}">
 
 
                             <button
