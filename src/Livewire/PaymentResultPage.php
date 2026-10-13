@@ -132,7 +132,20 @@ class PaymentResultPage extends BaseCheckoutComponent
         $this->itinerary->upsellItems->map($callback);
         $this->itinerary->insurances->map($callback);
 
-        $this->paid = $this->transaction->price;
+        $this->paid = $this->paidAmount();
+    }
+
+    /**
+     * Get the amount the customer was actually charged. An authorized payment that was
+     * aborted or failed to capture has not been charged, so nothing was paid.
+     */
+    protected function paidAmount(): Price
+    {
+        if ($this->output->isPaymentSuccessful) {
+            return $this->transaction->price;
+        }
+
+        return new Price(amount: 0, currency: $this->transaction->price->currency);
     }
 
     protected function processInsuranceData(): void
