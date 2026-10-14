@@ -176,6 +176,61 @@ This a test card number:
 For payment confirmation, use the challenge code `1234`.
 Enter the remaining data as you wish. You will find the other card number for different situations in this link: https://developer.computop.com/display/EN/Test+credit+card
 
+### Adyen payment provider
+Adyen is integrated as [Drop-in with the sessions flow](https://docs.adyen.com/online-payments/build-your-integration/sessions-flow?platform=Web&integration=Drop-in&version=6.46.0) using the official [Adyen PHP API library](https://github.com/Adyen/adyen-php-api-library). The library's requests are sent with Laravel's HTTP client, so they are logged like every other API call.
+
+1. The payment page creates a payment session with manual capture and shows the Drop-in.
+2. When the payment completed or failed, the Drop-in sends the shopper to the payment result page. Shoppers coming back from a redirect, e.g. 3D Secure, land there too.
+3. The payment result page verifies the payment with Adyen, books the itinerary, and then captures the payment, or reverses it when the booking failed.
+
+You need set up theses variables in the `.env` file of your Laravel application:
+```dotenv
+# Adyen Payment Provider
+CHECKOUT_ADYEN_ACTIVE=true
+CHECKOUT_ADYEN_NAME='Adyen'
+
+# "test", or the region of the live account: "live", "live-us", "live-au", "live-nea" or "live-in"
+CHECKOUT_ADYEN_ENVIRONMENT=test
+# Only for live: Customer Area > Developers > API URLs > Prefix
+CHECKOUT_ADYEN_LIVE_URL_PREFIX=
+
+# Optional, the payment methods to offer, "scheme" are cards. Leave it empty to offer all payment methods enabled in Adyen.
+CHECKOUT_ADYEN_ALLOWED_PAYMENT_METHODS=scheme
+
+# The credentials of each currency: CHECKOUT_ADYEN_{CURRENCY}_... with the ISO 4217 code of the currency.
+# Use single quotes, as API keys contain special characters.
+CHECKOUT_ADYEN_EUR_MERCHANT_ACCOUNT='your EUR merchant account'
+CHECKOUT_ADYEN_EUR_API_KEY='your EUR api key'
+CHECKOUT_ADYEN_EUR_CLIENT_KEY='your EUR client key'
+
+CHECKOUT_ADYEN_USD_MERCHANT_ACCOUNT='your USD merchant account'
+CHECKOUT_ADYEN_USD_API_KEY='your USD api key'
+CHECKOUT_ADYEN_USD_CLIENT_KEY='your USD client key'
+```
+
+**Credentials per currency:** a payment always uses the credentials of its currency. To accept another currency, add its three variables, e.g. `CHECKOUT_ADYEN_GBP_MERCHANT_ACCOUNT`, `CHECKOUT_ADYEN_GBP_API_KEY` and `CHECKOUT_ADYEN_GBP_CLIENT_KEY`. No code or config change is needed, as every currency with a `CHECKOUT_ADYEN_{CURRENCY}_MERCHANT_ACCOUNT` variable is picked up. A currency may also set its own `CHECKOUT_ADYEN_{CURRENCY}_ENVIRONMENT` and `CHECKOUT_ADYEN_{CURRENCY}_LIVE_URL_PREFIX`, e.g. when it is processed in another live region.
+
+**Currencies without credentials:** Adyen is offered for every currency. By default, a payment in a currency without credentials throws a `MissingAdyenCredentialsException`, e.g. "No Adyen credentials are configured for GBP or enable using the default credentials." To pay these currencies with default credentials instead, enable them:
+```dotenv
+CHECKOUT_ADYEN_USE_DEFAULT_CREDENTIALS=true
+CHECKOUT_ADYEN_MERCHANT_ACCOUNT='your default merchant account'
+CHECKOUT_ADYEN_API_KEY='your default api key'
+CHECKOUT_ADYEN_CLIENT_KEY='your default client key'
+```
+The credentials of a currency and the default credentials are never mixed: when a currency has a merchant account but not all its keys, an exception is thrown either way. A payment also keeps the credentials it was created with until it is captured or reversed, so adding the credentials of a currency does not affect its open payments.
+
+The domain of the checkout must be an allowed origin of every client key (Customer Area > Developers > API credentials).
+
+Only offer payment methods that authorize the payment right away and can be captured separately, as the itinerary is booked as soon as the shopper comes back.
+
+These are test card numbers, with the expiry date `03/2030` and the security code `737`:
+```php
+// Visa
+4111111145551142
+// Mastercard
+5555341244441115
+```
+You will find the other card number for different situations in this link: https://docs.adyen.com/development-resources/test-cards-and-credentials/test-card-numbers
 
 ## Adding a new payment method
 Payment methods are intentionally pluggable. A new provider should be added as a new gateway class without changing the existing production gateways. The checkout discovers providers from the `payment` array in `config/checkout.php`, filters them by `isActive()`, and then uses the implemented contract type to decide whether to redirect the customer or render an embedded widget.

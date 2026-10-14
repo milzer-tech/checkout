@@ -11,6 +11,7 @@
     ],
     "require": {
         "php": "^8.3.0",
+        "adyen/php-api-library": "^30.1",
         "azimkordpour/power-enum": "^1.2",
         "intervention/validation": "^4.0",
         "livewire/livewire": "^3.6",

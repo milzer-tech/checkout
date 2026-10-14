@@ -12,6 +12,12 @@
 */
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
+use Milzer\HttpLogger\Core\HttpLogger;
+use Milzer\HttpLogger\Core\LoggingOptions;
+use Milzer\HttpLogger\Core\Writers\ImmediateWriter;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetAvailableUpsellItemsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetRequlatoryInformationRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\RetrieveCheckoutRequest;
@@ -39,6 +45,63 @@ function mockFixture(string $name, int $status = 200): MockResponse
     }
 
     return MockResponse::make($body, $status);
+}
+
+/**
+ * Configure Adyen with the credentials of EUR and USD, and default credentials that are not used.
+ */
+function configureAdyen(): void
+{
+    Config::set('checkout.integrations.adyen', [
+        'active' => true,
+        'name' => 'Adyen',
+        'environment' => 'test',
+        'live_url_prefix' => null,
+        'allowed_payment_methods' => ['scheme'],
+        'merchant_accounts' => [
+            'EUR' => [
+                'merchant_account' => 'MerchantEUR',
+                'api_key' => 'eur-api-key',
+                'client_key' => 'test_eur-client-key',
+                'environment' => null,
+                'live_url_prefix' => null,
+            ],
+            'USD' => [
+                'merchant_account' => 'MerchantUSD',
+                'api_key' => 'usd-api-key',
+                'client_key' => 'test_usd-client-key',
+                'environment' => null,
+                'live_url_prefix' => null,
+            ],
+        ],
+        'use_default_credentials' => false,
+        'default' => [
+            'merchant_account' => 'MerchantDefault',
+            'api_key' => 'default-api-key',
+            'client_key' => 'test_default-client-key',
+        ],
+        'web' => [
+            'version' => '6.46.0',
+            'script_integrity' => 'sha384-script-hash',
+            'style_integrity' => 'sha384-style-hash',
+        ],
+    ]);
+}
+
+/**
+ * Write the outgoing HTTP log entries right away to a handler the test can read.
+ */
+function captureHttpLogs(): TestHandler
+{
+    $logs = new TestHandler;
+
+    app()->instance(HttpLogger::class, new HttpLogger(
+        logger: new Logger('test', [$logs]),
+        options: new LoggingOptions,
+        writer: new ImmediateWriter,
+    ));
+
+    return $logs;
 }
 
 function fakeCarbon(int $year = 2025, int $month = 8, int $day = 27, int $hour = 11, int $minute = 20, int $second = 19): void
