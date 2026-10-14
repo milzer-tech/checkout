@@ -131,7 +131,7 @@ return [
             // A currency may set its own in CHECKOUT_ADYEN_{CURRENCY}_LIVE_URL_PREFIX.
             'live_url_prefix' => env('CHECKOUT_ADYEN_LIVE_URL_PREFIX'),
             // Comma-separated payment method types, e.g. "scheme,applepay,googlepay". Empty offers all enabled in Adyen.
-            'allowed_payment_methods' => array_values(array_filter(array_map(trim(...), explode(',', (string) env('CHECKOUT_ADYEN_ALLOWED_PAYMENT_METHODS', 'scheme'))))),
+            'allowed_payment_methods' => array_values(array_filter(array_map(trim(...), explode(',', (string) env('CHECKOUT_ADYEN_ALLOWED_PAYMENT_METHODS', ''))))),
             // The credentials of every currency that has a CHECKOUT_ADYEN_{CURRENCY}_MERCHANT_ACCOUNT variable.
             'merchant_accounts' => (static function (): array {
                 $accounts = [];
