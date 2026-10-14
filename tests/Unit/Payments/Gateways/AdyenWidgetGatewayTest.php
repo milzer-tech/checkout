@@ -242,6 +242,10 @@ it('creates a manual capture session with the merchant account of the payment cu
         ],
         'channel' => 'Web',
         'additionalData' => ['manualCapture' => 'true'],
+        'applicationInfo' => [
+            'externalPlatform' => ['name' => 'Nezasa'],
+            'merchantApplication' => ['name' => 'Milzer Checkout'],
+        ],
     ])
         ->and($init->isAvailable)->toBeTrue()
         ->and($init->returnUrl)->toBe($prepareData->returnUrl)

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Nezasa\Checkout\Payments\Gateways\Adyen;
 
 use Adyen\Model\Checkout\Amount;
+use Adyen\Model\Checkout\ApplicationInfo;
+use Adyen\Model\Checkout\CommonField;
 use Adyen\Model\Checkout\CreateCheckoutSessionRequest;
+use Adyen\Model\Checkout\ExternalPlatform;
 use Adyen\Model\Checkout\ModelInterface;
 use Adyen\Model\Checkout\Payment;
 use Adyen\Model\Checkout\PaymentCaptureRequest;
@@ -64,6 +67,16 @@ class AdyenWidgetGateway implements WidgetPaymentContract
         'es' => 'es-ES',
         'fr' => 'fr-FR',
     ];
+
+    /**
+     * The application information that identifies the payments of the checkout to Adyen, as a technology
+     * partner: the platform and the product that sends them. Adyen requires the same values in every request.
+     *
+     * @see https://docs.adyen.com/partners/application-information#technology-partner
+     */
+    private const string EXTERNAL_PLATFORM = 'Nezasa';
+
+    private const string MERCHANT_APPLICATION = 'Milzer Checkout';
 
     /**
      * Returns whether the payment gateway is active.
@@ -126,6 +139,10 @@ class AdyenWidgetGateway implements WidgetPaymentContract
                     'channel' => CreateCheckoutSessionRequest::CHANNEL_WEB,
                     // Only authorize the payment, as it is captured after the booking succeeded.
                     'additionalData' => ['manualCapture' => 'true'],
+                    'applicationInfo' => new ApplicationInfo([
+                        'externalPlatform' => new ExternalPlatform(['name' => self::EXTERNAL_PLATFORM]),
+                        'merchantApplication' => new CommonField(['name' => self::MERCHANT_APPLICATION]),
+                    ]),
                 ]),
                 ['idempotencyKey' => 'session-'.$reference]
             );
