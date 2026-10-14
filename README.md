@@ -183,6 +183,8 @@ Adyen is integrated as [Drop-in with the sessions flow](https://docs.adyen.com/o
 2. When the payment completed or failed, the Drop-in sends the shopper to the payment result page. Shoppers coming back from a redirect, e.g. 3D Secure, land there too.
 3. The payment result page verifies the payment with Adyen, books the itinerary, and then captures the payment, or reverses it when the booking failed.
 
+The payment session tells Adyen the payments come from the checkout, with the [application information of a technology partner](https://docs.adyen.com/partners/application-information#technology-partner): the external platform `Nezasa` and the merchant application `Milzer Checkout`.
+
 You need set up theses variables in the `.env` file of your Laravel application:
 ```dotenv
 # Adyen Payment Provider
