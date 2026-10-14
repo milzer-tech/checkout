@@ -2,6 +2,7 @@
 
 use Nezasa\Checkout\Insurances\Providers\Ergo\ErgoInsurance;
 use Nezasa\Checkout\Insurances\Providers\HanseMerkur\HanseMerkurInsurance;
+use Nezasa\Checkout\Payments\Gateways\Adyen\AdyenWidgetGateway;
 use Nezasa\Checkout\Payments\Gateways\Computop\ComputopGateway;
 use Nezasa\Checkout\Payments\Gateways\Computop\ComputopTokenGateway;
 use Nezasa\Checkout\Payments\Gateways\Credit2000\Credit2000Gateway;
@@ -110,6 +111,63 @@ return [
             'prepare_action_type' => env('CHECKOUT_CREDIT2000_PREPARE_ACTION_TYPE', '5'),
             'purchase_type' => env('CHECKOUT_CREDIT2000_PURCHASE_TYPE', '1'),
         ],
+        /**
+         * Adyen Drop-in (sessions flow). The payment is only authorized in the Drop-in, and it is
+         * captured after the booking succeeded or reversed when the booking failed.
+         *
+         * Every currency is paid with its own credentials, set in the environment variables
+         * CHECKOUT_ADYEN_{CURRENCY}_MERCHANT_ACCOUNT, CHECKOUT_ADYEN_{CURRENCY}_API_KEY and
+         * CHECKOUT_ADYEN_{CURRENCY}_CLIENT_KEY, e.g. CHECKOUT_ADYEN_EUR_API_KEY. Another currency only
+         * needs its variables. A payment in a currency without credentials throws an exception, unless
+         * "use_default_credentials" is enabled, which pays it with the "default" credentials instead.
+         */
+        'adyen' => [
+            'active' => (bool) env('CHECKOUT_ADYEN_ACTIVE', false),
+            'name' => env('CHECKOUT_ADYEN_NAME', 'Adyen'),
+            // "test", or the region of the live account: "live", "live-us", "live-au", "live-nea" or "live-in".
+            // A currency may set its own in CHECKOUT_ADYEN_{CURRENCY}_ENVIRONMENT.
+            'environment' => env('CHECKOUT_ADYEN_ENVIRONMENT', 'test'),
+            // Only for live: the prefix in the Customer Area under Developers > API URLs.
+            // A currency may set its own in CHECKOUT_ADYEN_{CURRENCY}_LIVE_URL_PREFIX.
+            'live_url_prefix' => env('CHECKOUT_ADYEN_LIVE_URL_PREFIX'),
+            // Comma-separated payment method types, e.g. "scheme,applepay,googlepay". Empty offers all enabled in Adyen.
+            'allowed_payment_methods' => array_values(array_filter(array_map(trim(...), explode(',', (string) env('CHECKOUT_ADYEN_ALLOWED_PAYMENT_METHODS', 'scheme'))))),
+            // The credentials of every currency that has a CHECKOUT_ADYEN_{CURRENCY}_MERCHANT_ACCOUNT variable.
+            'merchant_accounts' => (static function (): array {
+                $accounts = [];
+
+                foreach (array_keys([...getenv(), ...$_ENV, ...$_SERVER]) as $name) {
+                    if (is_string($name) && preg_match('/^CHECKOUT_ADYEN_([A-Z]{3})_MERCHANT_ACCOUNT$/', $name, $matches) === 1) {
+                        $prefix = "CHECKOUT_ADYEN_{$matches[1]}_";
+
+                        $accounts[$matches[1]] = [
+                            'merchant_account' => env($prefix.'MERCHANT_ACCOUNT'),
+                            'api_key' => env($prefix.'API_KEY'),
+                            'client_key' => env($prefix.'CLIENT_KEY'),
+                            'environment' => env($prefix.'ENVIRONMENT'),
+                            'live_url_prefix' => env($prefix.'LIVE_URL_PREFIX'),
+                        ];
+                    }
+                }
+
+                ksort($accounts);
+
+                return $accounts;
+            })(),
+            // For a currency without credentials: false throws an exception, true uses the default credentials.
+            'use_default_credentials' => (bool) env('CHECKOUT_ADYEN_USE_DEFAULT_CREDENTIALS', false),
+            'default' => [
+                'merchant_account' => env('CHECKOUT_ADYEN_MERCHANT_ACCOUNT'),
+                'api_key' => env('CHECKOUT_ADYEN_API_KEY'),
+                'client_key' => env('CHECKOUT_ADYEN_CLIENT_KEY'),
+            ],
+            // Adyen Web is loaded from Adyen's CDN, so update the integrity hashes together with the version.
+            'web' => [
+                'version' => '6.46.0',
+                'script_integrity' => 'sha384-BWFAwV8ndpuOuMAiAu2fKA0Vj2lSBNRCVBKIV2K7G6hRT7+0CaXiFYZxkDgfwY7r',
+                'style_integrity' => 'sha384-iqhFsakyeWB88YbaGEhZMvY6gJnakKalS52WEM1jya1sN8udUMNyKpfouOSmYVy/',
+            ],
+        ],
         'passolution' => [
             'active' => (bool) env('CHECKOUT_PASSOLUTION_ACTIVE', false),
             'base_url' => env('CHECKOUT_PASSOLUTION_BASE_URL', 'https://api.passolution.eu/api/v2'),
@@ -170,6 +228,7 @@ return [
         ComputopGateway::class,
         ComputopTokenGateway::class,
         Credit2000Gateway::class,
+        AdyenWidgetGateway::class,
     ],
 
     'insurance_provider' => [
