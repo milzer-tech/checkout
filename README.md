@@ -197,7 +197,10 @@ CHECKOUT_ADYEN_ENVIRONMENT=test
 CHECKOUT_ADYEN_LIVE_URL_PREFIX=
 
 # Optional, the payment methods to offer, "scheme" are cards. Leave it empty to offer all payment methods enabled in Adyen.
-CHECKOUT_ADYEN_ALLOWED_PAYMENT_METHODS=scheme
+CHECKOUT_ADYEN_ALLOWED_PAYMENT_METHODS=scheme,applepay,googlepay
+
+# Optional, the country code for shoppers whose contact has no country, e.g. the country of the merchant. Apple Pay needs one.
+CHECKOUT_ADYEN_COUNTRY_CODE=DE
 
 # The credentials of each currency: CHECKOUT_ADYEN_{CURRENCY}_... with the ISO 4217 code of the currency.
 # Use single quotes, as API keys contain special characters.
@@ -233,6 +236,23 @@ These are test card numbers, with the expiry date `03/2030` and the security cod
 5555341244441115
 ```
 You will find the other card number for different situations in this link: https://docs.adyen.com/development-resources/test-cards-and-credentials/test-card-numbers
+
+#### Apple Pay and Google Pay
+The Drop-in shows [Apple Pay](https://docs.adyen.com/payment-methods/apple-pay/web-drop-in) and [Google Pay](https://docs.adyen.com/payment-methods/google-pay/web-drop-in) without any configuration, as the checkout uses the sessions flow and Adyen's Apple Pay certificate. They only need to be:
+
+1. **Added in the Customer Area** for every merchant account of the `CHECKOUT_ADYEN_{CURRENCY}_MERCHANT_ACCOUNT` variables (Payments > Payment methods > Request payment methods), and allowed by `CHECKOUT_ADYEN_ALLOWED_PAYMENT_METHODS` when it is set: `applepay` and `googlepay`.
+2. **Allowed in the iframe:** the checkout runs in an iframe, so the page that embeds it must allow payments, otherwise the browser hides both buttons:
+   ```html
+   <iframe src="https://your-checkout-domain/..." allow="payment"></iframe>
+   ```
+3. **Apple Pay: verified domains.** Apple verifies every domain that offers Apple Pay with Adyen's domain association file at `/.well-known/apple-developer-merchantid-domain-association`, which must be reachable as plain text, without a redirect or password. Add these domains to the Apple Pay domains of the payment method in the Customer Area:
+   - **The domain of the checkout**, where the package serves the file while Adyen is active.
+   - **The domain of every page that embeds the checkout.** In a cross-origin iframe, Safari only accepts the Apple Pay session of the [top-level page](https://bugs.webkit.org/show_bug.cgi?id=264379#c9), so the Drop-in validates Apple Pay for its domain, and that site must serve the same file, e.g. a copy of `src/Resources/adyen/apple-developer-merchantid-domain-association`.
+
+   Adyen updated the file on May 16, 2024, and an old file fails the verification, so replace it everywhere when Adyen announces a new one.
+4. **Google Pay, before going live:** add the Google merchant ID in the live Customer Area, apply for production access in the [Google Pay & Wallet Console](https://pay.google.com/business/console), and add the domains of the checkout and of the pages that embed it there. The test environment needs neither.
+
+Both payments are authorized in the Drop-in and captured after the booking like card payments. Apple Pay shows in Safari on Apple devices and as a code to scan with an iPhone in other browsers, and Google Pay shows in the browsers that support it. Test Apple Pay with a card of [Apple's sandbox](https://developer.apple.com/apple-pay/sandbox-testing/), and Google Pay with any card in a Google Pay wallet, which Adyen maps to a test card without charging it, or with [Google's test card suite](https://developers.google.com/pay/api/web/guides/resources/test-card-suite).
 
 ## Adding a new payment method
 Payment methods are intentionally pluggable. A new provider should be added as a new gateway class without changing the existing production gateways. The checkout discovers providers from the `payment` array in `config/checkout.php`, filters them by `isActive()`, and then uses the implemented contract type to decide whether to redirect the customer or render an embedded widget.

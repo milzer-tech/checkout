@@ -58,6 +58,7 @@ function configureAdyen(): void
         'environment' => 'test',
         'live_url_prefix' => null,
         'allowed_payment_methods' => ['scheme'],
+        'country_code' => null,
         'merchant_accounts' => [
             'EUR' => [
                 'merchant_account' => 'MerchantEUR',
