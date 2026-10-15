@@ -292,6 +292,35 @@ it('leaves out the shopper details that the contact does not have', function ():
         ->and($body['shopperEmail'])->toBe('jane@example.test');
 });
 
+it('uses the configured country code for Apple Pay when the contact has no country', function (): void {
+    Config::set('checkout.integrations.adyen.country_code', ' de ');
+
+    [, $init] = adyenGatewayPreparedPayment(checkout: adyenGatewayCheckout(['country' => null, 'countryCode' => null]));
+    $script = (new AdyenWidgetGateway)->getAssets($init)->scripts->last();
+
+    expect(adyenRequestBody(Http::recorded()->first()[0])['countryCode'])->toBe('DE')
+        ->and($init->persistentData['countryCode'])->toBe('DE')
+        ->and($script)->toContain('\u0022countryCode\u0022:\u0022DE\u0022');
+});
+
+it('prefers the country of the contact over the configured country code', function (): void {
+    Config::set('checkout.integrations.adyen.country_code', 'DE');
+
+    [, $init] = adyenGatewayPreparedPayment(checkout: adyenGatewayCheckout(['country' => 'CH-Switzerland', 'countryCode' => 'CH']));
+
+    expect(adyenRequestBody(Http::recorded()->first()[0])['countryCode'])->toBe('CH')
+        ->and($init->persistentData['countryCode'])->toBe('CH');
+});
+
+it('ignores a configured country code that is not two letters', function (mixed $countryCode): void {
+    Config::set('checkout.integrations.adyen.country_code', $countryCode);
+
+    [, $init] = adyenGatewayPreparedPayment(checkout: adyenGatewayCheckout(['country' => null, 'countryCode' => null]));
+
+    expect(adyenRequestBody(Http::recorded()->first()[0]))->not->toHaveKey('countryCode')
+        ->and($init->persistentData['countryCode'])->toBeNull();
+})->with(['empty' => '', 'three letters' => 'DEU', 'number' => 49]);
+
 it('offers all payment methods enabled in Adyen when no payment method is configured', function (): void {
     Config::set('checkout.integrations.adyen.allowed_payment_methods', []);
 
@@ -391,6 +420,16 @@ it('renders the Drop-in of a USD payment with the client key and environment of 
         ->and($scripts)->toContain('live-us')
         ->and($scripts)->not->toContain('test_eur-client-key')
         ->and($scripts)->not->toContain('usd-api-key');
+});
+
+it('validates Apple Pay for the host of the page that embeds the checkout', function (): void {
+    [, $init] = adyenGatewayPreparedPayment();
+
+    $script = (new AdyenWidgetGateway)->getAssets($init)->scripts->last();
+
+    expect($script)->toContain('const ancestors = window.location.ancestorOrigins;')
+        ->and($script)->toContain('new URL(ancestors[ancestors.length - 1]).hostname')
+        ->and($script)->toContain('paymentMethodsConfiguration: topLevelHost ? { applepay: { domainName: topLevelHost } } : {}');
 });
 
 it('embeds the Drop-in configuration as escaped JSON', function (): void {

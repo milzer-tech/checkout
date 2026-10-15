@@ -54,7 +54,14 @@ use Throwable;
  * 4. capture: captures the authorized payment after the booking succeeded
  * 5. abort: reverses the authorized payment when the booking failed
  *
+ * Apple Pay and Google Pay need no Drop-in configuration with the sessions flow and Adyen's Apple Pay certificate,
+ * besides the domain association file of Apple Pay, see ApplePayDomainAssociationController. Only in an iframe,
+ * Apple Pay validates the merchant for the host of the page that embeds the checkout, see dropInScript.
+ *
  * @see https://docs.adyen.com/online-payments/build-your-integration/sessions-flow?platform=Web&integration=Drop-in&version=6.46.0
+ * @see https://docs.adyen.com/payment-methods/apple-pay/web-drop-in
+ * @see https://docs.adyen.com/payment-methods/google-pay/web-drop-in
+ * @see https://bugs.webkit.org/show_bug.cgi?id=264379#c9
  */
 class AdyenWidgetGateway implements WidgetPaymentContract
 {
@@ -455,13 +462,20 @@ class AdyenWidgetGateway implements WidgetPaymentContract
     }
 
     /**
-     * Get the two-letter country code of the contact's address.
+     * Get the two-letter country code of the contact's address, or the configured one when the contact has
+     * no country, as Apple Pay cannot open its payment sheet without a country code.
      */
     private function countryCode(ContactInfoPayloadEntity $contact): ?string
     {
-        $countryCode = strtoupper($contact->address?->getCountryCode() ?? '');
+        foreach ([$contact->address?->getCountryCode(), Config::get('checkout.integrations.adyen.country_code')] as $countryCode) {
+            $countryCode = is_string($countryCode) ? strtoupper(trim($countryCode)) : '';
 
-        return preg_match('/^[A-Z]{2}$/', $countryCode) === 1 ? $countryCode : null;
+            if (preg_match('/^[A-Z]{2}$/', $countryCode) === 1) {
+                return $countryCode;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -502,6 +516,11 @@ class AdyenWidgetGateway implements WidgetPaymentContract
                     window.location.assign(url.toString());
                 };
 
+                // Safari only accepts the Apple Pay merchant session of the top-level page in a cross-origin
+                // iframe, so the merchant is validated for the host of the page that embeds the checkout.
+                const ancestors = window.location.ancestorOrigins;
+                const topLevelHost = ancestors && ancestors.length > 0 ? new URL(ancestors[ancestors.length - 1]).hostname : null;
+
                 try {
                     const { AdyenCheckout, Dropin } = window.AdyenWeb;
 
@@ -514,7 +533,9 @@ class AdyenWidgetGateway implements WidgetPaymentContract
                         },
                     });
 
-                    new Dropin(checkout).mount(container);
+                    new Dropin(checkout, {
+                        paymentMethodsConfiguration: topLevelHost ? { applepay: { domainName: topLevelHost } } : {},
+                    }).mount(container);
                 } catch (error) {
                     console.error("The Adyen Drop-in could not be loaded", error);
 
