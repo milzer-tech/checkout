@@ -103,6 +103,19 @@ it('hides the activity section until it is known that the activities have questi
     $mockClient->assertNothingSent();
 });
 
+it('lets the browser show a loader as soon as the traveller step is finished', function (): void {
+    fakeActivityQuestions();
+    $checkout = activitySectionCheckout();
+    $component = Livewire::test(ActivitySection::class, activitySectionProps($checkout))
+        ->assertSeeHtml('wire:key="activity-questions-placeholder"')
+        ->assertSeeHtml('x-on:traveller.window="waiting = true"');
+    finishTravellerStep($checkout);
+
+    $component->dispatch(Section::Traveller->value)
+        ->assertDontSeeHtml('wire:key="activity-questions-placeholder"')
+        ->assertSeeHtml('wire:key="activity-questions-loader-1"');
+});
+
 it('shows a loader as soon as the traveller step is finished', function (): void {
     $mockClient = fakeActivityQuestions();
     $checkout = activitySectionCheckout();
@@ -132,6 +145,7 @@ it('opens the activity section once its questions are loaded', function (): void
         ->assertSet('isCompleted', false)
         ->assertSee(trans('checkout::page.trip_details.activity_details'))
         ->assertSee('Arsenal FC vs AFC Bournemouth')
+        ->assertSeeHtml('wire:submit="nextActivity(0)"')
         ->assertDontSeeHtml('wire:init="loadQuestions"');
 
     $mockClient->assertSent(VerifyAvailabilityRequest::class);
@@ -174,13 +188,15 @@ it('opens the activity section at its first activity each time the traveller ste
     $component->dispatch(Section::Traveller->value)
         ->call('loadQuestions')
         ->call('nextActivity', 0)
-        ->assertSet('currentActivity', 1);
+        ->assertSet('currentActivity', 1)
+        ->assertSeeHtml('wire:submit="nextActivity(1)"');
 
     // The customer edits the traveller details, which resets the sections after them, and finishes them again.
     $component->dispatch('sections-reset', sections: [Section::Activity->value, Section::Promo->value])
         ->assertSet('isExpanded', false)
         ->dispatch(Section::Traveller->value)
         ->assertSet('isLoadingQuestions', true)
+        ->assertSeeHtml('wire:key="activity-questions-loader-2"')
         ->assertDontSee('Arsenal FC vs AFC Bournemouth')
         ->call('loadQuestions')
         ->assertSet('isLoadingQuestions', false)
@@ -224,7 +240,8 @@ it('skips the activity section without a loader when the itinerary has no activi
         ->assertSet('isExpanded', false)
         ->assertDispatched(Section::Activity->value)
         ->assertDontSee(trans('checkout::page.trip_details.activity_details'))
-        ->assertDontSeeHtml('wire:init="loadQuestions"');
+        ->assertDontSeeHtml('wire:init="loadQuestions"')
+        ->assertDontSeeHtml('x-on:traveller.window');
 
     Queue::assertPushed(VerifyAvailabilityJob::class);
     $mockClient->assertNothingSent();
@@ -246,7 +263,7 @@ it('offers to load the questions again when loading them fails', function (): vo
         ->assertSeeHtml('wire:click="retryLoadingQuestions"')
         ->assertDontSeeHtml('wire:init="loadQuestions"');
 
-    Exceptions::assertReported(NotFoundException::class);
+    Exceptions::assertReported(fn (RuntimeException $e): bool => $e->getPrevious() instanceof NotFoundException);
 
     fakeActivityQuestions();
 
@@ -285,21 +302,26 @@ it('loads the questions again when the traveller step is finished again after lo
 });
 
 it('keeps the activity section closed when the traveller details are reopened while its questions load', function (): void {
-    fakeActivityQuestions();
     $checkout = activitySectionCheckout();
+
+    MockClient::global([
+        VerifyAvailabilityRequest::class => MockResponse::make([], 200),
+        // The traveller section stores its reopening in a parallel request while Nezasa answers.
+        GetActivityQuestionsRequest::class => function () use ($checkout): MockResponse {
+            Checkout::query()->findOrFail($checkout->id)->updateData([
+                'status.traveller.isCompleted' => false,
+                'status.traveller.isExpanded' => true,
+            ]);
+
+            return mockFixture('get_activity_question_response');
+        },
+    ]);
+
     $component = Livewire::test(ActivitySection::class, activitySectionProps($checkout));
     finishTravellerStep($checkout);
 
     $component->dispatch(Section::Traveller->value)
-        ->assertSet('isLoadingQuestions', true);
-
-    // The traveller section stores its reopening in a parallel request.
-    $checkout->updateData([
-        'status.traveller.isCompleted' => false,
-        'status.traveller.isExpanded' => true,
-    ]);
-
-    $component->call('loadQuestions')
+        ->call('loadQuestions')
         ->assertSet('isLoadingQuestions', false)
         ->assertSet('isExpanded', false)
         ->assertNotDispatched('toast');
@@ -309,6 +331,42 @@ it('keeps the activity section closed when the traveller details are reopened wh
     expect($checkout->isCompleted(Section::Traveller))->toBeFalse()
         ->and($checkout->isExpanded(Section::Traveller))->toBeTrue()
         ->and($checkout->isExpanded(Section::Activity))->toBeFalse();
+});
+
+it('does not load the questions when the traveller details are reopened before they load', function (): void {
+    $mockClient = fakeActivityQuestions();
+    $checkout = activitySectionCheckout();
+    $component = Livewire::test(ActivitySection::class, activitySectionProps($checkout));
+    finishTravellerStep($checkout);
+
+    $component->dispatch(Section::Traveller->value)
+        ->dispatch('sections-reset', sections: [Section::Activity->value, Section::Promo->value])
+        ->assertSet('isLoadingQuestions', false)
+        ->assertDontSeeHtml('wire:init="loadQuestions"')
+        ->call('loadQuestions');
+
+    $mockClient->assertNothingSent();
+});
+
+it('does not reopen a completed activity section or reset the sections after it', function (): void {
+    fakeActivityQuestions();
+    $checkout = activitySectionCheckout();
+    $checkout->updateData([
+        'status' => array_map(fn (): array => ['isExpanded' => false, 'isCompleted' => true], Checkout::buildSectionStatus()),
+    ]);
+
+    Livewire::test(ActivitySection::class, activitySectionProps($checkout))
+        ->assertSet('isLoadingQuestions', true)
+        ->call('loadQuestions')
+        ->assertSet('isCompleted', true)
+        ->assertSet('isExpanded', false)
+        ->assertNotDispatched('sections-reset');
+
+    $checkout->refresh();
+
+    expect($checkout->isCompleted(Section::Activity))->toBeTrue()
+        ->and($checkout->isCompleted(Section::Promo))->toBeTrue()
+        ->and($checkout->isCompleted(Section::Insurance))->toBeTrue();
 });
 
 it('does not load the questions unless the section waits for them', function (): void {

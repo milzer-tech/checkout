@@ -16,6 +16,7 @@ use Nezasa\Checkout\Jobs\SaveAnswerActivityQuestionJob;
 use Nezasa\Checkout\Jobs\SendActivityAnswersToNezasaJob;
 use Nezasa\Checkout\Jobs\UpdateAnswerActivityQuestionJob;
 use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
+use RuntimeException;
 use Throwable;
 
 class ActivitySection extends BaseCheckoutComponent
@@ -34,6 +35,11 @@ class ActivitySection extends BaseCheckoutComponent
      * Indicates whether loading the activity questions has failed.
      */
     public bool $hasLoadingFailed = false;
+
+    /**
+     * The number of times the questions started loading, which gives every loader a new key, so it always loads.
+     */
+    public int $loadingAttempt = 0;
 
     /**
      * The current activity being processed.
@@ -106,6 +112,7 @@ class ActivitySection extends BaseCheckoutComponent
         // Show the loader right away, the questions are loaded by the view in the next request.
         $this->hasLoadingFailed = false;
         $this->isLoadingQuestions = true;
+        $this->loadingAttempt++;
     }
 
     /**
@@ -121,7 +128,8 @@ class ActivitySection extends BaseCheckoutComponent
             (new VerifyAvailabilityJob($this->getParams()))->handle();
             $this->activityQuestions = NezasaConnector::make()->checkout()->activityQuestions($this->checkoutId)->dto();
         } catch (Throwable $e) {
-            report($e);
+            // A failed response throws a not found exception, which is not reported on its own.
+            report(new RuntimeException("Loading the activity questions of checkout {$this->checkoutId} failed.", previous: $e));
 
             // The loader is replaced by the retry button, as a failed request would leave it spinning.
             $this->isLoadingQuestions = false;
@@ -144,7 +152,7 @@ class ActivitySection extends BaseCheckoutComponent
             $this->shouldRender = false;
 
             $this->next();
-        } else {
+        } elseif (! $this->isCompleted) {
             $this->expand(Section::Activity);
         }
 
