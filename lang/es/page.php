@@ -57,6 +57,8 @@ return [
         'driver' => 'Conductor',
         'travel_insurance' => 'Seguro de viaje',
         'activity_details' => 'Detalles de la actividad',
+        'activity_loading_failed' => 'No se pudieron cargar los detalles de la actividad.',
+        'activity_retry' => 'Reintentar',
         'price_breakdown' => 'Desglose de precios',
         'paid_before_departure' => 'Pagado antes de la salida',
         'paid_in_destination' => 'Pagado en destino',

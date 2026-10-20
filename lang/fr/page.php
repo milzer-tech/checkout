@@ -57,6 +57,8 @@ return [
         'driver' => 'Chauffeur',
         'travel_insurance' => 'Assurance voyage',
         'activity_details' => 'Détails de l’activité',
+        'activity_loading_failed' => 'Les détails de l’activité n’ont pas pu être chargés.',
+        'activity_retry' => 'Réessayer',
         'price_breakdown' => 'Détail des prix',
         'paid_before_departure' => 'Payé avant le départ',
         'paid_in_destination' => 'Payé sur place',

@@ -5,107 +5,129 @@
 @php($state = $isExpanded ? 'editing' : 'valid')
 
 
-<x-checkout::editable-box
-    title="{{trans('checkout::page.trip_details.activity_details')}}"
-    :state="$state"
-    :showEdit="true"
-    :showCheck="$isCompleted"
-    class="{{$shouldRender ? '' : 'hidden'}}"
-    onEdit="reopen('{{Section::Activity->value}}')"
->
-    <form wire:submit="save">
-        @foreach($activityQuestions as $componentIndex =>  $component)
-            <h2 class="text-xl font-semibold mb-4">{{$component->productName}}</h2>
-            <div class="py-2 bg-white dark:bg-gray-800 @if($componentIndex !== $currentActivity) hidden @endif"
-                 id="activity-{{$component->componentId}}">
-                <div id="{{$component->componentId}}">
-                    @foreach($component->questions as $questionIndex => $question)
-                        <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 min-w-0 mb-5">
-                            <div class="space-y-2 w-full min-w-0">
+<div>
+    @if($isLoadingQuestions)
+        <div wire:key="activity-questions-loader" wire:init="loadQuestions" role="status"
+             class="flex items-center justify-center gap-3 px-8 py-6 mb-6 rounded-lg bg-white dark:bg-gray-800 shadow-[0px_0px_20px_0px_#7D82934D] dark:shadow-none text-gray-700 dark:text-gray-200">
+            <svg class="h-5 w-5 animate-spin text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+            </svg>
+            <span class="text-sm">{{ trans('checkout::page.trip_details.loading') }}</span>
+        </div>
+    @elseif($hasLoadingFailed)
+        <div class="mb-6 rounded-md border border-red-200 bg-red-50 text-red-700 px-6 py-4 text-sm">
+            <div class="flex items-center justify-between gap-4">
+                <span>{{ trans('checkout::page.trip_details.activity_loading_failed') }}</span>
+                <button type="button" wire:click="retryLoadingQuestions" class="underline whitespace-nowrap">
+                    {{ trans('checkout::page.trip_details.activity_retry') }}
+                </button>
+            </div>
+        </div>
+    @elseif($shouldRender && $activityQuestions->isNotEmpty())
+        <x-checkout::editable-box
+            title="{{trans('checkout::page.trip_details.activity_details')}}"
+            :state="$state"
+            :showEdit="true"
+            :showCheck="$isCompleted"
+            onEdit="reopen('{{Section::Activity->value}}')"
+        >
+            <form wire:submit="save">
+                @foreach($activityQuestions as $componentIndex =>  $component)
+                    <h2 class="text-xl font-semibold mb-4">{{$component->productName}}</h2>
+                    <div class="py-2 bg-white dark:bg-gray-800 @if($componentIndex !== $currentActivity) hidden @endif"
+                         id="activity-{{$component->componentId}}">
+                        <div id="{{$component->componentId}}">
+                            @foreach($component->questions as $questionIndex => $question)
+                                <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 min-w-0 mb-5">
+                                    <div class="space-y-2 w-full min-w-0">
 
-                                @if(! $question->getInputType()->isCheckbox())
-                                    <label
-                                        class="block text-gray-700 dark:text-gray-200 font-medium">
-                                        {{$question->question}} @if($question->required)
-                                            ({{trans('checkout::page.trip_details.required')}})
-                                        @endif
-                                    </label>
-                                @endif
-
-                                @switch($question->getInputType())
-                                    @case(AnswerInputEnum::Select)
-                                        <select name="result.{{$component->componentId}}.{{$question->refId}}"
-                                                wire:model.change="result.{{$component->componentId}}.{{$question->refId}}"
-                                                class="form-select pr-8 w-full">
-                                            <option>{{ trans('checkout::input.placeholders.select') }}</option>
-                                            @foreach($question->answerOptions as $option)
-                                                <option value="{{$option->refId}}">{{$option->displayName}}</option>
-                                            @endforeach
-                                        </select>
-                                        @break
-                                    @case(AnswerInputEnum::Radio)
-                                        @break
-                                    @case(AnswerInputEnum::Checkbox)
-                                        <label
-                                            class="flex items-center space-x-2 text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
-                                            <input
-                                                name="result.{{$component->componentId}}.{{$question->refId}}"
-                                                wire:model.live="result.{{$component->componentId}}.{{$question->refId}}"
-                                                type="checkbox" value="1" class="form-checkbox ml-1">
-                                            <span> {{$question->question}} @if($question->required)
+                                        @if(! $question->getInputType()->isCheckbox())
+                                            <label
+                                                class="block text-gray-700 dark:text-gray-200 font-medium">
+                                                {{$question->question}} @if($question->required)
                                                     ({{trans('checkout::page.trip_details.required')}})
-                                                @endif</span>
-                                        </label>
-                                        @break
-                                    @default
-                                        <input
-                                            name="result.{{$component->componentId}}.{{$question->refId}}"
-                                            type="text"
-                                            @if($question->placeholder) placeholder="{{$question->placeholder}}" @endif
-                                            wire:model.live="result.{{$component->componentId}}.{{$question->refId}}"
-                                            class="form-input w-full">
-                                @endswitch
-                                @error("result.$component->componentId.$question->refId")<span
-                                    class="text-red-500 text-sm">{{ $message }}</span>@enderror
+                                                @endif
+                                            </label>
+                                        @endif
 
-                            </div>
+                                        @switch($question->getInputType())
+                                            @case(AnswerInputEnum::Select)
+                                                <select name="result.{{$component->componentId}}.{{$question->refId}}"
+                                                        wire:model.change="result.{{$component->componentId}}.{{$question->refId}}"
+                                                        class="form-select pr-8 w-full">
+                                                    <option>{{ trans('checkout::input.placeholders.select') }}</option>
+                                                    @foreach($question->answerOptions as $option)
+                                                        <option value="{{$option->refId}}">{{$option->displayName}}</option>
+                                                    @endforeach
+                                                </select>
+                                                @break
+                                            @case(AnswerInputEnum::Radio)
+                                                @break
+                                            @case(AnswerInputEnum::Checkbox)
+                                                <label
+                                                    class="flex items-center space-x-2 text-gray-700 dark:text-gray-200 font-medium overflow-ellipsis whitespace-nowrap overflow-hidden">
+                                                    <input
+                                                        name="result.{{$component->componentId}}.{{$question->refId}}"
+                                                        wire:model.live="result.{{$component->componentId}}.{{$question->refId}}"
+                                                        type="checkbox" value="1" class="form-checkbox ml-1">
+                                                    <span> {{$question->question}} @if($question->required)
+                                                            ({{trans('checkout::page.trip_details.required')}})
+                                                        @endif</span>
+                                                </label>
+                                                @break
+                                            @default
+                                                <input
+                                                    name="result.{{$component->componentId}}.{{$question->refId}}"
+                                                    type="text"
+                                                    @if($question->placeholder) placeholder="{{$question->placeholder}}" @endif
+                                                    wire:model.live="result.{{$component->componentId}}.{{$question->refId}}"
+                                                    class="form-input w-full">
+                                        @endswitch
+                                        @error("result.$component->componentId.$question->refId")<span
+                                            class="text-red-500 text-sm">{{ $message }}</span>@enderror
+
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                    @endforeach
-                </div>
-            </div>
+                    </div>
 
-            <div
-                class="flex justify-between items-center mt-2 mb-4 @if($componentIndex !== $currentActivity) hidden @endif">
-                @if(!$loop->first)
-                    @php($previousLabel = trans('checkout::page.trip_details.previous_activity'))
-                @endif
-                <button type="button"
-                        wire:click="previousActivity('{{$componentIndex}}')"
-                        class="inline-flex items-center px-5 py-2 rounded-lg border border-gray-200 bg-white text-blue-600 hover:bg-gray-50 shadow-sm {{ isset($previousLabel) ? '' : 'invisible' }}">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
-                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                    <span class="font-medium">{{$previousLabel ?? ''}}</span>
-                </button>
+                    <div
+                        class="flex justify-between items-center mt-2 mb-4 @if($componentIndex !== $currentActivity) hidden @endif">
+                        @if(!$loop->first)
+                            @php($previousLabel = trans('checkout::page.trip_details.previous_activity'))
+                        @endif
+                        <button type="button"
+                                wire:click="previousActivity('{{$componentIndex}}')"
+                                class="inline-flex items-center px-5 py-2 rounded-lg border border-gray-200 bg-white text-blue-600 hover:bg-gray-50 shadow-sm {{ isset($previousLabel) ? '' : 'invisible' }}">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            <span class="font-medium">{{$previousLabel ?? ''}}</span>
+                        </button>
 
-                @if($loop->remaining)
-                    @php($label = trans('checkout::page.trip_details.next_activity'))
-                @endif
+                        @if($loop->remaining)
+                            @php($label = trans('checkout::page.trip_details.next_activity'))
+                        @endif
 
-                @if($loop->last )
-                    @php($label = trans('checkout::page.trip_details.next_step'))
-                @endif
-                <button type="button"
-                        wire:click="nextActivity('{{$componentIndex}}')"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
-                    {{$label}}
-                </button>
-            </div>
+                        @if($loop->last )
+                            @php($label = trans('checkout::page.trip_details.next_step'))
+                        @endif
+                        <button type="button"
+                                wire:click="nextActivity('{{$componentIndex}}')"
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md">
+                            {{$label}}
+                        </button>
+                    </div>
 
-            @if(!$loop->last)
-                <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8 mt-6 mb-6"></div>
-            @endif
-        @endforeach
-    </form>
-</x-checkout::editable-box>
+                    @if(!$loop->last)
+                        <div class="h-px bg-gray-200 dark:bg-gray-700 -mx-8 mt-6 mb-6"></div>
+                    @endif
+                @endforeach
+            </form>
+        </x-checkout::editable-box>
+    @endif
+</div>
