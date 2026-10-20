@@ -254,7 +254,7 @@ class ActivitySection extends BaseCheckoutComponent
         } else {
             $rules[] = match ($question->answerValidation) {
                 AnswerValidationEnum::Int => 'integer',
-                AnswerValidationEnum::Double => 'float',
+                AnswerValidationEnum::Double => 'numeric',
                 AnswerValidationEnum::Boolean => 'boolean',
                 default => 'sometimes',
             };

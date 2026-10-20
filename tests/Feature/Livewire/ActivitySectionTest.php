@@ -369,6 +369,33 @@ it('does not reopen a completed activity section or reset the sections after it'
         ->and($checkout->isCompleted(Section::Insurance))->toBeTrue();
 });
 
+it('accepts a decimal number as the answer to a decimal question', function (): void {
+    fakeActivityQuestions(MockResponse::make([[
+        'componentId' => 'activity-with-decimal',
+        'productName' => 'Diving course',
+        'questions' => [[
+            'refId' => 'weight',
+            'question' => 'Weight in kg',
+            'required' => true,
+            'answerValidation' => 'double',
+        ]],
+    ]], 200));
+    $checkout = activitySectionCheckout();
+    $component = Livewire::test(ActivitySection::class, activitySectionProps($checkout));
+    finishTravellerStep($checkout);
+
+    $component->dispatch(Section::Traveller->value)
+        ->call('loadQuestions')
+        ->set('result.activity-with-decimal.weight', '72.5')
+        ->assertHasNoErrors()
+        ->set('result.activity-with-decimal.weight', 'heavy')
+        ->assertHasErrors(['result.activity-with-decimal.weight' => 'numeric'])
+        ->set('result.activity-with-decimal.weight', '80')
+        ->call('nextActivity', 0)
+        ->assertHasNoErrors()
+        ->assertSet('isCompleted', true);
+});
+
 it('does not load the questions unless the section waits for them', function (): void {
     $mockClient = fakeActivityQuestions();
     $checkout = activitySectionCheckout();
