@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 use Nezasa\Checkout\Enums\Section;
 use Nezasa\Checkout\Exceptions\NotFoundException;
+use Nezasa\Checkout\Exceptions\UnavailableServiceException;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\GetActivityQuestionsRequest;
 use Nezasa\Checkout\Integrations\Nezasa\Requests\Checkout\VerifyAvailabilityRequest;
 use Nezasa\Checkout\Jobs\SendActivityAnswersToNezasaJob;
@@ -76,12 +77,12 @@ function finishTravellerStep(Checkout $checkout): void
 /**
  * Fake the Nezasa calls of the activity section, replacing the responses faked before.
  */
-function fakeActivityQuestions(?MockResponse $questions = null): MockClient
+function fakeActivityQuestions(?MockResponse $questions = null, ?MockResponse $availability = null): MockClient
 {
     MockClient::destroyGlobal();
 
     return MockClient::global([
-        VerifyAvailabilityRequest::class => MockResponse::make([], 200),
+        VerifyAvailabilityRequest::class => $availability ?? MockResponse::make([], 200),
         GetActivityQuestionsRequest::class => $questions ?? mockFixture('get_activity_question_response'),
     ]);
 }
@@ -273,6 +274,34 @@ it('offers to load the questions again when loading them fails', function (): vo
         ->assertSeeHtml('wire:init="loadQuestions"')
         ->assertDontSee(trans('checkout::page.trip_details.activity_loading_failed'))
         ->call('loadQuestions')
+        ->assertSet('isExpanded', true)
+        ->assertSee('Arsenal FC vs AFC Bournemouth');
+});
+
+it('offers to load the questions again when the availability check fails', function (): void {
+    Exceptions::fake();
+    $mockClient = fakeActivityQuestions(availability: MockResponse::make(['problems' => [['detail' => 'Server error']]], 500));
+    $checkout = activitySectionCheckout();
+    $component = Livewire::test(ActivitySection::class, activitySectionProps($checkout));
+    finishTravellerStep($checkout);
+
+    $component->dispatch(Section::Traveller->value)
+        ->call('loadQuestions')
+        ->assertSet('isLoadingQuestions', false)
+        ->assertSet('hasLoadingFailed', true)
+        ->assertSet('isCompleted', false)
+        ->assertSet('isExpanded', false)
+        ->assertNotDispatched(Section::Activity->value)
+        ->assertSee(trans('checkout::page.trip_details.activity_loading_failed'));
+
+    $mockClient->assertNotSent(GetActivityQuestionsRequest::class);
+    Exceptions::assertReported(fn (RuntimeException $e): bool => $e->getPrevious() instanceof UnavailableServiceException);
+
+    fakeActivityQuestions();
+
+    $component->call('retryLoadingQuestions')
+        ->call('loadQuestions')
+        ->assertSet('hasLoadingFailed', false)
         ->assertSet('isExpanded', true)
         ->assertSee('Arsenal FC vs AFC Bournemouth');
 });

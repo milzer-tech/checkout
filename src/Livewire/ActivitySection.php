@@ -7,6 +7,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Exceptions\UnavailableServiceException;
+use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\AnswerActivityQuestionPayloadDto as AnswerActivity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ActivityQuestionResponse;
@@ -126,9 +128,15 @@ class ActivitySection extends BaseCheckoutComponent
 
         try {
             (new VerifyAvailabilityJob($this->getParams()))->handle();
+
+            // A failed availability check is cached instead of thrown, so it is checked here.
+            if (AvailabilityFacade::getCachedStatus($this->getParams()) !== 200) {
+                throw new UnavailableServiceException(AvailabilityFacade::getCachedResult($this->getParams()));
+            }
+
             $this->activityQuestions = NezasaConnector::make()->checkout()->activityQuestions($this->checkoutId)->dto();
         } catch (Throwable $e) {
-            // A failed response throws a not found exception, which is not reported on its own.
+            // Failed responses throw HTTP exceptions, which are not reported on their own.
             report(new RuntimeException("Loading the activity questions of checkout {$this->checkoutId} failed.", previous: $e));
 
             // The loader is replaced by the retry button, as a failed request would leave it spinning.
