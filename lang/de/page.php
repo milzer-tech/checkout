@@ -57,6 +57,8 @@ return [
         'driver' => 'Fahrer',
         'travel_insurance' => 'Reiseversicherung',
         'activity_details' => 'Aktivitätsdetails',
+        'activity_loading_failed' => 'Die Aktivitätsdetails konnten nicht geladen werden.',
+        'activity_retry' => 'Erneut versuchen',
         'price_breakdown' => 'Preisaufschlüsselung',
         'paid_before_departure' => 'Vor der Abreise bezahlt',
         'paid_in_destination' => 'Am Reiseziel bezahlt',

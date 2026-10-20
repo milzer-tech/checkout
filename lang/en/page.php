@@ -57,6 +57,8 @@ return [
         'driver' => 'Driver',
         'travel_insurance' => 'Travel insurance',
         'activity_details' => 'Activity details',
+        'activity_loading_failed' => 'The activity details could not be loaded.',
+        'activity_retry' => 'Retry',
         'price_breakdown' => 'Price breakdown',
         'paid_before_departure' => 'Paid before departure',
         'paid_in_destination' => 'Paid in destination',

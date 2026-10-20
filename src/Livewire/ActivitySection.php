@@ -7,6 +7,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Nezasa\Checkout\Enums\Section;
+use Nezasa\Checkout\Exceptions\UnavailableServiceException;
+use Nezasa\Checkout\Facades\AvailabilityFacade;
 use Nezasa\Checkout\Integrations\Nezasa\Connectors\NezasaConnector;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Payloads\Entities\AnswerActivityQuestionPayloadDto as AnswerActivity;
 use Nezasa\Checkout\Integrations\Nezasa\Dtos\Responses\ActivityQuestionResponse;
@@ -16,6 +18,8 @@ use Nezasa\Checkout\Jobs\SaveAnswerActivityQuestionJob;
 use Nezasa\Checkout\Jobs\SendActivityAnswersToNezasaJob;
 use Nezasa\Checkout\Jobs\UpdateAnswerActivityQuestionJob;
 use Nezasa\Checkout\Jobs\VerifyAvailabilityJob;
+use RuntimeException;
+use Throwable;
 
 class ActivitySection extends BaseCheckoutComponent
 {
@@ -23,6 +27,21 @@ class ActivitySection extends BaseCheckoutComponent
      * Indicates whether the component should be rendered.
      */
     public bool $shouldRender = false;
+
+    /**
+     * Indicates whether the activity questions are being loaded.
+     */
+    public bool $isLoadingQuestions = false;
+
+    /**
+     * Indicates whether loading the activity questions has failed.
+     */
+    public bool $hasLoadingFailed = false;
+
+    /**
+     * The number of times the questions started loading, which gives every loader a new key, so it always loads.
+     */
+    public int $loadingAttempt = 0;
 
     /**
      * The current activity being processed.
@@ -84,26 +103,76 @@ class ActivitySection extends BaseCheckoutComponent
     {
         $this->claimCustomerData();
 
-        $verifyAvailability = new VerifyAvailabilityJob($this->getParams());
-
         if (! $this->shouldRender) {
-            dispatch($verifyAvailability);
+            dispatch(new VerifyAvailabilityJob($this->getParams()));
             $this->markAsCompletedAdnCollapse(Section::Activity);
             $this->dispatch(Section::Activity->value);
 
             return;
         }
 
-        $verifyAvailability->handle();
-        $this->activityQuestions = NezasaConnector::make()->checkout()->activityQuestions($this->checkoutId)->dto();
+        // Show the loader right away, the questions are loaded by the view in the next request.
+        $this->hasLoadingFailed = false;
+        $this->isLoadingQuestions = true;
+        $this->loadingAttempt++;
+    }
+
+    /**
+     * Load the activity questions, then open the section, or skip it when there are no questions.
+     */
+    public function loadQuestions(): void
+    {
+        if (! $this->isLoadingQuestions) {
+            return;
+        }
+
+        try {
+            (new VerifyAvailabilityJob($this->getParams()))->handle();
+
+            // A failed availability check is cached instead of thrown, so it is checked here.
+            if (AvailabilityFacade::getCachedStatus($this->getParams()) !== 200) {
+                throw new UnavailableServiceException(AvailabilityFacade::getCachedResult($this->getParams()));
+            }
+
+            $this->activityQuestions = NezasaConnector::make()->checkout()->activityQuestions($this->checkoutId)->dto();
+        } catch (Throwable $e) {
+            // Failed responses throw HTTP exceptions, which are not reported on their own.
+            report(new RuntimeException("Loading the activity questions of checkout {$this->checkoutId} failed.", previous: $e));
+
+            // The loader is replaced by the retry button, as a failed request would leave it spinning.
+            $this->isLoadingQuestions = false;
+            $this->hasLoadingFailed = true;
+
+            return;
+        }
+
+        $this->currentActivity = 0;
+        $this->isLoadingQuestions = false;
+
+        // The customer may have reopened the traveller details while the questions were loading.
+        $this->model->refresh();
+
+        if (! $this->model->isCompleted(Section::Traveller)) {
+            return;
+        }
 
         if ($this->activityQuestions->isEmpty()) {
             $this->shouldRender = false;
 
             $this->next();
+        } elseif (! $this->isCompleted) {
+            $this->expand(Section::Activity);
         }
 
         $this->fillResult();
+    }
+
+    /**
+     * Load the activity questions again after loading them has failed.
+     */
+    public function retryLoadingQuestions(): void
+    {
+        $this->listen();
     }
 
     /**
@@ -193,7 +262,7 @@ class ActivitySection extends BaseCheckoutComponent
         } else {
             $rules[] = match ($question->answerValidation) {
                 AnswerValidationEnum::Int => 'integer',
-                AnswerValidationEnum::Double => 'float',
+                AnswerValidationEnum::Double => 'numeric',
                 AnswerValidationEnum::Boolean => 'boolean',
                 default => 'sometimes',
             };
@@ -212,10 +281,6 @@ class ActivitySection extends BaseCheckoutComponent
                 $answer = $this->ownsCustomerData()
                     ? $this->model->getAnswer($component->componentId, $question->refId)
                     : null;
-
-                if (is_null($answer) && $question->required) {
-                    $this->markAsNotCompletedAndExpand(Section::Activity);
-                }
 
                 $this->result[$component->componentId][$question->refId] = $answer;
             }
@@ -238,5 +303,7 @@ class ActivitySection extends BaseCheckoutComponent
 
         $this->isCompleted = false;
         $this->isExpanded = false;
+        $this->isLoadingQuestions = false;
+        $this->hasLoadingFailed = false;
     }
 }
