@@ -77,6 +77,22 @@ it('continues checkout when itinerary content validation is disabled', function 
         ->assertDontSee('Package tour guidelines not fulfilled');
 });
 
+it('links the back button to the trip builder without calling a livewire action', function (): void {
+    fakeInitialNezasaCalls();
+
+    Config::set('checkout.nezasa.ibe_base_url', 'https://ibe.example.test');
+
+    Livewire::withQueryParams([
+        'itineraryId' => 'itinerary-123',
+        'checkoutId' => 'checkout-456',
+        'origin' => 'IBE',
+        'lang' => 'en',
+        'rest-payment' => false,
+    ])->test(TripDetailsPage::class)
+        ->assertSeeHtml('href="https://ibe.example.test?nz-url='.urlencode('/itineraries/itinerary-123?nz-lang=en').'"')
+        ->assertDontSeeHtml('wire:click="goBack"');
+});
+
 it('renders not-found page', function (): void {
     fakeInitialNotFoundNezasaCalls();
 
