@@ -23,9 +23,12 @@
         x-data="{
             open: false,
             search: '',
-            selectedValue: $wire.entangle(@js($wireModel)).live,
             options: @js($countryOptions->all()),
             placeholder: @js(trans('checkout::input.placeholders.select')),
+            {{-- Read from the component, as entangle can not bind a key that is still missing, e.g. a country nobody picked yet. --}}
+            get selectedValue() {
+                return $wire.$get(@js($wireModel)) ?? '';
+            },
             get selectedOption() {
                 return this.options.find((option) => option.value === this.selectedValue) ?? null;
             },
@@ -45,22 +48,11 @@
                 this.$nextTick(() => this.$refs.search?.focus());
             },
             selectOption(option) {
-                this.selectedValue = option.value;
                 this.search = '';
                 this.open = false;
                 this.$refs.select.value = option.value;
                 this.$refs.select.dispatchEvent(new Event('input', { bubbles: true }));
                 this.$refs.select.dispatchEvent(new Event('change', { bubbles: true }));
-            },
-            init() {
-                this.$nextTick(() => {
-                    if (this.$refs.select.value) {
-                        this.selectedValue = this.$refs.select.value;
-                    }
-                });
-                this.$watch('selectedValue', (value) => {
-                    this.$refs.select.value = value ?? '';
-                });
             }
         }"
         @keydown.escape.window="open = false"
