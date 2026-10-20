@@ -34,6 +34,17 @@
                     </div>
                 </div>
             </section>
+
+            <div class="flex justify-between items-center">
+                <button wire:click="goBack()"
+                        class="flex items-center gap-2 px-6 py-3 rounded-md border border-gray-300 dark:border-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    {{ trans('checkout::page.trip_details.back') }}
+                </button>
+            </div>
         </div>
 
         <div class="min-w-0 lg:col-span-1">
@@ -47,19 +58,8 @@
         </div>
     </div>
 
-    <!-- Footer with navigation and copyright -->
+    <!-- Footer with copyright -->
     <div class=" mb-6">
-        <div class="flex justify-between items-center">
-            <button wire:click="goBack()"
-                    class="flex items-center gap-2 px-6 py-3 rounded-md border border-gray-300 dark:border-gray-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                {{ trans('checkout::page.trip_details.back') }}
-            </button>
-        </div>
-
         <div class="text-center mt-10 text-gray-500 dark:text-gray-400">
             {{ trans('checkout::page.payment.copyright') }}
         </div>
