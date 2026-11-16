@@ -27,6 +27,12 @@ use Stripe\StripeClient;
 final class VerticalInsuranceListener
 {
     /**
+     * The description of every Vertical insurance on Nezasa. Nezasa reads it as Markdown, like the payment
+     * explainer, so the link stays clickable.
+     */
+    private const string NEZASA_DESCRIPTION = 'You have purchased trip protection and will receive information about your coverage in a separate email from ViCoverage. You can visit [customers.vicoverage.com](https://customers.vicoverage.com/login) to find details or file a claim.';
+
+    /**
      * The stripe client.
      */
     private StripeClient $stripe;
@@ -218,7 +224,7 @@ final class VerticalInsuranceListener
                         bookingStatus: AvailabilityEnum::Booked,
                         supplierName: 'ViCoverage',
                         supplierConfirmationNumber: $insurance['policy_number'],
-                        description: $insurance['policy_number']
+                        description: self::NEZASA_DESCRIPTION
                     )
                 );
 
