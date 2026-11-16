@@ -60,7 +60,11 @@
         <div class="space-y-3">
             <h3 class="text-base font-semibold text-gray-900">{{trans('checkout::page.trip_details.conditions_of_payment')}}</h3>
         </div>
-        <div class="space-y-3 [&_a]:text-blue-600 [&_a]:underline [&_a]:hover:text-blue-800">
+        {{-- Tailwind's preflight removes list markers and indentation, so the Markdown lists need their own styles. --}}
+        <div class="space-y-3
+            [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1
+            [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1
+            [&_a]:text-blue-600 [&_a]:underline [&_a]:hover:text-blue-800">
             {!!  str($regulatoryInformation->paymentExplainer)->markdown() !!}
         </div>
 
